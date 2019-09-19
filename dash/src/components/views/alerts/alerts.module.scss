@@ -1,0 +1,58 @@
+
+@import '../../../assets/styles/colors.scss';
+//$drawer-width: 400px;
+
+.alerts {
+  height: 100%;
+  display: grid;
+  //grid-template-columns: $drawer-width auto;
+
+  // Set minimum height of the mapbox map.
+  > div:nth-child(2) {
+    min-height: 620px;
+  }
+
+  .modal {}
+  .modal > .header {
+    width: 100%;
+    border-bottom: 1px solid gray;
+    font-size: 1.5em;
+    font-family: 'Raleway', serif;
+    font-weight: 600;
+    text-align: center;
+    padding: 5px 0;
+  }
+  .modal > .content {
+    width: 100%;
+    padding: 10px 0;
+  }
+  .modal > .actions {
+    // width: 100%;
+    // padding: 10px 5px;
+    text-align: center;
+    button {
+      background-color: #23385e;
+      color: white;
+      font-size: 18px;
+      border: none;
+      border-radius: 5px;
+      height: 40px;
+      width: 175px;
+      align-self: center;
+      justify-self: right;
+    }
+  }
+  .modal > .close {
+    cursor: pointer;
+    position: absolute;
+    display: block;
+    padding: 0px 5px;
+    line-height: 20px;
+    right: -10px;
+    top: -10px;
+    // font-size: 24px;
+    background: #ffffff;
+    border-radius: 18px;
+    border: 1px solid #cfcece;
+  }
+}

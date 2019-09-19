@@ -1,0 +1,23 @@
+$logo-height: 70px;
+// $alert-height: 60px;
+// $logo-height: 140px;
+
+.app {
+  height: 100%;
+  display: grid;
+  grid-template-columns: auto; // ensures header resizes correctly if window size is changed
+  // grid-template-columns: 100%;
+  grid-template-rows: $logo-height auto;
+}
+
+.watermark {
+  background-image: url('./assets/images/watermark/watermark-med.png');
+  background-color: transparent;
+  opacity: 0.3;
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  z-index: 600;
+  pointer-events: none;
+  top: -30px;
+}

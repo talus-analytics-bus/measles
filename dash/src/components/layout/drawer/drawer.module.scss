@@ -1,0 +1,31 @@
+@import '../../../assets/styles/colors.scss';
+
+$button-width: 80px;
+$spacing: 10px;
+
+.drawer {
+  border-right: 2px solid $grey;
+  padding: 15px;
+  z-index: 3;
+  box-shadow: $layout-box-shadow;
+}
+
+.titleContainer {
+  margin-bottom: 20px;
+}
+.title {
+  font-size: 24px;
+  font-weight: bold;
+}
+.date {
+  color: $grey;
+  font-size: 18px;
+}
+
+.alertsContainer {
+  margin-bottom: 20px;
+}
+.subtitle {
+  font-size: 18px;
+  font-weight: bold;
+}

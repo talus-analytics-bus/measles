@@ -1,0 +1,265 @@
+@import './assets/styles/colors.scss';
+
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+// Styling for gear icon in header
+header i.material-icons {
+  align-self: center;
+  cursor: pointer;
+  color: rgba(0, 0, 0, .85); // to match nav menu items
+}
+.react-datepicker__time-list-item {
+  white-space: nowrap;
+}
+#mapbox-container-small {
+  // max-height: 600px;
+}
+[contenteditable=true]:empty:before, ::placeholder {
+  content: attr(placeholder);
+  display: block; /* For Firefox */
+  color: lightgray;
+  font-style: italic;
+}
+
+input:empty:before {
+  content: attr(placeholder);
+  display: block; /* For Firefox */
+  color: lightgray;
+  font-style: italic;
+}
+
+.react-datepicker__input-container {
+  width: 300px;
+}
+
+.popup-content.settingsMenu-content {
+  width: 210px !important;
+}
+
+// Styling for reactjs-popup tooltips
+.mapModal-content {
+  width: 33% !important;
+}
+.infoTooltip {
+  font-weight: normal;
+  font-size: 16px;
+}
+.signupLink .popup-content {
+  width: 500px !important;
+}
+.popup-content {
+  border-radius: 5px !important;
+  font-family: 'Open Sans', sans-serif !important;
+  padding: 10px !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  z-index: 10 !important;
+}
+
+$iconSize: 20px;
+.facility-marker {
+  border-radius: 1000px;
+  width: $iconSize;
+  height: $iconSize;
+  border: white 2px solid;
+  box-shadow: 0 0 20px 0px;
+
+  &.critical {
+    background-color: $critical;
+  }
+  &.alerted {
+    background-color: $alerted;
+  }
+  &.stable {
+    background-color: $stable;
+  }
+}
+
+//tables
+table {
+  width: 100%;
+  padding-top: 10px;
+  & > tr > th {
+    text-align: left;
+  }
+
+  &.statusUpdates,
+  &.alertHistory {
+    padding: 20px;
+    // border-bottom: 2px solid $grey;
+    td::first-letter {
+      text-transform: uppercase;
+    }
+    tr:not(:first-child) {
+      td {
+        border-top: 1px solid #e6e6e6;
+      }
+    }
+    th {
+      border-bottom: 1px solid #e6e6e6;
+    }
+  }
+}
+
+.button, button {
+  cursor: pointer;
+}
+
+.button.back {
+  visibility: hidden;
+}
+
+// Add styling from Bootstrap 3, "Dropdown" JS component package:
+// Source: https://getbootstrap.com/docs/3.4/customize/
+.pagination {
+  display: inline-block;
+  padding-left: 0;
+  margin: 20px 0;
+  border-radius: 4px;
+}
+.pagination > li {
+  display: inline;
+}
+.pagination > li > a,
+.pagination > li > span {
+  position: relative;
+  float: left;
+  padding: 6px 12px;
+  margin-left: -1px;
+  line-height: 1.42857143;
+  color: #337ab7;
+  text-decoration: none;
+  background-color: #ffffff;
+  border: 1px solid #dddddd;
+}
+.pagination > li > a:hover,
+.pagination > li > span:hover,
+.pagination > li > a:focus,
+.pagination > li > span:focus {
+  z-index: 2;
+  color: #23527c;
+  background-color: #eeeeee;
+  border-color: #dddddd;
+}
+.pagination > li:first-child > a,
+.pagination > li:first-child > span {
+  margin-left: 0;
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+}
+.pagination > li:last-child > a,
+.pagination > li:last-child > span {
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+.pagination > .active > a,
+.pagination > .active > span,
+.pagination > .active > a:hover,
+.pagination > .active > span:hover,
+.pagination > .active > a:focus,
+.pagination > .active > span:focus {
+  z-index: 3;
+  color: #ffffff;
+  cursor: default;
+  background-color: #337ab7;
+  border-color: #337ab7;
+}
+.pagination > .disabled > span,
+.pagination > .disabled > span:hover,
+.pagination > .disabled > span:focus,
+.pagination > .disabled > a,
+.pagination > .disabled > a:hover,
+.pagination > .disabled > a:focus {
+  color: #777777;
+  cursor: not-allowed;
+  background-color: #ffffff;
+  border-color: #dddddd;
+}
+.pagination-lg > li > a,
+.pagination-lg > li > span {
+  padding: 10px 16px;
+  font-size: 18px;
+  line-height: 1.3333333;
+}
+.pagination-lg > li:first-child > a,
+.pagination-lg > li:first-child > span {
+  border-top-left-radius: 6px;
+  border-bottom-left-radius: 6px;
+}
+.pagination-lg > li:last-child > a,
+.pagination-lg > li:last-child > span {
+  border-top-right-radius: 6px;
+  border-bottom-right-radius: 6px;
+}
+.pagination-sm > li > a,
+.pagination-sm > li > span {
+  padding: 5px 10px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.pagination-sm > li:first-child > a,
+.pagination-sm > li:first-child > span {
+  border-top-left-radius: 3px;
+  border-bottom-left-radius: 3px;
+}
+.pagination-sm > li:last-child > a,
+.pagination-sm > li:last-child > span {
+  border-top-right-radius: 3px;
+  border-bottom-right-radius: 3px;
+}
+.caret {
+  display: inline-block;
+  width: 0;
+  height: 0;
+  margin-left: 2px;
+  vertical-align: middle;
+  border-top: 4px dashed;
+  border-top: 4px solid \9;
+  border-right: 4px solid transparent;
+  border-left: 4px solid transparent;
+}
+
+.dropup .caret,
+.navbar-fixed-bottom .dropdown .caret {
+  content: "";
+  border-top: 0;
+  border-bottom: 4px dashed;
+  border-bottom: 4px solid \9;
+}
+
+.select-search-box::after,
+.react-datepicker__input-container::after {
+  content: "expand_more" !important;
+  font-family: 'Material Icons' !important;
+}
+
+// @import './assets/styles/bootstrap.min.css';
+@import "../node_modules/react-bootstrap-table-next/dist/react-bootstrap-table2.min.css";
+// @import "../node_modules/react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css";
+@import './assets/styles/fonts.css';
+@import './assets/styles/global.scss';
+@import './assets/styles/react-select-search.scss';
+
+// body {
+//   margin: 0;
+//   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+//     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+//     sans-serif;
+//   -webkit-font-smoothing: antialiased;
+//   -moz-osx-font-smoothing: grayscale;
+// }
+
+// code {
+//   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+//     monospace;
+// }

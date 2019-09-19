@@ -1,0 +1,31 @@
+@import '../../../assets/styles/colors.scss';
+
+.container {
+  width: 350px;
+}
+
+.header {
+  display: grid;
+  grid-template-columns: auto 100px;
+  border-bottom: 2px solid grey;
+}
+
+.titleContainer {
+  padding: 10px;
+
+  & > p:first-child {
+    display: flex;
+    align-items: center;
+    font-size: 26px;
+
+    & > i {
+      margin-left: 10px;
+      font-size: 30px;
+      color: blue;
+    }
+  }
+  & > p:last-child {
+    font-size: 18px;
+    // font-family: 'rawline', serif;
+  }
+}

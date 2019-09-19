@@ -1,0 +1,19 @@
+@import '../../../assets/styles/colors.scss';
+
+.logo {
+  background-color: $dark-grey;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: left;
+
+  a {
+    display: flex;
+    align-items: center;
+    justify-content: left;
+    height: calc(100% - 20px); //fake padding
+    .img {
+      height: 100%;
+    }
+  }
+}
