@@ -2,6 +2,7 @@
 
 # dependencies
 /node_modules
+/dash/node_modules
 /.pnp
 .pnp.js
 
@@ -18,3 +19,23 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Flask stuff:
+instance/
+.webassets-cache
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# data ingest scripts with lots of shapefiles
+/data_setup
+
+# other setup files
+/Bubblegum*
+/Moonlight*
+/ne_10m_admin_0_countries.zip
