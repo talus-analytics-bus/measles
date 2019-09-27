@@ -8,7 +8,7 @@ import Content from './content/Content'
 
 // Utilities (date formatting, etc.)
 import Util from '../../../components/misc/Util.js'
-import Query from '../../../components/misc/Query.js'
+import ObservationQuery from '../../../components/misc/ObservationQuery.js'
 
 import classNames from 'classnames'
 import styles from './details.module.scss'
@@ -60,19 +60,19 @@ const Details = (props: any) => {
 
   // Function to make API calls to get data for the state variables above.
   const getDetailsData = async () => {
-    var countryPopQ = await Query(3, 'yearly', '2018-01-01', '2018-01-01', country);
+    var countryPopQ = await ObservationQuery(3, 'yearly', '2018-01-01', '2018-01-01', country);
     setCountryPop(countryPopQ[0]['value']);
     setCountryName(countryPopQ[0]['place_name'])
 
-    var countryGDPQ = await Query(14, 'yearly', '2018-01-01', '2018-01-01', country);
+    var countryGDPQ = await ObservationQuery(14, 'yearly', '2018-01-01', '2018-01-01', country);
     console.log(countryGDPQ)
     setCountryGDP(countryGDPQ[0]['value']);
 
-    var countryJEEQ = await Query(6, 'monthly', '2019-07-01', '2019-07-01', country);
+    var countryJEEQ = await ObservationQuery(6, 'monthly', '2019-07-01', '2019-07-01', country);
     setCountryJEE(countryJEEQ[0]['value']);
 
-    setCaseHistory(await Query(6, 'monthly', '2010-01-01', '2018-01-01', country));
-    setCoverageHistory(await Query(4, 'yearly', '2010-01-01', '2018-01-01', country));
+    setCaseHistory(await ObservationQuery(6, 'monthly', '2010-01-01', '2018-01-01', country));
+    setCoverageHistory(await ObservationQuery(4, 'yearly', '2010-01-01', '2018-01-01', country));
 
     setLoading(false);
   }

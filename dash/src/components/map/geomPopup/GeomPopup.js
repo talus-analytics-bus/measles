@@ -1,11 +1,13 @@
 import React from 'react'
-//import Popup from 'reactjs-popup'
+import { Link } from 'react-router-dom'
 
 import styles from './geomPopup.module.scss'
 
 // : React.FC
 const GeomPopup = ({ popupData }) => {
   console.log(popupData)
+  const detailsPath = '/details/' + popupData['bubble']['place_id']
+
   return (
     <div className={styles.container}>
       <div className={styles.header}>
@@ -37,6 +39,17 @@ const GeomPopup = ({ popupData }) => {
           <p>
             {popupData['bubble']['value']}
           </p>
+          <p>
+            Month over month
+          </p>
+          <p>
+            {popupData['trend']['percent_change']}
+          </p>
+        </div>
+        <div className={styles.buttons}>
+          <Link to={detailsPath}>
+            <button>Country detail</button>
+          </Link>
         </div>
       </div>
     </div>

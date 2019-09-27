@@ -3,16 +3,21 @@ import { Route, Switch, BrowserRouter } from 'react-router-dom'
 import axios from 'axios'
 
 // layout
-import Alert from './components/layout/alert/Alert'
 import Logo from './components/layout/logo/Logo'
 
+// map
+import Map from './components/map/Map'
+
 // views
-import Alerts from './components/views/alerts/Alerts.js'
+//import Alerts from './components/views/alerts/Alerts.js'
 import Details from './components/views/details/Details'
 
 // styles
 import styles from './App.module.scss'
 import 'material-design-icons/iconfont/material-icons.css'
+
+// queries
+import ObservationQuery from './components/misc/ObservationQuery.js'
 
 var API_BASE = process.env.REACT_APP_API_BASE_URL
 if (typeof API_BASE === 'undefined') {
@@ -51,36 +56,11 @@ const App = () => {
   // Track whether the component is still loading.
   const [loading, setLoading] = React.useState(true)
 
-  /**
-   * Get observation data from API. Updates the observation data and loading status
-   * when complete.
-   * @method getObservations
-   */
-  async function getObservations(metric_id, temporal_resolution, start_date, end_date=null, country='all') {
-    if (end_date === null) {end_date = start_date};
-
-    var params = {
-      metric_id: metric_id,
-      temporal_resolution: temporal_resolution,
-      spatial_resolution: 'country',
-      start: start_date,
-      end: end_date
-    };
-
-    if (country !== 'all') { params['place_id'] = 'country'};
-
-    const res = await axios(`${API_BASE}/observations`, {
-      params
-    });
-
-    return res.data.data
-  }
-
   async function getMapObservations() {
     // get the bubble data
-    setBubbleObservations(await getObservations(6, 'monthly', '2019-07-01'));
+    setBubbleObservations(await ObservationQuery(6, 'monthly', '2019-07-01'));
     // get the fill data
-    setFillObservations(await getObservations(4, 'yearly', '2018-01-01'));
+    setFillObservations(await ObservationQuery(4, 'yearly', '2018-01-01'));
     setLoading(false);
   }
 
@@ -89,8 +69,8 @@ const App = () => {
   }, [])
 
   // Functions to render each page's elements.
-  const renderAlerts = loading ? <div /> :
-    <Alerts // map page
+  const renderMap = loading ? <div /> :
+    <Map // map page
       fillObservations={fillObservations} // observation data for map
       bubbleObservations={bubbleObservations} // observation data for map
       shownMapModal={shownMapModal} // don't show help modal more than once
@@ -116,8 +96,8 @@ const App = () => {
         <Logo />
         <Switch>
           <div>
-            <Route exact path='/alerts' render={() => renderAlerts} />
-            <Route exact path='/' component={() => renderAlerts} />
+            <Route exact path='/' component={() => renderMap} />
+            <Route exact path='/landing' component={() => renderMap} />
             <Route
               path='/details/:id'
               render={d => {

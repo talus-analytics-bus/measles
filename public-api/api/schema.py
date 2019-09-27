@@ -4,7 +4,7 @@
 
 # Standard libraries
 import functools
-from datetime import datetime, date
+from datetime import datetime, timedelta
 
 # Third party libraries
 from pony.orm import select
@@ -137,3 +137,56 @@ def getObservations(filters):
 
     # Return the query response
     return res
+
+
+# Define an observation endpoint query.
+def getTrend(filters):
+    # Initialize response as empty
+    res = None
+
+    metric_id = filters['metric_id']
+
+    # get metric info to check resolutions
+    metric = db.Metric[metric_id]
+
+    end = datetime.strptime(filters['end'], '%Y-%m-%d').date()
+    lag = int(filters['lag'])
+
+    t_rs = metric.temporal_resolution
+    if t_rs == 'yearly':
+        print('here: ', end.year, lag)
+        start = datetime(end.year - lag, end.month, end.day)
+    elif t_rs == 'monthly':
+        years, months = divmod(lag, 12)
+
+        if years == 0:
+            if months >= end.month:
+                start = datetime(end.year - 1, end.month + 12 - months, end.day)
+            else:
+                start = datetime(end.year, end.month - months, end.day)
+        else:
+            if months >= end.month:
+                start = datetime(end.year - (years + 1), end.month + 12 - months, end.day)
+            else:
+                start = datetime(end.year - (years), end.month - months, end.day)
+    elif t_rs == 'weekly':
+        start = end - timedelta(weeks=lag)
+    elif t_rs == 'daily':
+        start = end - timedelta(days=lag)
+
+    start = start.date()
+
+    if 'place_id' in filters:
+        res = select(o for o in db.Observation
+                     if o.metric.metric_id == metric_id
+                     and o.date_time.date in (start, end)
+                     and o.place.place_id == filters['place_id'])
+    else:
+        res = select(o for o in db.Observation
+                     if o.metric.metric_id == metric_id
+                     and o.date_time.date in (start, end))
+
+    print(res)
+
+    # Return the query response
+    return (res, start, end)

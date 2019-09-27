@@ -99,11 +99,11 @@ const initMap = (map, fillObservations, bubbleObservations) => {
       const place_id = observation['place_id']
 
       if (!value) {
-        map.setFeatureState({source: 'centroids', sourceLayer: 'country_centroids-buzq3b', id: place_id }, {value: 0});
+        map.setFeatureState({source: 'centroids', sourceLayer: 'centroids_id_rpr', id: place_id }, {value: 0});
       } else {
         //const state = { value: Math.floor(256 * value)};
         const state = {value: value};
-        map.setFeatureState({source: 'centroids', sourceLayer: 'country_centroids-buzq3b', id: place_id }, state);
+        map.setFeatureState({source: 'centroids', sourceLayer: 'centroids_id_rpr', id: place_id }, state);
       }
     });
 
@@ -114,9 +114,16 @@ const initMap = (map, fillObservations, bubbleObservations) => {
       'source-layer': 'centroids_id_rpr',
       'paint': {
       'circle-radius': [
-             'case',
-             0, ['boolean', ['feature-state', 'value'], null],
-             ['feature-state', 'value'] //, ["!", ['boolean', ['feature-state', 'value'], null]],0
+          'step',
+          ["feature-state", "value"],
+              0,
+              1, 1,
+              10, 10,
+              25, 20,
+              50, 30,
+              100, 40,
+              500, 50,
+              1000, 75
         ],
         'circle-color': '#ff0000',
         'circle-opacity': 0.4,

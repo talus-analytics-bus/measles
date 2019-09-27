@@ -11,7 +11,7 @@ if (typeof API_BASE === 'undefined') {
  * @method getObservations
  */
 
-const Query = async function (metric_id, temporal_resolution, start_date, end_date, country) {
+const ObservationQuery = async function (metric_id, temporal_resolution, start_date, end_date, country) {
   end_date = typeof end_date !== 'undefined' ? end_date : start_date;
   country = typeof country !== 'undefined' ? country : 'all';
 
@@ -32,4 +32,4 @@ const Query = async function (metric_id, temporal_resolution, start_date, end_da
   return res.data.data
 };
 
-export default Query;
+export default ObservationQuery;

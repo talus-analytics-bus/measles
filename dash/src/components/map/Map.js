@@ -1,8 +1,7 @@
 import React from 'react'
 import ReactMapGL, { NavigationControl, Popup } from 'react-map-gl'
-//import axios from 'axios'
 
-//import classNames from 'classnames'
+import TrendQuery from '../misc/TrendQuery.js'
 
 import 'mapbox-gl/dist/mapbox-gl.css'
 import './map.scss'
@@ -32,17 +31,27 @@ const Map = ({ fillObservations, bubbleObservations, mappedFacilityTypes, setMap
   const [showGeomPopup, setShowGeomPopup] = React.useState(false)
   const [popupData, setPopupData] = React.useState({})
 
+  const [trendObservations, setTrendObservations] = React.useState(() => {
+    const initialState = [];
+    return initialState;
+  });
+
   // Whether the reset button is shown or not. Controlled by the viewport
   // setting being other than the default.
   const [showReset, setShowReset] = React.useState(false);
 
   let mapRef = React.createRef()
 
+  async function getTrendObservations() {
+    // get the bubble data
+    setTrendObservations(await TrendQuery(6, '2019-07-01'));
+  }
+
   React.useEffect(() => {
     const map = mapRef.getMap()
     initMap(map, fillObservations, bubbleObservations)
+    getTrendObservations()
   }, [])
-
 
   /**
    * Reset the viewport to the default values. This is fired when the "Reset"
@@ -137,8 +146,9 @@ const Map = ({ fillObservations, bubbleObservations, mappedFacilityTypes, setMap
 
     const bubbleData = bubbleObservations.find(f => f.place_id === id)
     const fillData = fillObservations.find(f => f.place_id === id)
+    const trendData = trendObservations.find(f => f.place_id === id)
 
-    setPopupData({'fill': fillData, 'bubble': bubbleData})
+    setPopupData({'fill': fillData, 'bubble': bubbleData, 'trend': trendData})
 
     setSelectedGeomID(id)
     setCursorLngLat(e.lngLat)
