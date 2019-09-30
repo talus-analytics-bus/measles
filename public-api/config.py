@@ -22,9 +22,6 @@ class Config:
         cfg = ConfigParser()
         cfg.read(config_file)
 
-        print(cfg)
-        print(cfg['LOCAL'])
-        print(cfg['LOCAL']['port'])
         # Define command line  arguments.
         self.clargs = self.collect_arguments()
 
