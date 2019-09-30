@@ -5,6 +5,75 @@ html,
 body,
 #root {
   height: 100%;
+
+  // Mapbox Popup custom styling
+
+  // Define fade-in and out animation used in mapbox popups.
+  .fadeIn {
+    animation: show .25s normal forwards;
+  }
+  .fadeOut {
+    animation: hide .25s normal forwards;
+  }
+
+  /* Standard syntax */
+  @keyframes show {
+    from {opacity: 0;}
+    to {opacity: 1;}
+  }
+  @keyframes hide {
+    from {opacity: 1;}
+    to {opacity: 0;}
+  }
+
+  // Curve corners of content box.
+  .mapboxgl-popup-content {
+    border-radius: $border-radius;
+  }
+
+  // Shift position of tooltip vertically
+  .mapboxgl-popup-anchor-left {
+    transform: translate(5px, calc(-12%)) !important;
+  }
+  .mapboxgl-popup-anchor-right {
+    transform: translate(calc(-100% - 5px), calc(-12%)) !important;
+  }
+
+  // Position tip higher so it is always in the gray header area.
+  // Color tip gray
+  .mapboxgl-popup-tip {
+    position: absolute;
+  }
+  .mapboxgl-popup-anchor-left,
+  .mapboxgl-popup-anchor-right {
+    .mapboxgl-popup-tip {
+      top: 10px;
+    }
+  }
+  .mapboxgl-popup-anchor-top-left,
+  .mapboxgl-popup-anchor-top-right,
+  .mapboxgl-popup-anchor-top {
+    .mapboxgl-popup-tip {
+      top: -7px;
+      border-bottom-color: $light-grey-2;
+    }
+  }
+  .mapboxgl-popup-anchor-bottom-left,
+  .mapboxgl-popup-anchor-bottom-right,
+  .mapboxgl-popup-anchor-bottom {
+    .mapboxgl-popup-tip {
+      bottom: -7px;
+      border-bottom-color: $light-grey-2;
+    }
+  }
+  .mapboxgl-popup-anchor-left .mapboxgl-popup-tip {
+    border-right-color: $light-grey-2;
+    left: -10px;
+  }
+  .mapboxgl-popup-anchor-right .mapboxgl-popup-tip {
+    border-left-color: $light-grey-2;
+    right: -10px;
+  }
 }
 
 body {
@@ -25,6 +94,7 @@ header i.material-icons {
 #mapbox-container-small {
   // max-height: 600px;
 }
+
 [contenteditable=true]:empty:before, ::placeholder {
   content: attr(placeholder);
   display: block; /* For Firefox */
@@ -263,3 +333,5 @@ table {
 //   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
 //     monospace;
 // }
+
+// End spinner

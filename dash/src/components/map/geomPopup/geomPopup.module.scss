@@ -1,31 +1,83 @@
 @import '../../../assets/styles/colors.scss';
 
 .container {
-  width: 350px;
+  max-width: 400px;
+  min-width: 200px;
+  font-family: 'Gotham Book';
+  font-weight: normal;
 }
 
 .header {
   display: grid;
-  grid-template-columns: auto 100px;
-  border-bottom: 2px solid grey;
+  background-color: $light-grey-2;
+  font-family: 'Gotham Bold';
+  color: $dark-grey;
+  border-radius: $border-radius;
 }
 
 .titleContainer {
   padding: 10px;
 
-  & > p:first-child {
-    display: flex;
-    align-items: center;
-    font-size: 26px;
+  .stateName {
+    font-size: 1.5em;
+  }
+}
 
-    & > i {
-      margin-left: 10px;
-      font-size: 30px;
-      color: blue;
+button {
+  font-family: 'Cabin Bold', 'Open Sans', sans-serif;
+  padding: 10px 30px;
+  font-size: .9em;
+  float: right;
+  margin: 0 10px 10px 0;
+  border-radius: $border-radius;
+  border: none;
+
+  background-color: $btn-primary;
+  color: white;
+  font-weight: bold;
+  opacity: .9;
+
+  &:hover {
+    background-color: lighten($btn-primary, 10%);
+  }
+  &:active {
+    background-color: $btn-primary;
+    outline: none;
+    box-shadow: 0 0 10px 5px rgba(0, 0, 0, 0.29);
+    -webkit-box-shadow: 0 0 10px 5px rgba(0, 0, 0, 0.29);
+  }
+}
+
+.data {
+  display: flex;
+  flex-flow: column;
+
+  padding: 10px;
+
+
+
+  .datum {
+    margin-top: 20px;
+    &:first-child {
+      margin-top: 0;
+    }
+    .label {
+      font-family: 'Gotham Book', serif;
+      font-size: 1.1em;
+    }
+    .value {
+      font-size: 1.67em;
+      color: black;
+      font-family: 'Gotham Bold';
+      &.cases {
+        color: $value-red;
+      }
+      &.notAvail {
+        color: $grey;
+        font-style: italic;
+        font-size: 1em;
+      }
     }
   }
-  & > p:last-child {
-    font-size: 18px;
-    // font-family: 'rawline', serif;
-  }
+
 }
