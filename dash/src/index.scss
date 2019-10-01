@@ -32,11 +32,17 @@ body,
   }
 
   // Shift position of tooltip vertically
+  .mapboxgl-popup-anchor-top-left {
+    transform: translate(0, 10px) !important;
+  }
+  .mapboxgl-popup-anchor-top-right {
+    transform: translate(-100%, 10px) !important;
+  }
   .mapboxgl-popup-anchor-left {
-    transform: translate(5px, calc(-12%)) !important;
+    transform: translate(10px, -20px) !important;
   }
   .mapboxgl-popup-anchor-right {
-    transform: translate(calc(-100% - 5px), calc(-12%)) !important;
+    transform: translate(calc(-100% - 10px), -20px) !important;
   }
 
   // Position tip higher so it is always in the gray header area.
