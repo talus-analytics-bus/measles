@@ -3,17 +3,28 @@ import { Link } from 'react-router-dom'
 import classNames from 'classnames'
 
 import styles from './geomPopup.module.scss'
+// import flags from '../../../assets/images/flags/AD.png'
+
+function importAll(r) {
+  let images = {};
+  r.keys().map((item, index) => { images[item.replace('./', '')] = r(item); });
+  return images;
+}
+
+const flags = importAll(require.context('../../../assets/images/flags/', false, /\.(png|jpe?g|svg)$/));
+
 
 // : React.FC
 const GeomPopup = ({ popupData }) => {
   console.log(popupData)
   const detailsPath = '/details/' + popupData['bubble']['place_id']
-
+  const flag = flags[popupData['fill']['place_iso'] + '.png'];
   return (
     <div className={styles.container}>
       <div className={styles.header}>
         <div className={styles.titleContainer}>
           <p className={styles.stateName}>
+            {flag && <img src={flag} />}
             {popupData['fill']['place_name']}
           </p>
         </div>

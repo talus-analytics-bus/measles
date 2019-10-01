@@ -1,8 +1,10 @@
 @import '../../../assets/styles/colors.scss';
 
+$spacing: 10px;
+
 .container {
   max-width: 400px;
-  min-width: 300px;
+  min-width: 400px;
   font-family: 'Gotham Book';
   font-weight: normal;
 }
@@ -16,10 +18,18 @@
 }
 
 .titleContainer {
-  padding: 10px;
+  padding: $spacing;
 
   .stateName {
     font-size: 1.5em;
+    display: flex;
+    flex-flow: row;
+    align-items: center;
+
+    img {
+      height: 60px;
+      margin-right: 5px;
+    }
   }
 }
 
@@ -28,7 +38,7 @@ button {
   padding: 10px 30px;
   font-size: .9em;
   float: right;
-  margin: 0 10px 10px 0;
+  margin: 0 $spacing $spacing 0;
   border-radius: $border-radius;
   border: none;
 
@@ -51,7 +61,7 @@ button {
 .dataDateStamp {
   font-size: 1.05em;
   font-family: 'Gotham Bold', serif;
-  padding: 10px;
+  padding: $spacing;
   color: $dark-grey;
 }
 
@@ -59,7 +69,7 @@ button {
   display: flex;
   flex-flow: column;
 
-  padding: 10px;
+  padding: $spacing;
   // padding-top: 0;
 
   .datum {
