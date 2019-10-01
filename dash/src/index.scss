@@ -10,10 +10,10 @@ body,
 
   // Define fade-in and out animation used in mapbox popups.
   .fadeIn {
-    animation: show .25s normal forwards;
+    animation: show .35s normal forwards;
   }
   .fadeOut {
-    animation: hide .25s normal forwards;
+    animation: hide .35s normal forwards;
   }
 
   /* Standard syntax */
@@ -80,6 +80,13 @@ body,
     border-left-color: $light-grey-2;
     right: -10px;
   }
+}
+
+// Data source text
+.dataSource {
+  color: gray;
+  font-size: .9em;
+  font-style: italic;
 }
 
 body {

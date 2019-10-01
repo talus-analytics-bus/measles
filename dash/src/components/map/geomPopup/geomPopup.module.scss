@@ -12,7 +12,7 @@
   background-color: $light-grey-2;
   font-family: 'Gotham Bold';
   color: $dark-grey;
-  border-radius: $border-radius;
+  border-radius: $border-radius $border-radius 0 0;
 }
 
 .titleContainer {
@@ -48,13 +48,19 @@ button {
   }
 }
 
+.dataDateStamp {
+  font-size: 1.05em;
+  font-family: 'Gotham Bold', serif;
+  padding: 10px;
+  color: $dark-grey;
+}
+
 .data {
   display: flex;
   flex-flow: column;
 
   padding: 10px;
-
-
+  // padding-top: 0;
 
   .datum {
     margin-top: 20px;

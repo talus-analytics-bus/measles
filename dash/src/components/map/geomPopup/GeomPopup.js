@@ -16,18 +16,19 @@ const GeomPopup = ({ popupData }) => {
           <p className={styles.stateName}>
             {popupData['fill']['place_name']}
           </p>
-          {
-            // <p>
-            //   {new Date().toLocaleString('en-us', {
-            //     month: 'long',
-            //     year: 'numeric',
-            //     day: 'numeric'
-            //   })}
-            // </p>
-          }
         </div>
       </div>
       <div>
+        {
+          <p className={styles.dataDateStamp}>
+            {
+              'as of ' + new Date('7/01/2019').toLocaleString('en-us', { // TODO correctly
+                month: 'long',
+                year: 'numeric',
+              })
+          }
+          </p>
+        }
         <div className={styles.data}>
           {
             [
@@ -38,17 +39,18 @@ const GeomPopup = ({ popupData }) => {
                 delta: popupData['trend']['percent_change'],
                 deltaLabel: 'increase from prior 30 days', // TODO inc/dec dynamically
                 notAvail: false,
+                dataSource: popupData['bubble']['data_source'],
               },
               {
                 slug: 'prevalence',
-                label: 'Prevalence of measles in population',
+                label: 'Prevalence of measles',
                 value: 'Data not available', // TODO comma-sep int
                 notAvail: true,
               },
               {
                 slug: 'vacc-coverage',
                 label: 'Vaccination coverage',
-                value: parseFloat(popupData['fill']['value']).toFixed(0)+"% of people",
+                value: parseFloat(popupData['fill']['value']).toFixed(0)+"% of infants",
                 notAvail: false,
               },
             ].map(d =>
@@ -61,6 +63,9 @@ const GeomPopup = ({ popupData }) => {
                     [styles['notAvail']]: d.notAvail,
                   },
                 )}>{d.value}</p>
+                {
+                  d.dataSource && <p className={'dataSource'}>Source: {d.dataSource}</p>
+                }
               </div>
             )
           }
