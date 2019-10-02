@@ -22,6 +22,8 @@ class Metric(db.Entity):
     unit_type = Optional(str)
     unit = Optional(str)
     num_type = Optional(str)
+    is_view = Optional(bool)
+    view_name = Optional(str)
     observations = Set("Observation")
 
 

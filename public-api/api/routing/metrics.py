@@ -59,23 +59,43 @@ class Observations(Resource):
     @format_response
     def get(self):
         params = request.args
-        res = schema.getObservations(params)
+        (view_flag, res) = schema.getObservations(params)
 
-        formattedData = [r.to_dict(related_objects=True) for r in res]
+        if view_flag:
+            res_list = []
 
-        for o in formattedData:
-            metric_info = o['metric'].to_dict()
-            o['metric'] = metric_info['metric_name']
-            o['definition'] = metric_info['metric_definition']
+            for o in res:
+                res_list.append({
+                  'data_source': o[1],
+                  'date_time': o[2].strftime('%Y-%m-%d'),
+                  'definition': o[3],
+                  'metric': o[4],
+                  'observation_id': o[5],
+                  'place_fips': o[6],
+                  'place_id': o[7],
+                  'place_iso': o[8],
+                  'place_name': o[9],
+                  'updated_at': o[10],
+                  'value': o[11],
+                })
 
-            o['date_time'] = o['date_time'].to_dict()['date'].strftime('%Y-%m-%d')
+            return res_list
+        else:
+            formattedData = [r.to_dict(related_objects=True) for r in res]
 
-            place_info = o['place'].to_dict()
-            o['place_id'] = place_info['place_id']
-            o['place_name'] = place_info['name']
-            o['place_iso'] = place_info['iso']
-            o['place_fips'] = place_info['fips']
-            del[o['place']]
+            for o in formattedData:
+                metric_info = o['metric'].to_dict()
+                o['metric'] = metric_info['metric_name']
+                o['definition'] = metric_info['metric_definition']
+
+                o['date_time'] = o['date_time'].to_dict()['date'].strftime('%Y-%m-%d')
+
+                place_info = o['place'].to_dict()
+                o['place_id'] = place_info['place_id']
+                o['place_name'] = place_info['name']
+                o['place_iso'] = place_info['iso']
+                o['place_fips'] = place_info['fips']
+                del[o['place']]
 
         return formattedData
 

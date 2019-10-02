@@ -130,7 +130,7 @@ const Map = ({ fillObservations, bubbleObservations, mappedFacilityTypes, setMap
 
     // If there is a highlighted country, turn it off
     if (selectedGeomID > 0) {
-      map.setFeatureState({source: 'geoms', sourceLayer: 'countries_id-3n17an', id: selectedGeomID }, {clicked: false});
+      map.setFeatureState({source: 'geoms', sourceLayer: 'countries_id_rpr', id: selectedGeomID }, {clicked: false});
       setShowGeomPopup(false)
       setSelectedGeomID(-1)
     }
@@ -142,7 +142,7 @@ const Map = ({ fillObservations, bubbleObservations, mappedFacilityTypes, setMap
     console.log(clickedOnGeom)
 
     const id = clickedOnGeom.id
-    map.setFeatureState({source: 'geoms', sourceLayer: 'countries_id-3n17an', id: id }, {clicked: true});
+    map.setFeatureState({source: 'geoms', sourceLayer: 'countries_id_rpr', id: id }, {clicked: true});
 
     const bubbleData = bubbleObservations.find(f => f.place_id === id)
     const fillData = fillObservations.find(f => f.place_id === id)
@@ -235,7 +235,8 @@ const Map = ({ fillObservations, bubbleObservations, mappedFacilityTypes, setMap
   const onPopupClose = () => {
     const map = mapRef.getMap()
     const id = selectedGeomID
-    map.setFeatureState({source: 'geoms', sourceLayer: 'countries_id-3n17an', id: id }, {clicked: false});
+    console.log(id)
+    map.setFeatureState({source: 'geoms', sourceLayer: 'countries_id_rpr', id: id }, {clicked: false});
     setShowGeomPopup(false)
     setSelectedGeomID(-1)
   }
