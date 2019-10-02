@@ -11,6 +11,8 @@ from ..db import api
 from .. import schema
 from ..utils import format_response
 
+strf_str = '%Y-%m-%d %H:%M:%S %Z'
+
 # Initialize metric catalog or specifics endpoint
 @api.route("/metric", methods=["GET"])
 class Metric(Resource):
@@ -67,7 +69,7 @@ class Observations(Resource):
             for o in res:
                 res_list.append({
                   'data_source': o[1],
-                  'date_time': o[2].strftime('%Y-%m-%d'),
+                  'date_time': o[2].strftime('%Y-%m-%d %H:%M:%S %Z'),
                   'definition': o[3],
                   'metric': o[4],
                   'observation_id': o[5],
@@ -88,7 +90,7 @@ class Observations(Resource):
                 o['metric'] = metric_info['metric_name']
                 o['definition'] = metric_info['metric_definition']
 
-                o['date_time'] = o['date_time'].to_dict()['date'].strftime('%Y-%m-%d')
+                o['date_time'] = o['date_time'].to_dict()['datetime'].strftime(strf_str)
 
                 place_info = o['place'].to_dict()
                 o['place_id'] = place_info['place_id']
@@ -133,10 +135,11 @@ class Trend(Resource):
             for o in res:
                 place_id = o[7]
                 o_date = o[2]
+                no_tz_date = o_date.replace(tzinfo=None)
 
                 o_dict = {
                   'data_source': o[1],
-                  'date_time': o_date.strftime('%Y-%m-%d'),
+                  'date_time': o_date.strftime(strf_str),
                   'definition': o[3],
                   'metric': o[4],
                   'observation_id': o[5],
@@ -148,21 +151,22 @@ class Trend(Resource):
                   'value': o[11],
                 }
 
-                if o_date == start:
+                if no_tz_date == start:
                     start_dict[place_id] = o_dict
-                elif o_date == end:
+                elif no_tz_date == end:
                     end_dict[place_id] = o_dict
         else:
             formattedData = [r.to_dict(related_objects=True) for r in res]
 
             for o in formattedData:
-                o_date = o['date_time'].to_dict()['date']
+                o_date = o['date_time'].to_dict()['datetime']
+                no_tz_date = o_date.replace(tzinfo=None)
 
                 metric_info = o['metric'].to_dict()
                 o['metric'] = metric_info['metric_name']
                 o['definition'] = metric_info['metric_definition']
 
-                o['date_time'] = o_date.strftime('%Y-%m-%d')
+                o['date_time'] = o_date.strftime(strf_str)
 
                 place_info = o['place'].to_dict()
                 place_id = place_info['place_id']
@@ -172,9 +176,9 @@ class Trend(Resource):
                 o['place_fips'] = place_info['fips']
                 del[o['place']]
 
-                if o_date == start:
+                if no_tz_date == start:
                     start_dict[place_id] = o
-                elif o_date == end:
+                elif no_tz_date == end:
                     end_dict[place_id] = o
 
         trends = []
