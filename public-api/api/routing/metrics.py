@@ -11,6 +11,8 @@ from ..db import api
 from .. import schema
 from ..utils import format_response
 
+strf_str = '%Y-%m-%d %H:%M:%S %Z'
+
 # Initialize metric catalog or specifics endpoint
 @api.route("/metric", methods=["GET"])
 class Metric(Resource):
@@ -59,23 +61,43 @@ class Observations(Resource):
     @format_response
     def get(self):
         params = request.args
-        res = schema.getObservations(params)
+        (view_flag, res) = schema.getObservations(params)
 
-        formattedData = [r.to_dict(related_objects=True) for r in res]
+        if view_flag:
+            res_list = []
 
-        for o in formattedData:
-            metric_info = o['metric'].to_dict()
-            o['metric'] = metric_info['metric_name']
-            o['definition'] = metric_info['metric_definition']
+            for o in res:
+                res_list.append({
+                  'data_source': o[1],
+                  'date_time': o[2].strftime('%Y-%m-%d %H:%M:%S %Z'),
+                  'definition': o[3],
+                  'metric': o[4],
+                  'observation_id': o[5],
+                  'place_fips': o[6],
+                  'place_id': o[7],
+                  'place_iso': o[8],
+                  'place_name': o[9],
+                  'updated_at': o[10],
+                  'value': o[11],
+                })
 
-            o['date_time'] = o['date_time'].to_dict()['date'].strftime('%Y-%m-%d')
+            return res_list
+        else:
+            formattedData = [r.to_dict(related_objects=True) for r in res]
 
-            place_info = o['place'].to_dict()
-            o['place_id'] = place_info['place_id']
-            o['place_name'] = place_info['name']
-            o['place_iso'] = place_info['iso2']
-            o['place_fips'] = place_info['fips']
-            del[o['place']]
+            for o in formattedData:
+                metric_info = o['metric'].to_dict()
+                o['metric'] = metric_info['metric_name']
+                o['definition'] = metric_info['metric_definition']
+
+                o['date_time'] = o['date_time'].to_dict()['datetime'].strftime(strf_str)
+
+                place_info = o['place'].to_dict()
+                o['place_id'] = place_info['place_id']
+                o['place_name'] = place_info['name']
+                o['place_iso'] = place_info['iso2']
+                o['place_fips'] = place_info['fips']
+                del[o['place']]
 
         return formattedData
 
@@ -102,36 +124,62 @@ class Trend(Resource):
     @format_response
     def get(self):
         params = request.args
-        (res, start, end) = schema.getTrend(params)
+        (view_flag, res, start, end) = schema.getTrend(params)
 
         lag = int(params['lag'])
-
-        formattedData = [r.to_dict(related_objects=True) for r in res]
 
         start_dict = {}
         end_dict = {}
 
-        for o in formattedData:
-            o_date = o['date_time'].to_dict()['date']
+        if view_flag:
+            for o in res:
+                place_id = o[7]
+                o_date = o[2]
+                no_tz_date = o_date.replace(tzinfo=None)
 
-            metric_info = o['metric'].to_dict()
-            o['metric'] = metric_info['metric_name']
-            o['definition'] = metric_info['metric_definition']
+                o_dict = {
+                  'data_source': o[1],
+                  'date_time': o_date.strftime(strf_str),
+                  'definition': o[3],
+                  'metric': o[4],
+                  'observation_id': o[5],
+                  'place_fips': o[6],
+                  'place_id': place_id,
+                  'place_iso': o[8],
+                  'place_name': o[9],
+                  'updated_at': o[10],
+                  'value': o[11],
+                }
 
-            o['date_time'] = o_date.strftime('%Y-%m-%d')
+                if no_tz_date == start:
+                    start_dict[place_id] = o_dict
+                elif no_tz_date == end:
+                    end_dict[place_id] = o_dict
+        else:
+            formattedData = [r.to_dict(related_objects=True) for r in res]
 
-            place_info = o['place'].to_dict()
-            place_id = place_info['place_id']
-            o['place_id'] = place_id
-            o['place_name'] = place_info['name']
-            o['place_iso'] = place_info['iso2']
-            o['place_fips'] = place_info['fips']
-            del[o['place']]
+            for o in formattedData:
+                o_date = o['date_time'].to_dict()['datetime']
+                no_tz_date = o_date.replace(tzinfo=None)
 
-            if o_date == start:
-                start_dict[place_id] = o
-            elif o_date == end:
-                end_dict[place_id] = o
+                metric_info = o['metric'].to_dict()
+                o['metric'] = metric_info['metric_name']
+                o['definition'] = metric_info['metric_definition']
+
+                o['date_time'] = o_date.strftime(strf_str)
+
+                place_info = o['place'].to_dict()
+                place_id = place_info['place_id']
+                o['place_id'] = place_id
+                o['place_name'] = place_info['name']
+                o['place_iso'] = place_info['iso2']
+                o['place_fips'] = place_info['fips']
+                del[o['place']]
+
+                if no_tz_date == start:
+                    start_dict[place_id] = o
+                elif no_tz_date == end:
+                    end_dict[place_id] = o
 
         trends = []
 

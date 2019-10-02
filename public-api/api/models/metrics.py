@@ -22,13 +22,16 @@ class Metric(db.Entity):
     unit_type = Optional(str)
     unit = Optional(str)
     num_type = Optional(str)
+    is_view = Optional(bool)
+    view_name = Optional(str)
     observations = Set("Observation")
 
 
 class DateTime(db.Entity):
     dt_id = PrimaryKey(int, auto=True)
-    date = Required(date)
-    time = Required(time)
+    # date = Required(date)
+    # time = Required(time)
+    datetime = Required(datetime, column="dt", sql_type='TIMESTAMP WITH TIME ZONE')
     day = Required(bool)
     week_sunday = Required(bool)
     week_monday = Required(bool)

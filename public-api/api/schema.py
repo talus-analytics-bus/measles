@@ -107,12 +107,12 @@ def getObservations(filters):
             temp_value = metric.temporal_resolution
 
     if 'start' in filters:
-        min_time = datetime.strptime(filters['start'], '%Y-%m-%d').date()
+        min_time = datetime.strptime(filters['start'], '%Y-%m-%d')
     else:
         min_time = metric.min_time
 
     if 'end' in filters:
-        max_time = datetime.strptime(filters['end'], '%Y-%m-%d').date()
+        max_time = datetime.strptime(filters['end'], '%Y-%m-%d')
     else:
         max_time = metric.max_time
 
@@ -121,22 +121,41 @@ def getObservations(filters):
                                    min_time, max_time)
 
     else:
-        if 'place_id' in filters:
-            res = select(o for o in db.Observation
-                         if o.metric.metric_id == metric_id
-                         and o.date_time.date >= min_time
-                         and o.date_time.date <= max_time
-                         and o.place.place_id == filters['place_id'])
+        if metric.is_view:
+            q_str = f"""SELECT v.metric_id, v.data_source, d.dt,
+                    m.metric_definition, m.metric_name, v.observation_id,
+                    p.fips AS place_fips, p.place_id, p.iso AS place_iso,
+                    p.name AS place_name, v.updated_at, v.value::FLOAT
+                    FROM {metric.view_name} v
+                    LEFT JOIN datetime d ON v.datetime_id = d.dt_id
+                    LEFT JOIN place p ON v.place_id = p.place_id
+                    LEFT JOIN metric m ON v.metric_id = m.metric_id
+                    WHERE
+                    d.date >= '{min_time}'
+                    AND d.date <= '{max_time}'"""
+
+            if 'place_id' in filters:
+                q_str += f" AND p.place_id = {filters['place_id']}"
+
+                res = db.select(q_str)
+            else:
+                res = db.select(q_str)
+
+            return (True, res)
         else:
-            res = select(o for o in db.Observation
-                         if o.metric.metric_id == metric_id
-                         and o.date_time.date >= min_time
-                         and o.date_time.date <= max_time)
+            if 'place_id' in filters:
+                res = select(o for o in db.Observation
+                             if o.metric.metric_id == metric_id
+                             and o.date_time.datetime >= min_time
+                             and o.date_time.datetime <= max_time
+                             and o.place.place_id == filters['place_id'])
+            else:
+                res = select(o for o in db.Observation
+                             if o.metric.metric_id == metric_id
+                             and o.date_time.datetime >= min_time
+                             and o.date_time.datetime <= max_time)
 
-    print(res)
-
-    # Return the query response
-    return res
+            return (False, res)
 
 
 # Define an observation endpoint query.
@@ -149,7 +168,7 @@ def getTrend(filters):
     # get metric info to check resolutions
     metric = db.Metric[metric_id]
 
-    end = datetime.strptime(filters['end'], '%Y-%m-%d').date()
+    end = datetime.strptime(filters['end'], '%Y-%m-%d')
     lag = int(filters['lag'])
 
     t_rs = metric.temporal_resolution
@@ -174,19 +193,39 @@ def getTrend(filters):
     elif t_rs == 'daily':
         start = end - timedelta(days=lag)
 
-    start = start.date()
+    print(start, end)
 
-    if 'place_id' in filters:
-        res = select(o for o in db.Observation
-                     if o.metric.metric_id == metric_id
-                     and o.date_time.date in (start, end)
-                     and o.place.place_id == filters['place_id'])
+    if metric.is_view:
+        q_str = f"""SELECT v.metric_id, v.data_source, d.dt,
+                m.metric_definition, m.metric_name, v.observation_id,
+                p.fips AS place_fips, p.place_id, p.iso AS place_iso,
+                p.name AS place_name, v.updated_at, v.value::FLOAT
+                FROM {metric.view_name} v
+                LEFT JOIN datetime d ON v.datetime_id = d.dt_id
+                LEFT JOIN place p ON v.place_id = p.place_id
+                LEFT JOIN metric m ON v.metric_id = m.metric_id
+                WHERE
+                d.date in ('{start}', '{end}')"""
+        if 'place_id' in filters:
+            q_str += f" AND p.place_id = {filters['place_id']}"
+
+            res = db.select(q_str)
+        else:
+            res = db.select(q_str)
+
+        print(res)
+
+        return (True, res, start, end)
     else:
-        res = select(o for o in db.Observation
-                     if o.metric.metric_id == metric_id
-                     and o.date_time.date in (start, end))
+        if 'place_id' in filters:
+            res = select(o for o in db.Observation
+                         if o.metric.metric_id == metric_id
+                         and o.date_time.datetime in (start, end)
+                         and o.place.place_id == filters['place_id'])
+        else:
+            res = select(o for o in db.Observation
+                         if o.metric.metric_id == metric_id
+                         and o.date_time.datetime in (start, end))
 
-    print(res)
-
-    # Return the query response
-    return (res, start, end)
+        # Return the query response
+        return (False, res, start, end)
