@@ -122,36 +122,60 @@ class Trend(Resource):
     @format_response
     def get(self):
         params = request.args
-        (res, start, end) = schema.getTrend(params)
+        (view_flag, res, start, end) = schema.getTrend(params)
 
         lag = int(params['lag'])
-
-        formattedData = [r.to_dict(related_objects=True) for r in res]
 
         start_dict = {}
         end_dict = {}
 
-        for o in formattedData:
-            o_date = o['date_time'].to_dict()['date']
+        if view_flag:
+            for o in res:
+                place_id = o[7]
+                o_date = o[2]
 
-            metric_info = o['metric'].to_dict()
-            o['metric'] = metric_info['metric_name']
-            o['definition'] = metric_info['metric_definition']
+                o_dict = {
+                  'data_source': o[1],
+                  'date_time': o_date.strftime('%Y-%m-%d'),
+                  'definition': o[3],
+                  'metric': o[4],
+                  'observation_id': o[5],
+                  'place_fips': o[6],
+                  'place_id': place_id,
+                  'place_iso': o[8],
+                  'place_name': o[9],
+                  'updated_at': o[10],
+                  'value': o[11],
+                }
 
-            o['date_time'] = o_date.strftime('%Y-%m-%d')
+                if o_date == start:
+                    start_dict[place_id] = o_dict
+                elif o_date == end:
+                    end_dict[place_id] = o_dict
+        else:
+            formattedData = [r.to_dict(related_objects=True) for r in res]
 
-            place_info = o['place'].to_dict()
-            place_id = place_info['place_id']
-            o['place_id'] = place_id
-            o['place_name'] = place_info['name']
-            o['place_iso'] = place_info['iso']
-            o['place_fips'] = place_info['fips']
-            del[o['place']]
+            for o in formattedData:
+                o_date = o['date_time'].to_dict()['date']
 
-            if o_date == start:
-                start_dict[place_id] = o
-            elif o_date == end:
-                end_dict[place_id] = o
+                metric_info = o['metric'].to_dict()
+                o['metric'] = metric_info['metric_name']
+                o['definition'] = metric_info['metric_definition']
+
+                o['date_time'] = o_date.strftime('%Y-%m-%d')
+
+                place_info = o['place'].to_dict()
+                place_id = place_info['place_id']
+                o['place_id'] = place_id
+                o['place_name'] = place_info['name']
+                o['place_iso'] = place_info['iso']
+                o['place_fips'] = place_info['fips']
+                del[o['place']]
+
+                if o_date == start:
+                    start_dict[place_id] = o
+                elif o_date == end:
+                    end_dict[place_id] = o
 
         trends = []
 

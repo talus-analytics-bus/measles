@@ -195,17 +195,35 @@ def getTrend(filters):
 
     start = start.date()
 
-    if 'place_id' in filters:
-        res = select(o for o in db.Observation
-                     if o.metric.metric_id == metric_id
-                     and o.date_time.date in (start, end)
-                     and o.place.place_id == filters['place_id'])
+    if metric.is_view:
+        q_str = f"""SELECT v.metric_id, v.data_source, d.date,
+                m.metric_definition, m.metric_name, v.observation_id,
+                p.fips AS place_fips, p.place_id, p.iso AS place_iso,
+                p.name AS place_name, v.updated_at, v.value::FLOAT
+                FROM {metric.view_name} v
+                LEFT JOIN datetime d ON v.datetime_id = d.dt_id
+                LEFT JOIN place p ON v.place_id = p.place_id
+                LEFT JOIN metric m ON v.metric_id = m.metric_id
+                WHERE
+                d.date in ('{start}', '{end}')"""
+        if 'place_id' in filters:
+            q_str += f" AND p.place_id = {filters['place_id']}"
+
+            res = db.select(q_str)
+        else:
+            res = db.select(q_str)
+
+        return (True, res, start, end)
     else:
-        res = select(o for o in db.Observation
-                     if o.metric.metric_id == metric_id
-                     and o.date_time.date in (start, end))
+        if 'place_id' in filters:
+            res = select(o for o in db.Observation
+                         if o.metric.metric_id == metric_id
+                         and o.date_time.date in (start, end)
+                         and o.place.place_id == filters['place_id'])
+        else:
+            res = select(o for o in db.Observation
+                         if o.metric.metric_id == metric_id
+                         and o.date_time.date in (start, end))
 
-    print(res)
-
-    # Return the query response
-    return (res, start, end)
+        # Return the query response
+        return (False, res, start, end)
