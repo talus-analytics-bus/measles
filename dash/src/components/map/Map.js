@@ -130,9 +130,27 @@ const Map = ({ fillObservations, bubbleObservations, mappedFacilityTypes, setMap
 
     // If there is a highlighted country, turn it off
     if (selectedGeomID > 0) {
+
       map.setFeatureState({source: 'geoms', sourceLayer: 'countries_id_rpr', id: selectedGeomID }, {clicked: false});
+
+      console.log('Closing down stuff')
+      const tooltipArr = document.getElementsByClassName('mapboxgl-popup');
+      console.log(tooltipArr[0])
+      if (tooltipArr.length > 0) {
+        const tooltipEl = tooltipArr[0];
+        tooltipEl.classList.remove('fadeIn');
+        tooltipEl.classList.add('fadeOut');
+      }
+      console.log("fadeout done")
+
       setShowGeomPopup(false)
       setSelectedGeomID(-1)
+      // const fadeOutTimer = setTimeout(function fadeOutPopup () {
+      //   console.log("fadeout done")
+      //
+      //   setShowGeomPopup(false)
+      //   setSelectedGeomID(-1)
+      // }, 0);
     }
 
     const clickedOnGeom = e.features.find(f => f.layer.id === 'geom-fills')
@@ -153,6 +171,7 @@ const Map = ({ fillObservations, bubbleObservations, mappedFacilityTypes, setMap
     setSelectedGeomID(id)
     setCursorLngLat(e.lngLat)
     setShowGeomPopup(true)
+    console.log('made it')
 
     /**
      * Fly user to specified longlat map location, and (if provided) to the
@@ -281,14 +300,14 @@ const Map = ({ fillObservations, bubbleObservations, mappedFacilityTypes, setMap
       {showReset && (<ResetZoom handleClick={resetViewport}/>)}
       {showGeomPopup && (
         <Popup
-          color='#4286f4'
-          style={{ margin: 0, padding: 0, backgroundColor: '#4286f4' }}
+          anchor='left'
+          id='tooltip'
           longitude={cursorLngLat[0]}
           latitude={cursorLngLat[1]}
-          closeButton={true}
-          closeOnClick={true}
+          closeButton={false}
+          closeOnClick={false}
           onClose={onPopupClose}
-          anchor='top'
+          className={'fadingEffect fadeIn'}
         >
           <GeomPopup
             popupData={popupData}

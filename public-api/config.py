@@ -29,7 +29,9 @@ class Config:
         # overidden by command line arguments.
         cfg['session'] = {}
         for key in cfg['DEFAULT']:
+            print('key = ' + key)
             cfg['session'][key] = cfg['DEFAULT'][key]
+
 
         # Define the current database session based on command line arguments,
         # if they were provided
@@ -48,6 +50,7 @@ class Config:
                    if k not in ['datadir']}
 
         # Convert type of 'port' to integer
+        print(self.db)
         self.db['port'] = int(self.db['port'])
 
         # Define database engine based on db connection parameters.
