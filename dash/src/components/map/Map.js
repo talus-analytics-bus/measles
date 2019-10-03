@@ -2,6 +2,7 @@ import React from 'react'
 import ReactMapGL, { NavigationControl, Popup } from 'react-map-gl'
 
 import TrendQuery from '../misc/TrendQuery.js'
+import ObservationQuery from '../misc/ObservationQuery.js'
 
 import 'mapbox-gl/dist/mapbox-gl.css'
 import './map.scss'
@@ -31,7 +32,14 @@ const Map = ({ fillObservations, bubbleObservations, mappedFacilityTypes, setMap
   const [showGeomPopup, setShowGeomPopup] = React.useState(false)
   const [popupData, setPopupData] = React.useState({})
 
+  // Track state for the trend observations
   const [trendObservations, setTrendObservations] = React.useState(() => {
+    const initialState = [];
+    return initialState;
+  });
+
+  // Track state for the incidence observations
+  const [incidenceObservations, setIncidenceObservations] = React.useState(() => {
     const initialState = [];
     return initialState;
   });
@@ -47,10 +55,16 @@ const Map = ({ fillObservations, bubbleObservations, mappedFacilityTypes, setMap
     setTrendObservations(await TrendQuery(6, '2019-07-01'));
   }
 
+  async function getIncidenceObservations() {
+    // get the incidence data
+    setIncidenceObservations(await ObservationQuery(15, 'monthly', '2019-07-01'));
+  }
+
   React.useEffect(() => {
-    const map = mapRef.getMap()
-    initMap(map, fillObservations, bubbleObservations)
-    getTrendObservations()
+    const map = mapRef.getMap();
+    initMap(map, fillObservations, bubbleObservations);
+    getTrendObservations();
+    getIncidenceObservations();
   }, [])
 
   /**
@@ -156,13 +170,22 @@ const Map = ({ fillObservations, bubbleObservations, mappedFacilityTypes, setMap
     const bubbleData = bubbleObservations.find(f => f.place_id === id)
     const fillData = fillObservations.find(f => f.place_id === id)
     const trendData = trendObservations.find(f => f.place_id === id)
+    console.log('incidenceObservations')
+    console.log(incidenceObservations)
+    const incidenceData = incidenceObservations.find(f => f.place_id === id)
 
-    setPopupData({'fill': fillData, 'bubble': bubbleData, 'trend': trendData})
+    setPopupData(
+      {
+        'fill': fillData,
+        'bubble': bubbleData,
+        'trend': trendData,
+        'incidence': incidenceData,
+      }
+    )
 
     setSelectedGeomID(id)
     setCursorLngLat(e.lngLat)
     setShowGeomPopup(true)
-    console.log('made it')
 
     /**
      * Fly user to specified longlat map location, and (if provided) to the
@@ -290,7 +313,6 @@ const Map = ({ fillObservations, bubbleObservations, mappedFacilityTypes, setMap
       {showReset && (<ResetZoom handleClick={resetViewport}/>)}
       {showGeomPopup && (
         <Popup
-          anchor='left'
           id='tooltip'
           longitude={cursorLngLat[0]}
           latitude={cursorLngLat[1]}

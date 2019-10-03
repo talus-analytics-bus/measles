@@ -1,3 +1,5 @@
+import * as d3 from 'd3/dist/d3.min';
+
 // Utility functions.
 const Util = {};
 
@@ -24,6 +26,21 @@ Util.sortByName = (a, b) => {
   if (a.name > b.name) return -1;
   if (a.name < b.name) return 1;
   return 0;
+};
+
+// Format delta value
+Util.percentizeDelta = (deltaTmp) => {
+  const delta = Math.abs(deltaTmp);
+	const d3Format = d3.format(',.0%');
+	const d3FormattedNum = d3Format(delta);
+
+  if (Math.abs(delta) > 2) return '>200%';
+
+	if (d3FormattedNum === "0%" && delta !== 0) {
+		return "<1%";
+	} else {
+		return d3FormattedNum;
+	}
 };
 
 /**

@@ -3,8 +3,7 @@
 $spacing: 10px;
 
 .container {
-  max-width: 400px;
-  min-width: 400px;
+  width: 400px;
   font-family: 'Gotham Book';
   font-weight: normal;
 }
@@ -92,6 +91,66 @@ button {
         color: $grey;
         font-style: italic;
         font-size: 1em;
+      }
+      .delta {
+        font-size: initial;
+        display: flex;
+        flex-flow: row;
+        align-items: center;
+
+        position: relative;
+        left: -3px;
+
+        i {
+          // size?
+          font-size: 1.7em;
+        }
+        .delta-value {
+          font-family: 'rawline', serif;
+          font-weight: bold;
+          .sign {
+            font-size: 1.852em;
+          }
+          .num {
+            font-size: 1.405em;
+          }
+        }
+        .delta-text {
+          font-size: .75em;
+          color: $dark-grey;
+          font-family: 'Gotham Book', serif;
+          margin-left: 10px;
+        }
+      }
+      .delta {
+        &.inc {
+          i {
+            transform: rotate(-90deg);
+            transform-origin: center;
+          }
+          i, .delta-value {
+            color: $value-red;
+          }
+        }
+        &.dec {
+          i {
+            transform: rotate(90deg);
+          }
+          i, .delta-value {
+            color: $value-green;
+          }
+        }
+        .same {
+          .delta-value {
+            color: black;
+            .sign {
+              display: none;
+            }
+          }
+          i {
+            display: none;
+          }
+        }
       }
     }
   }

@@ -31,36 +31,36 @@ body,
     border-radius: $border-radius;
   }
 
-  // Shift position of tooltip vertically
-  .mapboxgl-popup-anchor-top-left {
-    transform: translate(0, 10px) !important;
-  }
-  .mapboxgl-popup-anchor-top-right {
-    transform: translate(-100%, 10px) !important;
-  }
-  .mapboxgl-popup-anchor-left {
-    transform: translate(10px, -20px) !important;
-  }
-  .mapboxgl-popup-anchor-right {
-    transform: translate(calc(-100% - 10px), -20px) !important;
-  }
+  // // Shift position of tooltip vertically
+  // .mapboxgl-popup-anchor-top-left {
+  //   transform: translate(0, 10px) !important;
+  // }
+  // .mapboxgl-popup-anchor-top-right {
+  //   transform: translate(-100%, 10px) !important;
+  // }
+  // .mapboxgl-popup-anchor-left {
+  //   transform: translate(10px, -20px) !important;
+  // }
+  // .mapboxgl-popup-anchor-right {
+  //   transform: translate(calc(-100% - 10px), -20px) !important;
+  // }
 
   // Position tip higher so it is always in the gray header area.
   // Color tip gray
-  .mapboxgl-popup-tip {
-    position: absolute;
-  }
-  .mapboxgl-popup-anchor-left,
-  .mapboxgl-popup-anchor-right {
-    .mapboxgl-popup-tip {
-      top: 10px;
-    }
-  }
+  // .mapboxgl-popup-tip {
+  //   position: absolute;
+  // }
+  // .mapboxgl-popup-anchor-left,
+  // .mapboxgl-popup-anchor-right {
+  //   .mapboxgl-popup-tip {
+  //     top: 10px;
+  //   }
+  // }
   .mapboxgl-popup-anchor-top-left,
   .mapboxgl-popup-anchor-top-right,
   .mapboxgl-popup-anchor-top {
     .mapboxgl-popup-tip {
-      top: -7px;
+      // top: -7px;
       border-bottom-color: $light-grey-2;
     }
   }
@@ -68,25 +68,28 @@ body,
   .mapboxgl-popup-anchor-bottom-right,
   .mapboxgl-popup-anchor-bottom {
     .mapboxgl-popup-tip {
-      bottom: -7px;
+      // bottom: -7px;
       border-bottom-color: $light-grey-2;
     }
   }
   .mapboxgl-popup-anchor-left .mapboxgl-popup-tip {
-    border-right-color: $light-grey-2;
-    left: -10px;
+    // border-right-color: $light-grey-2;
+    // left: -10px;
   }
   .mapboxgl-popup-anchor-right .mapboxgl-popup-tip {
-    border-left-color: $light-grey-2;
-    right: -10px;
+    // border-left-color: $light-grey-2;
+    // right: -10px;
   }
 }
 
 // Data source text
 .dataSource {
-  color: gray;
-  font-size: .9em;
+  color: #b3b3b3;
+  font-size: .75em;
+  // font-size: .9em;
   font-style: italic;
+  text-align: right;
+  margin-top: 5px;
 }
 
 body {
@@ -101,6 +104,7 @@ header i.material-icons {
   cursor: pointer;
   color: rgba(0, 0, 0, .85); // to match nav menu items
 }
+
 .react-datepicker__time-list-item {
   white-space: nowrap;
 }
