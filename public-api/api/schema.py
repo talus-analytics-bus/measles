@@ -131,8 +131,8 @@ def getObservations(filters):
                     LEFT JOIN place p ON v.place_id = p.place_id
                     LEFT JOIN metric m ON v.metric_id = m.metric_id
                     WHERE
-                    d.date >= '{min_time}'
-                    AND d.date <= '{max_time}'"""
+                    d.dt >= '{min_time}'
+                    AND d.dt <= '{max_time}'"""
 
             if 'place_id' in filters:
                 q_str += f" AND p.place_id = {filters['place_id']}"
@@ -205,7 +205,7 @@ def getTrend(filters):
                 LEFT JOIN place p ON v.place_id = p.place_id
                 LEFT JOIN metric m ON v.metric_id = m.metric_id
                 WHERE
-                d.date in ('{start}', '{end}')"""
+                d.dt in ('{start}', '{end}')"""
         if 'place_id' in filters:
             q_str += f" AND p.place_id = {filters['place_id']}"
 
