@@ -87,14 +87,14 @@ const GeomPopup = ({ popupData }) => {
                 deltaSign: getDeltaSign(popupData['trend']['percent_change']),
                 deltaFmt: Util.percentizeDelta(popupData['trend']['percent_change']),
                 deltaLabel: 'increase from prior 30 days', // TODO inc/dec dynamically
-                notAvail: !popupData['bubble']['value'],
+                notAvail: popupData['bubble']['value'] === null,
                 dataSource: popupData['bubble']['data_source'],
               },
               {
                 slug: 'incidence',
                 label: 'Incidence of measles' + ` (${measlesTimestamp})`,
                 value: popupData['incidence']['value'] + ' cases per 1M population', // TODO comma-sep int
-                notAvail: !popupData['incidence']['value'], // TODO dynamically
+                notAvail: popupData['incidence']['value'] === null, // TODO dynamically
                 dataSource: popupData['incidence']['data_source'],
               },
               {
