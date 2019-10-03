@@ -95,7 +95,7 @@ class Observations(Resource):
                 place_info = o['place'].to_dict()
                 o['place_id'] = place_info['place_id']
                 o['place_name'] = place_info['name']
-                o['place_iso'] = place_info['iso']
+                o['place_iso'] = place_info['iso2']
                 o['place_fips'] = place_info['fips']
                 del[o['place']]
 
@@ -172,7 +172,7 @@ class Trend(Resource):
                 place_id = place_info['place_id']
                 o['place_id'] = place_id
                 o['place_name'] = place_info['name']
-                o['place_iso'] = place_info['iso']
+                o['place_iso'] = place_info['iso2']
                 o['place_fips'] = place_info['fips']
                 del[o['place']]
 

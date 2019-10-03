@@ -56,6 +56,7 @@ class Place(db.Entity):
     description = Optional(str)
     fips = Optional(str)
     iso = Optional(str)
+    iso2 = Optional(str)
     place_type = Required(str)
     poly = Optional("Poly", column="poly_id")
     point = Optional("Point", column="point_id")

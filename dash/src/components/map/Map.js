@@ -133,24 +133,15 @@ const Map = ({ fillObservations, bubbleObservations, mappedFacilityTypes, setMap
 
       map.setFeatureState({source: 'geoms', sourceLayer: 'countries_id_rpr', id: selectedGeomID }, {clicked: false});
 
-      console.log('Closing down stuff')
       const tooltipArr = document.getElementsByClassName('mapboxgl-popup');
-      console.log(tooltipArr[0])
       if (tooltipArr.length > 0) {
         const tooltipEl = tooltipArr[0];
         tooltipEl.classList.remove('fadeIn');
         tooltipEl.classList.add('fadeOut');
       }
-      console.log("fadeout done")
 
       setShowGeomPopup(false)
       setSelectedGeomID(-1)
-      // const fadeOutTimer = setTimeout(function fadeOutPopup () {
-      //   console.log("fadeout done")
-      //
-      //   setShowGeomPopup(false)
-      //   setSelectedGeomID(-1)
-      // }, 0);
     }
 
     const clickedOnGeom = e.features.find(f => f.layer.id === 'geom-fills')
@@ -254,7 +245,6 @@ const Map = ({ fillObservations, bubbleObservations, mappedFacilityTypes, setMap
   const onPopupClose = () => {
     const map = mapRef.getMap()
     const id = selectedGeomID
-    console.log(id)
     map.setFeatureState({source: 'geoms', sourceLayer: 'countries_id_rpr', id: id }, {clicked: false});
     setShowGeomPopup(false)
     setSelectedGeomID(-1)
