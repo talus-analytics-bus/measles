@@ -3,7 +3,30 @@ import classNames from 'classnames'
 import styles from './legend.module.scss'
 
 const Legend = () => {
-  const [open, setOpen] = React.useState(false)
+  const [open, setOpen] = React.useState(true)
+
+  // Color series used to indicate relative vaccination coverage from least to
+  // most vaccinated.
+  const vaccinationColors = [
+    '#d6f0b2',
+    '#b9d7a8',
+    '#7fcdbb',
+    '#41b6c4',
+    '#2c7fb8',
+    '#303d91'
+  ];
+  const noDataColor = '#b3b3b3';
+
+  const vaccinationLegendLabels = (i: any) => {
+    switch (i) {
+      case 0:
+        return 'Fewest vaccinated';
+      case vaccinationColors.length - 1:
+        return 'Most vaccinated';
+      default:
+        return '';
+    }
+  };
 
   return (
     <div
@@ -12,34 +35,57 @@ const Legend = () => {
       })}
     >
       <div className={styles.toggleButton} onClick={() => setOpen(!open)}>
-        <p>Legend</p>
         <i
-          className={classNames('material-icons-outlined', {
+          className={classNames('material-icons', {
             [styles.open]: open
           })}
         >
-          expand_more
+          play_arrow
         </i>
       </div>
-      <div className={styles.empty} />
-      <div className={styles.legendScale}>
-        <ul className={styles.legendScale}>
-          <li><span style={{background: '#F1EEF6'}}></span>0 - 20%</li>
-          <li><span style={{background: '#BDC9E1'}}></span>40%</li>
-          <li><span style={{background: '#74A9CF'}}></span>60%</li>
-          <li><span style={{background: '#2B8CBE'}}></span>80%</li>
-          <li><span style={{background: '#045A8D'}}></span>100%</li>
-        </ul>
-      </div>
-      <div className={styles.contentContainer}>
-        <p>Facility types</p>
-        {[
-        ].map(([label, icon]) => (
-          <div>
-            <img src={icon} alt={`${label} marker`} />
-            <p>{label}</p>
+      <div className={styles.sections}>
+        {
+          // Vaccination coverage
+          <div className={styles.section}>
+            <p className={styles.sectionName}>Vaccination coverage</p>
+            <div className={styles.legendEntryGroups}>
+            <div className={styles.legendEntryGroup}>
+              {
+                vaccinationColors.map((d,i) =>
+                  <div className={styles.legendEntry}>
+                    <div className={classNames(styles.legendIcon, styles.rect)} style={ {'backgroundColor': d} } />
+                    <div className={styles.legendLabel}>{
+                      vaccinationLegendLabels(i)
+                    }</div>
+                  </div>
+                )
+              }
+            </div>
+            <div className={styles.legendEntryGroup}>
+              {
+                <div className={classNames(styles.legendEntry, styles.dataNotAvailable)}>
+                  <div className={classNames(styles.legendIcon, styles.rect)} style={ {'backgroundColor': noDataColor} } />
+                  <div className={styles.legendLabel}>{
+                    'Data not available'
+                  }</div>
+                </div>
+              }
+            </div>
           </div>
-        ))}
+          </div>
+        }
+        {
+          // Reported cases
+          <div className={styles.section}>
+            <p className={styles.sectionName}>Reported cases</p>
+            {
+              [
+                'Hello',
+                'World',
+              ].map(d => <div>{d}</div>)
+            }
+          </div>
+        }
       </div>
     </div>
   )

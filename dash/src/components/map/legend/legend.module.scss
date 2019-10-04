@@ -9,166 +9,137 @@ $icon-height: 20px;
 
 .mapOverlay {
   position: absolute;
+  display: flex;
+  flex-flow: column;
   z-index: 2;
+  bottom: 0;
+  right: 20px;
 
   // Scale legend size to be smaller than default size.
-  transform: scale(0.75);
-  transform-origin: bottom right;
-}
+  // transform: scale(1);
+  transform: scale(1) translateY(calc(100% - 50px));
+  transition: all .5s;
+  transform-origin: bottom;
 
-.legend {
-  display: grid;
-  grid-template-columns: auto auto;
-  grid-template-rows: auto auto;
-
-  transition-duration: 300ms;
-  right: 20px;
-  bottom: -$border-radius;
-  padding-bottom: $border-radius;
-
-  background-color: rgba(255, 255, 255, 0.8);
-  border: 2px solid $grey;
-  border-radius: $border-radius;
-
-  cursor: default;
-
-  & > .empty {
-  }
-
-  & > .toggleButton {
-    // grid-column: 1 / span 2;
-    padding-top: 5px;
-    padding-right: $container-spacing;
-    justify-self: start;
-    padding-left: 20px;
+  .toggleButton {
     display: flex;
+    flex-flow: row;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
 
-    & > p {
-      font-size: 22px;
-      font-weight: bold;
-      text-decoration: underline;
-      padding-right: 10px;
-      cursor: pointer;
+    font-size: initial;
+    padding: 10px;
+    width: 200px;
+
+    background-color: white;
+    color: #808183;
+
+    cursor: pointer;
+
+    i, &::before {
+      font-size: 1.453em !important;
     }
-
-    & > * {
-      display: inline-flex;
-      align-self: center;
+    i {
+      transform: rotate(-90deg)scaleY(1.2);
+      transition: all .5s;
+      vertical-align: middle;
+      font-size: initial;
+      margin-left: 20px;
+      top: 2px;
+      position: relative;
     }
-
-    & > i {
-      padding: auto;
-      bottom: 20px;
-      transition-duration: 300ms;
-
-      cursor: pointer;
-
-      &.open {
-        transform: rotate(180deg);
-      }
-    }
-    // background-color: red;
-  }
-
-  // grid container
-  // each half of legend
-  & > .contentContainer {
-    margin-top: 5px;
-    margin-bottom: $container-spacing;
-    padding-right: $container-spacing;
-    padding-left: $container-spacing;
-
-    // title
-    & > p {
-      font-size: $title-font-size;
-      font-weight: bold;
-      margin-bottom: $text-spacing;
-    }
-
-    // flex container
-    // each row of legend (except title)
-    & > div {
-      display: flex;
-
-      &:not(:last-child) {
-        margin-bottom: $text-spacing;
-      }
-
-      & > p {
-        font-size: $font-size;
-        // font-weight: bold;
-        margin-left: $text-spacing;
-      }
-
-      & > img {
-        height: $icon-height;
-        position: relative;
-        top: 1px;
-      }
-    }
-
-    // middle divider
-    &:first-child {
-      border-right: 1px solid $grey;
-    }
-    &:last-child {
-      border-left: 1px solid $grey;
+    &::before {
+      font-family: 'Open Sans', sans-serif;
+      content: 'show legend';
     }
   }
 
-  & > .legendScale ul {
-    & > ul {
-      margin: 0;
-      padding: 0;
-      float: left;
-      list-style: none;
-
-      & > li {
-        display: block;
-        float: left;
-        width: 50px;
-        margin-bottom: 6px;
-        text-align: center;
-        font-size: 80%;
-        list-style: none;
-
-        & > span {
-          display: block;
-          float: left;
-          height: 15px;
-          width: 50px;
-        }
-      }
+  &.open .toggleButton {
+    i {
+      transition: all .5s;
+      top: 0;
+      transform: rotate(90deg)scaleY(1.2);
     }
-  }
-
-
-}
-
-.circle {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  border-radius: 50%;
-  width: $icon-height;
-  height: $icon-height;
-  position: relative;
-  top: 1px;
-
-  &.critical {
-    background-color: $red;
-  }
-  &.alerted {
-    background-color: $yellow;
-  }
-  &.stable {
-    background-color: $green;
+    &::before {
+      content: 'hide legend';
+    }
   }
 }
 
 .open {
   // Scale legend size to be smaller than default size, and translate it so it
   // is visible.
-  transform: scale(0.75) translateY(calc(100% - 45px));
+  transform: scale(1);
+  transition: all .5s;
+}
+.sections {
+  display: flex;
+  flex-flow: row;
+  padding: 20px;
+  background-color: rgba(255, 255, 255, 0.92);
+
+  .section {
+    display: flex;
+    flex-flow: column;
+    cursor: default;
+    color: #161616;
+
+    padding-right: 80px;
+    &:last-child {
+      padding-right: 0;
+    }
+
+    .sectionName {
+      font-family: 'rawline', serif;
+      font-size: 1.0605em;
+      margin-bottom:10px;
+    }
+    .legendEntryGroups {
+      display: flex;
+      flex-flow: row;
+      .legendEntryGroup {
+        display: flex;
+        flow-flow: row;
+
+        .legendEntry {
+          width: 70px;
+          display: flex;
+          flex-flow: column;
+          position: relative;
+
+          $rect-height: 25px;
+          $rect-width: 70px;
+          $rect-border-width: 1px;
+
+          &.dataNotAvailable {
+            margin-left: $rect-width / 2;
+            .legendIcon.rect {
+              border-color: #b3b3b3;
+            }
+          }
+
+          .legendIcon {
+            &.rect {
+              width: $rect-width;
+              height: $rect-height;
+              border: $rect-border-width solid #666666;
+            }
+          }
+          .legendLabel {
+            position: absolute;
+            font-size: 0.8605em;
+            white-space: nowrap;
+            bottom: 0;
+            top: $rect-height + 2px;
+          }
+          &:last-child:not(:first-child) {
+            .legendLabel {
+              right: -2*$rect-border-width;
+            }
+          }
+        }
+      }
+    }
+  }
 }

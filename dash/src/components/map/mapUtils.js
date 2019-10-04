@@ -45,8 +45,8 @@ const initMap = (map, fillObservations, bubbleObservations) => {
         'fill-color': [
           'step',
           ["feature-state", "value"],
-              '#d3d3d3',
-              0, '#d6fob2',
+              '#b3b3b3',
+              0, '#d6f0b2',
               0.35, '#b9d7a8',
               0.5, '#7fcdbb',
               0.65, '#41b6c4',

@@ -142,14 +142,9 @@ button {
             color: $value-green;
           }
         }
-        .same {
-          .delta-value {
-            color: black;
-            .sign {
-              display: none;
-            }
-          }
-          i {
+        &.same {
+          .delta-text { margin-left: 5px;}
+          .delta-value, i {
             display: none;
           }
         }

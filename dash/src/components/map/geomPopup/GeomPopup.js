@@ -49,7 +49,7 @@ const GeomPopup = ({ popupData }) => {
     } else if (deltaVal < 0) {
       return 'decrease';
     } else {
-      return 'change';
+      return 'No change';
     }
   };
 
@@ -124,7 +124,7 @@ const GeomPopup = ({ popupData }) => {
                 )}>
                   {d.notAvail ? 'Data not available' : d.value}
                   {
-                    d.delta && !d.notAvail && <div className={classNames(styles.delta, {
+                    (d.delta !== null && d.delta !== undefined) && !d.notAvail && <div className={classNames(styles.delta, {
                       [styles['inc']]: d.delta > 0,
                       [styles['dec']]: d.delta < 0,
                       [styles['same']]: d.delta === 0,
