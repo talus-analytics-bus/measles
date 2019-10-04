@@ -49,41 +49,64 @@ const Legend = () => {
           <div className={styles.section}>
             <p className={styles.sectionName}>Vaccination coverage</p>
             <div className={styles.legendEntryGroups}>
-            <div className={styles.legendEntryGroup}>
-              {
-                vaccinationColors.map((d,i) =>
-                  <div className={styles.legendEntry}>
-                    <div className={classNames(styles.legendIcon, styles.rect)} style={ {'backgroundColor': d} } />
+              <div className={styles.legendEntryGroup}>
+                {
+                  vaccinationColors.map((d,i) =>
+                    <div className={styles.legendEntry}>
+                      <div className={classNames(styles.legendIcon, styles.rect)} style={ {'backgroundColor': d} } />
+                      <div className={styles.legendLabel}>{
+                        vaccinationLegendLabels(i)
+                      }</div>
+                    </div>
+                  )
+                }
+              </div>
+              <div className={styles.legendEntryGroup}>
+                {
+                  <div className={classNames(styles.legendEntry, styles.dataNotAvailable)}>
+                    <div className={classNames(styles.legendIcon, styles.rect)} style={ {'backgroundColor': noDataColor} } />
                     <div className={styles.legendLabel}>{
-                      vaccinationLegendLabels(i)
+                      'Data not available'
                     }</div>
                   </div>
-                )
-              }
+                }
+              </div>
             </div>
-            <div className={styles.legendEntryGroup}>
-              {
-                <div className={classNames(styles.legendEntry, styles.dataNotAvailable)}>
-                  <div className={classNames(styles.legendIcon, styles.rect)} style={ {'backgroundColor': noDataColor} } />
-                  <div className={styles.legendLabel}>{
-                    'Data not available'
-                  }</div>
-                </div>
-              }
-            </div>
-          </div>
           </div>
         }
         {
           // Reported cases
           <div className={styles.section}>
             <p className={styles.sectionName}>Reported cases</p>
-            {
-              [
-                'Hello',
-                'World',
-              ].map(d => <div>{d}</div>)
-            }
+            <div className={styles.legendEntryGroups}>
+              <div className={styles.legendEntryGroup}>
+                {
+                  [1,2,3].map((d,i) =>
+                    <div className={classNames(styles.legendEntry, styles.circle)}>
+                      <div className={classNames(styles.legendIcon, styles.circle)} />
+                      {
+                        (i === 0) && <div className={styles.legendLabel}>Fewest<br/>cases</div>
+                      }
+                      {
+                        (i === 2) && <div className={styles.legendLabel}>Most<br/>cases</div>
+                      }
+                    </div>
+                  )
+                }
+              </div>
+              <div className={styles.legendEntryGroup}>
+                {
+                  <div className={classNames(styles.legendEntry, styles.dataNotAvailable)}>
+                    <div className={classNames(styles.legendIcon, styles.circle)} />
+                    <div className={styles.legendLabel}>
+                      Data not
+                      <br/>
+                      recent
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
           </div>
         }
       </div>

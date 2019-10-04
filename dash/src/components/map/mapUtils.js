@@ -1,3 +1,4 @@
+// import flag from '../../assets/images/flags/US.png';
 const initMap = (map, fillObservations, bubbleObservations) => {
 
   map.on('load', function() {
@@ -125,10 +126,10 @@ const initMap = (map, fillObservations, bubbleObservations) => {
               500, 50,
               1000, 75
         ],
-        'circle-color': '#ff0000',
-        'circle-opacity': 0.4,
+        'circle-color': '#b02c3a',
+        'circle-opacity': 0.75,
         'circle-stroke-width': 1,
-        'circle-stroke-color': '#ffffff'
+        'circle-stroke-color': '#ffffff',
       }
     }, "country-small");
   }

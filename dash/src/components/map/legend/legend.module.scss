@@ -1,11 +1,6 @@
 @import '../../../assets/styles/colors.scss';
 
-$title-font-size: 16px;
-$font-size: 16px;
-$text-spacing: 10px;
-$container-spacing: 20px;
-$border-radius: 5px;
-$icon-height: 20px;
+$spacing: 5px;
 
 .mapOverlay {
   position: absolute;
@@ -13,11 +8,10 @@ $icon-height: 20px;
   flex-flow: column;
   z-index: 2;
   bottom: 0;
-  right: 20px;
+  right: 10px;
 
   // Scale legend size to be smaller than default size.
-  // transform: scale(1);
-  transform: scale(1) translateY(calc(100% - 50px));
+  transform: translateY(calc(100% - 28px));
   transition: all .5s;
   transform-origin: bottom;
 
@@ -29,8 +23,8 @@ $icon-height: 20px;
     margin: 0 auto;
 
     font-size: initial;
-    padding: 10px;
-    width: 200px;
+    padding: $spacing/2;
+    width: 150px;
 
     background-color: white;
     color: #808183;
@@ -38,7 +32,8 @@ $icon-height: 20px;
     cursor: pointer;
 
     i, &::before {
-      font-size: 1.453em !important;
+      font-size: 1.0605em !important;
+      // font-size: 1.453em !important;
     }
     i {
       transform: rotate(-90deg)scaleY(1.2);
@@ -76,7 +71,8 @@ $icon-height: 20px;
 .sections {
   display: flex;
   flex-flow: row;
-  padding: 20px;
+  padding: $spacing*2;
+  padding-bottom: $spacing*10 - 2px;
   background-color: rgba(255, 255, 255, 0.92);
 
   .section {
@@ -85,9 +81,9 @@ $icon-height: 20px;
     cursor: default;
     color: #161616;
 
-    padding-right: 80px;
+    padding-right: $spacing*22;
     &:last-child {
-      padding-right: 0;
+      padding-right: 10px;
     }
 
     .sectionName {
@@ -102,20 +98,33 @@ $icon-height: 20px;
         display: flex;
         flow-flow: row;
 
+        $rect-height: 20px * .8;
+        $rect-width: 55px * .8;
+        $circle-radius: $rect-height;
+        $rect-border-width: 1px;
+
         .legendEntry {
-          width: 70px;
+          width: $rect-width;
+          &.circle {
+            width: auto;
+          }
           display: flex;
           flex-flow: column;
           position: relative;
-
-          $rect-height: 25px;
-          $rect-width: 70px;
-          $rect-border-width: 1px;
-
           &.dataNotAvailable {
             margin-left: $rect-width / 2;
             .legendIcon.rect {
               border-color: #b3b3b3;
+            }
+            .legendIcon.circle {
+              margin: auto 0;
+              background: repeating-linear-gradient(
+                -45deg,
+                #b02c3a,
+                #b02c3a 2.5px,
+                white 2.5px,
+                white 5px
+              );
             }
           }
 
@@ -125,17 +134,69 @@ $icon-height: 20px;
               height: $rect-height;
               border: $rect-border-width solid #666666;
             }
+            &.circle {
+              border-radius: 9999px;
+              width: $circle-radius;
+              height: $circle-radius;
+              margin: auto 20px;
+              background-color: #b02c3a;
+              opacity: 0.85;
+              border: 1px solid white;
+              // box-shadow: 5px 5px 10px 0px #0000008c;
+              // -webkit-box-shadow: 5px 5px 10px 0px #0000008c;
+            }
           }
           .legendLabel {
             position: absolute;
             font-size: 0.8605em;
             white-space: nowrap;
             bottom: 0;
-            top: $rect-height + 2px;
+            top: $rect-height + 10px;
+            line-height: 1;
+            &.wrap {
+              white-space: normal;
+            }
+          }
+          &:not(.dataNotAvailable) {
+            &:nth-child(3) {
+              .legendIcon.circle {
+                // right: $circle-radius/2;
+                // position: absolute;
+              }
+            }
+            &:nth-child(2) {
+              .legendIcon.circle {
+                width: $circle-radius * .66;
+                height: $circle-radius * .66;
+                // margin: auto;
+              }
+            }
+            &:nth-child(1) {
+              .legendIcon.circle {
+                width: $circle-radius * .33;
+                height: $circle-radius * .33;
+                // margin: auto;
+              }
+            }
+          }
+          &.circle {
+            &:first-child {
+              .legendIcon.circle { margin-left: 0; }
+              .legendLabel { left: -1px; }
+            }
+            &:last-child {
+              .legendIcon.circle { margin-right: 0; }
+            }
           }
           &:last-child:not(:first-child) {
-            .legendLabel {
-              right: -2*$rect-border-width;
+            &:not(.circle) {
+              .legendLabel {
+                right: -2*$rect-border-width;
+              }
+            }
+            &.circle .legendLabel {
+              right: -1px;
+              text-align: right;
             }
           }
         }
