@@ -320,6 +320,7 @@ const Map = ({ fillObservations, bubbleObservations, mappedFacilityTypes, setMap
           closeOnClick={false}
           onClose={onPopupClose}
           className={'fadingEffect fadeIn'}
+          interactive={true}
         >
           <GeomPopup
             popupData={popupData}

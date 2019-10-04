@@ -94,6 +94,7 @@ const GeomPopup = ({ popupData }) => {
                 deltaLabel: 'increase from prior 30 days', // TODO inc/dec dynamically
                 notAvail: popupData['bubble']['value'] === null,
                 dataSource: popupData['bubble']['data_source'],
+                dataSourceLastUpdated: new Date (popupData['bubble']['updated_at']),
               },
               {
                 slug: 'incidence',
@@ -101,6 +102,7 @@ const GeomPopup = ({ popupData }) => {
                 value: Util.formatIncidence(popupData['incidence']['value']) + ' cases per 1M population', // TODO comma-sep int
                 notAvail: popupData['incidence']['value'] === null, // TODO dynamically
                 dataSource: popupData['incidence']['data_source'],
+                dataSourceLastUpdated: new Date (popupData['incidence']['updated_at']),
               },
               {
                 slug: 'vacc-coverage',
@@ -142,7 +144,7 @@ const GeomPopup = ({ popupData }) => {
                 {
                   (d.dataSource && !d.notAvail) &&
                     <div className={'dataSource'}>
-                      Source: {d.dataSource}{ d.dataSourceLastUpdated && false && ( // TODO remove "false" when this field is ready
+                      Source: {d.dataSource}{ d.dataSourceLastUpdated && ( // TODO remove "false" when this field is ready
                           ' as of ' + new Date(d.dataSourceLastUpdated).toLocaleString('en-us', { // TODO correctly
                             month: 'long',
                             year: 'numeric',

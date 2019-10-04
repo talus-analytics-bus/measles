@@ -26,9 +26,10 @@ body,
     to {opacity: 0;}
   }
 
-  // Curve corners of content box.
+  // Curve corners of content box, set cursor.
   .mapboxgl-popup-content {
     border-radius: $border-radius;
+    cursor: default;
   }
 
   // // Shift position of tooltip vertically
