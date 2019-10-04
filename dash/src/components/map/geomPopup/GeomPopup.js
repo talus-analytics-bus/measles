@@ -93,7 +93,7 @@ const GeomPopup = ({ popupData }) => {
                 deltaFmt: Util.percentizeDelta(popupData['trend']['percent_change']),
                 deltaLabel: 'increase from prior 30 days', // TODO inc/dec dynamically
                 notAvail: popupData['bubble']['value'] === null,
-                dataSource: popupData['bubble']['dat`a_source'],
+                dataSource: popupData['bubble']['data_source'],
               },
               {
                 slug: 'incidence',
@@ -122,7 +122,7 @@ const GeomPopup = ({ popupData }) => {
                 )}>
                   {d.notAvail ? 'Data not available' : d.value}
                   {
-                    d.delta && !d.notAvail && <p className={classNames(styles.delta, {
+                    d.delta && !d.notAvail && <div className={classNames(styles.delta, {
                       [styles['inc']]: d.delta > 0,
                       [styles['dec']]: d.delta < 0,
                       [styles['same']]: d.delta === 0,
@@ -136,12 +136,12 @@ const GeomPopup = ({ popupData }) => {
                         <span className={styles['num']}>{d.deltaFmt}</span>
                       </span>
                       <span className={styles['delta-text']}>{getDeltaWord(d.delta)} from<br/>previous month</span>
-                    </p>
+                    </div>
                   }
                 </p>
                 {
                   (d.dataSource && !d.notAvail) &&
-                    <p className={'dataSource'}>
+                    <div className={'dataSource'}>
                       Source: {d.dataSource}{ d.dataSourceLastUpdated && false && ( // TODO remove "false" when this field is ready
                           ' as of ' + new Date(d.dataSourceLastUpdated).toLocaleString('en-us', { // TODO correctly
                             month: 'long',
@@ -149,7 +149,7 @@ const GeomPopup = ({ popupData }) => {
                           })
                         )
                       }
-                    </p>
+                    </div>
                 }
               </div>
             )
