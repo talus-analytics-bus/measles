@@ -56,6 +56,22 @@ body,
   //     top: 10px;
   //   }
   // }
+
+  // Ensure upper left and right border radius of tooltip header doesn't put a
+  // gap between the tip and the header
+  .mapboxgl-popup-anchor-top-left .mapboxgl-popup-content > div > div {
+    border-radius: 0 $border-radius 0 0;
+  }
+  .mapboxgl-popup-anchor-top-right .mapboxgl-popup-content > div > div {
+    border-radius: $border-radius 0 0 0;
+  }
+  .mapboxgl-popup-anchor-bottom-left .mapboxgl-popup-content {
+    border-radius: $border-radius $border-radius $border-radius 0;
+  }
+  .mapboxgl-popup-anchor-bottom-right .mapboxgl-popup-content {
+    border-radius: $border-radius $border-radius 0 $border-radius;
+  }
+
   .mapboxgl-popup-anchor-top-left,
   .mapboxgl-popup-anchor-top-right,
   .mapboxgl-popup-anchor-top {
