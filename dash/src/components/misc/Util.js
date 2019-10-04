@@ -43,6 +43,36 @@ Util.percentizeDelta = (deltaTmp) => {
 	}
 };
 
+// Format incidence value
+Util.formatIncidence = (inc) => {
+  if (inc === 0) return '0';
+  else if (inc < 0.001) return '<0.001';
+  else return Util.formatSI(inc);
+};
+
+// Comma-ize numbers
+Util.comma = function(num) {
+	const resultTmp = d3.format(',.0f')(num);
+	return resultTmp;
+};
+
+// Format using standard suffixes
+Util.formatSI = (val) => {
+
+  // If zero, just return zero
+  if (val === 0) return '0';
+
+  // If 1 or less, return the value with three significant digits. (?)
+  else if (val < 1) return d3.format('.3f')(val);
+
+  // If between 1 - 1000, return value with two significant digits.
+  else if (val >= 1 && val < 1000) return d3.formatPrefix('.2f', 1)(val); // k
+
+  // If 1k or above, return SI value with two significant digits
+  else if (val >= 1000 && val < 1000000) return d3.formatPrefix('.2f', 1000)(val); // k
+  else return d3.formatPrefix(',.2s', 1000000)(val); // M
+};
+
 /**
  * Capitalizes each word in the input text and returns the result.
  * @method toTitleCase

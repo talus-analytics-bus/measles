@@ -53,6 +53,11 @@ const GeomPopup = ({ popupData }) => {
     }
   };
 
+  const getPeopleNoun = (val) => {
+    if (val === 1) return 'person';
+    else return 'people';
+  };
+
   const detailsPath = '/details/' + popupData['bubble']['place_id']
   const flag = flags[popupData['fill']['place_iso'] + '.png'];
   return (
@@ -82,18 +87,18 @@ const GeomPopup = ({ popupData }) => {
               {
                 slug: 'cases',
                 label: 'Measles cases reported' + ` (${measlesTimestamp})`,
-                value: popupData['bubble']['value'] + ' people', // TODO comma sep int
+                value: Util.comma(popupData['bubble']['value']) + ' ' + getPeopleNoun(popupData['bubble']['value']), // TODO comma sep int
                 delta: popupData['trend']['percent_change'],
                 deltaSign: getDeltaSign(popupData['trend']['percent_change']),
                 deltaFmt: Util.percentizeDelta(popupData['trend']['percent_change']),
                 deltaLabel: 'increase from prior 30 days', // TODO inc/dec dynamically
                 notAvail: popupData['bubble']['value'] === null,
-                dataSource: popupData['bubble']['data_source'],
+                dataSource: popupData['bubble']['dat`a_source'],
               },
               {
                 slug: 'incidence',
                 label: 'Incidence of measles' + ` (${measlesTimestamp})`,
-                value: popupData['incidence']['value'] + ' cases per 1M population', // TODO comma-sep int
+                value: Util.formatIncidence(popupData['incidence']['value']) + ' cases per 1M population', // TODO comma-sep int
                 notAvail: popupData['incidence']['value'] === null, // TODO dynamically
                 dataSource: popupData['incidence']['data_source'],
               },

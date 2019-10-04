@@ -114,6 +114,7 @@ button {
           }
           .num {
             font-size: 1.405em;
+            line-height: 0; // Required for vertical alignment with other divs
           }
         }
         .delta-text {
