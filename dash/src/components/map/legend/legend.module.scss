@@ -33,7 +33,6 @@ $spacing: 5px;
 
     i, &::before {
       font-size: 1.0605em !important;
-      // font-size: 1.453em !important;
     }
     i {
       transform: rotate(-90deg)scaleY(1.2);
@@ -42,6 +41,7 @@ $spacing: 5px;
       font-size: initial;
       margin-left: 20px;
       top: 2px;
+      right: -3px;
       position: relative;
     }
     &::before {
@@ -54,6 +54,7 @@ $spacing: 5px;
     i {
       transition: all .5s;
       top: 0;
+      right: -2px;
       transform: rotate(90deg)scaleY(1.2);
     }
     &::before {
