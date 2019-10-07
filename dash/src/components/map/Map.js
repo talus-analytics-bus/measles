@@ -90,6 +90,7 @@ const Map = ({ fillObservations, bubbleObservations, mappedFacilityTypes, setMap
    * @param  {obj}        e Mousemove event.
    */
   const handleMouseMove = e => {
+
     // Get map reference object.
     const map = mapRef.getMap();
 
@@ -97,8 +98,12 @@ const Map = ({ fillObservations, bubbleObservations, mappedFacilityTypes, setMap
     const features = map.queryRenderedFeatures(e.point);
 
     // Use pointer cursor for any country, grab cursor otherwise.
-    const onCountry = features.find(f => f['id'] > 0) !== undefined;
+    const onCountry = features.find(f => {
+      return f['layer']['source-layer'] === 'countries_id_rpr';
+    }) !== undefined;
 
+    // If map is on country or legend toggle, show pointer. Otherwise, show
+    // grab.
     map.getContainer().parentElement.parentElement.style.cursor =
       onCountry ? 'pointer' : 'grab';
   };
