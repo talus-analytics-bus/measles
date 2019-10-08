@@ -1,5 +1,6 @@
 import React from 'react'
-import ReactMapGL, { NavigationControl, Popup } from 'react-map-gl'
+import ReactMapGL, { Marker, NavigationControl, Popup } from 'react-map-gl'
+import * as d3 from 'd3/dist/d3.min';
 
 import TrendQuery from '../misc/TrendQuery.js'
 import ObservationQuery from '../misc/ObservationQuery.js'
@@ -17,7 +18,7 @@ import GeomPopup from './geomPopup/GeomPopup.js'
 
 const TOKEN = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN
 
-const Map = ({ fillObservations, bubbleObservations, mappedFacilityTypes, setMappedFacilityTypes }) => {
+const Map = ({ fillObservations, bubbleObservations, incidenceObservations, mappedFacilityTypes, setMappedFacilityTypes }) => {
 
   const defaultViewport = {
     width: '100%',
@@ -31,6 +32,7 @@ const Map = ({ fillObservations, bubbleObservations, mappedFacilityTypes, setMap
   const [cursorLngLat, setCursorLngLat] = React.useState([0, 0])
   const [showGeomPopup, setShowGeomPopup] = React.useState(false)
   const [popupData, setPopupData] = React.useState({})
+  const [markersLoaded, setMarkersLoaded] = React.useState(false)
 
   // Track state for the trend observations
   const [trendObservations, setTrendObservations] = React.useState(() => {
@@ -38,15 +40,18 @@ const Map = ({ fillObservations, bubbleObservations, mappedFacilityTypes, setMap
     return initialState;
   });
 
-  // Track state for the incidence observations
-  const [incidenceObservations, setIncidenceObservations] = React.useState(() => {
-    const initialState = [];
-    return initialState;
-  });
+  // // Track state for the incidence observations
+  // const [incidenceObservations, setIncidenceObservations] = React.useState(() => {
+  //   const initialState = [];
+  //   return initialState;
+  // });
 
   // Whether the reset button is shown or not. Controlled by the viewport
   // setting being other than the default.
   const [showReset, setShowReset] = React.useState(false);
+
+  // HTML markers for bubbles
+  const [markerComponents, setMarkerComponents] = React.useState([]);
 
   let mapRef = React.createRef()
 
@@ -55,16 +60,93 @@ const Map = ({ fillObservations, bubbleObservations, mappedFacilityTypes, setMap
     setTrendObservations(await TrendQuery(6, '2019-07-01'));
   }
 
-  async function getIncidenceObservations() {
-    // get the incidence data
-    setIncidenceObservations(await ObservationQuery(15, 'monthly', '2019-07-01'));
+  // Given incidence value, return scaled linear radius of marker.
+  const markerSizeScale = d3.scaleLinear()
+    .domain([0.001, 100]) // expected incidence value range
+    .range([5*2, 150*2]);
+  function getMarkerStyle (value) {
+
+    if (value === 0) return {
+      height: '0px',
+      width: '0px',
+    };
+
+    else return {
+      height: markerSizeScale(value) + 'px',
+      width: markerSizeScale(value) + 'px',
+    };
+  };
+
+  function getMarkerComponents(map, observations) {
+    console.log('map')
+    console.log(map)
+
+    const newMarkerComponents = [];
+
+    observations.forEach(observation => {
+      const value = observation['value'];
+      const place_id = observation['place_id']
+
+      if (!value) {
+        // map.setFeatureState({source: 'centroids', sourceLayer: 'centroids_id_rpr_latlon', id: place_id }, {value: 0});
+      } else {
+        //const state = { value: Math.floor(256 * value)};
+        const state = {value: value};
+        // map.setFeatureState({source: 'centroids', sourceLayer: 'centroids_id_rpr_latlon', id: place_id }, state);
+        const featureState = map.getFeatureState({source: 'centroids', sourceLayer: 'centroids_id_rpr_latlon', id: place_id });
+        if (featureState.lat !== null && featureState.lon !== null) {
+
+          // Get size (height and width) of marker according to the linear scale
+          const markerStyle = getMarkerStyle(featureState.value);
+          console.log('markerStyle')
+          console.log(markerStyle)
+          newMarkerComponents.push(
+            <Marker latitude={featureState.lat} longitude={featureState.lon}>
+            <div style={markerStyle} className={'general-marker'}></div>
+            </Marker>
+          );
+        }
+      }
+    });
+
+    setMarkerComponents(newMarkerComponents);
   }
+
+  // async function getIncidenceObservations() {
+  //   // get the incidence data
+  //   setIncidenceObservations(await ObservationQuery(15, 'monthly', '2019-07-01'));
+  // }
 
   React.useEffect(() => {
     const map = mapRef.getMap();
-    initMap(map, fillObservations, bubbleObservations);
-    getTrendObservations();
-    getIncidenceObservations();
+
+    initMap(map, fillObservations, bubbleObservations, incidenceObservations, function afterMapLoaded () {
+
+      getTrendObservations();
+      // getIncidenceObservations();
+      // getMarkerComponents(map, incidenceObservations);
+    });
+
+    // console.log("map.getLayer('geom-fills')")
+    // console.log(map.getLayer('geom-fills'))
+    // console.log('map')
+    // console.log(map)
+    // console.log('Marker')
+    // console.log(Marker)
+
+    // incidenceObservations.forEach(( observation) => {
+    //   const value = observation['value'];
+    //   const place_id = observation['place_id']
+    //
+    //   if (!value) {
+    //     map.setFeatureState({source: 'centroids', sourceLayer: 'centroids_id_rpr_latlon', id: place_id }, {value: 0});
+    //   } else {
+    //     //const state = { value: Math.floor(256 * value)};
+    //     const state = {value: value};
+    //     map.setFeatureState({source: 'centroids', sourceLayer: 'centroids_id_rpr_latlon', id: place_id }, state);
+    //   }
+    // });
+
   }, [])
 
   /**
@@ -116,6 +198,8 @@ const Map = ({ fillObservations, bubbleObservations, mappedFacilityTypes, setMap
    * @param  {obj}    e Click event.
    */
   const handleClick = e => {
+    console.log('e')
+    console.log(e)
     /**
      * Returns true if user clicked any part of the legend or the filter menus
      * (rather than directly on the map), and false otherwise.
@@ -278,9 +362,24 @@ const Map = ({ fillObservations, bubbleObservations, mappedFacilityTypes, setMap
     setSelectedGeomID(-1)
   }
 
+  const getBubbleMarker = (d, map) => {
+    return (markerComponents[0]); // debug
+  };
+
+  const renderMarkerComponents = (incidenceObservations, mapRef) => {
+    // console.log('mapRef')
+    // console.log(mapRef)
+    console.log('markerComponents')
+    console.log(markerComponents)
+
+    // if (incidenceObservations.length === 0) return;
+    // // setMarkersLoaded(true)
+    return markerComponents.map(component => component);
+  };
+
   return (
     <ReactMapGL
-      ref={map => (mapRef = map)}
+      ref={map => { mapRef = map; }}
       mapboxApiAccessToken={TOKEN}
       mapStyle='mapbox://styles/traethethird/ck0ia6pvc2cpc1cpe5nx5b7p5'
       {...viewport}
@@ -304,6 +403,9 @@ const Map = ({ fillObservations, bubbleObservations, mappedFacilityTypes, setMap
       onStyleLoad={handleStyleLoad}
       doubleClickZoom={false} //remove 300ms delay on clicking
     >
+      {
+        (markerComponents.length > 0) && renderMarkerComponents(incidenceObservations, mapRef)
+      }
       <div
         style={{
           position: 'absolute',

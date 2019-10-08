@@ -9,7 +9,7 @@ const Alert: React.FC = () => {
       <Link to="/landing">
         <img src={logo} className={styles.img} alt='logo' />
       </Link>
-      <div className={styles.title}>Vaccination coverage and cases of measles</div>
+      <div className={styles.title}>Vaccination coverage and incidence of measles</div>
     </div>
   )
 }

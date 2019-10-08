@@ -85,6 +85,14 @@ const GeomPopup = ({ popupData }) => {
           {
             [
               {
+                slug: 'incidence',
+                label: 'Incidence of measles' + ` (${measlesTimestamp})`,
+                value: Util.formatIncidence(popupData['incidence']['value']) + ' cases per 1M population', // TODO comma-sep int
+                notAvail: popupData['incidence']['value'] === null, // TODO dynamically
+                dataSource: popupData['incidence']['data_source'],
+                dataSourceLastUpdated: new Date (popupData['incidence']['updated_at']),
+              },
+              {
                 slug: 'cases',
                 label: 'Measles cases reported' + ` (${measlesTimestamp})`,
                 value: Util.comma(popupData['bubble']['value']) + ' ' + getPeopleNoun(popupData['bubble']['value']), // TODO comma sep int
@@ -95,14 +103,6 @@ const GeomPopup = ({ popupData }) => {
                 notAvail: popupData['bubble']['value'] === null,
                 dataSource: popupData['bubble']['data_source'],
                 dataSourceLastUpdated: new Date (popupData['bubble']['updated_at']),
-              },
-              {
-                slug: 'incidence',
-                label: 'Incidence of measles' + ` (${measlesTimestamp})`,
-                value: Util.formatIncidence(popupData['incidence']['value']) + ' cases per 1M population', // TODO comma-sep int
-                notAvail: popupData['incidence']['value'] === null, // TODO dynamically
-                dataSource: popupData['incidence']['data_source'],
-                dataSourceLastUpdated: new Date (popupData['incidence']['updated_at']),
               },
               {
                 slug: 'vacc-coverage',

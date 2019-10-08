@@ -43,6 +43,11 @@ const App = () => {
     return initialState;
   });
 
+  const [incidenceObservations, setIncidenceObservations] = React.useState(() => {
+    const initialState = [];
+    return initialState;
+  });
+
   const [fillObservations, setFillObservations] = React.useState(() => {
     const initialState = [];
     return initialState;
@@ -59,6 +64,10 @@ const App = () => {
   async function getMapObservations() {
     // get the bubble data
     setBubbleObservations(await ObservationQuery(6, 'monthly', '2019-07-01'));
+
+    // get the incidence data
+    setIncidenceObservations(await ObservationQuery(15, 'monthly', '2019-07-01'));
+
     // get the fill data
     setFillObservations(await ObservationQuery(4, 'yearly', '2018-01-01'));
     setLoading(false);
@@ -73,6 +82,7 @@ const App = () => {
     <Map // map page
       fillObservations={fillObservations} // observation data for map
       bubbleObservations={bubbleObservations} // observation data for map
+      incidenceObservations={incidenceObservations} // observation data for map
       shownMapModal={shownMapModal} // don't show help modal more than once
       setShownMapModal={setShownMapModal} // update modal display status
       />

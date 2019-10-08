@@ -28,6 +28,8 @@ const Legend = () => {
     }
   };
 
+  console.log('did the legend')
+
   return (
     <div
       className={classNames(styles.mapOverlay, styles.legend, {
@@ -75,9 +77,9 @@ const Legend = () => {
           </div>
         }
         {
-          // Reported cases
+          // Incidence
           <div className={styles.section}>
-            <p className={styles.sectionName}>Reported cases</p>
+            <p className={styles.sectionName}>Incidence of measles</p>
             <div className={styles.legendEntryGroups}>
               <div className={styles.legendEntryGroup}>
                 {
@@ -85,10 +87,10 @@ const Legend = () => {
                     <div className={classNames(styles.legendEntry, styles.circle)}>
                       <div className={classNames(styles.legendIcon, styles.circle)} />
                       {
-                        (i === 0) && <div className={styles.legendLabel}>Fewest<br/>cases</div>
+                        (i === 0) && <div className={styles.legendLabel}>Lowest<br/>incidence</div>
                       }
                       {
-                        (i === 2) && <div className={styles.legendLabel}>Most<br/>cases</div>
+                        (i === 2) && <div className={styles.legendLabel}>Highest<br/>incidence</div>
                       }
                     </div>
                   )
