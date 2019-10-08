@@ -43,19 +43,44 @@ body,
   }
 
   // Controls
+  .overlays > div:first-child {
+    bottom: unset;
+    top: 0;
+  }
   .mapboxgl-ctrl {
     background: none;
+    display: flex;
+    flex-flow: column;
+    outline: none;
+    box-shadow: none;
+    -webkit-box-shadow: none;
+
+    &:focus {
+      outline: none;
+    }
+
     .mapboxgl-ctrl-compass {
       display: none;
     }
+
+    $icon-size: 40px;
     .mapboxgl-ctrl-icon {
       margin: 0;
       background-color: white;
       border-radius: 9999px;
-      margin-right: 5px;
+      margin-bottom: 5px;
+      height: $icon-size;
+      width: $icon-size;
       opacity: 1;
-      // background-color: rgba(2
-      // 55, 255, 255, 0.8);
+
+      &:hover {
+        background-color: darken(white, 5%);
+      }
+
+      &:active {
+        box-shadow: none;
+        -webkit-box-shadow: none;
+      }
     }
   }
 
