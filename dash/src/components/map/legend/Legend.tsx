@@ -49,7 +49,7 @@ const Legend = () => {
         {
           // Vaccination coverage
           <div className={styles.section}>
-            <p className={styles.sectionName}>Vaccination coverage</p>
+            <p className={styles.sectionName}>Vaccination coverage (2018)</p>
             <div className={styles.legendEntryGroups}>
               <div className={styles.legendEntryGroup}>
                 {
@@ -79,7 +79,7 @@ const Legend = () => {
         {
           // Incidence
           <div className={styles.section}>
-            <p className={styles.sectionName}>Incidence of measles</p>
+            <p className={styles.sectionName}>Incidence of measles (recent)</p>
             <div className={styles.legendEntryGroups}>
               <div className={styles.legendEntryGroup}>
                 {
@@ -101,9 +101,9 @@ const Legend = () => {
                   <div className={classNames(styles.legendEntry, styles.dataNotAvailable)}>
                     <div className={classNames(styles.legendIcon, styles.circle)} />
                     <div className={styles.legendLabel}>
-                      Data not
+                      Data 1 to 6
                       <br/>
-                      recent
+                      months old
                     </div>
                   </div>
                 }

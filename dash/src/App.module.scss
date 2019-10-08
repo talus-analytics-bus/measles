@@ -1,13 +1,13 @@
-$logo-height: 70px;
 // $alert-height: 60px;
-// $logo-height: 140px;
+$logo-height: 70px;
 
 .app {
   height: 100%;
   display: grid;
   grid-template-columns: auto; // ensures header resizes correctly if window size is changed
   // grid-template-columns: 100%;
-  grid-template-rows: $logo-height auto;
+  grid-template-rows: min-content auto;
+  // grid-template-rows: $logo-height auto;
 }
 
 .watermark {

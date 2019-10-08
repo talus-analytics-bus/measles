@@ -1,28 +1,43 @@
 @import '../../../assets/styles/colors.scss';
+$logo-height: 70px;
 
 .logo {
   background-color: $dark-grey;
   z-index: 3;
   display: flex;
-  // align-items: center;
   justify-content: left;
+  // height: min-content;
 
   a {
     display: flex;
-    // align-items: center;
-    // justify-content: left;
-    // height: calc(100% - 20px); //fake padding
     .img {
-      height: 100%;
-      // width: auto;
+      height: $logo-height;
     }
   }
 
-  .title {
-    font-family: 'Gotham Bold', serif;
-    font-size: 2em;
-    color: white;
+  .text {
+    display: flex;
+    flex-flow: column;
+    text-align: left;
+    justify-content: center;
     margin-left: 40px;
-    align-self: center;
+    line-height: 1.2;
+
+    .title, .subtitle {
+      color: white;
+      // align-self: center;
+    }
+    .title {
+      font-family: 'Gotham Bold', serif;
+      font-size: 2em;
+      color: white;
+      align-self: center;
+    }
+    .subtitle {
+      font-family: 'Gotham Book', serif;
+      font-style: italic;
+      color: $grey;
+    }
   }
+
 }
