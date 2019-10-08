@@ -79,6 +79,8 @@ class Observations(Resource):
                   'place_name': o[9],
                   'updated_at': o[10],
                   'value': o[11],
+                  # FIXME: make this work for realz
+                  'stale_flag': False,
                 })
 
             return res_list
@@ -98,6 +100,9 @@ class Observations(Resource):
                 o['place_iso'] = place_info['iso2']
                 o['place_fips'] = place_info['fips']
                 del[o['place']]
+
+                # FIXME: make this work for realz
+                o['stale_flag'] = False
 
         return formattedData
 
@@ -217,6 +222,9 @@ class Trend(Resource):
             trend['place_name'] = end_obs['place_name']
             trend['place_iso'] = end_obs['place_iso']
             trend['place_fips'] = end_obs['place_fips']
+
+            # FIXME: make this work for realz
+            trend['stale_flag'] = False
 
             trends.append(trend)
 
