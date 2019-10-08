@@ -95,7 +95,6 @@ const initMap = (map, fillObservations, bubbleObservations, incidenceObservation
           const place_id = +observation['place_id']
           const stale = observation['stale_flag'] || false;
 
-          console.log('stale = ' + stale);
           if (!value) {
             map.setFeatureState({source: 'centroids', sourceLayer: 'centroids_id_rpr_latlon', id: place_id }, {
               value: 0,
@@ -210,12 +209,16 @@ const initMap = (map, fillObservations, bubbleObservations, incidenceObservation
               'case',
               ['==', ['feature-state', 'stale'], null],
               0,
+              ['==', ['feature-state', 'clicked'], true],
+              1,
               0.85,
           ],
           'circle-stroke-width': [
               'case',
               ['==', ['feature-state', 'stale'], null],
               0,
+              ['==', ['feature-state', 'clicked'], true],
+              2,
               1,
           ],
           'circle-stroke-color': [

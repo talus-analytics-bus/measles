@@ -209,6 +209,7 @@ const Map = ({ fillObservations, bubbleObservations, incidenceObservations, mapp
     if (selectedGeomID > 0) {
 
       map.setFeatureState({source: 'geoms', sourceLayer: 'countries_id_rpr', id: selectedGeomID }, {clicked: false});
+      map.setFeatureState({source: 'centroids', sourceLayer: 'centroids_id_rpr_latlon', id: selectedGeomID }, {clicked: false});
 
       const tooltipArr = document.getElementsByClassName('mapboxgl-popup');
       if (tooltipArr.length > 0) {
@@ -245,11 +246,13 @@ const Map = ({ fillObservations, bubbleObservations, incidenceObservations, mapp
 
     if (id !== selectedGeomID) {
       map.setFeatureState({source: 'geoms', sourceLayer: 'countries_id_rpr', id: id }, {clicked: true});
+      map.setFeatureState({source: 'centroids', sourceLayer: 'centroids_id_rpr_latlon', id: id }, {clicked: true});
       setSelectedGeomID(id)
       setCursorLngLat(e.lngLat)
       setShowGeomPopup(true)
     } else {
       map.setFeatureState({source: 'geoms', sourceLayer: 'countries_id_rpr', id: id }, {clicked: false});
+      map.setFeatureState({source: 'centroids', sourceLayer: 'centroids_id_rpr_latlon', id: id }, {clicked: false});
       setSelectedGeomID(-1)
       setShowGeomPopup(false)
     }
@@ -336,6 +339,7 @@ const Map = ({ fillObservations, bubbleObservations, incidenceObservations, mapp
     const map = mapRef.getMap()
     const id = selectedGeomID
     map.setFeatureState({source: 'geoms', sourceLayer: 'countries_id_rpr', id: id }, {clicked: false});
+    map.setFeatureState({source: 'centroids', sourceLayer: 'centroids_id_rpr_latlon', id: id }, {clicked: false});
     setShowGeomPopup(false)
     setSelectedGeomID(-1)
   }
