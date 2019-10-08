@@ -58,6 +58,34 @@ const GeomPopup = ({ popupData }) => {
     else return 'people';
   };
 
+  const getDatetimeStamp = (date_time, type = 'year') => {
+    if (type === 'month') {
+      return new Date(date_time).toLocaleString('en-US', { // TODO correctly
+        month: 'long',
+        year: 'numeric',
+        timeZone: 'UTC',
+      })
+    } else if (type === 'year') {
+      return new Date(date_time).toLocaleString('en-US', { // TODO correctly
+        year: 'numeric',
+        timeZone: 'UTC',
+      })
+    }
+  };
+
+  const getDeltaData = (datum) => {
+    if (datum) {
+      return {
+        delta: datum['percent_change'] || 0,
+        deltaSign: getDeltaSign(datum['percent_change'] || 0),
+        deltaFmt: Util.percentizeDelta(datum['percent_change'] || 0),
+        deltaLabel: 'increase from prior 30 days', // TODO inc/dec dynamicall
+      }
+    } else return {
+
+    };
+  };
+
   const detailsPath = '/details/' + popupData['bubble']['place_id']
   const flag = flags[popupData['fill']['place_iso'] + '.png'];
   return (
@@ -86,7 +114,7 @@ const GeomPopup = ({ popupData }) => {
             [
               {
                 slug: 'incidence',
-                label: 'Incidence of measles' + ` (${measlesTimestamp})`,
+                label: 'Incidence of measles' + ` (${getDatetimeStamp(popupData['incidence']['date_time'], 'month')})`,
                 value: Util.formatIncidence(popupData['incidence']['value']) + ' cases per 1M population', // TODO comma-sep int
                 notAvail: popupData['incidence']['value'] === null, // TODO dynamically
                 dataSource: popupData['incidence']['data_source'],
@@ -96,10 +124,11 @@ const GeomPopup = ({ popupData }) => {
                 slug: 'cases',
                 label: 'Measles cases reported' + ` (${measlesTimestamp})`,
                 value: Util.comma(popupData['bubble']['value']) + ' ' + getPeopleNoun(popupData['bubble']['value']), // TODO comma sep int
-                delta: popupData['trend']['percent_change'],
-                deltaSign: getDeltaSign(popupData['trend']['percent_change']),
-                deltaFmt: Util.percentizeDelta(popupData['trend']['percent_change']),
-                deltaLabel: 'increase from prior 30 days', // TODO inc/dec dynamically
+                deltaData: getDeltaData(popupData['trend']),
+                // delta: popupData['trend']['percent_change'],
+                // deltaSign: getDeltaSign(popupData['trend']['percent_change']),
+                // deltaFmt: Util.percentizeDelta(popupData['trend']['percent_change']),
+                // deltaLabel: 'increase from prior 30 days', // TODO inc/dec dynamically
                 notAvail: popupData['bubble']['value'] === null,
                 dataSource: popupData['bubble']['data_source'],
                 dataSourceLastUpdated: new Date (popupData['bubble']['updated_at']),
@@ -124,10 +153,10 @@ const GeomPopup = ({ popupData }) => {
                 )}>
                   {d.notAvail ? 'Data not available' : d.value}
                   {
-                    (d.delta !== null && d.delta !== undefined) && !d.notAvail && <div className={classNames(styles.delta, {
-                      [styles['inc']]: d.delta > 0,
-                      [styles['dec']]: d.delta < 0,
-                      [styles['same']]: d.delta === 0,
+                    (d.deltaData && d.deltaData.delta !== undefined) && !d.notAvail && <div className={classNames(styles.delta, {
+                      [styles['inc']]: d.deltaData.delta > 0,
+                      [styles['dec']]: d.deltaData.delta < 0,
+                      [styles['same']]: d.deltaData.delta === 0,
                     })}>
                       <i className={classNames('material-icons')}>play_arrow</i>
                       <span className={styles['delta-value']}>
@@ -135,9 +164,9 @@ const GeomPopup = ({ popupData }) => {
                           // Don't include sign for now since it's redundant
                           // <span className={styles['sign']}>{d.deltaSign}</span>
                         }
-                        <span className={styles['num']}>{d.deltaFmt}</span>
+                        <span className={styles['num']}>{d.deltaData.deltaFmt}</span>
                       </span>
-                      <span className={styles['delta-text']}>{getDeltaWord(d.delta)} from<br/>previous month</span>
+                      <span className={styles['delta-text']}>{getDeltaWord(d.deltaData.delta)} from<br/>previous month</span>
                     </div>
                   }
                 </p>

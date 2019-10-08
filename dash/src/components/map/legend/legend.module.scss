@@ -119,13 +119,14 @@ $spacing: 5px;
             }
             .legendIcon.circle {
               margin: auto 0;
-              background: repeating-linear-gradient(
-                -45deg,
-                #b02c3a,
-                #b02c3a 2.5px,
-                white 2.5px,
-                white 5px
-              );
+              background-color: gray;
+              // background: repeating-linear-gradient(
+              //   -45deg,
+              //   #b02c3a,
+              //   #b02c3a 2.5px,
+              //   white 2.5px,
+              //   white 5px
+              // );
             }
           }
 

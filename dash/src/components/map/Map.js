@@ -112,41 +112,15 @@ const Map = ({ fillObservations, bubbleObservations, incidenceObservations, mapp
     setMarkerComponents(newMarkerComponents);
   }
 
-  // async function getIncidenceObservations() {
-  //   // get the incidence data
-  //   setIncidenceObservations(await ObservationQuery(15, 'monthly', '2019-07-01'));
-  // }
-
   React.useEffect(() => {
     const map = mapRef.getMap();
 
     initMap(map, fillObservations, bubbleObservations, incidenceObservations, function afterMapLoaded () {
 
-      getTrendObservations();
       // getIncidenceObservations();
       // getMarkerComponents(map, incidenceObservations);
     });
-
-    // console.log("map.getLayer('geom-fills')")
-    // console.log(map.getLayer('geom-fills'))
-    // console.log('map')
-    // console.log(map)
-    // console.log('Marker')
-    // console.log(Marker)
-
-    // incidenceObservations.forEach(( observation) => {
-    //   const value = observation['value'];
-    //   const place_id = observation['place_id']
-    //
-    //   if (!value) {
-    //     map.setFeatureState({source: 'centroids', sourceLayer: 'centroids_id_rpr_latlon', id: place_id }, {value: 0});
-    //   } else {
-    //     //const state = { value: Math.floor(256 * value)};
-    //     const state = {value: value};
-    //     map.setFeatureState({source: 'centroids', sourceLayer: 'centroids_id_rpr_latlon', id: place_id }, state);
-    //   }
-    // });
-
+    getTrendObservations();
   }, [])
 
   /**
