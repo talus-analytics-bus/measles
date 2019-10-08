@@ -42,6 +42,23 @@ body,
     to {opacity: 0;}
   }
 
+  // Controls
+  .mapboxgl-ctrl {
+    background: none;
+    .mapboxgl-ctrl-compass {
+      display: none;
+    }
+    .mapboxgl-ctrl-icon {
+      margin: 0;
+      background-color: white;
+      border-radius: 9999px;
+      margin-right: 5px;
+      opacity: 1;
+      // background-color: rgba(2
+      // 55, 255, 255, 0.8);
+    }
+  }
+
   // Curve corners of content box, set cursor.
   .mapboxgl-popup-content {
     border-radius: $border-radius;
