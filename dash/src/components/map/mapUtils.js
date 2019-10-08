@@ -93,15 +93,19 @@ const initMap = (map, fillObservations, bubbleObservations, incidenceObservation
         incidenceObservations.forEach(( observation) => {
           const value = observation['value'];
           const place_id = +observation['place_id']
+          const stale = observation['stale_flag'] || false;
 
+          console.log('stale = ' + stale);
           if (!value) {
             map.setFeatureState({source: 'centroids', sourceLayer: 'centroids_id_rpr_latlon', id: place_id }, {
               value: 0,
+              stale: stale,
             }
           );
           } else {
             const state = {
               value: value,
+              stale: stale,
             };
             map.setFeatureState({source: 'centroids', sourceLayer: 'centroids_id_rpr_latlon', id: place_id }, state);
           }
@@ -139,6 +143,7 @@ const initMap = (map, fillObservations, bubbleObservations, incidenceObservation
               lon: null,
             }
           );
+
           } else {
 
             // Get matching centroid's lat/lon to store in state.
@@ -193,10 +198,32 @@ const initMap = (map, fillObservations, bubbleObservations, incidenceObservation
                 0.001, 5,
                 100, 150
           ],
-          'circle-color': '#b02c3a', // "not recent" color is gray
-          'circle-opacity': .85,
-          'circle-stroke-width': 1,
-          'circle-stroke-color': '#ffffff',
+          'circle-color': [
+              'case',
+              ['==', ['feature-state', 'stale'], false],
+              '#b02c3a',
+              ['==', ['feature-state', 'stale'], true],
+              '#b3b3b3',
+              'white',
+          ],
+          'circle-opacity': [
+              'case',
+              ['==', ['feature-state', 'stale'], null],
+              0,
+              0.85,
+          ],
+          'circle-stroke-width': [
+              'case',
+              ['==', ['feature-state', 'stale'], null],
+              0,
+              1,
+          ],
+          'circle-stroke-color': [
+              'case',
+              ['==', ['feature-state', 'stale'], false],
+              '#ffffff',
+              '#979797',
+          ],
         }
       }, "country-small");
     };
@@ -238,15 +265,9 @@ const initMap = (map, fillObservations, bubbleObservations, incidenceObservation
         'type': 'circle',
         'source': 'centroids',
         'source-layer': 'centroids_id_rpr_latlon',
-        // 'layout': {
-        //   'visibility': 'none',
-        // },
         'paint': {
         'circle-radius': 0,
-          // 'circle-color': '#b02c3a',
           'circle-opacity': 0,
-          // 'circle-stroke-width': 1,
-          // 'circle-stroke-color': '#ffffff',
         }
       }, "country-small");
     };
