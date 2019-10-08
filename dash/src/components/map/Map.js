@@ -228,13 +228,10 @@ const Map = ({ fillObservations, bubbleObservations, incidenceObservations, mapp
     console.log(clickedOnGeom)
 
     const id = clickedOnGeom.id
-    map.setFeatureState({source: 'geoms', sourceLayer: 'countries_id_rpr', id: id }, {clicked: true});
 
     const bubbleData = bubbleObservations.find(f => f.place_id === id)
     const fillData = fillObservations.find(f => f.place_id === id)
     const trendData = trendObservations.find(f => f.place_id === id)
-    console.log('incidenceObservations')
-    console.log(incidenceObservations)
     const incidenceData = incidenceObservations.find(f => f.place_id === id)
 
     setPopupData(
@@ -246,9 +243,16 @@ const Map = ({ fillObservations, bubbleObservations, incidenceObservations, mapp
       }
     )
 
-    setSelectedGeomID(id)
-    setCursorLngLat(e.lngLat)
-    setShowGeomPopup(true)
+    if (id !== selectedGeomID) {
+      map.setFeatureState({source: 'geoms', sourceLayer: 'countries_id_rpr', id: id }, {clicked: true});
+      setSelectedGeomID(id)
+      setCursorLngLat(e.lngLat)
+      setShowGeomPopup(true)
+    } else {
+      map.setFeatureState({source: 'geoms', sourceLayer: 'countries_id_rpr', id: id }, {clicked: false});
+      setSelectedGeomID(-1)
+      setShowGeomPopup(false)
+    }
 
     /**
      * Fly user to specified longlat map location, and (if provided) to the
