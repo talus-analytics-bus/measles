@@ -78,6 +78,7 @@ body,
       }
 
       &:active {
+        background-color: darken(white, 15%);
         box-shadow: none;
         -webkit-box-shadow: none;
       }
