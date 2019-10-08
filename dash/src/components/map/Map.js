@@ -140,6 +140,7 @@ const Map = ({ fillObservations, bubbleObservations, incidenceObservations, mapp
     setViewport(defaultViewport);
   };
 
+  let hoveredCountry;
   /**
    * Fired when mouse moves on map, mainly to handle cursor styling.
    * @method handleMouseMove
@@ -152,16 +153,64 @@ const Map = ({ fillObservations, bubbleObservations, incidenceObservations, mapp
 
     // Get list of features under the mouse cursor.
     const features = map.queryRenderedFeatures(e.point);
+    const allCountries = map.queryRenderedFeatures(
+      {
+        sourceLayer: 'countries-id-rpr',
+      }
+    )
 
     // Use pointer cursor for any country, grab cursor otherwise.
-    const onCountry = features.find(f => {
+    let countryFeature = features.find(f => {
       return f['layer']['source-layer'] === 'countries_id_rpr';
-    }) !== undefined;
+    });
+    const bubbleFeature = features.find(f => {
+      return f['layer']['source-layer'] === 'centroids_id_rpr_latlon';
+    });
+
+
+    const onCountry = countryFeature !== undefined;
+    const onBubble = bubbleFeature !== undefined;
+
+    // // Clear hover feature state
+    // allCountries.forEach(f => {
+    //   const curFeatureState =
+    //     map.getFeatureState({source: 'geoms', sourceLayer: 'countries_id_rpr', id: f.id });
+    //   map.setFeatureState({source: 'geoms', sourceLayer: 'countries_id_rpr', id: f.id }, {hover: false, ...curFeatureState});
+    // });
+
+    // Bubble takes precedence
+    if (onBubble) {
+      countryFeature = allCountries.find(f => f.id === bubbleFeature.id);
+    }
+
+    function setHoverState (featureSelector, hoverState) {
+      const curFeatureState = map.getFeatureState(featureSelector);
+      if (curFeatureState) {
+        curFeatureState.hover = hoverState;
+        map.setFeatureState(featureSelector, curFeatureState);
+      }
+    }
+
+    // If on country, set to hovered state
+    if (onCountry || onBubble) {
+      if (hoveredCountry && hoveredCountry.id !== countryFeature.id) {
+        setHoverState({source: 'geoms', sourceLayer: 'countries_id_rpr', id: hoveredCountry.id }, false);
+        setHoverState({source: 'centroids', sourceLayer: 'centroids_id_rpr_latlon', id: hoveredCountry.id }, false);
+      }
+      hoveredCountry = countryFeature;
+      setHoverState({source: 'geoms', sourceLayer: 'countries_id_rpr', id: hoveredCountry.id }, true);
+      setHoverState({source: 'centroids', sourceLayer: 'centroids_id_rpr_latlon', id: hoveredCountry.id }, true);
+    } else {
+      if (hoveredCountry) {
+        setHoverState({source: 'geoms', sourceLayer: 'countries_id_rpr', id: hoveredCountry.id }, false);
+        setHoverState({source: 'centroids', sourceLayer: 'centroids_id_rpr_latlon', id: hoveredCountry.id }, false);
+      }
+    }
 
     // If map is on country or legend toggle, show pointer. Otherwise, show
     // grab.
     map.getContainer().parentElement.parentElement.style.cursor =
-      onCountry ? 'pointer' : 'grab';
+      (onCountry || onBubble) ? 'pointer' : 'grab';
   };
 
   const handleStyleLoad = map => (map.resize())
@@ -222,13 +271,21 @@ const Map = ({ fillObservations, bubbleObservations, incidenceObservations, mapp
       setSelectedGeomID(-1)
     }
 
-    const clickedOnGeom = e.features.find(f => f.layer.id === 'geom-fills')
+    const clickedOnGeom = e.features.find(f => f.layer.id === 'geom-fills');
+    const clickedOnBubble = e.features.find(f => f.layer.id === 'metric-bubbles');
 
-    if (typeof clickedOnGeom === 'undefined') return;
+    if (clickedOnGeom === undefined && clickedOnBubble === undefined) return;
 
     console.log(clickedOnGeom)
+    console.log(clickedOnBubble)
 
-    const id = clickedOnGeom.id
+    // Bubble click takes priority.
+    let id;
+    if (clickedOnBubble) {
+      id = clickedOnBubble.id;
+    } else if (clickedOnGeom) {
+      id = clickedOnGeom.id;
+    }
 
     const bubbleData = bubbleObservations.find(f => f.place_id === id)
     const fillData = fillObservations.find(f => f.place_id === id)
