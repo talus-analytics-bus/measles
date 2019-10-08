@@ -58,19 +58,24 @@ const GeomPopup = ({ popupData }) => {
     else return 'people';
   };
 
-  const getDatetimeStamp = (date_time, type = 'year') => {
+  const getDatetimeStamp = (datum, type = 'year') => {
+    if (datum['value'] === null) return '';
+
+    let datetimeStamp;
+    const date_time = datum['date_time'].replace(/-/g, '/');
     if (type === 'month') {
-      return new Date(date_time).toLocaleString('en-US', { // TODO correctly
+      datetimeStamp = new Date(date_time).toLocaleString('en-US', { // TODO correctly
         month: 'long',
         year: 'numeric',
         timeZone: 'UTC',
       })
     } else if (type === 'year') {
-      return new Date(date_time).toLocaleString('en-US', { // TODO correctly
+      datetimeStamp = new Date(date_time).toLocaleString('en-US', { // TODO correctly
         year: 'numeric',
         timeZone: 'UTC',
       })
     }
+    return ` (${datetimeStamp})`;
   };
 
   const getDeltaData = (datum) => {
@@ -114,7 +119,7 @@ const GeomPopup = ({ popupData }) => {
             [
               {
                 slug: 'incidence',
-                label: 'Incidence of measles' + ` (${getDatetimeStamp(popupData['incidence']['date_time'], 'month')})`,
+                label: 'Incidence of measles' + `${getDatetimeStamp(popupData['incidence'], 'month')}`,
                 value: Util.formatIncidence(popupData['incidence']['value']) + ' cases per 1M population', // TODO comma-sep int
                 notAvail: popupData['incidence']['value'] === null, // TODO dynamically
                 dataSource: popupData['incidence']['data_source'],
@@ -122,7 +127,7 @@ const GeomPopup = ({ popupData }) => {
               },
               {
                 slug: 'cases',
-                label: 'Measles cases reported' + ` (${measlesTimestamp})`,
+                label: 'Measles cases reported' + `${getDatetimeStamp(popupData['bubble'], 'month')}`,
                 value: Util.comma(popupData['bubble']['value']) + ' ' + getPeopleNoun(popupData['bubble']['value']), // TODO comma sep int
                 deltaData: getDeltaData(popupData['trend']),
                 // delta: popupData['trend']['percent_change'],
@@ -135,7 +140,7 @@ const GeomPopup = ({ popupData }) => {
               },
               {
                 slug: 'vacc-coverage',
-                label: 'Vaccination coverage' + ` (${vaccinationTimestamp})`,
+                label: 'Vaccination coverage' + `${getDatetimeStamp(popupData['fill'], 'year')}`,
                 value: parseFloat(popupData['fill']['value']).toFixed(0)+"% of infants",
                 dataSource: popupData['fill']['data_source'],
                 dataSourceLastUpdated: new Date (popupData['fill']['updated_at']),
@@ -151,7 +156,7 @@ const GeomPopup = ({ popupData }) => {
                     [styles['notAvail']]: d.notAvail,
                   },
                 )}>
-                  {d.notAvail ? 'Data not available' : d.value}
+                  {d.notAvail ? 'Recent data not available' : d.value}
                   {
                     (d.deltaData && d.deltaData.delta !== undefined) && !d.notAvail && <div className={classNames(styles.delta, {
                       [styles['inc']]: d.deltaData.delta > 0,

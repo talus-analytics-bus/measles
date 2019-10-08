@@ -23,8 +23,8 @@ const Map = ({ fillObservations, bubbleObservations, incidenceObservations, mapp
   const defaultViewport = {
     width: '100%',
     height: '100%',
-    longitude: 0,
-    latitude: 20,
+    longitude: 33.73046875000961,
+    latitude: 4.418504408489266,
     zoom: 2
   };
   const [viewport, setViewport] = React.useState(defaultViewport);
@@ -364,6 +364,7 @@ const Map = ({ fillObservations, bubbleObservations, incidenceObservations, mapp
       maxZoom = {4}
       minZoom = {2}
       onViewportChange={v => {
+        console.log(v)
         // Update viewport.
         setViewport(v);
 

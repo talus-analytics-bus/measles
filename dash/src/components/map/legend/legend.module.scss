@@ -84,7 +84,7 @@ $spacing: 5px;
 
     padding-right: $spacing*22;
     &:last-child {
-      padding-right: 10px;
+      padding-right: 22px;
     }
 
     .sectionName {
@@ -115,11 +115,12 @@ $spacing: 5px;
           &.dataNotAvailable {
             margin-left: $rect-width / 2;
             .legendIcon.rect {
-              border-color: #b3b3b3;
+              border-color: $grey;
             }
             .legendIcon.circle {
               margin: auto 0;
-              background-color: gray;
+              background-color: $no-data-gray;
+              border-color: $grey;
               // background: repeating-linear-gradient(
               //   -45deg,
               //   #b02c3a,
