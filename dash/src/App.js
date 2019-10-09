@@ -107,7 +107,7 @@ const App = () => {
         <Switch>
           <div>
             <Route exact path='/' component={() => renderMap} />
-            <Route exact path='/landing' component={() => renderMap} />
+            <Route exact path='/map' component={() => renderMap} />
             <Route
               path='/details/:id'
               render={d => {

@@ -9,7 +9,7 @@ import iconGlobe from '../../../assets/images/globe.svg'
 const Alert: React.FC = () => {
   return (
     <div className={styles.logo}>
-      <Link to="/landing">
+      <Link to="/map">
         <img src={logo} className={styles.img} alt='logo' />
       </Link>
       <div className={styles.text}>
@@ -24,26 +24,30 @@ const Alert: React.FC = () => {
           [
             {
               id: 'globe',
-              route: '/landing', // TODO rename
+              route: '/map', // TODO rename
               icon: iconGlobe,
               tooltip: 'Click to view map of vaccination coverage and incidence of measles',
             },
             {
               id: 'flag',
-              route: '/landing', // TODO rename
+              route: '/map', // TODO rename
               icon: iconFlag,
               tooltip: 'Click to view map of vaccination coverage and incidence of measles',
             },
             {
               id: 'pin',
-              route: '/landing', // TODO rename
+              route: '/map', // TODO rename
               icon: iconPin,
               tooltip: 'Click to view map of vaccination coverage and incidence of measles',
             },
           ].map(button =>
-            <div>
-              <img src={button.icon} />
-            </div>
+              button.route && (
+                <Link to={button.route}>
+                  <div>
+                    <img src={button.icon} />
+                  </div>
+                </Link>
+              )
           )
         }
       </div>

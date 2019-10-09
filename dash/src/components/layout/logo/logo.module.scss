@@ -9,10 +9,15 @@ $logo-height: 70px;
   position: relative;
 
   $navButtonSize: 75px;
+
   .navButtons {
+    display: flex;
+    flex-flow: row;
     position: absolute;
     right: 0;
     bottom: -$navButtonSize/2;
+  }
+  .navButtons a {
     div {
       display: flex;
       flex-flow:row;
