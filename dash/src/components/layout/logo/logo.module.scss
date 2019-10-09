@@ -26,7 +26,7 @@ $logo-height: 70px;
       position: relative;
       line-height: $navButtonSize;
       cursor: pointer;
-      margin-right: 20px;
+      margin-right: 10px;
 
       &:hover {
         background-color: darken(#5781ab, 5%);
@@ -35,7 +35,7 @@ $logo-height: 70px;
         background-color: darken(#5781ab, 15%);
       }
       img {
-        height: $navButtonSize/2;
+        height: $navButtonSize*.6;
         display: flex;
         flex-flow:row;
         align-content: center;
