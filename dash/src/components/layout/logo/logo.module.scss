@@ -6,7 +6,45 @@ $logo-height: 70px;
   z-index: 3;
   display: flex;
   justify-content: left;
-  // height: min-content;
+  position: relative;
+
+  $navButtonSize: 75px;
+  .navButtons {
+    position: absolute;
+    right: 0;
+    bottom: -$navButtonSize/2;
+    div {
+      display: flex;
+      flex-flow:row;
+      border-radius: 9999px;
+      background-color: #5781ab;
+      height: $navButtonSize;
+      width: $navButtonSize;
+      float: right;
+      box-shadow: 5px 5px 10px 0 rgba(0, 0, 0, 0.29);
+      -webkit-box-shadow: 5px 5px 10px 0 rgba(0, 0, 0, 0.29);
+      position: relative;
+      line-height: $navButtonSize;
+      cursor: pointer;
+      margin-right: 20px;
+
+      &:hover {
+        background-color: darken(#5781ab, 5%);
+      }
+      &:active {
+        background-color: darken(#5781ab, 15%);
+      }
+      img {
+        height: $navButtonSize/2;
+        display: flex;
+        flex-flow:row;
+        align-content: center;
+        justify-self: center;
+        margin: auto;
+        position: relative;
+      }
+    }
+  }
 
   a {
     display: flex;
