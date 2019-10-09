@@ -36,6 +36,9 @@ console.log(DEMO_DATE)
 const App = () => {
   console.log('Render App')
 
+  // Track which page is being shown to keep the logo bar updated.
+  const [page, setPage] = React.useState('')
+
   const [showWm, setShowWm] = React.useState(false)
 
   const [bubbleObservations, setBubbleObservations] = React.useState(() => {
@@ -103,14 +106,15 @@ const App = () => {
   return (
     <div className={styles.app}>
       <BrowserRouter>
-        <Logo />
+        <Logo page={page} />
         <Switch>
           <div>
-            <Route exact path='/' component={() => renderMap} />
-            <Route exact path='/map' component={() => renderMap} />
+            <Route exact path='/' component={ () => { setPage('map'); return renderMap; } } />
+            <Route exact path='/map' component={ () => { setPage('map'); return renderMap; } } />
             <Route
               path='/details/:id'
-              render={d => {
+              component={d => {
+                setPage('details');
                 return renderDetails(d.match.params.id)
               }}
             />

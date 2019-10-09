@@ -3,6 +3,33 @@ import * as d3 from 'd3/dist/d3.min';
 // Utility functions.
 const Util = {};
 
+
+Util.getDatetimeStamp = (datum, type = 'year') => {
+  if (datum['value'] === null) return '';
+
+  let datetimeStamp;
+  const date_time = datum['date_time'].replace(/-/g, '/');
+  if (type === 'month') {
+    datetimeStamp = new Date(date_time).toLocaleString('en-US', { // TODO correctly
+      month: 'long',
+      year: 'numeric',
+      timeZone: 'UTC',
+    })
+  } else if (type === 'year') {
+    datetimeStamp = new Date(date_time).toLocaleString('en-US', { // TODO correctly
+      year: 'numeric',
+      timeZone: 'UTC',
+    })
+  }
+  return ` (${datetimeStamp})`;
+};
+
+Util.importAll = (r) => {
+  let images = {};
+  r.keys().map((item, index) => { images[item.replace('./', '')] = r(item); });
+  return images;
+}
+
 // Sorting functions to sort alerts and statuses data by datetime and by
 // unique ID (sequential relative to submission order).
 Util.sortByDatetime = (a, b) => {

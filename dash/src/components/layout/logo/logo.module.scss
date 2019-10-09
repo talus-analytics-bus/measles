@@ -17,7 +17,11 @@ $logo-height: 70px;
     right: 0;
     bottom: -$navButtonSize/2;
   }
-  .navButtons a {
+  .navButtons a.active div, .navButtons div.active {
+    background-color: darken(#5781ab, 5%);
+    border: 1px solid white;
+  }
+  .navButtons a, .navButtons {
     div {
       display: flex;
       flex-flow:row;
@@ -39,6 +43,7 @@ $logo-height: 70px;
       &:active {
         background-color: darken(#5781ab, 15%);
       }
+      border: 1px solid transparent;
       img {
         height: $navButtonSize*.6;
         display: flex;

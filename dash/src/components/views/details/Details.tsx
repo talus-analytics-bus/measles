@@ -8,6 +8,7 @@ import Content from './content/Content'
 
 // Utilities (date formatting, etc.)
 import Util from '../../../components/misc/Util.js'
+import worldMap from '../../../assets/images/world-map.svg'
 import ObservationQuery from '../../../components/misc/ObservationQuery.js'
 
 import classNames from 'classnames'
@@ -34,15 +35,16 @@ const Details = (props: any) => {
   // Get data for current country.
   const country = props.id;
   const [countryName, setCountryName] = React.useState('');
+  const [countryIso2, setCountryIso2] = React.useState('');
 
   // total population
-  const [countryPop, setCountryPop] = React.useState(0);
+  const [countryPop, setCountryPop] = React.useState({});
 
   // GDP per capita
-  const [countryGDP, setCountryGDP] = React.useState(0);
+  const [countryGDP, setCountryGDP] = React.useState({});
 
   // JEE Score
-  const [countryJEE, setCountryJEE] = React.useState(0);
+  const [countryJEE, setCountryJEE] = React.useState({});
 
   //Policies (doubt we get this by October?)
 
@@ -61,15 +63,16 @@ const Details = (props: any) => {
   // Function to make API calls to get data for the state variables above.
   const getDetailsData = async () => {
     var countryPopQ = await ObservationQuery(3, 'yearly', '2018-01-01', '2018-01-01', country);
-    setCountryPop(countryPopQ[0]['value']);
+    setCountryPop(countryPopQ[0]);
     setCountryName(countryPopQ[0]['place_name'])
+    setCountryIso2(countryPopQ[0]['place_iso'])
 
     var countryGDPQ = await ObservationQuery(14, 'yearly', '2018-01-01', '2018-01-01', country);
     console.log(countryGDPQ)
-    setCountryGDP(countryGDPQ[0]['value']);
+    setCountryGDP(countryGDPQ[0]);
 
     var countryJEEQ = await ObservationQuery(6, 'monthly', '2019-08-01', '2019-08-01', country);
-    setCountryJEE(countryJEEQ[0]['value']);
+    setCountryJEE(countryJEEQ[0]);
 
     setCaseHistory(await ObservationQuery(6, 'monthly', '2010-01-01', '2018-01-01', country));
     setCoverageHistory(await ObservationQuery(4, 'yearly', '2010-01-01', '2018-01-01', country));
@@ -85,34 +88,67 @@ const Details = (props: any) => {
   // If loading do not show JSX content.
   if (loading) return (<div></div>);
   else {
-    console.log(countryPop)
-    console.log(countryGDP)
-    console.log(countryJEE)
 
-    // Get datetime stamp for facility status and other elements
-    const timeThreshold = DEMO_DATE !== undefined ? new Date(DEMO_DATE) : new Date();
+    return (<div className={styles.details}>
+              <div className={styles.sidebar}>
+                <div className={styles.title}>
+                  {countryIso2 && <img src={`/flags/${countryIso2}.png`} className={styles.flag} />}
+                  {countryName}
+                </div>
+                <div className={styles.map}>
+                  <img src={worldMap} />
+                </div>
+                {
+                  [
+                    {
+                      'title': 'Population',
+                      'value_fmt': Util.comma,
+                      'value_label': 'people',
+                      'date_time_fmt': (date_time: any) => {return Util.getDatetimeStamp(date_time, 'year')}, // TODO
+                      'value': countryPop.value,
+                    }
+                  ].map(item =>
+                    <div className={styles.item}>
+                      <div className={styles.title}>
+                        {item.title} {item.date_time_fmt(item.date_time)}
+                      </div>
+                      <div className={styles.content}>
+                        <div className={styles.value}>
+                          {item.value_fmt(item.value)}
+                        </div>
+                        <div className={styles.label}>
+                        </div>
+                      </div>
 
-    return (<div>
-              <div>
-                <p>{countryName}</p>
-                <p>Country Population: {countryPop}</p>
-                <p>GDP per-capita: {countryGDP}</p>
-                <p>JEE: {countryJEE}</p>
+                    </div>
+                  )
+                }
               </div>
-              <div>
-                <p>Coverage</p>
-                <Chart
-                  metric={coverageHistory}
-                />
-              </div>
-              <div>
-                <p>Cases</p>
-                <Chart
-                  metric={caseHistory}
-                />
-              </div>
+              <div className={styles.main} />
             </div>
     );
+    // Original page content from before Mike is below.
+    // return (<div>
+    //           <div>
+    //             <p>{countryName}</p>
+    //             <p>Country Population: {countryPop}</p>
+    //             <p>GDP per-capita: {countryGDP}</p>
+    //             <p>JEE: {countryJEE}</p>
+    //           </div>
+    //           <div>
+    //             <p>Coverage</p>
+    //             <Chart
+    //               metric={coverageHistory}
+    //             />
+    //           </div>
+    //           <div>
+    //             <p>Cases</p>
+    //             <Chart
+    //               metric={caseHistory}
+    //             />
+    //           </div>
+    //         </div>
+    // );
   }
 };
 

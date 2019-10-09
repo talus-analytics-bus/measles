@@ -5,14 +5,7 @@ import Util from '../../misc/Util.js'
 
 import styles from './geomPopup.module.scss'
 // import flags from '../../../assets/images/flags/AD.png'
-
-function importAll(r) {
-  let images = {};
-  r.keys().map((item, index) => { images[item.replace('./', '')] = r(item); });
-  return images;
-}
-
-const flags = importAll(require.context('../../../assets/images/flags/', false, /\.(png|jpe?g|svg)$/));
+// const flags = Util.importAll(require.context('../../../assets/images/flags/', false, /\.(png|jpe?g|svg)$/));
 
 // : React.FC
 const GeomPopup = ({ popupData }) => {
@@ -58,26 +51,6 @@ const GeomPopup = ({ popupData }) => {
     else return 'people';
   };
 
-  const getDatetimeStamp = (datum, type = 'year') => {
-    if (datum['value'] === null) return '';
-
-    let datetimeStamp;
-    const date_time = datum['date_time'].replace(/-/g, '/');
-    if (type === 'month') {
-      datetimeStamp = new Date(date_time).toLocaleString('en-US', { // TODO correctly
-        month: 'long',
-        year: 'numeric',
-        timeZone: 'UTC',
-      })
-    } else if (type === 'year') {
-      datetimeStamp = new Date(date_time).toLocaleString('en-US', { // TODO correctly
-        year: 'numeric',
-        timeZone: 'UTC',
-      })
-    }
-    return ` (${datetimeStamp})`;
-  };
-
   const getDeltaData = (datum) => {
     if (datum) {
       return {
@@ -92,7 +65,7 @@ const GeomPopup = ({ popupData }) => {
   };
 
   const detailsPath = '/details/' + popupData['bubble']['place_id']
-  const flag = flags[popupData['fill']['place_iso'] + '.png'];
+  const flag = `/flags/${popupData['fill']['place_iso'] }.png`;
   return (
     <div className={styles.container}>
       <div className={styles.header}>
@@ -119,7 +92,7 @@ const GeomPopup = ({ popupData }) => {
             [
               {
                 slug: 'incidence',
-                label: 'Incidence of measles' + `${getDatetimeStamp(popupData['incidence'], 'month')}`,
+                label: 'Incidence of measles' + `${Util.getDatetimeStamp(popupData['incidence'], 'month')}`,
                 value: Util.formatIncidence(popupData['incidence']['value']) + ' cases per 1M population', // TODO comma-sep int
                 notAvail: popupData['incidence']['value'] === null, // TODO dynamically
                 dataSource: popupData['incidence']['data_source'],
@@ -127,7 +100,7 @@ const GeomPopup = ({ popupData }) => {
               },
               {
                 slug: 'cases',
-                label: 'Measles cases reported' + `${getDatetimeStamp(popupData['bubble'], 'month')}`,
+                label: 'Measles cases reported' + `${Util.getDatetimeStamp(popupData['bubble'], 'month')}`,
                 value: Util.comma(popupData['bubble']['value']) + ' ' + getPeopleNoun(popupData['bubble']['value']), // TODO comma sep int
                 deltaData: getDeltaData(popupData['trend']),
                 // delta: popupData['trend']['percent_change'],
@@ -140,7 +113,7 @@ const GeomPopup = ({ popupData }) => {
               },
               {
                 slug: 'vacc-coverage',
-                label: 'Vaccination coverage' + `${getDatetimeStamp(popupData['fill'], 'year')}`,
+                label: 'Vaccination coverage' + `${Util.getDatetimeStamp(popupData['fill'], 'year')}`,
                 value: parseFloat(popupData['fill']['value']).toFixed(0)+"% of infants",
                 dataSource: popupData['fill']['data_source'],
                 dataSourceLastUpdated: new Date (popupData['fill']['updated_at']),
