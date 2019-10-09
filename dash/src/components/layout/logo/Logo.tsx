@@ -23,21 +23,22 @@ const Alert: React.FC = () => {
         {
           [
             {
-              id: 'globe',
+              id: 'pin',
               route: '/map', // TODO rename
-              icon: iconGlobe,
+              icon: iconPin,
               tooltip: 'Click to view map of vaccination coverage and incidence of measles',
             },
             {
               id: 'flag',
-              route: '/map', // TODO rename
+              route: '/detail', // TODO rename
               icon: iconFlag,
               tooltip: 'Click to view map of vaccination coverage and incidence of measles',
             },
+
             {
-              id: 'pin',
-              route: '/map', // TODO rename
-              icon: iconPin,
+              id: 'globe',
+              route: '/global', // TODO rename
+              icon: iconGlobe,
               tooltip: 'Click to view map of vaccination coverage and incidence of measles',
             },
           ].map(button =>
