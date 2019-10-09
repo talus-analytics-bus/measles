@@ -10,7 +10,7 @@ import Map from './components/map/Map'
 
 // views
 //import Alerts from './components/views/alerts/Alerts.js'
-import Details from './components/views/details/Details'
+import Details from './components/views/details/Details.js'
 
 // styles
 import styles from './App.module.scss'
