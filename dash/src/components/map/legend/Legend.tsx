@@ -28,8 +28,6 @@ const Legend = () => {
     }
   };
 
-  console.log('did the legend')
-
   return (
     <div
       className={classNames(styles.mapOverlay, styles.legend, {
@@ -101,7 +99,7 @@ const Legend = () => {
                   <div className={classNames(styles.legendEntry, styles.dataNotAvailable)}>
                     <div className={classNames(styles.legendIcon, styles.circle)} />
                     <div className={styles.legendLabel}>
-                      Data 1 to 6
+                      Data 2 to 3
                       <br/>
                       months old
                     </div>

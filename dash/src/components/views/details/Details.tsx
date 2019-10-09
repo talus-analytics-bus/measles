@@ -68,7 +68,7 @@ const Details = (props: any) => {
     console.log(countryGDPQ)
     setCountryGDP(countryGDPQ[0]['value']);
 
-    var countryJEEQ = await ObservationQuery(6, 'monthly', '2019-07-01', '2019-07-01', country);
+    var countryJEEQ = await ObservationQuery(6, 'monthly', '2019-08-01', '2019-08-01', country);
     setCountryJEE(countryJEEQ[0]['value']);
 
     setCaseHistory(await ObservationQuery(6, 'monthly', '2010-01-01', '2018-01-01', country));

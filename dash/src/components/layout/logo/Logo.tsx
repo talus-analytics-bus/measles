@@ -12,7 +12,7 @@ const Alert: React.FC = () => {
       <div className={styles.text}>
         <div className={styles.title}>Vaccination coverage and incidence of measles</div>
         {
-          <div className={styles.subtitle}>Showing most recent data as of July 2019</div>
+          <div className={styles.subtitle}>Showing most recent data as of September 2019</div>
           // <div className={styles.subtitle}>Data as of July 2019</div>
         }
       </div>

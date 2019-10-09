@@ -57,7 +57,7 @@ const Map = ({ fillObservations, bubbleObservations, incidenceObservations, mapp
 
   async function getTrendObservations() {
     // get the bubble data
-    setTrendObservations(await TrendQuery(6, '2019-07-01'));
+    setTrendObservations(await TrendQuery(6, '2019-08-01'));
   }
 
   // Given incidence value, return scaled linear radius of marker.

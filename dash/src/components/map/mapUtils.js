@@ -36,8 +36,6 @@ const initMap = (map, fillObservations, bubbleObservations, incidenceObservation
       }
     });
 
-    console.log(map.getStyle().layers)
-
     map.addLayer({
       id: 'geom-fills',
       type: 'fill',
@@ -93,6 +91,8 @@ const initMap = (map, fillObservations, bubbleObservations, incidenceObservation
 
       const setupCircleBubbleState = () => {
 
+        console.log('incidenceObservations')
+        console.log(incidenceObservations)
         incidenceObservations.forEach(( observation) => {
           const value = observation['value'];
           const place_id = +observation['place_id']

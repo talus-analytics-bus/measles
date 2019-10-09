@@ -63,10 +63,10 @@ const App = () => {
 
   async function getMapObservations() {
     // get the bubble data
-    setBubbleObservations(await ObservationQuery(6, 'monthly', '2019-07-01'));
+    setBubbleObservations(await ObservationQuery(6, 'monthly', '2019-08-01'));
 
     // get the incidence data
-    setIncidenceObservations(await ObservationQuery(15, 'monthly', '2019-07-01'));
+    setIncidenceObservations(await ObservationQuery(15, 'monthly', '2019-08-01'));
 
     // get the fill data
     setFillObservations(await ObservationQuery(4, 'yearly', '2018-01-01'));
