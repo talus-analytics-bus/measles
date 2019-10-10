@@ -55,7 +55,7 @@ const initMap = (map, fillObservations, bubbleObservations, incidenceObservation
               0.8, '#2c7fb8',
               0.95, '#303d91'
         ],
-        'fill-opacity': 0.9,
+        'fill-opacity': 1,
       }
     }, "country-small");
 
@@ -72,8 +72,11 @@ const initMap = (map, fillObservations, bubbleObservations, incidenceObservation
         ],
         'line-width': [
           'case',
-            ['boolean', ['feature-state', 'clicked'], true], 2.5,
-            .5
+            ['==', ['feature-state', 'clicked'], true],
+            3,
+            ['==', ['feature-state', 'hover'], true],
+            3,
+            .5,
           ],
       }
     }, "country-small");
@@ -93,15 +96,18 @@ const initMap = (map, fillObservations, bubbleObservations, incidenceObservation
         incidenceObservations.forEach(( observation) => {
           const value = observation['value'];
           const place_id = +observation['place_id']
+          const stale = observation['stale_flag'] || false;
 
           if (!value) {
             map.setFeatureState({source: 'centroids', sourceLayer: 'centroids_id_rpr_latlon', id: place_id }, {
               value: 0,
+              stale: stale,
             }
           );
           } else {
             const state = {
               value: value,
+              stale: stale,
             };
             map.setFeatureState({source: 'centroids', sourceLayer: 'centroids_id_rpr_latlon', id: place_id }, state);
           }
@@ -139,6 +145,7 @@ const initMap = (map, fillObservations, bubbleObservations, incidenceObservation
               lon: null,
             }
           );
+
           } else {
 
             // Get matching centroid's lat/lon to store in state.
@@ -172,6 +179,29 @@ const initMap = (map, fillObservations, bubbleObservations, incidenceObservation
       };
       // setupSymbolCircles();
 
+      // // Add hover callbacks
+      // // When the user moves their mouse over the state-fill layer, we'll update the
+      // let hoveredStateIdBubbles;
+      // map.on("mousemove", "metric-bubbles", function(e) {
+      //   if (e.features.length > 0) {
+      //     if (hoveredStateIdBubbles) {
+      //       map.setFeatureState({source: 'centroids', sourceLayer: 'centroids_id_rpr_latlon', id: hoveredStateIdBubbles}, { hover: false});
+      //     }
+      //     hoveredStateIdBubbles = e.features[0].id;
+      //     map.setFeatureState({source: 'centroids', sourceLayer: 'centroids_id_rpr_latlon', id: hoveredStateIdBubbles}, { hover: true});
+      //     console.log('Hovering!')
+      //   }
+      // });
+
+      // // When the mouse leaves the state-fill layer, update the feature state of the
+      // // previously hovered feature.
+      // map.on("mouseleave", "metric-bubbles", function() {
+      //   if (hoveredStateId) {
+      //     map.setFeatureState({source: 'states', id: hoveredStateId}, { hover: false});
+      //   }
+      //   hoveredStateId =  null;
+      // });
+
       map.off('render', afterChangeComplete); // remove this handler now that we're done.
       callback();
     }
@@ -180,7 +210,7 @@ const initMap = (map, fillObservations, bubbleObservations, incidenceObservation
     const setupCircleBubbles = () => {
       // Add centroids to map so they can be accessed via getSourceFeatures.
       map.addLayer({
-        'id': 'population',
+        'id': 'metric-bubbles',
         'type': 'circle',
         'source': 'centroids',
         'source-layer': 'centroids_id_rpr_latlon',
@@ -193,10 +223,38 @@ const initMap = (map, fillObservations, bubbleObservations, incidenceObservation
                 0.001, 5,
                 100, 150
           ],
-          'circle-color': '#b02c3a', // "not recent" color is gray
-          'circle-opacity': .85,
-          'circle-stroke-width': 1,
-          'circle-stroke-color': '#ffffff',
+          'circle-color': [
+              'case',
+              ['==', ['feature-state', 'stale'], false],
+              '#b02c3a',
+              ['==', ['feature-state', 'stale'], true],
+              '#b3b3b3',
+              'white',
+          ],
+          'circle-opacity': [
+              'case',
+              ['==', ['feature-state', 'stale'], null],
+              0,
+              ['==', ['feature-state', 'clicked'], true],
+              1,
+              0.85,
+          ],
+          'circle-stroke-width': [
+              'case',
+              ['==', ['feature-state', 'stale'], null],
+              0,
+              ['==', ['feature-state', 'clicked'], true],
+              2,
+              ['==', ['feature-state', 'hover'], true],
+              2,
+              1,
+          ],
+          'circle-stroke-color': [
+              'case',
+              ['==', ['feature-state', 'stale'], false],
+              '#ffffff',
+              '#979797',
+          ],
         }
       }, "country-small");
     };
@@ -238,15 +296,9 @@ const initMap = (map, fillObservations, bubbleObservations, incidenceObservation
         'type': 'circle',
         'source': 'centroids',
         'source-layer': 'centroids_id_rpr_latlon',
-        // 'layout': {
-        //   'visibility': 'none',
-        // },
         'paint': {
         'circle-radius': 0,
-          // 'circle-color': '#b02c3a',
           'circle-opacity': 0,
-          // 'circle-stroke-width': 1,
-          // 'circle-stroke-color': '#ffffff',
         }
       }, "country-small");
     };
