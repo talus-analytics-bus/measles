@@ -77,7 +77,7 @@ const Legend = () => {
         {
           // Incidence
           <div className={styles.section}>
-            <p className={styles.sectionName}>Incidence of measles (recent)</p>
+            <p className={styles.sectionName}>Incidence of measles (monthly)</p>
             <div className={styles.legendEntryGroups}>
               <div className={styles.legendEntryGroup}>
                 {
@@ -99,7 +99,7 @@ const Legend = () => {
                   <div className={classNames(styles.legendEntry, styles.dataNotAvailable)}>
                     <div className={classNames(styles.legendIcon, styles.circle)} />
                     <div className={styles.legendLabel}>
-                      Data 2 to 3
+                      Data over 3
                       <br/>
                       months old
                     </div>

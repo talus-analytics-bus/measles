@@ -63,8 +63,7 @@ const GeomPopup = ({ popupData }) => {
 
     };
   };
-
-  const detailsPath = '/details/' + popupData['bubble']['place_id']
+  const detailsPath = '/details/' + popupData['fill']['place_id']
   const flag = `/flags/${popupData['fill']['place_iso'] }.png`;
   return (
     <div className={styles.container}>
@@ -103,10 +102,6 @@ const GeomPopup = ({ popupData }) => {
                 label: 'Measles cases reported' + `${Util.getDatetimeStamp(popupData['bubble'], 'month')}`,
                 value: Util.comma(popupData['bubble']['value']) + ' ' + getPeopleNoun(popupData['bubble']['value']), // TODO comma sep int
                 deltaData: getDeltaData(popupData['trend']),
-                // delta: popupData['trend']['percent_change'],
-                // deltaSign: getDeltaSign(popupData['trend']['percent_change']),
-                // deltaFmt: Util.percentizeDelta(popupData['trend']['percent_change']),
-                // deltaLabel: 'increase from prior 30 days', // TODO inc/dec dynamically
                 notAvail: popupData['bubble']['value'] === null,
                 dataSource: popupData['bubble']['data_source'],
                 dataSourceLastUpdated: new Date (popupData['bubble']['updated_at']),

@@ -1,6 +1,7 @@
 // import ReactMapGL, { NavigationControl, Popup } from 'react-map-gl'
 
 import circleImg from '../../assets/images/circle@3x.png';
+import Util from '../../components/misc/Util.js';
 const initMap = (map, fillObservations, bubbleObservations, incidenceObservations, callback) => {
 
   map.on('load', function() {
@@ -89,16 +90,33 @@ const initMap = (map, fillObservations, bubbleObservations, incidenceObservation
         //filter: ['has', 'id']
       });
 
+      /**
+       * Returns true if datum is 3 or more months old, false otherwise.
+       * @method getStaleStatus
+       */
+      const getStaleStatus = (obs, timeFrame = 'month') => {
+        if (obs['stale_flag'] === true) {
+          const today = Util.today();
+          const date_time = obs['date_time'].replace(/-/g, '/');
+          const then = new Date(date_time);
+          switch (timeFrame) {
+            case 'month':
+              if (today.getUTCMonth() - then.getUTCMonth() > 3) return true;
+              else return false;
+            case 'year':
+              if (today.getUTCYear() - then.getUTCYear() > 3) return true;
+              else return false;
+          }
+        } else return false;
+      };
+
       const setupCircleBubbleState = () => {
 
         incidenceObservations.forEach(( observation) => {
-          if (observation['place_name'] === 'Ukraine') {
-            console.log('observation')
-            console.log(observation)
-          }
           const value = observation['value'];
           const place_id = +observation['place_id']
-          const stale = observation['stale_flag'] || false;
+          const stale = getStaleStatus(observation, 'month');
+          // const stale = observation['stale_flag'] || false;
 
           if (!value) {
             map.setFeatureState({source: 'centroids', sourceLayer: 'centroids_id_rpr_latlon', id: place_id }, {
@@ -221,6 +239,8 @@ const initMap = (map, fillObservations, bubbleObservations, incidenceObservation
           'circle-stroke-width': [
               'case',
               ['==', ['feature-state', 'stale'], null],
+              0,
+              ['==', ['feature-state', 'value'], 0],
               0,
               ['==', ['feature-state', 'clicked'], true],
               2,

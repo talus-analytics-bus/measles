@@ -1,6 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import styles from './logo.module.scss'
+import Util from '../../../components/misc/Util.js'
 import logo from '../../../assets/images/measles_tracker.svg'
 import iconPin from '../../../assets/images/pin.svg'
 import iconFlag from '../../../assets/images/flag.svg'
@@ -39,7 +40,12 @@ const Logo: React.FC = (props: any) => {
   const getPageSubtitle = (page: any) => {
     switch (page) {
       case 'map':
-        return 'Showing most recent data as of September 2019';
+        return 'Showing most recent data as of ' + Util.today().toLocaleString('en-US', {
+          month: 'long',
+          year: 'numeric',
+          day: 'numeric',
+          timeZone: 'UTC',
+        });
       default:
         return ''; // TODO check this. Should we show the same for each page?
     }

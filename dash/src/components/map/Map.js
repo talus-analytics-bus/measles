@@ -276,9 +276,6 @@ const Map = ({ fillObservations, bubbleObservations, incidenceObservations, mapp
 
     if (clickedOnGeom === undefined && clickedOnBubble === undefined) return;
 
-    console.log(clickedOnGeom)
-    console.log(clickedOnBubble)
-
     // Bubble click takes priority.
     let id;
     if (clickedOnBubble) {

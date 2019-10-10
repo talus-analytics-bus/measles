@@ -4,7 +4,7 @@ import axios from 'axios'
 import { Link } from 'react-router-dom'
 import Chart from '../../chart/Chart.js'
 
-import Content from './content/Content'
+import MiniMap from '../../../components/map/MiniMap.js'
 
 // Utilities (date formatting, etc.)
 import Util from '../../../components/misc/Util.js'
@@ -101,7 +101,10 @@ const Details = (props) => {
                   {countryName}
                 </div>
                 <div className={styles.map}>
-                  <img src={worldMap} />
+                  {
+                    <MiniMap />
+                    // <img src={worldMap} />
+                  }
                 </div>
                 {
                   [

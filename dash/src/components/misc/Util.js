@@ -4,22 +4,26 @@ import * as d3 from 'd3/dist/d3.min';
 const Util = {};
 
 
+Util.today = () => {
+  return new Date(); // TODO put time traveling here if needed
+};
+
 Util.getDatetimeStamp = (datum, type = 'year') => {
-  if (datum['value'] === null) return '';
+  if (!datum || datum['value'] === null) return '';
 
   let datetimeStamp;
   const date_time = datum['date_time'].replace(/-/g, '/');
   if (type === 'month') {
-    datetimeStamp = new Date(date_time).toLocaleString('en-US', { // TODO correctly
+    datetimeStamp = new Date(date_time).toLocaleString('en-US', {
       month: 'long',
       year: 'numeric',
       timeZone: 'UTC',
-    })
+    });
   } else if (type === 'year') {
-    datetimeStamp = new Date(date_time).toLocaleString('en-US', { // TODO correctly
+    datetimeStamp = new Date(date_time).toLocaleString('en-US', {
       year: 'numeric',
       timeZone: 'UTC',
-    })
+    });
   }
   return ` (${datetimeStamp})`;
 };
