@@ -94,38 +94,92 @@ def get_start(t_rs, end, lag):
     return start
 
 
-def manage_lag(metric, null_res, max_time, null_places):
+def manage_lag(metric, null_res, max_time, null_places, observations):
 
     min_time = get_start(metric.temporal_resolution, max_time, metric.lag_allowed)
 
-    if len(null_places) > 1:
-        lag_res = select(o for o in db.Observation
-                         if o.metric.metric_id == metric.metric_id
-                         and o.date_time.datetime >= min_time
-                         and o.date_time.datetime <= max_time
-                         and o.place.place_id in null_places)
+    # print('observations')
+    # print(observations)
+    if metric.is_view:
+        print('made it to 102')
+        if len(null_places) > 1:
+            place_id_arr = '{' + (', '.join(map(lambda x: str(x), null_places))) + '}'
+            lag_res_q_str = f"""SELECT v.metric_id, v.data_source, d.dt,
+                                m.metric_definition, m.metric_name, v.observation_id,
+                                p.fips AS place_fips, p.place_id, p.iso AS place_iso,
+                                p.name AS place_name, v.updated_at, v.value::FLOAT
+                                FROM {metric.view_name} v
+                                LEFT JOIN datetime d ON v.datetime_id = d.dt_id
+                                LEFT JOIN place p ON v.place_id = p.place_id
+                                LEFT JOIN metric m ON v.metric_id = m.metric_id
+                                WHERE
+                                v.place_id = ANY('{place_id_arr}'::int[])
+                                AND d.dt >= '{min_time}'
+                                AND d.dt <= '{max_time}'"""
+            lag_res = db.select(lag_res_q_str)
+
+            # lag_res = select(o for o in observations
+            #                  if o.metric.metric_id == metric.metric_id
+            #                  and o.date_time.datetime >= min_time
+            #                  and o.date_time.datetime <= max_time
+            #                  and o.place_id in null_places)
+        else:
+            lag_res_q_str = f"""SELECT v.metric_id, v.data_source, d.dt,
+                                m.metric_definition, m.metric_name, v.observation_id,
+                                p.fips AS place_fips, p.place_id, p.iso AS place_iso,
+                                p.name AS place_name, v.updated_at, v.value::FLOAT
+                                FROM {metric.view_name} v
+                                LEFT JOIN datetime d ON v.datetime_id = d.dt_id
+                                LEFT JOIN place p ON v.place_id = p.place_id
+                                LEFT JOIN metric m ON v.metric_id = m.metric_id
+                                WHERE
+                                v.place_id = {null_places[0]}
+                                AND d.dt >= '{min_time}'
+                                AND d.dt <= '{max_time}'"""
+            lag_res = db.select(lag_res_q_str)
+            # lag_res = select(o for o in observations
+            #                  if o.metric.metric_id == metric.metric_id
+            #                  and o.date_time.datetime >= min_time
+            #                  and o.date_time.datetime <= max_time
+            #                  and o.place_id == null_places[0])
+        print('made it to 115')
+
     else:
-        lag_res = select(o for o in db.Observation
-                         if o.metric.metric_id == metric.metric_id
-                         and o.date_time.datetime >= min_time
-                         and o.date_time.datetime <= max_time
-                         and o.place.place_id == null_places[0])
+        print('Doing a non-view metric')
+        if len(null_places) > 1:
+            lag_res = select(o for o in observations
+                             if o.metric.metric_id == metric.metric_id
+                             and o.date_time.datetime >= min_time
+                             and o.date_time.datetime <= max_time
+                             and o.place.place_id in null_places)
+        else:
+            lag_res = select(o for o in observations
+                             if o.metric.metric_id == metric.metric_id
+                             and o.date_time.datetime >= min_time
+                             and o.date_time.datetime <= max_time
+                             and o.place.place_id == null_places[0])
 
     print(min_time.strftime("%Y-%m-%d") + " :: " + max_time.strftime("%Y-%m-%d"))
 
     latest_observation = {}
 
     for o in lag_res:
-        place_id = o.place.place_id
+        place_id = o.place_id if metric.is_view else o.place.place_id
+        # place_id = o.place.place_id
 
         if o.value is not None:
             if place_id in latest_observation:
-                if o.date_time.datetime > latest_observation[place_id].date_time.datetime:
+                obs_dt = o.dt if metric.is_view else o.date_time.datetime
+                latest_obs_dt = latest_observation[place_id].dt if metric.is_view else latest_observation[place_id].date_time.datetime
+                if obs_dt > latest_obs_dt:
                     latest_observation[place_id] = o
             else:
                 latest_observation[place_id] = o
 
-    print(latest_observation)
+    if 236 in latest_observation:
+        print('latest_observation')
+        print(latest_observation[236])
+    # print(latest_observation.values())
 
     return latest_observation.values()
 
@@ -181,44 +235,70 @@ def getObservations(filters):
 
     place_id = None
 
+    # If the metric is a view, then the pool of observations comes from that
+    # view. Otherwise, it is simply the "Observations" entity.
+    dbEntity = None
+    view_q_str =    f"""SELECT v.metric_id, v.data_source, d.dt,
+                        m.metric_definition, m.metric_name, v.observation_id,
+                        p.fips AS place_fips, p.place_id, p.iso AS place_iso,
+                        p.name AS place_name, v.updated_at, v.value::FLOAT
+                        FROM {metric.view_name} v
+                        LEFT JOIN datetime d ON v.datetime_id = d.dt_id
+                        LEFT JOIN place p ON v.place_id = p.place_id
+                        LEFT JOIN metric m ON v.metric_id = m.metric_id
+                        WHERE
+                        d.dt >= '{min_time}'
+                        AND d.dt <= '{max_time}'"""
+    if is_view:
+        observations = db.select(view_q_str)
+        # mvmTest = select(o for o in observations if o.place_id == 113)
+        # print('mvmTest')
+        # print(mvmTest)
+    else:
+        observations = db.Observation
+
     if t_summary or s_summary:
         return observation_summary(metric_id, t_summary, temp_value, s_summary, spatial_value,
                                    min_time, max_time)
 
     else:
         if is_view:
-            q_str = f"""SELECT v.metric_id, v.data_source, d.dt,
-                    m.metric_definition, m.metric_name, v.observation_id,
-                    p.fips AS place_fips, p.place_id, p.iso AS place_iso,
-                    p.name AS place_name, v.updated_at, v.value::FLOAT
-                    FROM {metric.view_name} v
-                    LEFT JOIN datetime d ON v.datetime_id = d.dt_id
-                    LEFT JOIN place p ON v.place_id = p.place_id
-                    LEFT JOIN metric m ON v.metric_id = m.metric_id
-                    WHERE
-                    d.dt >= '{min_time}'
-                    AND d.dt <= '{max_time}'"""
+            # q_str = f"""SELECT v.metric_id, v.data_source, d.dt,
+            #         m.metric_definition, m.metric_name, v.observation_id,
+            #         p.fips AS place_fips, p.place_id, p.iso AS place_iso,
+            #         p.name AS place_name, v.updated_at, v.value::FLOAT
+            #         FROM {metric.view_name} v
+            #         LEFT JOIN datetime d ON v.datetime_id = d.dt_id
+            #         LEFT JOIN place p ON v.place_id = p.place_id
+            #         LEFT JOIN metric m ON v.metric_id = m.metric_id
+            #         WHERE
+            #         d.dt >= '{min_time}'
+            #         AND d.dt <= '{max_time}'"""
 
             if 'place_id' in filters:
-                q_str += f" AND p.place_id = {filters['place_id']}"
+                view_q_str += f" AND p.place_id = {filters['place_id']}"
                 place_id = filters['place_id']
 
-                res = db.select(q_str)
+                res = db.select(view_q_str)
             else:
-                res = db.select(q_str)
+                res = db.select(view_q_str)
 
-            return (True, res, [])
+            # return (True, res, [])
         else:
             if 'place_id' in filters:
-                res = select(o for o in db.Observation
-                             if o.metric.metric_id == metric_id
-                             and o.date_time.datetime >= min_time
-                             and o.date_time.datetime <= max_time
-                             and o.place.place_id == filters['place_id'])
+                res = None
+                if is_view:
+                    res = select(o for o in observations)
+                else:
+                    res = select(o for o in observations
+                        if o.metric.metric_id == metric_id
+                        and o.date_time.datetime >= min_time
+                        and o.date_time.datetime <= max_time
+                        and o.place.place_id == filters['place_id'])
 
                 place_id = filters['place_id']
             else:
-                res = select(o for o in db.Observation
+                res = select(o for o in observations
                              if o.metric.metric_id == metric_id
                              and o.date_time.datetime >= min_time
                              and o.date_time.datetime <= max_time)
@@ -234,11 +314,15 @@ def getObservations(filters):
                 for o in res:
                     if o.value is None:
                         null_res.append(o)
-                        null_places.append(o.place.place_id)
-                lag = manage_lag(metric, null_res, max_time, null_places)
+                        if is_view:
+                            null_places.append(o.place_id)
+                        else:
+                            null_places.append(o.place.place_id)
+
+                lag = manage_lag(metric, null_res, max_time, null_places, observations)
             else:
                 if list(res)[0].value is None:
-                    lag = manage_lag(metric, res, max_time, [place_id])
+                    lag = manage_lag(metric, res, max_time, [place_id], observations)
 
         else:
             lag = None

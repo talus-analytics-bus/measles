@@ -92,6 +92,10 @@ const initMap = (map, fillObservations, bubbleObservations, incidenceObservation
       const setupCircleBubbleState = () => {
 
         incidenceObservations.forEach(( observation) => {
+          if (observation['place_name'] === 'Ukraine') {
+            console.log('observation')
+            console.log(observation)
+          }
           const value = observation['value'];
           const place_id = +observation['place_id']
           const stale = observation['stale_flag'] || false;
@@ -114,91 +118,68 @@ const initMap = (map, fillObservations, bubbleObservations, incidenceObservation
       setupCircleBubbleState();
 
 
-      /**
-       * Draw circles as symbols. Issues: small circles appear pixelated and border thickness differs.
-       * Potential solution: change native size of circle SVG?
-       * @method setupSymbolCircles
-       * @return {[type]}           [description]
-       */
-      const setupSymbolCircles = () => {
-
-        // Load centroids
-        const centroids = map.querySourceFeatures('centroids', {
-          sourceLayer: 'centroids_id_rpr_latlon',
-        });
-
-        const markerData = {
-          type: 'FeatureCollection',
-          features: [],
-        };
-
-        incidenceObservations.forEach(( observation) => {
-          const value = observation['value'];
-          const place_id = +observation['place_id']
-
-          if (!value) {
-            map.setFeatureState({source: 'centroids', sourceLayer: 'centroids_id_rpr_latlon', id: place_id }, {
-              value: 0,
-              lat: null,
-              lon: null,
-            }
-          );
-
-          } else {
-
-            // Get matching centroid's lat/lon to store in state.
-            const centroidTmp = centroids.find(d => d.id === place_id);
-            const centroid = centroidTmp ? centroidTmp : {properties: {lat: null, lon: null}};
-            const state = {
-              value: value,
-              lat: centroid.properties.lat,
-              lon: centroid.properties.lon,
-            };
-            map.setFeatureState({source: 'centroids', sourceLayer: 'centroids_id_rpr_latlon', id: place_id }, state);
-            markerData.features.push(
-              {
-                type: 'Feature',
-                properties: {
-                  'value': value,
-                  'image': 'circle', // TODO set to hatch if applicable
-                },
-                geometry: {
-                  type: 'Point',
-                  coordinates: [state.lon, state.lat],
-                }
-              }
-            );
-          }
-        });
-
-        // Set map symbol data
-        map.getSource('markers').setData(markerData);
-
-      };
-      // setupSymbolCircles();
-
-      // // Add hover callbacks
-      // // When the user moves their mouse over the state-fill layer, we'll update the
-      // let hoveredStateIdBubbles;
-      // map.on("mousemove", "metric-bubbles", function(e) {
-      //   if (e.features.length > 0) {
-      //     if (hoveredStateIdBubbles) {
-      //       map.setFeatureState({source: 'centroids', sourceLayer: 'centroids_id_rpr_latlon', id: hoveredStateIdBubbles}, { hover: false});
+      // /**
+      //  * Draw circles as symbols. Issues: small circles appear pixelated and border thickness differs.
+      //  * Potential solution: change native size of circle SVG?
+      //  * @method setupSymbolCircles
+      //  * @return {[type]}           [description]
+      //  */
+      // const setupSymbolCircles = () => {
+      //
+      //   // Load centroids
+      //   const centroids = map.querySourceFeatures('centroids', {
+      //     sourceLayer: 'centroids_id_rpr_latlon',
+      //   });
+      //
+      //   const markerData = {
+      //     type: 'FeatureCollection',
+      //     features: [],
+      //   };
+      //
+      //   incidenceObservations.forEach(( observation) => {
+      //     const value = observation['value'];
+      //     const place_id = +observation['place_id']
+      //
+      //     if (!value) {
+      //       map.setFeatureState({source: 'centroids', sourceLayer: 'centroids_id_rpr_latlon', id: place_id }, {
+      //         value: 0,
+      //         lat: null,
+      //         lon: null,
+      //       }
+      //     );
+      //
+      //     } else {
+      //
+      //       // Get matching centroid's lat/lon to store in state.
+      //       const centroidTmp = centroids.find(d => d.id === place_id);
+      //       const centroid = centroidTmp ? centroidTmp : {properties: {lat: null, lon: null}};
+      //       const state = {
+      //         value: value,
+      //         lat: centroid.properties.lat,
+      //         lon: centroid.properties.lon,
+      //       };
+      //       map.setFeatureState({source: 'centroids', sourceLayer: 'centroids_id_rpr_latlon', id: place_id }, state);
+      //       markerData.features.push(
+      //         {
+      //           type: 'Feature',
+      //           properties: {
+      //             'value': value,
+      //             'image': 'circle', // TODO set to hatch if applicable
+      //           },
+      //           geometry: {
+      //             type: 'Point',
+      //             coordinates: [state.lon, state.lat],
+      //           }
+      //         }
+      //       );
       //     }
-      //     hoveredStateIdBubbles = e.features[0].id;
-      //     map.setFeatureState({source: 'centroids', sourceLayer: 'centroids_id_rpr_latlon', id: hoveredStateIdBubbles}, { hover: true});
-      //     console.log('Hovering!')
-      //   }
-      // });
-
-      // // When the mouse leaves the state-fill layer, update the feature state of the
-      // // previously hovered feature.
-      // map.on("mouseleave", "metric-bubbles", function() {
-      //   if (hoveredStateId) {
-      //     map.setFeatureState({source: 'states', id: hoveredStateId}, { hover: false});
-      //   }
-      //   hoveredStateId =  null;
-      // });
+      //   });
+      //
+      //   // Set map symbol data
+      //   map.getSource('markers').setData(markerData);
+      //
+      // };
+      // setupSymbolCircles();
 
       map.off('render', afterChangeComplete); // remove this handler now that we're done.
       callback();

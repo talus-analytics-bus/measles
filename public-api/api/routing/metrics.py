@@ -66,24 +66,7 @@ class Observations(Resource):
         if view_flag:
             res_list = []
 
-            for o in res:
-                res_list.append({
-                  'data_source': o[1],
-                  'date_time': o[2].strftime('%Y-%m-%d %H:%M:%S %Z'),
-                  'definition': o[3],
-                  'metric': o[4],
-                  'observation_id': o[5],
-                  'place_fips': o[6],
-                  'place_id': o[7],
-                  'place_iso': o[8],
-                  'place_name': o[9],
-                  'updated_at': o[10],
-                  'value': o[11],
-                  # FIXME: make this work for realz
-                  'stale_flag': False,
-                })
-
-            if lag is not None:
+            if lag != None and len(lag) > 0:
                 for o in lag:
                     res_list.append({
                       'data_source': o[1],
@@ -101,11 +84,31 @@ class Observations(Resource):
                       'stale_flag': True,
                     })
 
+            for o in res:
+                lagDataForPlace = [r for r in res_list if r['place_id'] == o.place_id]
+                if len(lagDataForPlace) > 0:
+                    continue
+                res_list.append({
+                  'data_source': o[1],
+                  'date_time': o[2].strftime('%Y-%m-%d %H:%M:%S %Z'),
+                  'definition': o[3],
+                  'metric': o[4],
+                  'observation_id': o[5],
+                  'place_fips': o[6],
+                  'place_id': o[7],
+                  'place_iso': o[8],
+                  'place_name': o[9],
+                  'updated_at': o[10],
+                  'value': o[11],
+                  # FIXME: make this work for realz
+                  'stale_flag': False,
+                })
+
             return res_list
         else:
             formattedData = [r.to_dict(related_objects=True) for r in res]
 
-            if lag is not None:
+            if lag != None and len(lag) > 0:
                 lagData = [r.to_dict(related_objects=True) for r in lag]
 
                 formattedData = [o for o in formattedData if o['value'] is not None]
