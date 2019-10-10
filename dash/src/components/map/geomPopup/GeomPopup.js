@@ -65,6 +65,56 @@ const GeomPopup = ({ popupData }) => {
   };
   const detailsPath = '/details/' + popupData['fill']['place_id']
   const flag = `/flags/${popupData['fill']['place_iso'] }.png`;
+
+  const getTooltipMetricData = (popupData, type) => {
+    const obs = popupData[type];
+    switch (type) {
+      case 'incidence':
+        if (obs === undefined) return {
+          notAvail: true,
+          label: 'Incidence of measles',
+        }
+        else return {
+          slug: type,
+          label: 'Incidence of measles' + `${Util.getDatetimeStamp(obs, 'month')}`,
+          value: Util.formatIncidence(obs['value']) + ' cases per 1M population',
+          notAvail: obs['value'] === null,
+          dataSource: obs['data_source'],
+          dataSourceLastUpdated: new Date (obs['updated_at']),
+        }
+      case 'bubble':
+        if (obs === undefined) return {
+          notAvail: true,
+          label: 'Measeles cases reported',
+        }
+        else return {
+          slug: 'cases',
+          label: 'Measles cases reported' + `${Util.getDatetimeStamp(obs, 'month')}`,
+          value: Util.comma(obs['value']) + ' ' + getPeopleNoun(obs['value']),
+          deltaData: getDeltaData(popupData['trend']),
+          notAvail: obs['value'] === null,
+          dataSource: obs['data_source'],
+          dataSourceLastUpdated: new Date (obs['updated_at']),
+        };
+      case 'fill':
+        if (obs === undefined) return {
+          notAvail: true,
+          label: 'Vaccination coverage',
+        }
+        else return {
+          slug: 'vacc-coverage',
+          label: 'Vaccination coverage' + `${Util.getDatetimeStamp(obs, 'year')}`,
+          value: parseFloat(obs['value']).toFixed(0)+"% of infants",
+          dataSource: obs['data_source'],
+          dataSourceLastUpdated: new Date (obs['updated_at']),
+          notAvail: false, // TODO dynamically
+        };
+      default:
+        console.log('[Error] Unknown metric type: ' + type);
+        return {};
+    }
+  };
+
   return (
     <div className={styles.container}>
       <div className={styles.header}>
@@ -76,44 +126,12 @@ const GeomPopup = ({ popupData }) => {
         </div>
       </div>
       <div>
-        {
-          // <p className={styles.dataDateStamp}>
-          //   {
-          //     new Date('7/01/2019').toLocaleString('en-us', { // TODO correctly
-          //       month: 'long',
-          //       year: 'numeric',
-          //     })
-          //   }
-          // </p>
-        }
         <div className={styles.data}>
           {
             [
-              {
-                slug: 'incidence',
-                label: 'Incidence of measles' + `${Util.getDatetimeStamp(popupData['incidence'], 'month')}`,
-                value: Util.formatIncidence(popupData['incidence']['value']) + ' cases per 1M population', // TODO comma-sep int
-                notAvail: popupData['incidence']['value'] === null, // TODO dynamically
-                dataSource: popupData['incidence']['data_source'],
-                dataSourceLastUpdated: new Date (popupData['incidence']['updated_at']),
-              },
-              {
-                slug: 'cases',
-                label: 'Measles cases reported' + `${Util.getDatetimeStamp(popupData['bubble'], 'month')}`,
-                value: Util.comma(popupData['bubble']['value']) + ' ' + getPeopleNoun(popupData['bubble']['value']), // TODO comma sep int
-                deltaData: getDeltaData(popupData['trend']),
-                notAvail: popupData['bubble']['value'] === null,
-                dataSource: popupData['bubble']['data_source'],
-                dataSourceLastUpdated: new Date (popupData['bubble']['updated_at']),
-              },
-              {
-                slug: 'vacc-coverage',
-                label: 'Vaccination coverage' + `${Util.getDatetimeStamp(popupData['fill'], 'year')}`,
-                value: parseFloat(popupData['fill']['value']).toFixed(0)+"% of infants",
-                dataSource: popupData['fill']['data_source'],
-                dataSourceLastUpdated: new Date (popupData['fill']['updated_at']),
-                notAvail: false, // TODO dynamically
-              },
+              getTooltipMetricData(popupData, 'incidence'),
+              getTooltipMetricData(popupData, 'bubble'),
+              getTooltipMetricData(popupData, 'fill'),
             ].map(d =>
               <div className={classNames(styles[d.slug], styles.datum)}>
                 <p className={classNames(styles[d.slug], styles.label)}>{d.label}</p>

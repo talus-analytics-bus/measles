@@ -241,7 +241,14 @@ class Trend(Resource):
             try:
                 trend['percent_change'] = (end_value - start_value) / start_value
             except (TypeError, ZeroDivisionError):
-                trend['percent_change'] = None
+                if end_value == None:
+                    trend['percent_change'] = None
+                elif start_value == 0 and end_value > 0:
+                    trend['percent_change'] = 1e10 #TODO make infinity
+                elif start_value == 0 and end_value < 0:
+                    trend['percent_change'] = -1e10 #TODO make neg infinity
+                else:
+                    trend['percent_change'] = None
 
             try:
                 trend['change_per_period'] = (end_value - start_value) / lag

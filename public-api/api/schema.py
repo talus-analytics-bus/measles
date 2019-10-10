@@ -64,16 +64,16 @@ def observation_summary(metric_id, t_summary, temp_value, s_summary, spatial_val
                         min_time, max_time):
     return 'test'
 
-
 spatial_resolution_error = Exception("Requested spatial resolution is finer than metric's")
 temporal_resolution_error = Exception("Requested temporal resolution is finer than metric's")
-
 
 def get_start(t_rs, end, lag):
     if t_rs == 'yearly':
         print('here: ', end.year, lag)
         start = datetime(end.year - lag, end.month, end.day)
     elif t_rs == 'monthly':
+        # Convert the allowed lag value (months) to years and months (usually 0 years
+        # and some months).
         years, months = divmod(lag, 12)
 
         if years == 0:
@@ -101,7 +101,6 @@ def manage_lag(metric, null_res, max_time, null_places, observations):
     # print('observations')
     # print(observations)
     if metric.is_view:
-        print('made it to 102')
         if len(null_places) > 1:
             place_id_arr = '{' + (', '.join(map(lambda x: str(x), null_places))) + '}'
             lag_res_q_str = f"""SELECT v.metric_id, v.data_source, d.dt,
@@ -118,11 +117,6 @@ def manage_lag(metric, null_res, max_time, null_places, observations):
                                 AND d.dt <= '{max_time}'"""
             lag_res = db.select(lag_res_q_str)
 
-            # lag_res = select(o for o in observations
-            #                  if o.metric.metric_id == metric.metric_id
-            #                  and o.date_time.datetime >= min_time
-            #                  and o.date_time.datetime <= max_time
-            #                  and o.place_id in null_places)
         else:
             lag_res_q_str = f"""SELECT v.metric_id, v.data_source, d.dt,
                                 m.metric_definition, m.metric_name, v.observation_id,
@@ -137,15 +131,8 @@ def manage_lag(metric, null_res, max_time, null_places, observations):
                                 AND d.dt >= '{min_time}'
                                 AND d.dt <= '{max_time}'"""
             lag_res = db.select(lag_res_q_str)
-            # lag_res = select(o for o in observations
-            #                  if o.metric.metric_id == metric.metric_id
-            #                  and o.date_time.datetime >= min_time
-            #                  and o.date_time.datetime <= max_time
-            #                  and o.place_id == null_places[0])
-        print('made it to 115')
 
     else:
-        print('Doing a non-view metric')
         if len(null_places) > 1:
             lag_res = select(o for o in observations
                              if o.metric.metric_id == metric.metric_id
@@ -159,13 +146,10 @@ def manage_lag(metric, null_res, max_time, null_places, observations):
                              and o.date_time.datetime <= max_time
                              and o.place.place_id == null_places[0])
 
-    print(min_time.strftime("%Y-%m-%d") + " :: " + max_time.strftime("%Y-%m-%d"))
-
     latest_observation = {}
 
     for o in lag_res:
         place_id = o.place_id if metric.is_view else o.place.place_id
-        # place_id = o.place.place_id
 
         if o.value is not None:
             if place_id in latest_observation:
@@ -175,11 +159,6 @@ def manage_lag(metric, null_res, max_time, null_places, observations):
                     latest_observation[place_id] = o
             else:
                 latest_observation[place_id] = o
-
-    if 236 in latest_observation:
-        print('latest_observation')
-        print(latest_observation[236])
-    # print(latest_observation.values())
 
     return latest_observation.values()
 
@@ -251,9 +230,6 @@ def getObservations(filters):
                         AND d.dt <= '{max_time}'"""
     if is_view:
         observations = db.select(view_q_str)
-        # mvmTest = select(o for o in observations if o.place_id == 113)
-        # print('mvmTest')
-        # print(mvmTest)
     else:
         observations = db.Observation
 
@@ -263,18 +239,6 @@ def getObservations(filters):
 
     else:
         if is_view:
-            # q_str = f"""SELECT v.metric_id, v.data_source, d.dt,
-            #         m.metric_definition, m.metric_name, v.observation_id,
-            #         p.fips AS place_fips, p.place_id, p.iso AS place_iso,
-            #         p.name AS place_name, v.updated_at, v.value::FLOAT
-            #         FROM {metric.view_name} v
-            #         LEFT JOIN datetime d ON v.datetime_id = d.dt_id
-            #         LEFT JOIN place p ON v.place_id = p.place_id
-            #         LEFT JOIN metric m ON v.metric_id = m.metric_id
-            #         WHERE
-            #         d.dt >= '{min_time}'
-            #         AND d.dt <= '{max_time}'"""
-
             if 'place_id' in filters:
                 view_q_str += f" AND p.place_id = {filters['place_id']}"
                 place_id = filters['place_id']
@@ -283,7 +247,6 @@ def getObservations(filters):
             else:
                 res = db.select(view_q_str)
 
-            # return (True, res, [])
         else:
             if 'place_id' in filters:
                 res = None
@@ -330,7 +293,7 @@ def getObservations(filters):
         return (is_view, res, lag)
 
 
-# Define an observation endpoint query.
+# Define a trend endpoint query.
 def getTrend(filters):
     # Initialize response as empty
     res = None
@@ -347,6 +310,7 @@ def getTrend(filters):
 
     start = get_start(t_rs, end, lag)
 
+    print('start, end')
     print(start, end)
 
     if metric.is_view:
