@@ -69,6 +69,67 @@ spatial_resolution_error = Exception("Requested spatial resolution is finer than
 temporal_resolution_error = Exception("Requested temporal resolution is finer than metric's")
 
 
+def get_start(t_rs, end, lag):
+    if t_rs == 'yearly':
+        print('here: ', end.year, lag)
+        start = datetime(end.year - lag, end.month, end.day)
+    elif t_rs == 'monthly':
+        years, months = divmod(lag, 12)
+
+        if years == 0:
+            if months >= end.month:
+                start = datetime(end.year - 1, end.month + 12 - months, end.day)
+            else:
+                start = datetime(end.year, end.month - months, end.day)
+        else:
+            if months >= end.month:
+                start = datetime(end.year - (years + 1), end.month + 12 - months, end.day)
+            else:
+                start = datetime(end.year - (years), end.month - months, end.day)
+    elif t_rs == 'weekly':
+        start = end - timedelta(weeks=lag)
+    elif t_rs == 'daily':
+        start = end - timedelta(days=lag)
+
+    return start
+
+
+def manage_lag(metric, null_res, max_time, null_places):
+
+    min_time = get_start(metric.temporal_resolution, max_time, metric.lag_allowed)
+
+    if len(null_places) > 1:
+        lag_res = select(o for o in db.Observation
+                         if o.metric.metric_id == metric.metric_id
+                         and o.date_time.datetime >= min_time
+                         and o.date_time.datetime <= max_time
+                         and o.place.place_id in null_places)
+    else:
+        lag_res = select(o for o in db.Observation
+                         if o.metric.metric_id == metric.metric_id
+                         and o.date_time.datetime >= min_time
+                         and o.date_time.datetime <= max_time
+                         and o.place.place_id == null_places[0])
+
+    print(min_time.strftime("%Y-%m-%d") + " :: " + max_time.strftime("%Y-%m-%d"))
+
+    latest_observation = {}
+
+    for o in lag_res:
+        place_id = o.place.place_id
+
+        if o.value is not None:
+            if place_id in latest_observation:
+                if o.date_time.datetime > latest_observation[place_id].date_time.datetime:
+                    latest_observation[place_id] = o
+            else:
+                latest_observation[place_id] = o
+
+    print(latest_observation)
+
+    return latest_observation.values()
+
+
 # Define an observation endpoint query.
 def getObservations(filters):
     s_rs = ['planet', 'country', 'state', 'county', 'block_group', 'tract', 'point']
@@ -116,12 +177,16 @@ def getObservations(filters):
     else:
         max_time = metric.max_time
 
+    is_view = metric.is_view
+
+    place_id = None
+
     if t_summary or s_summary:
         return observation_summary(metric_id, t_summary, temp_value, s_summary, spatial_value,
                                    min_time, max_time)
 
     else:
-        if metric.is_view:
+        if is_view:
             q_str = f"""SELECT v.metric_id, v.data_source, d.dt,
                     m.metric_definition, m.metric_name, v.observation_id,
                     p.fips AS place_fips, p.place_id, p.iso AS place_iso,
@@ -136,6 +201,7 @@ def getObservations(filters):
 
             if 'place_id' in filters:
                 q_str += f" AND p.place_id = {filters['place_id']}"
+                place_id = filters['place_id']
 
                 res = db.select(q_str)
             else:
@@ -149,13 +215,34 @@ def getObservations(filters):
                              and o.date_time.datetime >= min_time
                              and o.date_time.datetime <= max_time
                              and o.place.place_id == filters['place_id'])
+
+                place_id = filters['place_id']
             else:
                 res = select(o for o in db.Observation
                              if o.metric.metric_id == metric_id
                              and o.date_time.datetime >= min_time
                              and o.date_time.datetime <= max_time)
 
-            return (False, res)
+        lag_allowed = True if (metric.lag_allowed > 0 and min_time == max_time) else False
+
+        if lag_allowed:
+            if place_id is None:
+                null_res = []
+                null_places = []
+
+                for o in res:
+                    if o.value is None:
+                        null_res.append(o)
+                        null_places.append(o.place.place_id)
+                lag = manage_lag(metric, null_res, max_time, null_places)
+            else:
+                if list(res)[0].value is None:
+                    lag = manage_lag(metric, res, max_time, [place_id])
+
+        else:
+            lag = None
+
+        return (is_view, res, lag)
 
 
 # Define an observation endpoint query.
@@ -172,26 +259,8 @@ def getTrend(filters):
     lag = int(filters['lag'])
 
     t_rs = metric.temporal_resolution
-    if t_rs == 'yearly':
-        print('here: ', end.year, lag)
-        start = datetime(end.year - lag, end.month, end.day)
-    elif t_rs == 'monthly':
-        years, months = divmod(lag, 12)
 
-        if years == 0:
-            if months >= end.month:
-                start = datetime(end.year - 1, end.month + 12 - months, end.day)
-            else:
-                start = datetime(end.year, end.month - months, end.day)
-        else:
-            if months >= end.month:
-                start = datetime(end.year - (years + 1), end.month + 12 - months, end.day)
-            else:
-                start = datetime(end.year - (years), end.month - months, end.day)
-    elif t_rs == 'weekly':
-        start = end - timedelta(weeks=lag)
-    elif t_rs == 'daily':
-        start = end - timedelta(days=lag)
+    start = get_start(t_rs, end, lag)
 
     print(start, end)
 
