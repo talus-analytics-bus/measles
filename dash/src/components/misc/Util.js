@@ -83,6 +83,11 @@ Util.comma = function(num) {
 	return resultTmp;
 };
 
+// Format money as comma number with USD suffix
+Util.money = (val) => {
+  return Util.comma(val) + ' USD';
+}
+
 // Format using standard suffixes
 Util.formatSI = (val) => {
 

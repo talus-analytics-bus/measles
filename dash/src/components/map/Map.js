@@ -425,7 +425,6 @@ const Map = ({ fillObservations, bubbleObservations, incidenceObservations, mapp
       maxZoom = {4}
       minZoom = {2}
       onViewportChange={v => {
-        console.log(v)
         // Update viewport.
         setViewport(v);
 

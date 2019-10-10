@@ -85,10 +85,10 @@ const Legend = () => {
                     <div className={classNames(styles.legendEntry, styles.circle)}>
                       <div className={classNames(styles.legendIcon, styles.circle)} />
                       {
-                        (i === 0) && <div className={styles.legendLabel}>Lowest<br/>incidence</div>
+                        (i === 0) && <div className={styles.legendLabel}>Low<br/>incidence</div>
                       }
                       {
-                        (i === 2) && <div className={styles.legendLabel}>Highest<br/>incidence</div>
+                        (i === 2) && <div className={styles.legendLabel}>High<br/>incidence</div>
                       }
                     </div>
                   )

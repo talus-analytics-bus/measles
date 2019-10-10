@@ -114,7 +114,7 @@ const Details = (props) => {
                     },
                     {
                       'title': 'Gross domestic product per capita',
-                      'value_fmt': d3.format('$'),
+                      'value_fmt': Util.money,
                       'value_label': '',
                       'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'year')}, // TODO
                       ...countryGDP,

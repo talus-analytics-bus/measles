@@ -18,8 +18,8 @@ $logo-height: 70px;
     bottom: -$navButtonSize/2;
   }
   .navButtons a.active div, .navButtons div.active {
-    background-color: darken(#5781ab, 5%);
-    border: 1px solid white;
+    background-color: darken(#5781ab, 15%);
+    border: 2px solid white;
   }
   .navButtons a, .navButtons {
     div {
@@ -38,12 +38,12 @@ $logo-height: 70px;
       margin-right: 10px;
 
       &:hover {
-        background-color: darken(#5781ab, 5%);
-      }
-      &:active {
         background-color: darken(#5781ab, 15%);
       }
-      border: 1px solid transparent;
+      &:active {
+        background-color: darken(#5781ab, 25%);
+      }
+      border: 2px solid transparent;
       img {
         height: $navButtonSize*.6;
         display: flex;
