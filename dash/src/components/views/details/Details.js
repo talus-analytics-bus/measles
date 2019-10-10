@@ -10,6 +10,7 @@ import Content from './content/Content'
 import Util from '../../../components/misc/Util.js'
 import worldMap from '../../../assets/images/world-map.svg'
 import ObservationQuery from '../../../components/misc/ObservationQuery.js'
+import * as d3 from 'd3/dist/d3.min';
 
 import classNames from 'classnames'
 import styles from './details.module.scss'
@@ -27,7 +28,7 @@ const now = DEMO_DATE !== undefined ? new Date(DEMO_DATE) : new Date();
 const API_BASE = process.env.REACT_APP_API_BASE_URL;
 
 // FC for Details.
-const Details = (props: any) => {
+const Details = (props) => {
 
   // Manage loading state (don't show if loading, etc.)
   const [loading, setLoading] = React.useState(true)
@@ -85,10 +86,14 @@ const Details = (props: any) => {
     getDetailsData();
   }, [])
 
+  const debugPrinter = (item) => {
+    console.log(item)
+  }
   // If loading do not show JSX content.
   if (loading) return (<div></div>);
   else {
-
+    console.log('countryGDP')
+    console.log(countryGDP)
     return (<div className={styles.details}>
               <div className={styles.sidebar}>
                 <div className={styles.title}>
@@ -104,20 +109,42 @@ const Details = (props: any) => {
                       'title': 'Population',
                       'value_fmt': Util.comma,
                       'value_label': 'people',
-                      'date_time_fmt': (date_time: any) => {return Util.getDatetimeStamp(date_time, 'year')}, // TODO
-                      'value': countryPop.value,
-                    }
+                      'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'year')}, // TODO
+                      ...countryPop,
+                    },
+                    {
+                      'title': 'Gross domestic product per capita',
+                      'value_fmt': d3.format('$'),
+                      'value_label': '',
+                      'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'year')}, // TODO
+                      ...countryGDP,
+                    },
                   ].map(item =>
                     <div className={styles.item}>
-                      <div className={styles.title}>
-                        {item.title} {item.date_time_fmt(item.date_time)}
-                      </div>
+                      <span className={styles.title}>
+                        {debugPrinter(item)}
+                        {item.title} {item.date_time_fmt(item)}
+                      </span>
                       <div className={styles.content}>
-                        <div className={styles.value}>
-                          {item.value_fmt(item.value)}
-                        </div>
-                        <div className={styles.label}>
-                        </div>
+                        {
+                          (item.value !== null && (
+                            <span>
+                              <span className={styles.value}>
+                                {item.value_fmt(item.value)}
+                              </span>
+                              <span className={styles.label}>
+                                &nbsp;{item.value_label}
+                              </span>
+                            </span>
+                          ))
+                        }
+                        {
+                          (item.value === null && (
+                            <span className={'notAvail'}>
+                              Data not available
+                            </span>
+                          ))
+                        }
                       </div>
 
                     </div>

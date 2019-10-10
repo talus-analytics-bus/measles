@@ -158,6 +158,15 @@ body,
   }
 }
 
+
+// Data not available text
+.notAvail {
+  color: $grey;
+  font-style: italic;
+  font-family: 'Gotham Book', serif;
+  font-size: 1em;
+}
+
 // Data source text
 .dataSource {
   color: hsla(0, 0%, 60%, 1);
