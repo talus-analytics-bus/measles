@@ -61,7 +61,7 @@ class Observations(Resource):
     @format_response
     def get(self):
         params = request.args
-        (view_flag, res) = schema.getObservations(params)
+        (view_flag, res, lag) = schema.getObservations(params)
 
         if view_flag:
             res_list = []
@@ -83,9 +83,39 @@ class Observations(Resource):
                   'stale_flag': False,
                 })
 
+            if lag is not None:
+                for o in lag:
+                    res_list.append({
+                      'data_source': o[1],
+                      'date_time': o[2].strftime('%Y-%m-%d %H:%M:%S %Z'),
+                      'definition': o[3],
+                      'metric': o[4],
+                      'observation_id': o[5],
+                      'place_fips': o[6],
+                      'place_id': o[7],
+                      'place_iso': o[8],
+                      'place_name': o[9],
+                      'updated_at': o[10],
+                      'value': o[11],
+                      # FIXME: make this work for realz
+                      'stale_flag': True,
+                    })
+
             return res_list
         else:
             formattedData = [r.to_dict(related_objects=True) for r in res]
+
+            if lag is not None:
+                lagData = [r.to_dict(related_objects=True) for r in lag]
+
+                formattedData = [o for o in formattedData if o['value'] is not None]
+
+                for o in formattedData:
+                    o['stale_flag'] = False
+                for o in lagData:
+                    o['stale_flag'] = True
+
+                formattedData.extend(lagData)
 
             for o in formattedData:
                 metric_info = o['metric'].to_dict()
@@ -100,9 +130,6 @@ class Observations(Resource):
                 o['place_iso'] = place_info['iso2']
                 o['place_fips'] = place_info['fips']
                 del[o['place']]
-
-                # FIXME: make this work for realz
-                o['stale_flag'] = False
 
         return formattedData
 

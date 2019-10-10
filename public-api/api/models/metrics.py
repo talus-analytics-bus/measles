@@ -24,6 +24,7 @@ class Metric(db.Entity):
     num_type = Optional(str)
     is_view = Optional(bool)
     view_name = Optional(str)
+    lag_allowed = Optional(int)
     observations = Set("Observation")
 
 
