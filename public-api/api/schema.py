@@ -207,7 +207,7 @@ def getObservations(filters):
             else:
                 res = db.select(q_str)
 
-            return (True, res)
+            return (True, res, [])
         else:
             if 'place_id' in filters:
                 res = select(o for o in db.Observation
@@ -223,7 +223,8 @@ def getObservations(filters):
                              and o.date_time.datetime >= min_time
                              and o.date_time.datetime <= max_time)
 
-        lag_allowed = True if (metric.lag_allowed > 0 and min_time == max_time) else False
+        metric_lag_allowed = metric.lag_allowed != None and metric.lag_allowed > 0
+        lag_allowed = True if (metric_lag_allowed and min_time == max_time) else False
 
         if lag_allowed:
             if place_id is None:
