@@ -30,6 +30,8 @@ const API_BASE = process.env.REACT_APP_API_BASE_URL;
 // FC for Details.
 const Details = (props) => {
 
+  console.log('Detals.js -- RENDERED')
+
   // Manage loading state (don't show if loading, etc.)
   const [loading, setLoading] = React.useState(true)
 
@@ -77,8 +79,9 @@ const Details = (props) => {
 
     setCaseHistory(await ObservationQuery(6, 'monthly', '2010-01-01', '2018-01-01', country));
     setCoverageHistory(await ObservationQuery(4, 'yearly', '2010-01-01', '2018-01-01', country));
-
+    props.setLoadingNav(false);
     setLoading(false);
+
   }
 
   // Effect hook to load API data.
@@ -90,10 +93,13 @@ const Details = (props) => {
     console.log(item)
   }
   // If loading do not show JSX content.
+  console.log('props.loadingNav')
+  console.log(props.loadingNav)
   if (loading) return (<div></div>);
   else {
-    console.log('countryGDP')
-    console.log(countryGDP)
+
+    console.log('countryPop')
+    console.log(countryPop)
     return (<div className={styles.details}>
               <div className={styles.sidebar}>
                 <div className={styles.title}>
@@ -157,28 +163,6 @@ const Details = (props) => {
               <div className={styles.main} />
             </div>
     );
-    // Original page content from before Mike is below.
-    // return (<div>
-    //           <div>
-    //             <p>{countryName}</p>
-    //             <p>Country Population: {countryPop}</p>
-    //             <p>GDP per-capita: {countryGDP}</p>
-    //             <p>JEE: {countryJEE}</p>
-    //           </div>
-    //           <div>
-    //             <p>Coverage</p>
-    //             <Chart
-    //               metric={coverageHistory}
-    //             />
-    //           </div>
-    //           <div>
-    //             <p>Cases</p>
-    //             <Chart
-    //               metric={caseHistory}
-    //             />
-    //           </div>
-    //         </div>
-    // );
   }
 };
 

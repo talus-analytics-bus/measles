@@ -7,8 +7,10 @@ import logo from '../../../assets/images/measles_tracker.svg'
 import iconPin from '../../../assets/images/pin.svg'
 import iconFlag from '../../../assets/images/flag.svg'
 import iconGlobe from '../../../assets/images/globe.svg'
+import Popup from 'reactjs-popup'
 
 const Logo: React.FC = (props: any) => {
+  console.log('Logo.tsx - UPDATED')
   const page = props.page;
   const renderButton = (button: any) => {
     console.log('page = ' + page)
@@ -23,12 +25,20 @@ const Logo: React.FC = (props: any) => {
       )
     } else {
       return (
-        <div className={styles.navButtonContainer}>
-          <div className={classNames(styles.buttonSpinner)}></div>
-          <div className={classNames(page === button.page ? styles.active : '', styles.navButton)}>
-            <img src={button.icon} />
-          </div>
-        </div>
+        <Popup
+          closeOnDocumentClick={true}
+          modal
+          trigger={
+            <div className={classNames(styles.navButtonContainer, page === button.page ? styles.active : '')}>
+              <div className={classNames(styles.buttonSpinner)}></div>
+              <div className={classNames(styles.navButton)}>
+                <img src={button.icon} />
+              </div>
+            </div>
+          }
+        >
+          <div className={'dev'}>The country menu is currently being developed.</div>
+        </Popup>
       )
     }
   };
@@ -63,7 +73,7 @@ const Logo: React.FC = (props: any) => {
   };
 
   return (
-    <div className={classNames(styles.logo, {[styles.loading]: props.loadingNav })}>
+    <div className={classNames(styles.logo, {[styles.loading]: props.loadingNav }, styles[page])}>
       <Link to="/map">
         <img src={logo} className={styles.img} alt='logo' />
       </Link>
@@ -87,6 +97,7 @@ const Logo: React.FC = (props: any) => {
               id: 'flag',
               page: 'details',
               icon: iconFlag,
+              popup: true,
               tooltip: 'Click to view map of vaccination coverage and incidence of measles',
             },
 

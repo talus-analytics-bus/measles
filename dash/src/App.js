@@ -84,13 +84,13 @@ const App = () => {
     // TODO make this work the same way as the other "get most recent data queries", since it doesn't seem to
     setFillObservations(await ObservationQuery(4, 'yearly', '2018-01-01'));
     setLoading(false);
-    setLoadingNav(false);
   }
 
   // Track whether the welcome modal has been shown yet. If so, do not show it
   // again.
   let alreadyShowedWelcomeModal = false;
   React.useEffect(() => {
+    console.log("Getting map observations")
     getMapObservations()
 
     // If welcome modal isn't being shown currently and it has not already been
@@ -109,16 +109,20 @@ const App = () => {
       incidenceObservations={incidenceObservations} // observation data for map
       shownMapModal={shownMapModal} // don't show help modal more than once
       setShownMapModal={setShownMapModal} // update modal display status
+      setLoadingNav={setLoadingNav}
+      className={'map'}
       />
 
   const renderDetails = id => {
-    if (loading) return <div />
+    if (loading) {
+      return <div />
+    }
     else {
       // if no selected country, load the correct one based on the ID
       const coverage = fillObservations.find(o => +o.place_id === +id)
       const cases = bubbleObservations.find(o => +o.place_id === +id)
 
-      return <Details id={id} coverage={coverage} cases={cases} />
+      return <Details id={id} coverage={coverage} cases={cases} loadingNav={loadingNav} setLoadingNav={setLoadingNav}/>
     }
   }
 
@@ -130,12 +134,14 @@ const App = () => {
         <Logo page={page} loadingNav={loadingNav} />
         <Switch>
           <div>
-            <Route exact path='/' component={ () => { setPage('map'); return renderMap; } } />
-            <Route exact path='/map' component={ () => { setPage('map'); return renderMap; } } />
+            <Route exact path='/' component={ () => { setPage('map'); setLoadingNav(true); return renderMap; } } />
+            <Route exact path='/map' component={ () => { setPage('map'); setLoadingNav(true); return renderMap; } } />
+            <Route exact path='/global' component={ () => { setPage('global'); return <div className={'dev global'}>The global page is currently being developed.</div>; } } />
             <Route
               path='/details/:id'
               component={d => {
                 setPage('details');
+                if (page !== 'details') setLoadingNav(true);
                 return renderDetails(d.match.params.id)
               }}
             />
@@ -158,8 +164,7 @@ const App = () => {
                     </div>
                     <div className={styles.content}>
                       <div className={styles.text}>
-                        <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</p>
-                        <p>Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat.</p>
+                        <p>The Measles Tracker integrates, analyzes, and visualizes measles surveillance and vaccination data to provide a comprehensive overview of the current status of the measles outbreak globally, including the populations and regions most at risk. The dashboard was developed by Talus Analytics and is designed to be used in Chrome or Firefox.</p>
                       </div>
                       <button className={classNames('button', 'modal')} onClick={close}>Continue</button>
                     </div>

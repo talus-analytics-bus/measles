@@ -12,7 +12,7 @@ import GeomPopup from './geomPopup/GeomPopup.js'
 
 const TOKEN = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN
 
-const Map = ({ fillObservations, bubbleObservations, incidenceObservations, mappedFacilityTypes, setMappedFacilityTypes }) => {
+const Map = ({ fillObservations, bubbleObservations, incidenceObservations, mappedFacilityTypes, setMappedFacilityTypes, setLoadingNav}) => {
 
   const defaultViewport = {
     width: '100%',
@@ -115,6 +115,8 @@ const Map = ({ fillObservations, bubbleObservations, incidenceObservations, mapp
       // getMarkerComponents(map, incidenceObservations);
     });
     getTrendObservations();
+    console.log('updated loadingNav -- Map')
+    setLoadingNav(false);
   }, [])
 
   /**

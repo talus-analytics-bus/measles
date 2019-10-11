@@ -10,6 +10,10 @@ $logo-height: 70px;
 
   $navButtonSize: 75px;
 
+  &.map + div {
+    background-color: #122336;
+  }
+
   .navButtons {
     display: flex;
     flex-flow: row;
@@ -28,24 +32,6 @@ $logo-height: 70px;
       transform-origin: center;
       @keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }
     }
-    // Rect
-    // .buttonSpinner {
-    //   visibility: visible;
-    //   -webkit-animation: spin 1s linear infinite;
-    //   animation: spin 1s linear infinite;
-    //   transform-origin: top center;
-    //   @keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }
-    // }
-    // .navButton {
-    //   background-color: #5781ab;
-    //   -webkit-animation: pulse 2s linear infinite;
-    //   animation: pulse 2s linear infinite;
-    //   @keyframes pulse {
-    //     0% { background-color: #5781ab; }
-    //     50% { background-color: darken(#5781ab, 15%); }
-    //     100% { background-color: #5781ab; }
-    //   }
-    // }
   }
   .navButtons .buttonSpinner {
     visibility: hidden;
@@ -81,7 +67,7 @@ $logo-height: 70px;
     // }
   }
 
-  .navButtons a.active .navButton, .navButtons .navButton.active {
+  .navButtons .navButtonContainer.active .navButton {
     background-color: darken(#5781ab, 15%);
     border: 2px solid white;
   }
