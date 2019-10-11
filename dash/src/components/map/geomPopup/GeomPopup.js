@@ -59,12 +59,11 @@ const GeomPopup = ({ popupData }) => {
         deltaFmt: Util.percentizeDelta(datum['percent_change'] || 0),
         deltaLabel: 'increase from prior 30 days', // TODO inc/dec dynamicall
       }
-    } else return {
-
-    };
+    } else return {};
   };
-  const detailsPath = '/details/' + popupData['fill']['place_id']
-  const flag = `/flags/${popupData['fill']['place_iso'] }.png`;
+
+  const detailsPath = '/details/' + popupData['place_id'];
+  const flag = `/flags/${popupData['place_iso']}.png`;
 
   const getTooltipMetricData = (popupData, type) => {
     const obs = popupData[type];
@@ -121,7 +120,7 @@ const GeomPopup = ({ popupData }) => {
         <div className={styles.titleContainer}>
           <p className={styles.stateName}>
             {flag && <img src={flag} />}
-            {popupData['fill']['place_name']}
+            {popupData['fill'] ? popupData['fill']['place_name'] : popupData['place_name']}
           </p>
         </div>
       </div>

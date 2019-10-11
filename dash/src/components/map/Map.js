@@ -277,11 +277,16 @@ const Map = ({ fillObservations, bubbleObservations, incidenceObservations, mapp
     if (clickedOnGeom === undefined && clickedOnBubble === undefined) return;
 
     // Bubble click takes priority.
-    let id;
+    let id, iso, name;
     if (clickedOnBubble) {
       id = clickedOnBubble.id;
+      iso = clickedOnBubble.properties.ISO_A2;
+      name = clickedOnBubble.properties.NAME;
+      console.log(clickedOnBubble)
     } else if (clickedOnGeom) {
       id = clickedOnGeom.id;
+      iso = clickedOnGeom.properties.ISO_A2;
+      name = clickedOnGeom.properties.NAME;
     }
 
     const bubbleData = bubbleObservations.find(f => f.place_id === id)
@@ -291,6 +296,9 @@ const Map = ({ fillObservations, bubbleObservations, incidenceObservations, mapp
 
     setPopupData(
       {
+        'place_id': id,
+        'place_iso': iso,
+        'place_name': name,
         'fill': fillData,
         'bubble': bubbleData,
         'trend': trendData,

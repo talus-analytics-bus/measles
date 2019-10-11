@@ -20,9 +20,9 @@ const Legend = () => {
   const vaccinationLegendLabels = (i: any) => {
     switch (i) {
       case 0:
-        return 'Fewest vaccinated';
+        return 'Low coverage';
       case vaccinationColors.length - 1:
-        return 'Most vaccinated';
+        return 'High coverage';
       default:
         return '';
     }

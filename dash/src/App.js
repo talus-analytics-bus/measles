@@ -7,6 +7,7 @@ import Logo from './components/layout/logo/Logo'
 
 // map
 import Map from './components/map/Map'
+import Util from './components/misc/Util.js'
 
 // views
 //import Alerts from './components/views/alerts/Alerts.js'
@@ -66,12 +67,13 @@ const App = () => {
 
   async function getMapObservations() {
     // get the bubble data
-    setBubbleObservations(await ObservationQuery(6, 'monthly', '2019-08-01'));
+    setBubbleObservations(await ObservationQuery(6, 'monthly', Util.formatDatetimeApi(Util.today())));
 
     // get the incidence data
-    setIncidenceObservations(await ObservationQuery(15, 'monthly', '2019-08-01'));
+    setIncidenceObservations(await ObservationQuery(15, 'monthly', Util.formatDatetimeApi(Util.today())));
 
     // get the fill data
+    // TODO make this work the same way as the other "get most recent data queries", since it doesn't seem to
     setFillObservations(await ObservationQuery(4, 'yearly', '2018-01-01'));
     setLoading(false);
   }

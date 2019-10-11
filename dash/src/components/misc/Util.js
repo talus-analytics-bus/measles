@@ -3,6 +3,28 @@ import * as d3 from 'd3/dist/d3.min';
 // Utility functions.
 const Util = {};
 
+Util.formatDatetimeApi = (dt) => {
+  const year = dt.getFullYear();
+  const monthTmp = dt.getMonth() + 1;
+  const month = monthTmp > 9 ? ('' + monthTmp) : ('0' + monthTmp);
+
+  const dateTmp = dt.getDate();
+  const date = dateTmp > 9 ? ('' + dateTmp) : ('0' + dateTmp);
+
+  // const hoursTmp = dt.getHours();
+  // const hours = hoursTmp > 9 ? ('' + hoursTmp) : ('0' + hoursTmp);
+  //
+  // const minutesTmp = dt.getMinutes();
+  // const minutes = minutesTmp > 9 ? ('' + minutesTmp) : ('0' + minutesTmp);
+  //
+  // const secondsTmp = dt.getSeconds();
+  // const seconds = secondsTmp > 9 ? ('' + secondsTmp) : ('0' + secondsTmp);
+
+  const yyyymmdd = `${year}-${month}-${date}`;
+  return `${yyyymmdd}`;
+  // const hhmmss = `${hours}:${minutes}:${seconds}`;
+  // return `${yyyymmdd}T${hhmmss}`;
+};
 
 Util.today = () => {
   return new Date(); // TODO put time traveling here if needed
@@ -141,21 +163,5 @@ Util.formatDate = (input) => {
     }
   );
 }
-Util.formatDatetimeApi = (dt) => {
-  const year = dt.getFullYear();
-  const monthTmp = dt.getMonth() + 1;
-  const month = monthTmp > 10 ? ('' + monthTmp) : ('0' + monthTmp);
-  const dateTmp = dt.getDate();
-  const date = dateTmp > 10 ? ('' + dateTmp) : ('0' + dateTmp);
-  const hoursTmp = dt.getHours();
-  const hours = hoursTmp > 10 ? ('' + hoursTmp) : ('0' + hoursTmp);
-  const minutesTmp = dt.getMinutes();
-  const minutes = minutesTmp > 10 ? ('' + minutesTmp) : ('0' + minutesTmp);
-  const secondsTmp = dt.getSeconds();
-  const seconds = secondsTmp > 10 ? ('' + secondsTmp) : ('0' + secondsTmp);
-  const yyyymmdd = `${year}-${month}-${date}`;
-  const hhmmss = `${hours}:${minutes}:${seconds}`;
-  return `${yyyymmdd}T${hhmmss}`;
-};
 
 export default Util;
