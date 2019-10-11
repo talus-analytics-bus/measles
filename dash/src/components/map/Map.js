@@ -1,19 +1,13 @@
 import React from 'react'
 import ReactMapGL, { Marker, NavigationControl, Popup } from 'react-map-gl'
 import * as d3 from 'd3/dist/d3.min';
-
 import TrendQuery from '../misc/TrendQuery.js'
 import ObservationQuery from '../misc/ObservationQuery.js'
-
 import 'mapbox-gl/dist/mapbox-gl.css'
 import './map.scss'
-//import styles from './map.module.scss'
-
 import initMap from './mapUtils'
-
 import Legend from './legend/Legend'
 import ResetZoom from './resetZoom/ResetZoom'
-//import Filter from './filter/Filter'
 import GeomPopup from './geomPopup/GeomPopup.js'
 
 const TOKEN = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN
@@ -282,7 +276,7 @@ const Map = ({ fillObservations, bubbleObservations, incidenceObservations, mapp
       id = clickedOnBubble.id;
       iso = clickedOnBubble.properties.ISO_A2;
       name = clickedOnBubble.properties.NAME;
-      console.log(clickedOnBubble)
+
     } else if (clickedOnGeom) {
       id = clickedOnGeom.id;
       iso = clickedOnGeom.properties.ISO_A2;
@@ -458,7 +452,7 @@ const Map = ({ fillObservations, bubbleObservations, incidenceObservations, mapp
           padding: '10px'
         }}
       >
-      <NavigationControl />
+        <NavigationControl />
       </div>
       <Legend />
       {showReset && (<ResetZoom handleClick={resetViewport}/>)}

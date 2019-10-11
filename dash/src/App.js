@@ -1,6 +1,8 @@
 import React from 'react'
 import { Route, Switch, BrowserRouter } from 'react-router-dom'
 import axios from 'axios'
+import Modal from 'reactjs-popup'
+import classNames from 'classnames';
 
 // layout
 import Logo from './components/layout/logo/Logo'
@@ -62,6 +64,9 @@ const App = () => {
   // turning off always until we need interval
   const [shownMapModal, setShownMapModal] = React.useState(true);
 
+  // Track whether the welcome modal has been shown once yet.
+  const [showWelcomeModal, setShowWelcomeModal] = React.useState(false)
+
   // Track whether the component is still loading.
   const [loading, setLoading] = React.useState(true)
 
@@ -78,8 +83,18 @@ const App = () => {
     setLoading(false);
   }
 
+  // Track whether the welcome modal has been shown yet. If so, do not show it
+  // again.
+  let alreadyShowedWelcomeModal = false;
   React.useEffect(() => {
     getMapObservations()
+
+    // If welcome modal isn't being shown currently and it has not already been
+    // shown, show it, and mark it as already shown.
+    if (!showWelcomeModal && !alreadyShowedWelcomeModal) {
+      setShowWelcomeModal(true);
+      alreadyShowedWelcomeModal = true;
+    }
   }, [])
 
   // Functions to render each page's elements.
@@ -122,6 +137,33 @@ const App = () => {
             />
           </div>
         </Switch>
+        {
+          showWelcomeModal && (
+            <Modal
+              position="top center"
+              on="click"
+              closeOnDocumentClick
+              defaultOpen={showWelcomeModal}
+              modal
+            >
+              <div className={styles.modal}>
+                <div className={styles.header}>
+                  Welcome to the Measles Tracker
+                </div>
+                <div className={styles.content}>
+                  <div className={styles.text}>
+                    <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</p>
+                    <p>Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat.</p>
+                  </div>
+                  <button className={classNames('button', 'modal')}>Continue</button>
+                  {
+                    // setShowWelcomeModal(false)
+                  }
+                </div>
+              </div>
+            </Modal>
+          )
+        }
       </BrowserRouter>
     </div>
   )

@@ -30,3 +30,10 @@ $value-red: #9d3e4c;
 $value-green: #006837;
 
 $btn-primary: #223442;
+
+// Gradients
+$light-blue-1: #87acd5;
+$light-blue-2: #5697bf;
+$light-blue-gradient-1: linear-gradient(0deg, $light-blue-2 0%, $light-blue-1 100%);
+$light-blue-gradient-2: linear-gradient(0deg, darken($light-blue-2, 15%) 0%, darken($light-blue-1, 15%) 100%);
+$light-blue-gradient-3: linear-gradient(0deg, darken($light-blue-2, 25%) 0%, darken($light-blue-1, 25%) 100%);

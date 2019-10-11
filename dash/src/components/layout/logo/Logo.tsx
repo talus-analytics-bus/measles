@@ -60,7 +60,6 @@ const Logo: React.FC = (props: any) => {
         <div className={styles.title}>{getPageTitle(page)}</div>
         {
           <div className={styles.subtitle}>{getPageSubtitle(page)}</div>
-          // <div className={styles.subtitle}>Showing data released September 2019</adiv>
         }
       </div>
       <div className={styles.navButtons}>
