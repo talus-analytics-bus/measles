@@ -52,12 +52,11 @@ const GeomPopup = ({ popupData }) => {
   };
 
   const getDeltaData = (datum) => {
-    if (datum) {
+    if (datum && datum['percent_change'] !== null) {
       return {
-        delta: datum['percent_change'] || 0,
-        deltaSign: getDeltaSign(datum['percent_change'] || 0),
-        deltaFmt: Util.percentizeDelta(datum['percent_change'] || 0),
-        deltaLabel: 'increase from prior 30 days', // TODO inc/dec dynamicall
+        delta: datum['percent_change'],
+        deltaSign: getDeltaSign(datum['percent_change']),
+        deltaFmt: Util.percentizeDelta(datum['percent_change']),
       }
     } else return {};
   };
