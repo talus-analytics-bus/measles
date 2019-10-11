@@ -37,3 +37,5 @@ $light-blue-2: #5697bf;
 $light-blue-gradient-1: linear-gradient(0deg, $light-blue-2 0%, $light-blue-1 100%);
 $light-blue-gradient-2: linear-gradient(0deg, darken($light-blue-2, 15%) 0%, darken($light-blue-1, 15%) 100%);
 $light-blue-gradient-3: linear-gradient(0deg, darken($light-blue-2, 25%) 0%, darken($light-blue-1, 25%) 100%);
+
+$loading-spinner-gradient: linear-gradient(90deg, white 0%, transparent 100%);

@@ -70,6 +70,9 @@ const App = () => {
   // Track whether the component is still loading.
   const [loading, setLoading] = React.useState(true)
 
+  // Track whether navbar loading spinner should show
+  const [loadingNav, setLoadingNav] = React.useState(true)
+
   async function getMapObservations() {
     // get the bubble data
     setBubbleObservations(await ObservationQuery(6, 'monthly', Util.formatDatetimeApi(Util.today())));
@@ -81,6 +84,7 @@ const App = () => {
     // TODO make this work the same way as the other "get most recent data queries", since it doesn't seem to
     setFillObservations(await ObservationQuery(4, 'yearly', '2018-01-01'));
     setLoading(false);
+    setLoadingNav(false);
   }
 
   // Track whether the welcome modal has been shown yet. If so, do not show it
@@ -123,7 +127,7 @@ const App = () => {
   return (
     <div className={styles.app}>
       <BrowserRouter>
-        <Logo page={page} />
+        <Logo page={page} loadingNav={loadingNav} />
         <Switch>
           <div>
             <Route exact path='/' component={ () => { setPage('map'); return renderMap; } } />
@@ -146,21 +150,22 @@ const App = () => {
               defaultOpen={showWelcomeModal}
               modal
             >
-              <div className={styles.modal}>
-                <div className={styles.header}>
-                  Welcome to the Measles Tracker
-                </div>
-                <div className={styles.content}>
-                  <div className={styles.text}>
-                    <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</p>
-                    <p>Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat.</p>
+              {
+                close => (
+                  <div className={styles.modal}>
+                    <div className={styles.header}>
+                      Welcome to the Measles Tracker
+                    </div>
+                    <div className={styles.content}>
+                      <div className={styles.text}>
+                        <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</p>
+                        <p>Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat.</p>
+                      </div>
+                      <button className={classNames('button', 'modal')} onClick={close}>Continue</button>
+                    </div>
                   </div>
-                  <button className={classNames('button', 'modal')}>Continue</button>
-                  {
-                    // setShowWelcomeModal(false)
-                  }
-                </div>
-              </div>
+                )
+              }
             </Modal>
           )
         }

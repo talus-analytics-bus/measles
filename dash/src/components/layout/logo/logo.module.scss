@@ -17,12 +17,56 @@ $logo-height: 70px;
     right: 0;
     bottom: -$navButtonSize/2;
   }
-  .navButtons a.active div, .navButtons div.active {
+
+  &.loading .navButtons .active {
+    .buttonSpinner {
+      visibility: visible;
+      -webkit-animation: spin 1s linear infinite;
+      animation: spin 1s linear infinite;
+      transform-origin: top center;
+      @keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }
+    }
+    .navButton {
+      background-color: #5781ab;
+      -webkit-animation: pulse 2s linear infinite;
+      animation: pulse 2s linear infinite;
+      @keyframes pulse {
+        0% { background-color: #5781ab; }
+        50% { background-color: darken(#5781ab, 15%); }
+        100% { background-color: #5781ab; }
+      }
+    }
+  }
+  .navButtons .buttonSpinner {
+    visibility: hidden;
+  }
+
+
+  .navButtons {
+    $spinnerShift: 10px;
+    $spinnerWidth: $spinnerShift*2;
+    $spinnerSize: $navButtonSize + 4px + $spinnerShift; // 4px = borders
+    .navButtonContainer {
+      position:relative;
+    }
+    .buttonSpinner {
+      border-radius: 0 0 0 8px;
+      background: $loading-spinner-gradient;
+      position: absolute;
+      height: $spinnerSize/2;
+      width: $spinnerWidth;
+      top: ($navButtonSize/2) + 2px;
+      left: ($navButtonSize/2) - ($spinnerWidth/2) + 2px;
+    }
+  }
+
+  .navButtons a.active .navButton, .navButtons .navButton.active {
     background-color: darken(#5781ab, 15%);
     border: 2px solid white;
   }
   .navButtons a, .navButtons {
-    div {
+    .navButton {
+      z-index: 0;
       display: flex;
       flex-flow:row;
       border-radius: 9999px;

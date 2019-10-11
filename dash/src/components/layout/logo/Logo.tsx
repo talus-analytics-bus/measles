@@ -1,4 +1,5 @@
 import React from 'react'
+import classNames from 'classnames'
 import { Link } from 'react-router-dom'
 import styles from './logo.module.scss'
 import Util from '../../../components/misc/Util.js'
@@ -13,19 +14,29 @@ const Logo: React.FC = (props: any) => {
     console.log('page = ' + page)
     if (button.route) {
       return (
-        <Link to={button.route} className={page === button.page ? styles.active : ''}>
-          <div>
+        <Link to={button.route} className={classNames(page === button.page ? styles.active : '', styles.navButtonContainer)}>
+          <div className={classNames(styles.buttonSpinner)}></div>
+          <div className={styles.navButton}>
             <img src={button.icon} />
           </div>
         </Link>
       )
     } else {
       return (
-        <div className={page === button.page ? styles.active : ''}>
-          <img src={button.icon} />
+        <div className={styles.navButtonContainer}>
+          <div className={classNames(styles.buttonSpinner)}></div>
+          <div className={classNames(page === button.page ? styles.active : '', styles.navButton)}>
+            <img src={button.icon} />
+          </div>
         </div>
       )
     }
+  };
+  const renderButtonSpinner = () => {
+      return (
+        <div className={styles.buttonSpinner}>
+        </div>
+      )
   };
 
   const getPageTitle = (page: any) => {
@@ -52,7 +63,7 @@ const Logo: React.FC = (props: any) => {
   };
 
   return (
-    <div className={styles.logo}>
+    <div className={classNames(styles.logo, {[styles.loading]: props.loadingNav })}>
       <Link to="/map">
         <img src={logo} className={styles.img} alt='logo' />
       </Link>
