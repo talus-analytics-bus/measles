@@ -18,8 +18,8 @@ $logo-height: 70px;
     bottom: -$navButtonSize/2;
   }
 
-  .navButtons .active {
-  // &.loading .navButtons .active {
+  // .navButtons .active {
+  &.loading .navButtons .active {
     // Circle
     .buttonSpinner {
       visibility: visible;
@@ -48,7 +48,7 @@ $logo-height: 70px;
     // }
   }
   .navButtons .buttonSpinner {
-    // visibility: hidden;
+    visibility: hidden;
   }
 
 
