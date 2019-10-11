@@ -73,6 +73,9 @@ const App = () => {
   // Track whether navbar loading spinner should show
   const [loadingNav, setLoadingNav] = React.useState(true)
 
+  // Track details component
+  const [detailsComponent, setDetailsComponent] = React.useState(null)
+
   async function getMapObservations() {
     // get the bubble data
     setBubbleObservations(await ObservationQuery(6, 'monthly', Util.formatDatetimeApi(Util.today())));
@@ -117,12 +120,45 @@ const App = () => {
     if (loading) {
       return <div />
     }
-    else {
-      // if no selected country, load the correct one based on the ID
-      const coverage = fillObservations.find(o => +o.place_id === +id)
-      const cases = bubbleObservations.find(o => +o.place_id === +id)
+    else if (detailsComponent === null || (detailsComponent && detailsComponent.props.id !== id)) {
+      console.log('No details component, getting data')
+      // // if no selected country, load the correct one based on the ID
+      // const coverage = fillObservations.find(o => +o.place_id === +id)
+      // const cases = bubbleObservations.find(o => +o.place_id === +id)
 
-      return <Details id={id} coverage={coverage} cases={cases} loadingNav={loadingNav} setLoadingNav={setLoadingNav}/>
+      // Function to make API calls to get data for the state variables above.
+      const getDetailsData = async (country) => {
+        var countryPopQ = await ObservationQuery(3, 'yearly', '2018-01-01', '2018-01-01', country);
+        const countryPop = countryPopQ[0];
+        const countryName = countryPopQ[0]['place_name'];
+        const countryIso2 = countryPopQ[0]['place_iso'];
+
+        var countryGDPQ = await ObservationQuery(14, 'yearly', '2018-01-01', '2018-01-01', country);
+        const countryGDP = countryGDPQ[0];
+
+        var countryJEEQ = await ObservationQuery(6, 'monthly', '2019-08-01', '2019-08-01', country);
+        const countryJEE = countryJEEQ[0];
+
+        const caseHistory = await ObservationQuery(6, 'monthly', '2010-01-01', '2018-01-01', country);
+
+        const coverageHistory = await ObservationQuery(4, 'yearly', '2010-01-01', '2018-01-01', country);
+
+        setDetailsComponent(<Details
+          id={country}
+          countryPop={countryPop}
+          countryName={countryName}
+          countryIso2={countryIso2}
+          countryGDP={countryGDP}
+          countryJEE={countryJEE}
+          caseHistory={caseHistory}
+          coverageHistory={coverageHistory}
+        />);
+      }
+      getDetailsData(id);
+      return <div />;
+    } else {
+      setLoadingNav(false);
+      return detailsComponent;
     }
   }
 
@@ -141,7 +177,7 @@ const App = () => {
               path='/details/:id'
               component={d => {
                 setPage('details');
-                if (page !== 'details') setLoadingNav(true);
+                setLoadingNav(true);
                 return renderDetails(d.match.params.id)
               }}
             />

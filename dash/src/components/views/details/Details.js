@@ -30,81 +30,51 @@ const API_BASE = process.env.REACT_APP_API_BASE_URL;
 // FC for Details.
 const Details = (props) => {
 
-  console.log('Detals.js -- RENDERED')
-
   // Manage loading state (don't show if loading, etc.)
   const [loading, setLoading] = React.useState(true)
 
   // Get data for current country.
   const country = props.id;
-  const [countryName, setCountryName] = React.useState('');
-  const [countryIso2, setCountryIso2] = React.useState('');
-
-  // total population
-  const [countryPop, setCountryPop] = React.useState({});
-
-  // GDP per capita
-  const [countryGDP, setCountryGDP] = React.useState({});
-
-  // JEE Score
-  const [countryJEE, setCountryJEE] = React.useState({});
+  // const [countryName, setCountryName] = React.useState('');
+  // const [countryIso2, setCountryIso2] = React.useState('');
+  //
+  // // total population
+  // const [countryPop, setCountryPop] = React.useState({});
+  //
+  // // GDP per capita
+  // const [countryGDP, setCountryGDP] = React.useState({});
+  //
+  // // JEE Score
+  // const [countryJEE, setCountryJEE] = React.useState({});
 
   //Policies (doubt we get this by October?)
 
-  // Vaccination coverage
-  const coverage = props.coverage;
-
-  // Reported cases
-  const cases = props.cases;
-
-  // Reported cases over time
-  const [caseHistory, setCaseHistory]  = React.useState([]);
-
-  // Vaccination coverage over time
-  const [coverageHistory, setCoverageHistory] = React.useState([]);
-
-  // Function to make API calls to get data for the state variables above.
-  const getDetailsData = async () => {
-    var countryPopQ = await ObservationQuery(3, 'yearly', '2018-01-01', '2018-01-01', country);
-    setCountryPop(countryPopQ[0]);
-    setCountryName(countryPopQ[0]['place_name'])
-    setCountryIso2(countryPopQ[0]['place_iso'])
-
-    var countryGDPQ = await ObservationQuery(14, 'yearly', '2018-01-01', '2018-01-01', country);
-    console.log(countryGDPQ)
-    setCountryGDP(countryGDPQ[0]);
-
-    var countryJEEQ = await ObservationQuery(6, 'monthly', '2019-08-01', '2019-08-01', country);
-    setCountryJEE(countryJEEQ[0]);
-
-    setCaseHistory(await ObservationQuery(6, 'monthly', '2010-01-01', '2018-01-01', country));
-    setCoverageHistory(await ObservationQuery(4, 'yearly', '2010-01-01', '2018-01-01', country));
-    props.setLoadingNav(false);
-    setLoading(false);
-
-  }
+  // // Vaccination coverage
+  // const coverage = props.coverage;
+  //
+  // // Reported cases
+  // const cases = props.cases;
+  //
+  // // Reported cases over time
+  // const [caseHistory, setCaseHistory]  = React.useState([]);
+  //
+  // // Vaccination coverage over time
+  // const [coverageHistory, setCoverageHistory] = React.useState([]);
 
   // Effect hook to load API data.
   React.useEffect(() => {
-    getDetailsData();
+    // getDetailsData();
   }, [])
 
-  const debugPrinter = (item) => {
-    console.log(item)
-  }
   // If loading do not show JSX content.
-  console.log('props.loadingNav')
-  console.log(props.loadingNav)
-  if (loading) return (<div></div>);
+  if (false) return (<div></div>);
   else {
 
-    console.log('countryPop')
-    console.log(countryPop)
     return (<div className={styles.details}>
               <div className={styles.sidebar}>
                 <div className={styles.title}>
-                  {countryIso2 && <img src={`/flags/${countryIso2}.png`} className={styles.flag} />}
-                  {countryName}
+                  {props.countryIso2 && <img src={`/flags/${props.countryIso2}.png`} className={styles.flag} />}
+                  {props.countryName}
                 </div>
                 <div className={styles.map}>
                   {
@@ -119,19 +89,18 @@ const Details = (props) => {
                       'value_fmt': Util.comma,
                       'value_label': 'people',
                       'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'year')}, // TODO
-                      ...countryPop,
+                      ...props.countryPop,
                     },
                     {
                       'title': 'Gross domestic product per capita',
                       'value_fmt': Util.money,
                       'value_label': '',
                       'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'year')}, // TODO
-                      ...countryGDP,
+                      ...props.countryGDP,
                     },
                   ].map(item =>
                     <div className={styles.item}>
                       <span className={styles.title}>
-                        {debugPrinter(item)}
                         {item.title} {item.date_time_fmt(item)}
                       </span>
                       <div className={styles.content}>
