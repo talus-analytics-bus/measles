@@ -26,15 +26,17 @@ $logo-height: 70px;
   &.loading .navButtons .active {
     // Circle
     .buttonSpinner {
-      visibility: visible;
-      -webkit-animation: spin 1s linear infinite;
-      animation: spin 1s linear infinite;
-      transform-origin: center;
-      @keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }
+      opacity: 1;
+      transition: .5s opacity;
     }
   }
   .navButtons .buttonSpinner {
-    visibility: hidden;
+    opacity: 0;
+    transition: .5s opacity;
+    -webkit-animation: spin 1s linear infinite;
+    animation: spin 1s linear infinite;
+    transform-origin: center;
+    @keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }
   }
 
 
