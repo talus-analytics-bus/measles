@@ -10,10 +10,8 @@ import iconGlobe from '../../../assets/images/globe.svg'
 import Popup from 'reactjs-popup'
 
 const Logo: React.FC = (props: any) => {
-  console.log('Logo.tsx - UPDATED')
   const page = props.page;
   const renderButton = (button: any) => {
-    console.log('page = ' + page)
     if (button.route) {
       return (
         <Link to={button.route} className={classNames(page === button.page ? styles.active : '', styles.navButtonContainer)}>

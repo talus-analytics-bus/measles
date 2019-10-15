@@ -32,12 +32,8 @@ if (typeof DEMO_DATE === 'undefined') {
   DEMO_DATE = '2025-07-04T23:56:00'
 }
 
-console.log('DEMO_DATE')
-console.log(DEMO_DATE)
-
 //: React.FC
 const App = () => {
-  console.log('Render App')
 
   // Track which page is being shown to keep the logo bar updated.
   const [page, setPage] = React.useState('')
@@ -93,7 +89,6 @@ const App = () => {
   // again.
   let alreadyShowedWelcomeModal = false;
   React.useEffect(() => {
-    console.log("Getting map observations")
     getMapObservations()
 
     // If welcome modal isn't being shown currently and it has not already been
@@ -121,7 +116,6 @@ const App = () => {
       return <div />
     }
     else if (detailsComponent === null || (detailsComponent && detailsComponent.props.id !== id)) {
-      console.log('No details component, getting data')
       // // if no selected country, load the correct one based on the ID
       // const coverage = fillObservations.find(o => +o.place_id === +id)
       // const cases = bubbleObservations.find(o => +o.place_id === +id)

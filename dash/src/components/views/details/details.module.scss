@@ -25,16 +25,20 @@ $spacing: 20px;
       font-weight: bold;
       font-size: 2.2em;
       color: black;
-      margin-bottom: $spacing;
+      // margin-bottom: $spacing;
 
       .flag {
         height: 75px;
         margin-right: $spacing;
       }
-
     }
 
     .map {
+
+      height: 350px;
+      width: 513px;
+
+      &, & * { cursor: default };
 
       img {
 
@@ -46,7 +50,7 @@ $spacing: 20px;
       display: flex;
       flex-flow: column;
       margin-top: $spacing;
-      
+
       .title {
         color: $dark-grey;
         font-family: 'Open Sans', sans-serif;

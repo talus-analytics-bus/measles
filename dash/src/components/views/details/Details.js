@@ -78,8 +78,7 @@ const Details = (props) => {
                 </div>
                 <div className={styles.map}>
                   {
-                    <MiniMap />
-                    // <img src={worldMap} />
+                    <MiniMap countryIso2={props.countryIso2}/>
                   }
                 </div>
                 {

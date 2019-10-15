@@ -18,10 +18,15 @@ body,
     line-height: 1.2;
     // margin-top: 60px;
   }
+
+  $marker-size: 15px;
   .general-marker {
+    opacity: 0;
+    height: $marker-size;
+    width: $marker-size;
     border-radius: 9999px;
-    background-color: #b02c3a;
-    opacity: 0.65;
+    background-color: #1b2879;
+    opacity: 1;
     border: 1px solid white;
     transform: translate(-50%, -50%);
     text-align: center;
@@ -29,6 +34,12 @@ body,
     margin: auto 0;
     position: relative;
     line-height: 300px;
+
+    transition: opacity .5s;
+
+    box-shadow: 2px 2px 5px 0 rgba(0, 0, 0, 0.68);
+    -webkit-box-shadow: 2px 2px 5px 0 rgba(0, 0, 0, 0.68);
+
   }
 
   // Mapbox Popup custom styling

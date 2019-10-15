@@ -31,6 +31,7 @@ $logo-height: 70px;
     }
   }
   .navButtons .buttonSpinner {
+    pointer-events: none;
     opacity: 0;
     transition: .5s opacity;
     -webkit-animation: spin 1s linear infinite;

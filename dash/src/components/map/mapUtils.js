@@ -85,11 +85,6 @@ const initMap = (map, fillObservations, bubbleObservations, incidenceObservation
     function afterChangeComplete () {
       if (!map.loaded()) { return } // still not loaded; bail out.
 
-      const relatedFeatures = map.querySourceFeatures('geoms', {
-        sourceLayer: 'countries_id_rpr',
-        //filter: ['has', 'id']
-      });
-
       /**
        * Returns true if datum is 3 or more months old, false otherwise.
        * @method getStaleStatus
@@ -307,4 +302,107 @@ const initMap = (map, fillObservations, bubbleObservations, incidenceObservation
   }
 }
 
+export const initMiniMap = (map, fillObservations, bubbleObservations, incidenceObservations, callback) => {
+
+  map.on('load', function() {
+    initGeoms(fillObservations, bubbleObservations, incidenceObservations);
+  })
+
+  const initGeoms = (fillObservations, bubbleObservations, incidenceObservations) => {
+
+    if (!map.getSource('geoms'))
+      map.addSource('geoms', {
+        type: 'vector',
+        url: 'mapbox://traethethird.4kh7sxxt'
+      })
+
+    if (!map.getSource('centroids'))
+      map.addSource('centroids', {
+        type: 'vector',
+        url: 'mapbox://traethethird.9g6e0amc'
+        // url: 'mapbox://traethethird.5u7sntcb'
+      })
+
+    fillObservations.forEach(( observation) => {
+      const value = observation['value'];
+      const place_id = observation['place_id']
+
+      map.setFeatureState({source: 'geoms', sourceLayer: 'countries_id_rpr', id: place_id }, {clicked: false});
+      if (!value) {
+        map.setFeatureState({source: 'geoms', sourceLayer: 'countries_id_rpr', id: place_id }, {value: 0});
+      } else {
+        //const state = { value: Math.floor(256 * value)};
+        const state = { value: value / 100};
+        map.setFeatureState({source: 'geoms', sourceLayer: 'countries_id_rpr', id: place_id }, state);
+      }
+    });
+
+    map.on('render', afterChangeComplete); // warning: this fires many times per second!
+
+    function afterChangeComplete () {
+      if (!map.loaded()) { return } // still not loaded; bail out.
+
+      map.off('render', afterChangeComplete); // remove this handler now that we're done.
+      callback();
+    }
+
+    // Display circles as circle layer.
+    const setupCircleBubbles = () => {
+      // Add centroids to map so they can be accessed via getSourceFeatures.
+      map.addLayer({
+        'id': 'metric-bubbles',
+        'type': 'circle',
+        'source': 'centroids',
+        'source-layer': 'centroids_id_rpr_latlon',
+        'paint': {
+        'circle-radius': [
+            'interpolate',
+            ['linear'],
+            ["feature-state", "value"],
+                0, 0,
+                0.001, 5,
+                100, 150
+          ],
+          'circle-color': [
+              'case',
+              ['==', ['feature-state', 'stale'], false],
+              '#b02c3a',
+              ['==', ['feature-state', 'stale'], true],
+              '#b3b3b3',
+              'white',
+          ],
+          'circle-opacity': [
+              'case',
+              ['==', ['feature-state', 'stale'], null],
+              0,
+              ['==', ['feature-state', 'clicked'], true],
+              1,
+              0.85,
+          ],
+          'circle-stroke-width': [
+              'case',
+              ['==', ['feature-state', 'stale'], null],
+              0,
+              ['==', ['feature-state', 'value'], 0],
+              0,
+              ['==', ['feature-state', 'clicked'], true],
+              2,
+              ['==', ['feature-state', 'hover'], true],
+              2,
+              1,
+          ],
+          'circle-stroke-color': [
+              'case',
+              ['==', ['feature-state', 'stale'], false],
+              '#ffffff',
+              '#979797',
+          ],
+        }
+      });
+    };
+
+    setupCircleBubbles();
+
+  }
+}
 export default initMap
