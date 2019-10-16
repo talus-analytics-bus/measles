@@ -66,7 +66,9 @@ class Observations(Resource):
         if view_flag:
             res_list = []
 
-            if lag != None and len(lag) > 0:
+            lagged_places = []
+
+            if lag is not None and len(lag) > 0:
                 for o in lag:
                     res_list.append({
                       'data_source': o[1],
@@ -80,13 +82,14 @@ class Observations(Resource):
                       'place_name': o[9],
                       'updated_at': o[10],
                       'value': o[11],
-                      # FIXME: make this work for realz
                       'stale_flag': True,
                     })
 
+                    lagged_places.append(o[7])
+
             for o in res:
-                lagDataForPlace = [r for r in res_list if r['place_id'] == o.place_id]
-                if len(lagDataForPlace) > 0:
+
+                if o.place_id in lagged_places:
                     continue
                 res_list.append({
                   'data_source': o[1],
@@ -100,15 +103,16 @@ class Observations(Resource):
                   'place_name': o[9],
                   'updated_at': o[10],
                   'value': o[11],
-                  # FIXME: make this work for realz
                   'stale_flag': False,
                 })
+
+            res_list.sort(key=lambda o: (o['place_id'], o['date_time']))
 
             return res_list
         else:
             formattedData = [r.to_dict(related_objects=True) for r in res]
 
-            if lag != None and len(lag) > 0:
+            if lag is not None and len(lag) > 0:
                 lagData = [r.to_dict(related_objects=True) for r in lag]
 
                 formattedData = [o for o in formattedData if o['value'] is not None]
@@ -133,6 +137,8 @@ class Observations(Resource):
                 o['place_iso'] = place_info['iso2']
                 o['place_fips'] = place_info['fips']
                 del[o['place']]
+
+        formattedData.sort(key=lambda o: (o['place_id'], o['date_time']))
 
         return formattedData
 
