@@ -3,6 +3,7 @@ import { Route, Switch, BrowserRouter } from 'react-router-dom'
 import axios from 'axios'
 import Modal from 'reactjs-popup'
 import classNames from 'classnames';
+import * as d3 from 'd3/dist/d3.min';
 
 // layout
 import Logo from './components/layout/logo/Logo'
@@ -111,6 +112,40 @@ const App = () => {
       className={'map'}
       />
 
+  const getIncidenceQuartile = (allObsTmp, countryObs) => {
+    const allObs = allObsTmp.filter(o => {
+      return o.date_time === countryObs.date_time
+      && o.value !== null;
+    })
+    .map(o => o.value);
+
+    console.log('allObsTmp')
+    console.log(allObsTmp)
+    console.log('allObs')
+    console.log(allObs)
+    console.log('countryObs')
+    console.log(countryObs)
+
+    const quartiles = [
+      d3.quantile(allObs, .25),
+      d3.quantile(allObs, .5),
+      d3.quantile(allObs, .75),
+    ];
+
+    if (countryObs.value < quartiles[0]) {
+      return 0;
+    }
+    else if (countryObs.value < quartiles[1]) {
+      return 1;
+    }
+    else if (countryObs.value < quartiles[2]) {
+      return 2;
+    }
+    else if (countryObs.value >= quartiles[2]) {
+      return 3;
+    } else return null;
+  };
+
   const renderDetails = id => {
     if (loading) {
       return <div />
@@ -141,12 +176,17 @@ const App = () => {
         const countryJeeMcm = countryJeeMcmQ[0];
 
         // Incidence history and latest observation
-        const countryIncidenceHistory = await ObservationQuery(15, 'monthly', '2019-10-01', '2010-01-01', country);
+        const countryIncidenceHistoryTmp = await ObservationQuery(15, 'monthly', '2019-10-01', '2010-01-01', country);
+        const countryIncidenceHistory = countryIncidenceHistoryTmp
+          .filter(d => d.value !== null);
         const countryIncidenceLatest = countryIncidenceHistory.length > 0 ? countryIncidenceHistory[countryIncidenceHistory.length - 1] : {};
 
         // Vacc. coverage history and latest observation
         const countryVaccHistory = await ObservationQuery(4, 'yearly', '2018-01-01', '2010-01-01', country);
         const countryVaccLatest = countryVaccHistory.length > 0 ? countryVaccHistory[countryVaccHistory.length - 1] : {};
+
+        // Get quartile of incidence
+        const countryIncidenceQuartile = getIncidenceQuartile(incidenceObservations, countryIncidenceLatest);
 
         // Currently unused
         const caseHistoryQ = await ObservationQuery(6, 'monthly', '2010-01-01', '2018-01-01', country);
@@ -163,6 +203,7 @@ const App = () => {
           caseHistoryQ={caseHistoryQ}
           countryIncidenceHistory={countryIncidenceHistory}
           countryIncidenceLatest={countryIncidenceLatest}
+          countryIncidenceQuartile={countryIncidenceQuartile}
           countryVaccHistory={countryVaccHistory}
           countryVaccLatest={countryVaccLatest}
         />);

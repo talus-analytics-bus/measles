@@ -132,10 +132,69 @@ $spacing: 20px;
           border: 2.5px solid transparent;
 
           &.active {
-            box-shadow: 2px 2px 5px 0 rgba(0, 0, 0, 0.68);
-            -webkit-box-shadow: 2px 2px 5px 0 rgba(0, 0, 0, 0.68);
+            box-shadow: 1px 1px 2.5px 0 rgba(0, 0, 0, 0.68);
+            -webkit-box-shadow: 1px 1px 2.5px 0 rgba(0, 0, 0, 0.68);
           }
         }
+
+        $sep: -10px;
+        $wedge-size: .9825px;
+        $wedge-height: 10px;
+        $wedge-slope: $wedge-size*10;
+
+        @for $i from 1 through 4 {
+          .trapezoid-#{$i} {
+            .bottom {
+              height: $wedge-height*$i;
+            }
+          }
+        }
+
+        .trapezoidContainer {
+          display: flex;
+
+          .labelLeft, .labelRight {
+            bottom: calc(-2em - 10px);
+          }
+        }
+        .trapezoid {
+
+          font-family: 'rawline', serif;
+          font-weight: 600;
+          font-size: 1.4em;
+          margin-right: 2px;
+          margin-top: auto;
+          text-align: center;
+          padding-bottom: 2px;
+          line-height: $rect-height - 2px;
+
+          .shape {
+              margin:0 auto;
+          }
+
+          .top {
+              height:0;
+              border-width:0 0 $wedge-slope $wedge-size*100;
+              border-style:solid;
+              border-color:transparent $light-grey-2 $light-grey-2 transparent;
+          }
+
+          .bottom {
+              background-color: $light-grey-2;
+          }
+
+          &.active {
+            .bottom {
+              box-shadow: 3px 3px 2.5px 0 rgba(0, 0, 0, 0.3);
+              background-color: $value-red;
+            }
+            .top {
+              box-shadow: 3px 3px 2.5px 0 rgba(0, 0, 0, 0.3);
+              border-color:transparent $value-red $value-red transparent;
+            }
+          }
+        }
+
         .labelLeft, .labelRight {
           position: absolute;
           white-space: nowrap;

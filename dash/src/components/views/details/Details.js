@@ -105,7 +105,7 @@ const Details = (props) => {
   const getScoreJsx = (score) => {
     const scoreLabeling = getScoreLabeling(score);
     return (
-      <div className={classNames(styles.jee, styles[scoreLabeling.color])} style={ { 'border-style': 'solid', 'border-width': '0 0 0 10px' } }>
+      <div className={classNames(styles.jee, styles[scoreLabeling.color])} style={ { 'borderStyle': 'solid', 'borderWidth': '0 0 0 10px' } }>
         {scoreLabeling.label}
       </div>
     );
@@ -162,6 +162,83 @@ const Details = (props) => {
     }
   };
 
+  const getWedgeChartBin = () => {
+    const val = props.countryIncidenceQuartile;
+    switch (val) {
+      case 0:
+        return {
+          i: 0,
+          color: '#d6f0b2',
+        };
+      case 1:
+        return {
+          i: 1,
+          color: '#b9d7a8',
+        };
+      case 2:
+        return {
+          i: 2,
+          color: '#41b6c4',
+        };
+      case 3:
+        return {
+          i: 3,
+          color: 'red',
+        };
+      default:
+        return {
+          i: -9999,
+          color: 'gray',
+        };
+    }
+  };
+
+  const getWedgeChart = (val) => {
+    // Get vaccination chart bins
+    const binData = getWedgeChartBin();
+    return (
+      <div className={classNames(styles.chart, styles.vaccChart)}>
+        {
+          [0,1,2,3].map(bin =>
+            <div className={styles.trapezoidContainer}>
+              <div
+              className={classNames(
+                styles.trapezoid,
+                styles.shape,
+                styles['trapezoid-' + (bin + 1)],
+                {
+                  [styles.active]: bin === binData.i,
+                }
+              )}
+              style={{
+                'color': binData.i > 3 ? 'white' : '',
+              }}
+              >
+                <div
+                  className={styles.top}
+                />
+                <div
+                  className={styles.bottom}
+                />
+              </div>
+              {
+                // Label if first
+                (bin === 0) && <div className={styles.labelLeft}>Low relative<br/>incidence</div>
+              }
+              {
+                // Label if last
+                (bin === 3) && <div className={styles.labelRight}>High relative<br/>incidence</div>
+              }
+              {
+                // (binData.i === bin) && <span>{Util.percentize(val)}</span>
+              }
+            </div>
+          )
+        }
+      </div>
+    )
+  };
+
   /**
    * Get vaccination chart JSX.
    * @method getVaccChart
@@ -182,8 +259,8 @@ const Details = (props) => {
                 }
               )}
               style={{
-                // 'border-color': bin === binData.i ? 'gray' : '',
-                'background-color': bin === binData.i ? binData.color : '',
+                // 'borderColor': bin === binData.i ? 'gray' : '',
+                'backgroundColor': bin === binData.i ? binData.color : '',
                 'color': binData.i > 3 ? 'white' : '',
               }}
               >
@@ -323,7 +400,9 @@ const Details = (props) => {
                   },
                   {
                     'title': 'Monthly incidence of measles',
-                    'value_fmt': (val) => val, // TODO
+                    'chart_jsx': getWedgeChart,
+                    'value_fmt': Util.formatIncidence,
+                    'value_label': 'cases per 1M population',
                     'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'month')},
                     ...(props.countryIncidenceLatest.value !== undefined ? props.countryIncidenceLatest : { value: null }),
                   },
