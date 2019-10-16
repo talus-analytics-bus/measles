@@ -106,6 +106,8 @@ class Observations(Resource):
                   'stale_flag': False,
                 })
 
+            res_list.sort(key=lambda o: (o['place_id'], o['date_time']))
+
             return res_list
         else:
             formattedData = [r.to_dict(related_objects=True) for r in res]
@@ -135,6 +137,8 @@ class Observations(Resource):
                 o['place_iso'] = place_info['iso2']
                 o['place_fips'] = place_info['fips']
                 del[o['place']]
+
+        formattedData.sort(key=lambda o: (o['place_id'], o['date_time']))
 
         return formattedData
 
