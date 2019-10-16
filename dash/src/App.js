@@ -114,8 +114,7 @@ const App = () => {
 
   const getIncidenceQuartile = (allObsTmp, countryObs) => {
     const allObs = allObsTmp.filter(o => {
-      return o.date_time === countryObs.date_time
-      && o.value !== null;
+      return o.value !== null;
     })
     .map(o => o.value);
 
