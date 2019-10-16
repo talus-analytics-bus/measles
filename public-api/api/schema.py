@@ -64,8 +64,10 @@ def observation_summary(metric_id, t_summary, temp_value, s_summary, spatial_val
                         min_time, max_time):
     return 'test'
 
+
 spatial_resolution_error = Exception("Requested spatial resolution is finer than metric's")
 temporal_resolution_error = Exception("Requested temporal resolution is finer than metric's")
+
 
 def get_start(t_rs, end, lag):
     if t_rs == 'yearly':
@@ -132,9 +134,9 @@ def manage_lag(metric, null_res, max_time, null_places, observations):
                              and o.place.place_id in null_places)
         elif len(null_places) == 0:
             lag_res = select(o for o in observations
-                if o.metric.metric_id == metric.metric_id
-                and o.date_time.datetime >= min_time
-                and o.date_time.datetime <= max_time)
+                             if o.metric.metric_id == metric.metric_id
+                             and o.date_time.datetime >= min_time
+                             and o.date_time.datetime <= max_time)
         else:
             lag_res = select(o for o in observations
                              if o.metric.metric_id == metric.metric_id
@@ -150,7 +152,9 @@ def manage_lag(metric, null_res, max_time, null_places, observations):
         if o.value is not None:
             if place_id in latest_observation:
                 obs_dt = o.dt if metric.is_view else o.date_time.datetime
-                latest_obs_dt = latest_observation[place_id].dt if metric.is_view else latest_observation[place_id].date_time.datetime
+                latest_obs_dt = latest_observation[place_id].dt if metric.is_view else \
+                    latest_observation[place_id].date_time.datetime
+
                 if obs_dt > latest_obs_dt:
                     latest_observation[place_id] = o
             else:
@@ -162,7 +166,7 @@ def manage_lag(metric, null_res, max_time, null_places, observations):
 # Define an observation endpoint query.
 def getObservations(filters):
     s_rs = ['planet', 'country', 'state', 'county', 'block_group', 'tract', 'point']
-    t_rs = ['yearly', 'monthly', 'weekly', 'daily']
+    t_rs = ['yearly', 'monthly', 'weekly', 'daily', 'occasion']
 
     # Initialize response as empty
     res = None
@@ -212,8 +216,8 @@ def getObservations(filters):
 
     # If the metric is a view, then the pool of observations comes from that
     # view. Otherwise, it is simply the "Observations" entity.
-    dbEntity = None
-    view_q_str =    f"""SELECT v.metric_id, v.data_source, d.dt,
+
+    view_q_str = f"""SELECT v.metric_id, v.data_source, d.dt,
                         m.metric_definition, m.metric_name, v.observation_id,
                         p.fips AS place_fips, p.place_id, p.iso AS place_iso,
                         p.name AS place_name, v.updated_at, v.value::FLOAT
@@ -250,10 +254,10 @@ def getObservations(filters):
                     res = select(o for o in observations)
                 else:
                     res = select(o for o in observations
-                        if o.metric.metric_id == metric_id
-                        and o.date_time.datetime >= min_time
-                        and o.date_time.datetime <= max_time
-                        and o.place.place_id == filters['place_id'])
+                                 if o.metric.metric_id == metric_id
+                                 and o.date_time.datetime >= min_time
+                                 and o.date_time.datetime <= max_time
+                                 and o.place.place_id == filters['place_id'])
 
                 place_id = filters['place_id']
             else:
@@ -262,7 +266,7 @@ def getObservations(filters):
                              and o.date_time.datetime >= min_time
                              and o.date_time.datetime <= max_time)
 
-        metric_lag_allowed = metric.lag_allowed != None and metric.lag_allowed > 0
+        metric_lag_allowed = metric.lag_allowed is not None and metric.lag_allowed > 0
         lag_allowed = True if (metric_lag_allowed and min_time == max_time) else False
 
         if lag_allowed:
