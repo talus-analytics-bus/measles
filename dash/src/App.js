@@ -119,13 +119,6 @@ const App = () => {
     })
     .map(o => o.value);
 
-    console.log('allObsTmp')
-    console.log(allObsTmp)
-    console.log('allObs')
-    console.log(allObs)
-    console.log('countryObs')
-    console.log(countryObs)
-
     const quartiles = [
       d3.quantile(allObs, .25),
       d3.quantile(allObs, .5),
