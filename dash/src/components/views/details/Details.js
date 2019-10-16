@@ -61,6 +61,58 @@ const Details = (props) => {
   // // Vaccination coverage over time
   // const [coverageHistory, setCoverageHistory] = React.useState([]);
 
+  /**
+   * Returns JEE score colors and labels
+   * @method getScoreName
+   */
+  const getScoreLabeling = (score) => {
+  	if (score < 1.5) {
+      return {
+        label: 'No capacity',
+        color: 'red',
+        value: score,
+      };
+  	} else if (score < 2.5) {
+      return {
+        label: 'Limited capacity',
+        color: 'yellow',
+        value: score,
+      };
+  	} else if (score < 3.5) {
+      return {
+        label: 'Developed capacity',
+        color: 'yellow',
+        value: score,
+      };
+  	} else if (score < 4.5) {
+      return {
+        label: 'Demonstrated capacity',
+        color: 'green',
+        value: score,
+      };
+    }
+    return {
+      label: 'Sustainable capacity',
+      color: 'green',
+      value: score,
+    };
+  };
+
+  console.log('styles')
+  console.log(styles)
+  /**
+   * Get JSX for rendering JEE scores.
+   * @method getScoreJsx
+   */
+  const getScoreJsx = (score) => {
+    const scoreLabeling = getScoreLabeling(score);
+    return (
+      <div className={classNames(styles.jee, styles[scoreLabeling.color])} style={ { 'border-style': 'solid', 'border-width': '0 0 0 10px' } }>
+        {scoreLabeling.label}
+      </div>
+    );
+  };
+
   // Effect hook to load API data.
   React.useEffect(() => {
     // getDetailsData();
@@ -70,9 +122,6 @@ const Details = (props) => {
   // If loading do not show JSX content.
   if (false) return (<div></div>);
   else {
-
-    console.log('props.countryJEE[0][0]')
-    console.log(props.countryJEE[0][0])
 
     return (<div className={styles.details}>
               <div className={styles.sidebar}>
@@ -92,6 +141,8 @@ const Details = (props) => {
                       'value_fmt': Util.comma,
                       'value_label': 'people',
                       'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'year')}, // TODO
+                      // 'dataSource': obs['data_source'],
+                      // 'dataSourceLastUpdated': new Date (obs['updated_at']),
                       ...props.countryPop,
                     },
                     {
@@ -102,11 +153,22 @@ const Details = (props) => {
                       ...props.countryGDP,
                     },
                     {
-                      'title': 'JEE score 1',
-                      'value_fmt': (val) => val,
-                      'value_label': '',
+                      'title': 'Immunization capacity',
+                      'value_fmt': getScoreJsx,
                       'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'year')}, // TODO
-                      ...(props.countryJEE[0].length > 0 ? props.countryJEE[0][0] : {value: null}),
+                      ...(props.countryJeeImmun ? props.countryJeeImmun : {value: null}),
+                    },
+                    {
+                      'title': 'Real-time surveillance capacity',
+                      'value_fmt': getScoreJsx,
+                      'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'year')}, // TODO
+                      ...(props.countryJeeSurv ? props.countryJeeSurv : {value: null}),
+                    },
+                    {
+                      'title': 'Medical countermeasures capacity',
+                      'value_fmt': getScoreJsx,
+                      'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'year')}, // TODO
+                      ...(props.countryJeeMcm ? props.countryJeeMcm : {value: null}),
                     },
                   ].map(item =>
                     <div className={styles.item}>
@@ -115,23 +177,40 @@ const Details = (props) => {
                       </span>
                       <div className={styles.content}>
                         {
+                          // Display formatted value and label
                           (item.value !== null && (
                             <span>
                               <span className={styles.value}>
                                 {item.value_fmt(item.value)}
                               </span>
-                              <span className={styles.label}>
-                                &nbsp;{item.value_label}
-                              </span>
+                              {
+                                item.value_label && <span className={styles.label}>
+                                  &nbsp;{item.value_label}
+                                </span>
+                              }
                             </span>
                           ))
                         }
                         {
+                          // Data not available message, if applicable.
                           (item.value === null && (
                             <span className={'notAvail'}>
                               Data not available
                             </span>
                           ))
+                        }
+                        {
+                          // Display data source text if available.
+                          (item.data_source && !item.notAvail) &&
+                            <div className={'dataSource'}>
+                              Source: {item.data_source}{ item.updated_at && (
+                                  ' as of ' + new Date(item.updated_at).toLocaleString('en-us', {
+                                    month: 'long',
+                                    year: 'numeric',
+                                  })
+                                )
+                              }
+                            </div>
                         }
                       </div>
 

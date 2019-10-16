@@ -133,21 +133,12 @@ const App = () => {
         const countryGDP = countryGDPQ[0];
 
         // Latest relevant JEE scores.
-        var countryJEE = [
-          await ObservationQuery(16, 'yearly', '2018-01-01', '2018-01-01', country),
-          await ObservationQuery(17, 'yearly', '2018-01-01', '2018-01-01', country),
-          await ObservationQuery(18, 'yearly', '2018-01-01', '2018-01-01', country),
-        ];
-        // var countryJEE = [
-        //   await ObservationQuery(16, 'occasion', '2019-08-01', '2019-08-01', country)[0],
-        //   await ObservationQuery(17, 'occasion', '2019-08-01', '2019-08-01', country)[0],
-        //   await ObservationQuery(18, 'occasion', '2019-08-01', '2019-08-01', country)[0],
-        // ];
-
-        console.log('countryJEE')
-        console.log(countryJEE)
-        // const countryJEE = countryJEEQ[0];
-
+        const countryJeeImmunQ = await ObservationQuery(16, 'occasion', undefined, undefined, country);
+        const countryJeeImmun = countryJeeImmunQ[0];
+        const countryJeeSurvQ = await ObservationQuery(17, 'occasion', undefined, undefined, country);
+        const countryJeeSurv = countryJeeSurvQ[0];
+        const countryJeeMcmQ = await ObservationQuery(18, 'occasion', undefined, undefined, country);
+        const countryJeeMcm = countryJeeMcmQ[0];
 
         // Unused currently
         const caseHistory = await ObservationQuery(6, 'monthly', '2010-01-01', '2018-01-01', country);
@@ -159,7 +150,9 @@ const App = () => {
           countryName={countryName}
           countryIso2={countryIso2}
           countryGDP={countryGDP}
-          countryJEE={countryJEE}
+          countryJeeImmun={countryJeeImmun}
+          countryJeeSurv={countryJeeSurv}
+          countryJeeMcm={countryJeeMcm}
           caseHistory={caseHistory}
           coverageHistory={coverageHistory}
         />);
