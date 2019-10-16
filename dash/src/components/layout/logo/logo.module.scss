@@ -71,6 +71,7 @@ $logo-height: 70px;
   }
 
   .navButtons .navButtonContainer.active .navButton {
+    transition: background-color .125s;
     background-color: darken(#5781ab, 15%);
     border: 2px solid white;
   }
@@ -95,11 +96,14 @@ $logo-height: 70px;
       line-height: $navButtonSize;
       cursor: pointer;
       margin-right: 10px;
+      transition: background-color .125s;
 
       &:hover {
+        transition: background-color .125s;
         background-color: darken(#5781ab, 15%);
       }
       &:active {
+        transition: background-color .125s;
         background-color: darken(#5781ab, 25%);
       }
       border: 2px solid transparent;
