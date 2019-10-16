@@ -34,12 +34,6 @@ const Map = ({ fillObservations, bubbleObservations, incidenceObservations, mapp
     return initialState;
   });
 
-  // // Track state for the incidence observations
-  // const [incidenceObservations, setIncidenceObservations] = React.useState(() => {
-  //   const initialState = [];
-  //   return initialState;
-  // });
-
   // Whether the reset button is shown or not. Controlled by the viewport
   // setting being other than the default.
   const [showReset, setShowReset] = React.useState(false);

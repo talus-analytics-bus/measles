@@ -16,10 +16,10 @@ body,
     font-size: 2em;
     padding: 40px;
     line-height: 1.2;
-    // margin-top: 60px;
   }
 
-  $marker-size: 15px;
+  $marker-size: 20px;
+  // $marker-size: 25px;
   .general-marker {
     opacity: 0;
     height: $marker-size;

@@ -33,7 +33,7 @@ $logo-height: 70px;
   .navButtons .buttonSpinner {
     pointer-events: none;
     opacity: 0;
-    transition: .5s opacity;
+    transition: .5s all;
     -webkit-animation: spin 1s linear infinite;
     animation: spin 1s linear infinite;
     transform-origin: center;
@@ -75,6 +75,11 @@ $logo-height: 70px;
     border: 2px solid white;
   }
   .navButtons a, .navButtons {
+
+    .navButtonContainer:last-child > .navButton {
+      margin-right: 16px; // prevents browser jump in FF
+    }
+
     .navButton {
       z-index: 0;
       display: flex;

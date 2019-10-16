@@ -66,9 +66,13 @@ const Details = (props) => {
     // getDetailsData();
   }, [])
 
+
   // If loading do not show JSX content.
   if (false) return (<div></div>);
   else {
+
+    console.log('props.countryJEE[0][0]')
+    console.log(props.countryJEE[0][0])
 
     return (<div className={styles.details}>
               <div className={styles.sidebar}>
@@ -93,9 +97,16 @@ const Details = (props) => {
                     {
                       'title': 'Gross domestic product per capita',
                       'value_fmt': Util.money,
-                      'value_label': '',
+                      'value_label': 'USD',
                       'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'year')}, // TODO
                       ...props.countryGDP,
+                    },
+                    {
+                      'title': 'JEE score 1',
+                      'value_fmt': (val) => val,
+                      'value_label': '',
+                      'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'year')}, // TODO
+                      ...(props.countryJEE[0].length > 0 ? props.countryJEE[0][0] : {value: null}),
                     },
                   ].map(item =>
                     <div className={styles.item}>

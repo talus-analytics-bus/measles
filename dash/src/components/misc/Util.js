@@ -111,7 +111,7 @@ Util.comma = function(num) {
 
 // Format money as comma number with USD suffix
 Util.money = (val) => {
-  return Util.comma(val) + ' USD';
+  return Util.comma(val);
 }
 
 // Format using standard suffixes

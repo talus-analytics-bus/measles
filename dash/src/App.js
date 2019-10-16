@@ -122,6 +122,8 @@ const App = () => {
 
       // Function to make API calls to get data for the state variables above.
       const getDetailsData = async (country) => {
+
+        // Country basic info
         var countryPopQ = await ObservationQuery(3, 'yearly', '2018-01-01', '2018-01-01', country);
         const countryPop = countryPopQ[0];
         const countryName = countryPopQ[0]['place_name'];
@@ -130,11 +132,25 @@ const App = () => {
         var countryGDPQ = await ObservationQuery(14, 'yearly', '2018-01-01', '2018-01-01', country);
         const countryGDP = countryGDPQ[0];
 
-        var countryJEEQ = await ObservationQuery(6, 'monthly', '2019-08-01', '2019-08-01', country);
-        const countryJEE = countryJEEQ[0];
+        // Latest relevant JEE scores.
+        var countryJEE = [
+          await ObservationQuery(16, 'yearly', '2018-01-01', '2018-01-01', country),
+          await ObservationQuery(17, 'yearly', '2018-01-01', '2018-01-01', country),
+          await ObservationQuery(18, 'yearly', '2018-01-01', '2018-01-01', country),
+        ];
+        // var countryJEE = [
+        //   await ObservationQuery(16, 'occasion', '2019-08-01', '2019-08-01', country)[0],
+        //   await ObservationQuery(17, 'occasion', '2019-08-01', '2019-08-01', country)[0],
+        //   await ObservationQuery(18, 'occasion', '2019-08-01', '2019-08-01', country)[0],
+        // ];
 
+        console.log('countryJEE')
+        console.log(countryJEE)
+        // const countryJEE = countryJEEQ[0];
+
+
+        // Unused currently
         const caseHistory = await ObservationQuery(6, 'monthly', '2010-01-01', '2018-01-01', country);
-
         const coverageHistory = await ObservationQuery(4, 'yearly', '2010-01-01', '2018-01-01', country);
 
         setDetailsComponent(<Details
