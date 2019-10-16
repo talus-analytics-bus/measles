@@ -3,6 +3,7 @@ import Popup from 'reactjs-popup'
 import axios from 'axios'
 import { Link } from 'react-router-dom'
 import Chart from '../../chart/Chart.js'
+import SlidingLine from './content/SlidingLine.js'
 
 import MiniMap from '../../../components/map/MiniMap.js'
 
@@ -32,6 +33,9 @@ const Details = (props) => {
 
   // Manage loading state (don't show if loading, etc.)
   const [loading, setLoading] = React.useState(true)
+
+  // Track whether the sliding line chart has been drawn
+  const [ slidingLine, setSlidingLine ]  = React.useState(null);
 
   // Get data for current country.
   const country = props.id;
@@ -285,7 +289,27 @@ const Details = (props) => {
 
   // Effect hook to load API data.
   React.useEffect(() => {
-    // getDetailsData();
+
+    const chartParams = {
+      data: props.countryIncidenceHistory,
+    };
+
+    console.log('styles.slidingLine')
+    console.log(styles.slidingLine)
+
+    // Radar chart object defined in ResilienceRadarChart.js.
+    setSlidingLine(
+      new SlidingLine(
+
+        // Selector of DOM element in Resilience.js component where the chart
+        // should be drawn.
+        '.' + styles.slidingLine,
+
+        // Chart parameters consumed by Chart.js and ResilienceRadarChart.js,
+        // defined above.
+        chartParams,
+      )
+    );
   }, [])
 
 
@@ -325,12 +349,14 @@ const Details = (props) => {
                     {
                       'title': 'Immunization capacity',
                       'value_fmt': getScoreJsx,
+                      'hideSource': true,
                       'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'year')}, // TODO
                       ...(props.countryJeeImmun ? props.countryJeeImmun : {value: null}),
                     },
                     {
                       'title': 'Real-time surveillance capacity',
                       'value_fmt': getScoreJsx,
+                      'hideSource': true,
                       'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'year')}, // TODO
                       ...(props.countryJeeSurv ? props.countryJeeSurv : {value: null}),
                     },
@@ -372,11 +398,11 @@ const Details = (props) => {
                       </div>
                       {
                         // Display data source text if available.
-                        (item.data_source && !item.notAvail) &&
+                        (item.data_source && !item.notAvail && !item.hideSource) &&
                           <div className={'dataSource'}>
                             Source: {item.data_source}{ item.updated_at && (
                                 ' as of ' + new Date(item.updated_at).toLocaleString('en-us', {
-                                  month: 'long',
+                                  month: 'short',
                                   year: 'numeric',
                                 })
                               )
@@ -406,6 +432,12 @@ const Details = (props) => {
                     'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'month')},
                     ...(props.countryIncidenceLatest.value !== undefined ? props.countryIncidenceLatest : { value: null }),
                   },
+                  {
+                    'title': 'Incidence over time',
+                    'chart_jsx': () => <div className={styles.slidingLine} />,
+                    'date_time_fmt': Util.getDateTimeRange,
+                    ...(props.countryIncidenceHistory.length > 0 ? { value: props.countryIncidenceHistory } : { value: null }),
+                  },
                 ].map(item =>
                   <div className={styles.item}>
                     <span className={styles.title}>
@@ -414,7 +446,7 @@ const Details = (props) => {
                     <div className={styles.content}>
                       {
                         // Display formatted value and label
-                        (item.value !== null && (
+                        ((item.value !== null && typeof item.value !== 'object') && (
                           <span>
                             <span className={styles.value}>
                               {item.value_fmt(item.value)}
@@ -447,7 +479,7 @@ const Details = (props) => {
                         <div className={'dataSource'}>
                           Source: {item.data_source}{ item.updated_at && (
                               ' as of ' + new Date(item.updated_at).toLocaleString('en-us', {
-                                month: 'long',
+                                month: 'short',
                                 year: 'numeric',
                               })
                             )

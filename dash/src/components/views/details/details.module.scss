@@ -218,7 +218,7 @@ $spacing: 20px;
     margin-top: 10px;
     width: 100%;
     .item {
-      &:not(:last-child) {
+      &:first-child {
         border-bottom: 1px solid #b2b2b2;
         padding-bottom: 10px;
       }
@@ -226,6 +226,13 @@ $spacing: 20px;
         font-family: 'Raleway', sans-serif;
         font-size: 1.1em * 1.18;
       }
+    }
+  }
+
+  .charts {
+    .slidingLine {
+      height: 500px;
+      width: 700px;
     }
   }
 }

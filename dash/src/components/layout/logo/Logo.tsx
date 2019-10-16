@@ -60,7 +60,7 @@ const Logo: React.FC = (props: any) => {
     switch (page) {
       case 'map':
         return 'Showing most recent data as of ' + Util.today().toLocaleString('en-US', {
-          month: 'long',
+          month: 'short',
           year: 'numeric',
           day: 'numeric',
           timeZone: 'UTC',

@@ -169,8 +169,8 @@ const App = () => {
         const countryJeeMcm = countryJeeMcmQ[0];
 
         // Incidence history and latest observation
-        const countryIncidenceHistoryTmp = await ObservationQuery(15, 'monthly', '2019-10-01', '2010-01-01', country);
-        const countryIncidenceHistory = countryIncidenceHistoryTmp
+        const countryIncidenceHistoryFull = await ObservationQuery(15, 'monthly', '2019-10-01', '2010-01-01', country);
+        const countryIncidenceHistory = countryIncidenceHistoryFull
           .filter(d => d.value !== null);
         const countryIncidenceLatest = countryIncidenceHistory.length > 0 ? countryIncidenceHistory[countryIncidenceHistory.length - 1] : {};
 
@@ -194,7 +194,7 @@ const App = () => {
           countryJeeSurv={countryJeeSurv}
           countryJeeMcm={countryJeeMcm}
           caseHistoryQ={caseHistoryQ}
-          countryIncidenceHistory={countryIncidenceHistory}
+          countryIncidenceHistory={countryIncidenceHistoryFull  }
           countryIncidenceLatest={countryIncidenceLatest}
           countryIncidenceQuartile={countryIncidenceQuartile}
           countryVaccHistory={countryVaccHistory}

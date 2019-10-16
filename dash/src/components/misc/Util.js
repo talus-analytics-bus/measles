@@ -3,6 +3,22 @@ import * as d3 from 'd3/dist/d3.min';
 // Utility functions.
 const Util = {};
 
+Util.getDateTimeRange = (item) => {
+  const data = item.value;
+  const first = data[0]['date_time'];
+  const last = data[data.length - 1]['date_time'];
+  const firstStr = new Date(first.replace(/-/g, '/')).toLocaleString('en-us', {
+    month: 'short',
+    year: 'numeric',
+  });
+  const lastStr = new Date(last.replace(/-/g, '/')).toLocaleString('en-us', {
+    month: 'short',
+    year: 'numeric',
+  });
+  if (firstStr === lastStr) return `(${firstStr})`;
+  else return `(${firstStr} to ${lastStr})`;
+};
+
 Util.formatDatetimeApi = (dt) => {
   const year = dt.getFullYear();
   const monthTmp = dt.getMonth() + 1;
@@ -37,7 +53,7 @@ Util.getDatetimeStamp = (datum, type = 'year') => {
   const date_time = datum['date_time'].replace(/-/g, '/');
   if (type === 'month') {
     datetimeStamp = new Date(date_time).toLocaleString('en-US', {
-      month: 'long',
+      month: 'short',
       year: 'numeric',
       timeZone: 'UTC',
     });
@@ -162,7 +178,7 @@ Util.formatDatetime = (input) => {
 }
 Util.formatDate = (input) => {
     return input.toLocaleString('en-us', {
-      month: 'long',
+      month: 'short',
       year: 'numeric',
       day: 'numeric'
     }

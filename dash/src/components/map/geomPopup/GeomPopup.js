@@ -12,7 +12,7 @@ const GeomPopup = ({ popupData }) => {
   console.log(popupData)
 
   const measlesTimestamp = new Date('7/01/2019').toLocaleString('en-us', { // TODO correctly
-    month: 'long',
+    month: 'short',
     year: 'numeric',
   });
 
@@ -164,7 +164,7 @@ const GeomPopup = ({ popupData }) => {
                     <div className={'dataSource'}>
                       Source: {d.dataSource}{ d.dataSourceLastUpdated && ( // TODO remove "false" when this field is ready
                           ' as of ' + new Date(d.dataSourceLastUpdated).toLocaleString('en-us', { // TODO correctly
-                            month: 'long',
+                            month: 'short',
                             year: 'numeric',
                           })
                         )
