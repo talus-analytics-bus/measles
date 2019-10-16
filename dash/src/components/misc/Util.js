@@ -81,6 +81,11 @@ Util.sortByName = (a, b) => {
   return 0;
 };
 
+// Percentize number
+Util.percentize = (val) => {
+  return parseFloat(val).toFixed(0) + "%";
+};
+
 // Format delta value
 Util.percentizeDelta = (deltaTmp) => {
   const delta = Math.abs(deltaTmp);

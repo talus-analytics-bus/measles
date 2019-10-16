@@ -98,8 +98,6 @@ const Details = (props) => {
     };
   };
 
-  console.log('styles')
-  console.log(styles)
   /**
    * Get JSX for rendering JEE scores.
    * @method getScoreJsx
@@ -113,6 +111,101 @@ const Details = (props) => {
     );
   };
 
+  const getVaccinationChartBin = (val) => {
+    // 0, '#d6f0b2',
+    // 0.35, '#b9d7a8',
+    // 0.5, '#7fcdbb',
+    // 0.65, '#41b6c4',
+    // 0.8, '#2c7fb8',
+    // 0.95, '#303d91'
+
+    if (val < 35) {
+      return {
+        i: 0,
+        color: '#d6f0b2',
+      };
+    }
+    else if (val < 5) {
+      return {
+        i: 1,
+        color: '#b9d7a8',
+      };
+    }
+    else if (val < 65) {
+      return {
+        i: 2,
+        color: '#7fcdbb',
+      };
+    }
+    else if (val < 8) {
+      return {
+        i: 3,
+        color: '#41b6c4',
+      };
+    }
+    else if (val < 95) {
+      return {
+        i: 4,
+        color: '#2c7fb8',
+      };
+    }
+    else if (val <= 100) {
+      return {
+        i: 5,
+        color: '#303d91',
+      };
+    } else {
+      return {
+        i: -9999,
+        color: 'gray',
+      };
+    }
+  };
+
+  /**
+   * Get vaccination chart JSX.
+   * @method getVaccChart
+   */
+  const getVaccChart = (val) => {
+    // Get vaccination chart bins
+    const binData = getVaccinationChartBin(val);
+    return (
+      <div className={classNames(styles.chart, styles.vaccChart)}>
+        {
+          [0,1,2,3,4,5].map(bin =>
+            <div className={styles.rectContainer}>
+              <div
+              className={classNames(
+                styles.rect,
+                {
+                  [styles.active]: bin === binData.i,
+                }
+              )}
+              style={{
+                // 'border-color': bin === binData.i ? 'gray' : '',
+                'background-color': bin === binData.i ? binData.color : '',
+                'color': binData.i > 3 ? 'white' : '',
+              }}
+              >
+                {
+                  binData.i === bin ? Util.percentize(val) : ''
+                }
+              </div>
+              {
+                // Label if first
+                (bin === 0) && <div className={styles.labelLeft}>Low<br/>coverage</div>
+              }
+              {
+                // Label if last
+                (bin === 5) && <div className={styles.labelRight}>High<br/>coverage</div>
+              }
+            </div>
+          )
+        }
+      </div>
+    )
+  };
+
   // Effect hook to load API data.
   React.useEffect(() => {
     // getDetailsData();
@@ -120,6 +213,8 @@ const Details = (props) => {
 
 
   // If loading do not show JSX content.
+  console.log('props')
+  console.log(props)
   if (false) return (<div></div>);
   else {
 
@@ -141,8 +236,6 @@ const Details = (props) => {
                       'value_fmt': Util.comma,
                       'value_label': 'people',
                       'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'year')}, // TODO
-                      // 'dataSource': obs['data_source'],
-                      // 'dataSourceLastUpdated': new Date (obs['updated_at']),
                       ...props.countryPop,
                     },
                     {
@@ -199,26 +292,93 @@ const Details = (props) => {
                             </span>
                           ))
                         }
-                        {
-                          // Display data source text if available.
-                          (item.data_source && !item.notAvail) &&
-                            <div className={'dataSource'}>
-                              Source: {item.data_source}{ item.updated_at && (
-                                  ' as of ' + new Date(item.updated_at).toLocaleString('en-us', {
-                                    month: 'long',
-                                    year: 'numeric',
-                                  })
-                                )
-                              }
-                            </div>
-                        }
                       </div>
-
+                      {
+                        // Display data source text if available.
+                        (item.data_source && !item.notAvail) &&
+                          <div className={'dataSource'}>
+                            Source: {item.data_source}{ item.updated_at && (
+                                ' as of ' + new Date(item.updated_at).toLocaleString('en-us', {
+                                  month: 'long',
+                                  year: 'numeric',
+                                })
+                              )
+                            }
+                          </div>
+                      }
                     </div>
                   )
                 }
               </div>
-              <div className={styles.main} />
+              <div className={styles.main}>
+              {
+                [
+                  {
+                    'title': 'Vaccination coverage',
+                    'chart_jsx': getVaccChart,
+                    'value_fmt': Util.percentize,
+                    'value_label': 'of infants',
+                    'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'year')},
+                    ...(props.countryVaccLatest.value !== undefined ? props.countryVaccLatest : { value: null }),
+                  },
+                  {
+                    'title': 'Monthly incidence of measles',
+                    'value_fmt': (val) => val, // TODO
+                    'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'month')},
+                    ...(props.countryIncidenceLatest.value !== undefined ? props.countryIncidenceLatest : { value: null }),
+                  },
+                ].map(item =>
+                  <div className={styles.item}>
+                    <span className={styles.title}>
+                      {item.title} {item.date_time_fmt(item)}
+                    </span>
+                    <div className={styles.content}>
+                      {
+                        // Display formatted value and label
+                        (item.value !== null && (
+                          <span>
+                            <span className={styles.value}>
+                              {item.value_fmt(item.value)}
+                            </span>
+                            {
+                              item.value_label && <span className={styles.label}>
+                                &nbsp;{item.value_label}
+                              </span>
+                            }
+                          </span>
+                        ))
+                      }
+                      {
+                        // Data not available message, if applicable.
+                        (item.value === null && (
+                          <span className={'notAvail'}>
+                            Data not available
+                          </span>
+                        ))
+                      }
+                      {
+                        // Display chart if there is one
+                        (item.chart_jsx !== undefined) &&
+                          item.chart_jsx(item.value)
+                      }
+                    </div>
+                    {
+                      // Display data source text if available.
+                      (item.data_source && !item.notAvail) &&
+                        <div className={'dataSource'}>
+                          Source: {item.data_source}{ item.updated_at && (
+                              ' as of ' + new Date(item.updated_at).toLocaleString('en-us', {
+                                month: 'long',
+                                year: 'numeric',
+                              })
+                            )
+                          }
+                        </div>
+                    }
+                  </div>
+                )
+              }
+              </div>
             </div>
     );
   }

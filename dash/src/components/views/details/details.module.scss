@@ -14,96 +14,159 @@ $spacing: 20px;
     background-color: #f1f1f1;
     padding: $spacing;
     margin-left: $spacing*2;
+    margin-right: $spacing*2;
     max-width: 30%;
     min-width: 390px;
+  }
+  .title {
+    // Name of country or "Global caseload"
+    display: flex;
+    flex-flow: row;
+    align-items: center;
 
-    > .title {
-      // Name of country or "Global caseload"
+    font-family: 'Raleway', serif;
+    font-weight: bold;
+    font-size: 1.8em;
+    line-height: 1;
+    // font-size: 2.2em;
+    color: black;
+    // margin-bottom: $spacing;
+
+    .flag {
+      height: 75px;
+      margin-right: $spacing;
+    }
+  }
+
+  .map {
+
+    height: 350px;
+    width: 513px;
+
+    // TODO confirm cross-browser compat.
+    transform: scale(.75);
+    transform-origin: top left;
+    margin-bottom: -90px;
+    // margin-right: -125px;
+
+    &, & * { cursor: default };
+
+    img {
+
+    }
+
+  }
+
+  .item {
+    display: flex;
+    flex-flow: column;
+    margin-top: $spacing;
+    // max-width: 800px;
+
+    .title {
+      color: $dark-grey;
+      font-family: 'Open Sans', sans-serif;
+      font-size: 1.1em;
+      // font-size: 1.46em;
+      font-weight: bold;
+
+      .info {
+        // TODO
+        img {
+          // TODO
+        }
+      }
+    }
+
+    .content {
       display: flex;
       flex-flow: row;
-      align-items: center;
+      justify-content: space-between;
 
-      font-family: 'Raleway', serif;
-      font-weight: bold;
-      font-size: 1.8em;
-      line-height: 1;
-      // font-size: 2.2em;
-      color: black;
-      // margin-bottom: $spacing;
-
-      .flag {
-        height: 75px;
-        margin-right: $spacing;
+      .value {
+        font-size: 2em;
       }
-    }
-
-    .map {
-
-      height: 350px;
-      width: 513px;
-
-      // TODO confirm cross-browser compat.
-      transform: scale(.75);
-      transform-origin: top left;
-      margin-bottom: -90px;
-      // margin-right: -125px;
-
-      &, & * { cursor: default };
-
-      img {
-
-      }
-
-    }
-
-    .item {
-      display: flex;
-      flex-flow: column;
-      margin-top: $spacing;
-
-      .title {
-        color: $dark-grey;
-        font-family: 'Open Sans', sans-serif;
+      .label {
         font-size: 1.1em;
-        // font-size: 1.46em;
+      }
+      .value {
+        color: black;
+        font-family: 'rawline', serif;
         font-weight: bold;
 
-        .info {
-          // TODO
-          img {
-            // TODO
-          }
+        .jee {
+          padding-left: 5px;
+          padding-bottom: 5px;
+          margin-top: 5px;
+          line-height: 2.5;
+          font-size: .8em;
+          &.green { border-color: $jee-green; }
+          &.yellow { border-color: $jee-yellow; }
+          &.red { border-color: $jee-red; }
+          &.gray { border-color: $jee-gray; }
         }
       }
-
-      .content {
+      .label {
+        color: $dark-grey;
+        font-family: 'Open Sans', sans-serif;
+      }
+      .chart {
         display: flex;
-        flex-flow: column;
-        .value, .label {
-          font-size: 1.57em;
-        }
-        .value {
-          color: black;
-          font-family: 'rawline', serif;
-          font-weight: bold;
+        flex-flow: row;
+        position: relative;
+        margin-bottom: 50px;
 
-          .jee {
-            padding-left: 5px;
-            &.green { border-color: $jee-green; }
-            &.yellow { border-color: $jee-yellow; }
-            &.red { border-color: $jee-red; }
-            &.gray { border-color: $jee-gray; }
+        $rect-height: 30px;
+        .rect {
+          font-family: 'rawline', serif;
+          font-weight: 600;
+          font-size: 1.4em;
+          background-color: $light-grey-2;
+          width: $rect-height*2;
+          height: $rect-height - 2px;
+          margin-right: 2px;
+          text-align: center;
+          padding-bottom: 2px;
+          line-height: $rect-height - 2px;
+
+          border: 2.5px solid transparent;
+
+          &.active {
+            box-shadow: 2px 2px 5px 0 rgba(0, 0, 0, 0.68);
+            -webkit-box-shadow: 2px 2px 5px 0 rgba(0, 0, 0, 0.68);
           }
         }
-        .label {
-          color: $dark-grey;
-          font-family: 'Open Sans', sans-serif;
+        .labelLeft, .labelRight {
+          position: absolute;
+          white-space: nowrap;
+          line-height: 1;
+          margin-top: 10px;
         }
-      }
-      .source {
-        // Just use .dataSource from index.scss
+        .labelLeft {}
+        .labelRight {
+          right: 0;
+          text-align: right;
+        }
       }
     }
+  }
+  .source {
+    // Just use .dataSource from index.scss
+  }
 
+  .main {
+    margin-right: $spacing*2;
+    margin-top: 10px;
+    width: 100%;
+    .item {
+      &:not(:last-child) {
+        border-bottom: 1px solid #b2b2b2;
+        padding-bottom: 10px;
+      }
+      .title {
+        font-family: 'Raleway', sans-serif;
+        font-size: 1.1em * 1.18;
+      }
+    }
   }
 }

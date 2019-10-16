@@ -140,9 +140,16 @@ const App = () => {
         const countryJeeMcmQ = await ObservationQuery(18, 'occasion', undefined, undefined, country);
         const countryJeeMcm = countryJeeMcmQ[0];
 
-        // Unused currently
-        const caseHistory = await ObservationQuery(6, 'monthly', '2010-01-01', '2018-01-01', country);
-        const coverageHistory = await ObservationQuery(4, 'yearly', '2010-01-01', '2018-01-01', country);
+        // Incidence history and latest observation
+        const countryIncidenceHistory = await ObservationQuery(15, 'monthly', '2019-10-01', '2010-01-01', country);
+        const countryIncidenceLatest = countryIncidenceHistory.length > 0 ? countryIncidenceHistory[countryIncidenceHistory.length - 1] : {};
+
+        // Vacc. coverage history and latest observation
+        const countryVaccHistory = await ObservationQuery(4, 'yearly', '2018-01-01', '2010-01-01', country);
+        const countryVaccLatest = countryVaccHistory.length > 0 ? countryVaccHistory[countryVaccHistory.length - 1] : {};
+
+        // Currently unused
+        const caseHistoryQ = await ObservationQuery(6, 'monthly', '2010-01-01', '2018-01-01', country);
 
         setDetailsComponent(<Details
           id={country}
@@ -153,8 +160,11 @@ const App = () => {
           countryJeeImmun={countryJeeImmun}
           countryJeeSurv={countryJeeSurv}
           countryJeeMcm={countryJeeMcm}
-          caseHistory={caseHistory}
-          coverageHistory={coverageHistory}
+          caseHistoryQ={caseHistoryQ}
+          countryIncidenceHistory={countryIncidenceHistory}
+          countryIncidenceLatest={countryIncidenceLatest}
+          countryVaccHistory={countryVaccHistory}
+          countryVaccLatest={countryVaccLatest}
         />);
       }
       getDetailsData(id);
