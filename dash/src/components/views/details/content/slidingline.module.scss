@@ -8,20 +8,12 @@
   path {
     fill: none;
     stroke: $value-red;
-    // stroke: #5781ab;
     stroke-width: 3px;
     stroke-linecap: round;
     stroke-linejoin: round;
     clip-path: url('#plotArea');
   }
 }
-// .lineNull {
-//   path {
-//     stroke-dasharray: 4;
-//     stroke-width: 3px;
-//     stroke: lighten(#5781ab, 15%);
-//   }
-// }
 .lineVacc {
   path {
     stroke: #333333;

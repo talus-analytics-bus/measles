@@ -287,6 +287,41 @@ const Details = (props) => {
     )
   };
 
+  /**
+   * Render sliding line chart containers and legend.
+   * @method getSlidingLineJsx
+   */
+  const getSlidingLineJsx = () => {
+    return (
+      <div className={styles.slidingLineContainer}>
+        <div className={styles.slidingLineLegend}>
+          {
+            [
+              {
+                label: 'Monthly incidence',
+                class: styles.monthlyIncidence,
+              },
+              {
+                label: 'Vaccination coverage',
+                class: styles.vaccinationCoverage,
+              },
+            ].map(entry =>
+              <div className={styles.entry}>
+                <svg width="18" height="10">
+                  <line className={classNames(styles.symbol, entry.class)} x1="0" x2="18" y1="5" y2="5" />
+                </svg>
+                <div className={styles.label}>
+                  {entry.label}
+                </div>
+              </div>
+            )
+          }
+        </div>
+        <div className={styles.slidingLine} />
+      </div>
+    );
+  };
+
   // Effect hook to load API data.
   React.useEffect(() => {
 
@@ -443,7 +478,7 @@ const Details = (props) => {
                   },
                   {
                     'title': 'Incidence over time',
-                    'chart_jsx': () => <div className={styles.slidingLine} />,
+                    'chart_jsx': getSlidingLineJsx,
                     'date_time_fmt': Util.getDateTimeRange,
                     ...(props.countryIncidenceHistory.length > 0 ? { value: props.countryIncidenceHistory } : { value: null }),
                   },

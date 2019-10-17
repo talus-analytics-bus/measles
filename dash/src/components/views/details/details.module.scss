@@ -219,7 +219,8 @@ $spacing: 20px;
     margin-top: 10px;
     width: 100%;
     .itemContainer {
-      &:first-child {
+      &:not(:last-child) {
+      // &:first-child {
         border-bottom: 1px solid #b2b2b2;
         padding-bottom: 10px;
       }
@@ -235,10 +236,44 @@ $spacing: 20px;
   }
 
   $slidingLineWidth: 725px;
-  .slidingLine {
-    height: $slidingLineWidth/2.2;
-    width: $slidingLineWidth;
-    margin-left: 20px;
-    // Other styles for this chart are in slidingline.module.scss
+  .slidingLineContainer {
+    .slidingLineLegend {
+      display: flex;
+      flex-flow: row;
+      .entry {
+        display: flex;
+        flex-flow: row;
+        align-items: center;
+        margin-right: 20px;
+        .symbol {
+          width: 20px;
+          height: 0;
+          border-top: 2px solid black;
+          margin-right: 5px;
+          &.monthlyIncidence {
+            stroke: $value-red;
+            stroke-width: 3px;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+          }
+          &.vaccinationCoverage {
+            stroke: #333333;
+            stroke-width: 1.5px;
+            stroke-dasharray: 6, 6;
+            stroke-linecap: square;
+          }
+        }
+        .label {
+          font-size: .9em;
+          margin-left: 5px;
+        }
+      }
+    }
+    .slidingLine {
+      height: $slidingLineWidth/2.2;
+      width: $slidingLineWidth;
+      margin-left: 20px;
+      // Other styles for this chart are in slidingline.module.scss
+    }
   }
 }
