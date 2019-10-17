@@ -72,31 +72,31 @@ const Details = (props) => {
   const getScoreLabeling = (score) => {
   	if (score < 1.5) {
       return {
-        label: 'No capacity',
+        label: 'None',
         color: 'red',
         value: score,
       };
   	} else if (score < 2.5) {
       return {
-        label: 'Limited capacity',
+        label: 'Limited',
         color: 'yellow',
         value: score,
       };
   	} else if (score < 3.5) {
       return {
-        label: 'Developed capacity',
+        label: 'Developed',
         color: 'yellow',
         value: score,
       };
   	} else if (score < 4.5) {
       return {
-        label: 'Demonstrated capacity',
+        label: 'Demonstrated',
         color: 'green',
         value: score,
       };
     }
     return {
-      label: 'Sustainable capacity',
+      label: 'Sustainable',
       color: 'green',
       value: score,
     };
