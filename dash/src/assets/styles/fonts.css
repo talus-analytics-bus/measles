@@ -26,6 +26,15 @@
   url(../fonts/openSans/regular/OpenSans-Regular.eot) format('eot');
 }
 
+/* Open Sans */
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 600;
+  src: local('Open Sans'), local('OpenSans-Semibold'),
+  url(../fonts/openSans/semibold/OpenSans-Semibold.ttf) format('ttf'),
+}
+
 @font-face {
   font-family: 'Open Sans';
   font-style: normal;

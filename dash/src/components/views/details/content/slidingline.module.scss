@@ -1,1 +1,52 @@
 @import '../../../../assets/styles/colors.scss';
+.drawn {
+  width: 0 !important;
+}
+.lineValue,
+.lineVacc,
+.lineNull {
+  path {
+    fill: none;
+    stroke: $value-red;
+    // stroke: #5781ab;
+    stroke-width: 3px;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    clip-path: url('#plotArea');
+  }
+}
+.lineNull {
+  path {
+    stroke-dasharray: 4;
+    stroke-width: 3px;
+    stroke: lighten(#5781ab, 15%);
+  }
+}
+.lineVacc {
+  path {
+    stroke: #333333;
+    stroke-width: 1px;
+    stroke-dasharray: 4;
+    stroke-linecap: square;
+  }
+}
+.areaNull {
+  path {
+    // stroke: green;
+    fill: $light-grey-2;
+  }
+}
+
+.x-axis, .y-axis {
+  .label {
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 600;
+    text-align: center;
+    fill: $dark-grey;
+    text-anchor: middle;
+    font-size: 2em;
+  }
+}
+.y-axis .label {
+  transform: rotate(-90deg);
+}

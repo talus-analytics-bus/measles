@@ -290,8 +290,17 @@ const Details = (props) => {
   // Effect hook to load API data.
   React.useEffect(() => {
 
+    // For sliding line chart, only use "trimmed" data.
+
     const chartParams = {
       data: props.countryIncidenceHistory,
+      vaccData: props.countryVaccHistory,
+      margin: {
+        top: 20,
+        right: 30,
+        bottom: 20,
+        left: 60,
+      },
     };
 
     // Sliding line chart defined in SlidingLine.js
@@ -424,7 +433,7 @@ const Details = (props) => {
                     ...(props.countryVaccLatest.value !== undefined ? props.countryVaccLatest : { value: null }),
                   },
                   {
-                    'title': 'Monthly incidence of measles',
+                    'title': 'Recent monthly incidence of measles',
                     'chart_jsx': getWedgeChart,
                     'value_fmt': Util.formatIncidence,
                     'value_label': 'cases per 1M population',

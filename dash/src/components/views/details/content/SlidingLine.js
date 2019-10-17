@@ -1,5 +1,6 @@
 import * as d3 from 'd3/dist/d3.min';
 import Chart from "../../../chart/Chart.js";
+import styles from './slidingline.module.scss';
 
 class SlidingLine extends Chart {
   constructor(
@@ -10,222 +11,326 @@ class SlidingLine extends Chart {
     super(selector, params);
 
     this.params = params;
-    this.data = params.data;
+
+    this.data = {
+      vals: null,
+      vaccVals: null,
+    };
+    this.data.vals = params.data
+    this.data.vaccVals = params.vaccData || null
+      // .filter(d => d.value);
 
     // Get min and max time from data.
     const minTime = new Date(
-      this.data[0]['date_time'].replace(/-/g, '/')
+      this.data.vals[0]['date_time'].replace(/-/g, '/')
     );
     const maxTime = new Date(
-      this.data[this.data.length - 1]['date_time'].replace(/-/g, '/')
+      this.data.vals[this.data.vals.length - 1]['date_time'].replace(/-/g, '/')
     );
 
+    // [ min, max ]
     this.xDomainDefault = [minTime, maxTime];
-    // this.margin = {}; // TODO
+
+    // Get max incidence from data.
+    // [ max, min ]
+    this.yDomainDefault = [d3.max(this.data.vals, d => d.value), 0];
 
     this.init();
   }
 
   draw() {
 
-    if (this.data.length < 1) {
+    const chart = this;
+    console.log('chart');
+    console.log(chart);
+
+    // Create clipping path
+    // <defs>
+    //   <clipPath id="cut-off-bottom">
+    //     <rect x="0" y="0" width="200" height="500" />
+    //   </clipPath>
+    // </defs>
+    //
+    chart.svg.append('defs')
+      .append('clipPath')
+        .attr('id', 'plotArea')
+        .append('rect')
+          .attr('x', 0)
+          .attr('y', 0)
+          .attr('width', chart.width)
+          .attr('height', chart.height)
+
+    if (chart.data.vals.length < 1) {
       // TODO show "no data" message
       return
     }
 
-    // x scale: Time
+    // x scale: Time - main chart
     // global min/max to start
-    console.log('this')
-    console.log(this)
     const x = d3.scaleTime()
       .domain(this.xDomainDefault) // min and max time vary w. window size
-      .range([0, 500]); // always fixed
+      .range([0, chart.width])
+      .clamp(true); // always fixed
 
-    console.log('x')
-    console.log(x)
+    // x axis - main chart
+    const xAxis = d3.axisBottom()
+      .scale(x);
+    const xAxisG = chart.newGroup(styles['x-axis'])
+      .attr('transform', `translate(0, ${chart.height})`)
+      .call(xAxis);
 
-  //   this.radii = {
-  //     chart: chartRadius,
-  //     spoke: chartRadius *.12,
-  //     innerMax: chartRadius * .78,
-  //     outerMax: chartRadius * 1,
-  //   };
-  //
-  //   // Add chart container
-  //   this.origin = this.newGroup('origin')
-  //     .attr('transform', `translate(${this.width / 2}, ${this.height / 2})`);
-  //
-  //   // Add chart base circle
-  //
-  //   // Define scales mapping resilience domains to angles.
-  //   const pi = Math.PI;
-  //   const baseStartAngle = (360 / domainsLowerCase.length) * (pi / 180);
-  //
-  //   const angleScale = d3.scaleOrdinal()
-  //   .domain(domainsLowerCase)
-  //   .range(
-  //     domainsLowerCase.map(
-  //       (d, i) => {
-  //         return (baseStartAngle * i);
-  //       }
-  //     )
-  //   );
-  //
-  //   // Add fake arcs shape
-  //   const getArcShape = (datum, type) => {
-  //     const startAngle = angleScale(datum.name);
-  //     const endAngle = angleScale(datum.name) + (baseStartAngle);
-  //     datum.labelAngle = ((startAngle + endAngle) / 2) * (180 / pi);
-  //     switch (type) {
-  //       case 'section':
-  //         return d3.arc()
-  //           .innerRadius(0)
-  //           .outerRadius(this.radii.outerMax)
-  //           .startAngle(startAngle)
-  //           .endAngle(endAngle);
-  //       case 'domain-label':
-  //         return d3.arc()
-  //           .innerRadius(this.radii.innerMax)
-  //           .outerRadius(this.radii.outerMax)
-  //           .startAngle(startAngle)
-  //           .endAngle(endAngle);
-  //       case 'section-background':
-  //         return d3.arc()
-  //           .innerRadius(0)
-  //           .outerRadius(this.radii.innerMax)
-  //           .startAngle(startAngle)
-  //           .endAngle(endAngle);
-  //       case 'slice':
-  //         return d3.arc()
-  //           .innerRadius(0)
-  //           // .outerRadius(datum.frac * this.radii.innerMax)
-  //           .startAngle(startAngle)
-  //           .endAngle(endAngle);
-  //       default:
-  //         return null;
-  //     }
-  //   };
-  //
-  //   // Create text circle.
-  //   const circleGen = () => {
-  //     const radius = this.radii.outerMax;
-  //
-  //     //set defaults
-  //     var r = function(d) { return d.radius; },
-  //         x = function(d) { return d.x; },
-  //         y = function(d) { return d.y; };
-  //
-  //     //returned function to generate circle path
-  //     function circle(d) {
-  //       var cx = 0,
-  //           cy = 0,
-  //           myr = radius;
-  //
-  //       return "M" + cx + " " + cy + " " +
-  //              "m" + " 0 " + myr +
-  //              "a" + myr + " " + myr + " 0 0 1 " + " 0 "  + -myr*2 +
-  //              "a" + myr + " " + myr + " 0 0 1 " + " 0 " + myr*2 + "Z";
-  //     }
-  //
-  //     //getter-setter methods
-  //     circle.r = function(value) {
-  //       if (!arguments.length) return r; r = value; return circle;
-  //     };
-  //     circle.x = function(value) {
-  //       if (!arguments.length) return x; x = value; return circle;
-  //     };
-  //     circle.y = function(value) {
-  //       if (!arguments.length) return y; y = value; return circle;
-  //     };
-  //
-  //     return circle;
-  //   }
-  //   const textCircle = circleGen()
-  //    .x(function(d) { return 0; })
-  //    .y(function(d) { return 0; })
-  //    .r(function(d) { return this.radii.outerMax; });
-  //
-  //  // Create arcs group.
-  //  const arcs = this.newGroup('arcs', this.origin);
-  //
-  //   arcs.append('path')
-  //     .attr('class','textCircle')
-  //     .attr('id','textCircle')
-  //     .attr('d', textCircle);
-  //
-  //   // Add each pie slice background.
-  //   arcs.selectAll('path.section-background')
-  //     .data(this.data).enter()
-  //     .append("path")
-  //       .each((d) => {
-  //         d.arcShape = getArcShape(d, 'section-background');
-  //       })
-  //       .attr("d", (d) => d.arcShape())
-  //       .attr('class', 'section-background')
-  //       .attr('fill', '#f2f2f2')
-  //       .attr('stroke-width', '0')
-  //       .attr('stroke', 'none');
-  //
-  //   // Add each pie slice and domain label.
-  //   const setDomainData = this.params.setDomain;
-  //   const sections = arcs.selectAll('g.sections')
-  //     .data(this.data).enter()
-  //     .append('g')
-  //       .attr('class', 'sections')
-  //       .attr('data-tip', true)
-  //       .attr('data-for', 'radar-chart-tooltip')
-  //       .on('mouseover', function (d) {
-  //         setDomainData(d);
-  //       });
-  //
-  //   // Add each arc.
-  //   sections
-  //     .append("path")
-  //     .each((d) => {
-  //       d.arcShape = getArcShape(d, 'slice');
-  //     })
-  //     .attr('class', (d) => d.name.toLowerCase() + ' slice')
-  //     .attr('stroke-width', '0')
-  //     .attr('stroke', 'none')
-  //     .attr("d", (d) => d.arcShape({outerRadius: 0.01 * this.radii.innerMax}))
-  //     .transition(0)
-  //     .delay(0)
-  //     .duration(1000)
-  //     .attr("d", (d) => d.arcShape({outerRadius: d.frac * this.radii.innerMax}))
-  //
-  //   // Add domain sections (biggest triangles).
-  //   sections
-  //     .append("path")
-  //     .each((d) => {
-  //         d.arcShape = getArcShape(d, 'section');
-  //         d.labelArcShape = getArcShape(d, 'domain-label');
-  //       })
-  //       .attr("d", (d) => d.arcShape())
-  //       .attr('class', 'section')
-  //       .attr('stroke', '#cccccc')
-  //       .attr('fill', 'transparent')
-  //       .attr('stroke-width', '2px');
-  //
-  //
-  //   // Add domain labels.
-  //   const usingFirefox = navigator.userAgent.search('Firefox') > -1;
-  //   sections.append('text')
-  //     .attr('textLength', d => usingFirefox ? d.name.length * 1.25 *12.5 : undefined)
-  //     .attr('transform', 'rotate(180)')
-  //     .attr('dy','40')
-  //     .append('textPath')
-  //       .attr('href', '#textCircle')
-  //       .attr('startOffset', d => `${(100 * (d.labelAngle / 360))}%`)
-  //       .text(d => d.name.toUpperCase());
-  //
-  //   // Add spoke
-  //   const spoke = this.newGroup('spoke', this.origin);
-  //   spoke.append('circle')
-  //     .attr('cx', 0)
-  //     .attr('cy', 0)
-  //     .attr('r', this.radii.spoke)
-  //     .attr('fill', 'white')
-  //     .attr('stroke', 'none');
+    // y scale: incidence - main chart
+    // Never changes
+    const y = d3.scaleLinear()
+      .domain(chart.yDomainDefault)
+      .range([0, chart.height])
+
+    // y scale: vacc cov. - main chart
+    // Never changes
+    const yRight = d3.scaleLinear()
+      .domain([100, 0])
+      .range([0, chart.height])
+
+    // y axis - main chart - left
+    const yAxis = d3.axisLeft()
+      .scale(y);
+    const yAxisG = chart.newGroup(styles['y-axis'])
+      .call(yAxis);
+
+    // y axis - main chart - right
+    const yAxisRight = d3.axisRight()
+      .scale(yRight);
+    const yAxisGRight = chart.newGroup('y-axis-right')
+      .attr('transform', `translate(${chart.width}, 0)`)
+      .call(yAxisRight);
+
+    // Define line function - main chart
+    const line = d3.line()
+      .x(d => x(new Date(d.date_time.replace(/-/g, '/'))))
+      .y(d => y(d.value));
+    const lineVacc = d3.line()
+      .x(d => x(new Date(d.date_time.replace(/-/g, '/'))))
+      .y(d => yRight(d.value));
+
+    // Define rectangle area function - main chart, nulls
+    const area = d3.area()
+    .x(d => x(
+      new Date(d.date_time.replace(/-/g, '/'))
+    ))
+    .y0(chart.height)
+		.y1(0);
+
+    // Get "value" line segments -- all segments where data are available (not
+    // null).
+    const getValueLineSegments = () => {
+      const valueLineSegments = [];
+      let start, end, prev;
+      let segment = [];
+      chart.data.vals.forEach(datum => {
+
+        // If no start and datum not-null, datum is start
+        // If there was a previous datum, also include it
+        if (!start && datum.value !== null) {
+          start = datum;
+          if (prev) segment.push(prev);
+          segment.push(datum);
+          // console.log('If no start and datum not-null, datum is start')
+          prev = datum;
+          return;
+        }
+        // If no start and datum null, continue
+        if (!start && datum.value === null) {
+          // console.log('If no start and datum null, continue')
+          prev = datum;
+          return;
+        }
+        // If start and datum not-null, push to segment
+        if (start && datum.value !== null) {
+          segment.push(datum);
+          // console.log('If start and datum not-null, push to segment')
+          prev = datum;
+          return;
+        }
+        // If start and datum null, push to segment, and start new one
+        if (start && datum.value === null) {
+          // segment.push(datum);
+          start = undefined;
+          valueLineSegments.push(segment);
+          segment = [];
+          // console.log('If start and datum null, push to segment, and start new one')
+          prev = datum;
+          return;
+        }
+        // console.log('Error: reached unreachable state');
+      });
+
+      if (segment.length > 0) {
+        // console.log('segment - ending')
+        // console.log(segment)
+        valueLineSegments.push(segment);
+        segment = [];
+        // console.log('If ending segment has values, push them')
+      }
+      // console.log('valueLineSegments')
+      // console.log(valueLineSegments)
+      return valueLineSegments;
+    };
+
+    // Get "value" line segments -- all segments where data are available (not
+    // null).
+    const getNullLineSegments = () => {
+      const valueLineSegments = [];
+      let start, end, prev;
+      let segment = [];
+      chart.data.vals.forEach(datum => {
+
+        // If no start and datum not-null, datum is start
+        // If there was a previous datum, also include it
+        if (!start && datum.value === null) {
+          start = datum;
+          if (prev) segment.push(prev);
+          segment.push(datum);
+          // console.log('If no start and datum not-null, datum is start')
+          prev = datum;
+          return;
+        }
+        // If no start and datum null, continue
+        if (!start && datum.value !== null) {
+          // console.log('If no start and datum null, continue')
+          prev = datum;
+          return;
+        }
+        // If start and datum not-null, push to segment
+        if (start && datum.value === null) {
+          segment.push(datum);
+          // console.log('If start and datum not-null, push to segment')
+          prev = datum;
+          return;
+        }
+        // If start and datum null, push to segment, and start new one
+        if (start && datum.value !== null) {
+          // segment.push(datum);
+          start = undefined;
+          valueLineSegments.push(segment);
+          segment = [];
+          // console.log('If start and datum null, push to segment, and start new one')
+          prev = datum;
+          return;
+        }
+        // console.log('Error: reached unreachable state');
+      });
+
+      if (segment.length > 0) {
+        // console.log('segment - ending')
+        // console.log(segment)
+        valueLineSegments.push(segment);
+        segment = [];
+        // console.log('If ending segment has values, push them')
+      }
+      // console.log('nullLineSegments')
+      // console.log(valueLineSegments)
+      return valueLineSegments;
+    };
+
+    // Add line to chart
+    const valueLineSegments = getValueLineSegments();
+    chart.newGroup(styles.lineValue)
+      .selectAll('path')
+      .data(valueLineSegments)
+      .enter().append('path')
+        .attr('d', d => line(d));
+
+    // Add null areas to chart
+    const nullLineSegments = getNullLineSegments();
+    chart.newGroup(styles.areaNull)
+      .selectAll('path')
+      .data(nullLineSegments)
+      .enter().append('path')
+        .attr('d', d => area(d));
+
+    // Add vaccination line to chart
+    const formatVaccVals = () => {
+      const output = [];
+      const vals = chart.data.vaccVals;
+      chart.data.vaccVals.forEach((v, i) => {
+
+        // For first val do nothing special
+        if (i === 0) {
+          output.push(v);
+          return
+        }
+
+        // For all other values, append the value, and also a fake point that
+        // has the last point's value and this point's datetime.
+        const fakePoint = {
+          value: vals[i-1].value,
+          date_time: v.date_time,
+        };
+        output.push(fakePoint);
+        output.push(v);
+        if (i === vals.length - 1) {
+          const pointDt = new Date(v.date_time.replace(/-/g, '/'));
+          const year = pointDt.getUTCFullYear();
+          pointDt.setUTCFullYear(year + 1);
+          const fakeDtStr = pointDt.toString();
+          const fakeFuturePoint = {
+            value: v.value,
+            date_time: fakeDtStr,
+          };
+          output.push(fakeFuturePoint);
+        }
+      });
+      // Sort
+      const sortByDtString = (aTmp, bTmp) => {
+        const a = new Date(aTmp.date_time.replace(/-/g, '/'));
+        const b = new Date(bTmp.date_time.replace(/-/g, '/'));
+        if (a > b) return 1;
+        if (a < b) return -1;
+        else return 0;
+      };
+      return output;
+      // return output.sort(sortByDtString);
+    };
+    const vaccLineData = formatVaccVals();
+    chart.newGroup(styles.lineVacc)
+      .selectAll('path')
+      .data([vaccLineData])
+      .enter().append('path')
+        .attr('d', d => lineVacc(d));
+
+
+    // Add axis labels
+    // TODO make y-axis label not clash with tick labels
+    chart[styles['y-axis']].append('text')
+      .attr('class', styles.label)
+      .attr('x', -chart.height / 2)
+      .attr('y', -chart.margin.left + 15)
+      .text('Monthly incidence of measles');
+
+    // chart[styles['x-axis']].append('text')
+    //   .attr('class', styles.label)
+      // .attr('x', chart.width / 2)
+      // .attr('y', chart.margin.bottom)
+    //   .text('Time');
+    //
+
+    // Reduce width at the end
+    chart.svg.node().parentElement.classList.add(styles.drawn);
+
+    // TODO build rest of chart
+
+    // Update function: Draw lines, add tooltips, etc.
+    // Assumption: Data themselves do not change.
+    chart.update = () => {
+      console.log('chart.update()');
+
+      // Draw incidence line (solid blue, no label)
+
+
+      // Draw vaccination coverage line (dashed black, labeled, perhaps with
+      // year every time it "steps" if we are zoomed in enough?)
+      // TODO
+    };
   }
 }
 

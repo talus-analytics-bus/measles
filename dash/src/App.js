@@ -197,8 +197,38 @@ const App = () => {
         const countryJeeMcm = results.countryJeeMcmQ[0];
 
         // Incidence history and latest observation
+        // Do not show null values in data for now
+        const foundNotNullVal = {
+          fromStart: false,
+          fromEnd: false,
+        };
         const countryIncidenceHistory = results.countryIncidenceHistoryFull
-          .filter(d => d.value !== null);
+            .filter(d => {
+              if (foundNotNullVal.fromStart) return true;
+              else {
+                if (d.value === null) return false;
+                else {
+                  foundNotNullVal.fromStart = true;
+                  return true;
+                }
+              }
+            })
+            .reverse()
+            .filter(d => {
+              if (foundNotNullVal.fromEnd) return true;
+              else {
+                if (d.value === null) return false;
+                else {
+                  foundNotNullVal.fromEnd = true;
+                  return true;
+                }
+              }
+            })
+            .reverse();
+
+        // const countryIncidenceHistory = results.countryIncidenceHistoryFull
+        //   .filter(d => d.value !== null);
+
         const countryIncidenceLatest = countryIncidenceHistory.length > 0 ? countryIncidenceHistory[countryIncidenceHistory.length - 1] : {};
 
         // Vacc. coverage history and latest observation
@@ -219,7 +249,7 @@ const App = () => {
           countryJeeImmun={countryJeeImmun}
           countryJeeSurv={countryJeeSurv}
           countryJeeMcm={countryJeeMcm}
-          countryIncidenceHistory={results.countryIncidenceHistoryFull}
+          countryIncidenceHistory={countryIncidenceHistory}
           countryIncidenceLatest={countryIncidenceLatest}
           countryIncidenceQuartile={countryIncidenceQuartile}
           countryVaccHistory={results.countryVaccHistory}

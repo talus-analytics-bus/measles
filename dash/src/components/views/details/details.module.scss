@@ -30,7 +30,6 @@ $spacing: 20px;
     line-height: 1;
     // font-size: 2.2em;
     color: black;
-    // margin-bottom: $spacing;
 
     .flag {
       height: 75px;
@@ -61,7 +60,6 @@ $spacing: 20px;
     display: flex;
     flex-flow: column;
     margin-top: $spacing;
-    // max-width: 800px;
 
     .title {
       color: $dark-grey;
@@ -171,18 +169,18 @@ $spacing: 20px;
           line-height: $rect-height - 2px;
 
           .shape {
-              margin:0 auto;
+            margin:0 auto;
           }
 
           .top {
-              height:0;
-              border-width:0 0 $wedge-slope $wedge-size*100;
-              border-style:solid;
-              border-color:transparent $light-grey-2 $light-grey-2 transparent;
+            height:0;
+            border-width:0 0 $wedge-slope $wedge-size*100;
+            border-style:solid;
+            border-color:transparent $light-grey-2 $light-grey-2 transparent;
           }
 
           .bottom {
-              background-color: $light-grey-2;
+            background-color: $light-grey-2;
           }
 
           &.active {
@@ -215,6 +213,7 @@ $spacing: 20px;
     // Just use .dataSource from index.scss
   }
 
+  $itemMaxWidth: 750px;
   .main {
     margin-right: $spacing*2;
     margin-top: 10px;
@@ -225,19 +224,21 @@ $spacing: 20px;
         padding-bottom: 10px;
       }
       .item {
-        max-width: 900px;
+        max-width: $itemMaxWidth;
         .title {
           font-family: 'Raleway', sans-serif;
           font-size: 1.1em * 1.18;
+          margin-bottom: 10px;
         }
       }
     }
   }
 
-  .charts {
-    .slidingLine {
-      height: 500px;
-      width: 700px;
-    }
+  $slidingLineWidth: 650px;
+  .slidingLine {
+    height: $slidingLineWidth/2.2;
+    width: $slidingLineWidth;
+    margin-left: 20px;
+    // Other styles for this chart are in slidingline.module.scss
   }
 }
