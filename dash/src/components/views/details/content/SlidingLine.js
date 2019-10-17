@@ -52,7 +52,7 @@ class SlidingLine extends Chart {
     };
 
     chart.newGroup(styles.slider)
-      .attr('transform', `translate(0, ${20})`);
+      .attr('transform', `translate(0, ${35})`);
 
     // Extend chart to accomodate slider
     const curHeight = chart.svg.attr('height');
@@ -115,14 +115,39 @@ class SlidingLine extends Chart {
       .tickPadding(10)
       .scale(x2);
 
-
     const xAxisG2 = chart.newGroup(styles['x-axis-2'], chart[styles.slider])
       .attr('transform', `translate(0, ${chart.height + chart.slider.height})`)
       .call(xAxis2);
 
+    // Time formatting
+    var formatMillisecond = d3.timeFormat(".%L"),
+    formatSecond = d3.timeFormat(":%S"),
+    formatMinute = d3.timeFormat("%I:%M"),
+    formatHour = d3.timeFormat("%I %p"),
+    formatDay = d3.timeFormat("%a %d"),
+    formatWeek = d3.timeFormat("%b %d"),
+    formatMonth = d3.timeFormat("%b"),
+    formatYear = d3.timeFormat("%Y");
+
+    function multiFormat(date) {
+      return (d3.timeYear(date) < date ? formatMonth
+          : formatYear)(date);
+    }
+    // function multiFormat(date) {
+    //   return (d3.timeSecond(date) < date ? formatMillisecond
+    //       : d3.timeMinute(date) < date ? formatSecond
+    //       : d3.timeHour(date) < date ? formatMinute
+    //       : d3.timeDay(date) < date ? formatHour
+    //       : d3.timeMonth(date) < date ? (d3.timeWeek(date) < date ? formatDay : formatWeek)
+    //       : d3.timeYear(date) < date ? formatMonth
+    //       : formatYear)(date);
+    // }
+
     // x axis - main chart
     const xAxis = d3.axisBottom()
       .tickSizeOuter(0)
+      .ticks(5)
+      .tickFormat(multiFormat)
       .scale(x);
     const xAxisG = chart.newGroup(styles['x-axis'])
       .attr('transform', `translate(0, ${chart.height})`)
@@ -169,62 +194,6 @@ class SlidingLine extends Chart {
     ))
     .y0(chart.height)
 		.y1(0);
-
-    // Get "value" line segments -- all segments where data are available (not
-    // null).
-    const getValueLineSegments = () => {
-      const valueLineSegments = [];
-      let start, end, prev;
-      let segment = [];
-      chart.data.vals.forEach(datum => {
-
-        // If no start and datum not-null, datum is start
-        // If there was a previous datum, also include it
-        if (!start && datum.value !== null) {
-          start = datum;
-          if (prev) segment.push(prev);
-          segment.push(datum);
-          // console.log('If no start and datum not-null, datum is start')
-          prev = datum;
-          return;
-        }
-        // If no start and datum null, continue
-        if (!start && datum.value === null) {
-          // console.log('If no start and datum null, continue')
-          prev = datum;
-          return;
-        }
-        // If start and datum not-null, push to segment
-        if (start && datum.value !== null) {
-          segment.push(datum);
-          // console.log('If start and datum not-null, push to segment')
-          prev = datum;
-          return;
-        }
-        // If start and datum null, push to segment, and start new one
-        if (start && datum.value === null) {
-          // segment.push(datum);
-          start = undefined;
-          valueLineSegments.push(segment);
-          segment = [];
-          // console.log('If start and datum null, push to segment, and start new one')
-          prev = datum;
-          return;
-        }
-        // console.log('Error: reached unreachable state');
-      });
-
-      if (segment.length > 0) {
-        // console.log('segment - ending')
-        // console.log(segment)
-        valueLineSegments.push(segment);
-        segment = [];
-        // console.log('If ending segment has values, push them')
-      }
-      // console.log('valueLineSegments')
-      // console.log(valueLineSegments)
-      return valueLineSegments;
-    };
 
     // Get "value" line segments -- all segments where data are available (not
     // null).
@@ -278,6 +247,70 @@ class SlidingLine extends Chart {
         // console.log('If ending segment has values, push them')
       }
       // console.log('nullLineSegments')
+      // console.log(valueLineSegments)
+      return valueLineSegments;
+    };
+
+    // Add null areas to chart
+    const nullLineSegments = getNullLineSegments();
+    chart.newGroup(styles.areaNull)
+      .selectAll('path')
+      .data(nullLineSegments)
+      .enter().append('path')
+        .attr('d', d => area(d));
+
+    // Get "value" line segments -- all segments where data are available (not
+    // null).
+    const getValueLineSegments = () => {
+      const valueLineSegments = [];
+      let start, end, prev;
+      let segment = [];
+      chart.data.vals.forEach(datum => {
+
+        // If no start and datum not-null, datum is start
+        // If there was a previous datum, also include it
+        if (!start && datum.value !== null) {
+          start = datum;
+          if (prev) segment.push(prev);
+          segment.push(datum);
+          // console.log('If no start and datum not-null, datum is start')
+          prev = datum;
+          return;
+        }
+        // If no start and datum null, continue
+        if (!start && datum.value === null) {
+          // console.log('If no start and datum null, continue')
+          prev = datum;
+          return;
+        }
+        // If start and datum not-null, push to segment
+        if (start && datum.value !== null) {
+          segment.push(datum);
+          // console.log('If start and datum not-null, push to segment')
+          prev = datum;
+          return;
+        }
+        // If start and datum null, push to segment, and start new one
+        if (start && datum.value === null) {
+          // segment.push(datum);
+          start = undefined;
+          valueLineSegments.push(segment);
+          segment = [];
+          // console.log('If start and datum null, push to segment, and start new one')
+          prev = datum;
+          return;
+        }
+        // console.log('Error: reached unreachable state');
+      });
+
+      if (segment.length > 0) {
+        // console.log('segment - ending')
+        // console.log(segment)
+        valueLineSegments.push(segment);
+        segment = [];
+        // console.log('If ending segment has values, push them')
+      }
+      // console.log('valueLineSegments')
       // console.log(valueLineSegments)
       return valueLineSegments;
     };
@@ -351,13 +384,6 @@ class SlidingLine extends Chart {
         .attr('height', d => chart.slider.height - y2(d.value))
         .attr('class', styles.sliderRect);
 
-    // Add null areas to chart
-    const nullLineSegments = getNullLineSegments();
-    chart.newGroup(styles.areaNull)
-      .selectAll('path')
-      .data(nullLineSegments)
-      .enter().append('path')
-        .attr('d', d => area(d));
 
         const yAxisG = chart.newGroup(styles['y-axis'])
           .call(yAxis);
@@ -393,6 +419,51 @@ class SlidingLine extends Chart {
     .attr('x', chart.height / 2)
       .attr('dy', '1.2em')
       .text('(% of infants)');
+
+
+    // add brush to slider
+		const brush = d3.brushX()
+  		.extent([[0, chart.height], [chart.width, chart.height + chart.slider.height]])
+  		.on('brush end', () => {
+        console.log('brush end');
+  			const s = d3.event.selection || x2.range();
+        console.log('s');
+        console.log(s);
+
+        const eachBand = x2.step();
+        const getDomainInvertVals = (val) => {
+
+          let index = Math.ceil((val / eachBand));
+          console.log('index = ' + index)
+          if (index > chart.data.vals.length - 1) index = chart.data.vals.length - 1;
+
+          // TODO elegantly
+          return new Date (
+            chart.data.vals[index]['date_time'].replace(/-/g, '/')
+          );
+        };
+
+
+        // Update main chart x axis
+        const invertedVals = s.map(d => {
+          return getDomainInvertVals(d);
+        });
+  			x.domain(invertedVals);
+  			chart[styles['x-axis']].call(xAxis);
+
+  			// chart.selectAll('.point, .sec-point')
+  			// .attr('cx', d => x(d.data.date))
+  			// .attr('cy', d => y(d[1]));
+
+        // Reposition chart elements
+  			chart[styles.lineValue].selectAll('path'). attr('d', d => line(d));
+  			chart[styles.lineVacc].selectAll('path'). attr('d', d => lineVacc(d));
+  			chart[styles.areaNull].selectAll('path'). attr('d', d => area(d));
+  		});
+
+		chart[styles.slider].append('g')
+  		.attr('class', 'brush')
+  		.call(brush)
 
     // Reduce width at the end
     chart.svg.node().parentElement.classList.add(styles.drawn);

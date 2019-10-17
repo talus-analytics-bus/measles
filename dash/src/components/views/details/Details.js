@@ -362,7 +362,7 @@ const Details = (props) => {
       margin: {
         top: 20,
         right: 110,
-        bottom: 45,
+        bottom: 60,
         left: 60,
       },
     };

@@ -27,6 +27,7 @@
   path {
     // stroke: green;
     fill: $light-grey-2;
+    clip-path: url('#plotArea');
   }
 }
 
