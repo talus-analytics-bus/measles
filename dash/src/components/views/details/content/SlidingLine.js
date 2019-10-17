@@ -12,124 +12,16 @@ class SlidingLine extends Chart {
     this.params = params;
     this.data = params.data;
 
-    // const formatResilienceData = (raw) => {
-    //   const output = [];
-    //   const denominator = raw.length;
-    //   domainsLowerCase.forEach(domain => {
-    //     // Define variables.
-    //     const investments = [];
-    //     let rcsTmp = [];
-    //     let numerator = 0;
-    //
-    //     // Iterate over investments to assign data.
-    //     raw.forEach(investment => {
-    //       if (investment.rcs[domain].length > 0) {
-    //         investments.push(investment);
-    //         rcsTmp = rcsTmp.concat(investment.rcs[domain].map(d => +d.rc_id));
-    //         numerator++;
-    //       }
-    //     });
-    //
-    //     // Define basic datum
-    //     const rcs = d3.set(rcsTmp).values();
-    //     const domainObj = {
-    //       name: domain,
-    //       frac: (numerator / denominator) || 0.001, // min size for animations
-    //       investments: investments,
-    //       invNoun: investments.length !== 1 ? 'investments' : 'investment',
-    //       rcs: rcs,
-    //       rcsNoun: rcs.length !== 1 ? 'characteristics' : 'characteristic',
-    //     };
-    //
-    //     // Push datum to output (should be 5 total)
-    //     output.push(domainObj);
-    //   });
-    //   return output;
-    // };
-    //
-    // // Data structure:
-    // const fakeData = [
-    //   {
-    //     name: 'Environment',
-    //     frac: 0.2,
-    //     investments: [],
-    //   },
-    //   {
-    //     name: 'Social',
-    //     frac: 0.3,
-    //     investments: [],
-    //   },
-    //   {
-    //     name: 'Safety',
-    //     frac: 0.7,
-    //     investments: [],
-    //   },
-    //   {
-    //     name: 'Health',
-    //     frac: 1/2, // Out of how many investments are this res domain?
-    //     investments: [
-    //       {
-    //         name: 'Update evacuation plan',
-    //         impact: 'Socioeconomically vulnerable population',
-    //         iconPath: '',
-    //         resChars: [
-    //           {
-    //             name: 'Access to healthcare',
-    //             domain: 'Health',
-    //           },
-    //           {
-    //             name: 'Access to necessary medications',
-    //             domain: 'Health',
-    //           },
-    //           {
-    //             name: 'Access to emergency services',
-    //             domain: 'Health',
-    //           },
-    //         ],
-    //       },
-    //     ],
-    //   },
-    //   {
-    //     name: 'Economic',
-    //     frac: 2/2,
-    //     investments: [
-    //       {
-    //         name: 'Write resilience plan',
-    //         impact: 'Intracare North Hospital',
-    //         iconPath: '',
-    //         resChars: [
-    //           {
-    //             name: 'Example economic resilience characteristic 1',
-    //             domain: 'Economic',
-    //           },
-    //         ],
-    //       },
-    //       {
-    //         name: 'Update evacuation plan',
-    //         impact: 'Socioeconomically vulnerable population',
-    //         iconPath: '',
-    //         resChars: [
-    //           {
-    //             name: 'Example economic resilience characteristic 2',
-    //             domain: 'Economic',
-    //           },
-    //         ],
-    //       },
-    //     ],
-    //   }
-    // ];
-    //
-    // const USE_FAKE = false;
-    // if (USE_FAKE) this.data = fakeData;
-    // else this.data = formatResilienceData(params.data);
-    //
-    // const radarMargin = 15;
-    // this.margin = {
-    //   top: radarMargin,
-    //   bottom: radarMargin,
-    //   left: radarMargin,
-    //   right: radarMargin,
-    // };
+    // Get min and max time from data.
+    const minTime = new Date(
+      this.data[0]['date_time'].replace(/-/g, '/')
+    );
+    const maxTime = new Date(
+      this.data[this.data.length - 1]['date_time'].replace(/-/g, '/')
+    );
+
+    this.xDomainDefault = [minTime, maxTime];
+    // this.margin = {}; // TODO
 
     this.init();
   }
@@ -137,10 +29,20 @@ class SlidingLine extends Chart {
   draw() {
 
     if (this.data.length < 1) {
-      // this.setNoData()
+      // TODO show "no data" message
       return
     }
 
+    // x scale: Time
+    // global min/max to start
+    console.log('this')
+    console.log(this)
+    const x = d3.scaleTime()
+      .domain(this.xDomainDefault) // min and max time vary w. window size
+      .range([0, 500]); // always fixed
+
+    console.log('x')
+    console.log(x)
 
   //   this.radii = {
   //     chart: chartRadius,

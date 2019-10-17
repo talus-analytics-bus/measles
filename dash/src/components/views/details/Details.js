@@ -294,7 +294,7 @@ const Details = (props) => {
       data: props.countryIncidenceHistory,
     };
 
-    // Radar chart object defined in ResilienceRadarChart.js.
+    // Sliding line chart defined in SlidingLine.js
     setSlidingLine(
       new SlidingLine(
 
