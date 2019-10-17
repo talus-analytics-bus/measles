@@ -101,7 +101,9 @@ $spacing: 20px;
           line-height: 2.5;
           font-size: .8em;
           &.green { border-color: $jee-green; }
+          &.lightgreen { border-color: $jee-green-light; }
           &.yellow { border-color: $jee-yellow; }
+          &.lightyellow { border-color: $jee-yellow-light; }
           &.red { border-color: $jee-red; }
           &.gray { border-color: $jee-gray; }
         }

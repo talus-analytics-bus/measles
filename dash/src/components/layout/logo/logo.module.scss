@@ -6,7 +6,8 @@ $logo-height: 70px;
   z-index: 3;
   display: flex;
   justify-content: left;
-  position: relative;
+  position: sticky;
+  top: 0;
 
   $navButtonSize: 55px;
 
