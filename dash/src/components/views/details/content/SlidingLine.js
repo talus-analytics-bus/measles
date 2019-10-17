@@ -112,6 +112,7 @@ class SlidingLine extends Chart {
       .tickSize(0)
       .tickValues(tickValues)
       .tickFormat((val) => val.replace('1/',''))
+      .tickPadding(10)
       .scale(x2);
 
 
