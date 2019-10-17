@@ -132,8 +132,8 @@ $spacing: 20px;
           border: 2.5px solid transparent;
 
           &.active {
-            box-shadow: 1px 1px 2.5px 0 rgba(0, 0, 0, 0.68);
-            -webkit-box-shadow: 1px 1px 2.5px 0 rgba(0, 0, 0, 0.68);
+            box-shadow: 3px 3px 2.5px 0 rgba(0, 0, 0, 0.3);
+            -webkit-box-shadow: 3px 3px 2.5px 0 rgba(0, 0, 0, 0.3);
           }
         }
 

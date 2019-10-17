@@ -129,18 +129,11 @@ const App = () => {
     .map(o => o.value)
     .sort();
 
-    console.log('allObs');
-    console.log(allObs);
     const quartiles = [
       d3.quantile(allObs, .25),
       d3.quantile(allObs, .5),
       d3.quantile(allObs, .75),
     ];
-    console.log('quartiles');
-    console.log(quartiles);
-
-    console.log('countryObs.value')
-    console.log(countryObs.value)
 
     if (countryObs.value < quartiles[0]) {
       return 0;
@@ -149,7 +142,6 @@ const App = () => {
       return 1;
     }
     else if (countryObs.value < quartiles[2]) {
-      console.log('DING!')
       return 2;
     }
     else if (countryObs.value >= quartiles[2]) {

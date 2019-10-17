@@ -1,6 +1,7 @@
 @import '../../../../assets/styles/colors.scss';
 .drawn {
   width: 0 !important;
+  height: auto !important;
 }
 .lineValue,
 .lineVacc,
@@ -29,7 +30,7 @@
   }
 }
 
-.x-axis, .y-axis, .y-axis-right {
+.x-axis, .x-axis-2, .y-axis, .y-axis-right {
   path, line {
     stroke: #b2b2b2;
   }
@@ -53,4 +54,12 @@
 }
 .y-axis .label {
   transform: rotate(-90deg);
+}
+.slider {
+  .sliderRect {
+    fill: $value-red;
+    &.dim {
+      opacity: .5;
+    }
+  }
 }

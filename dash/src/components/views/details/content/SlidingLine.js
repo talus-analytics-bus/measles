@@ -46,13 +46,19 @@ class SlidingLine extends Chart {
     console.log('chart');
     console.log(chart);
 
+    // Parameterize the slider
+    chart.slider = {
+      height: chart.height * .24,
+    };
+
+    chart.newGroup(styles.slider)
+      .attr('transform', `translate(0, ${20})`);
+
+    // Extend chart to accomodate slider
+    const curHeight = chart.svg.attr('height');
+    chart.svg.attr('height', (+curHeight) + chart.slider.height);
+
     // Create clipping path
-    // <defs>
-    //   <clipPath id="cut-off-bottom">
-    //     <rect x="0" y="0" width="200" height="500" />
-    //   </clipPath>
-    // </defs>
-    //
     chart.svg.append('defs')
       .append('clipPath')
         .attr('id', 'plotArea')
@@ -71,8 +77,47 @@ class SlidingLine extends Chart {
     // global min/max to start
     const x = d3.scaleTime()
       .domain(this.xDomainDefault) // min and max time vary w. window size
-      .range([0, chart.width])
-      .clamp(true); // always fixed
+      .range([0, chart.width]);
+
+    // x scale: Time - slider (via scale band)
+    // TODO deal with time zone effects elegantly.
+    const x2Domain = d3.timeMonths(
+      new Date(chart.xDomainDefault[0]).setSeconds(1),
+      new Date(chart.xDomainDefault[1]).setMonth(chart.xDomainDefault[1].getMonth() + 1)
+    )
+    .map(d => {
+      return d.toLocaleString("en-US", {
+        month: 'numeric',
+        year: 'numeric',
+        timeZone: "UTC"
+      })
+    });
+
+    const x2 = d3.scaleBand()
+      .domain(x2Domain) // never changes
+      .range([0, chart.width]);
+
+    console.log('x2')
+    console.log(x2)
+    console.log('x2Domain')
+    console.log(x2Domain)
+
+    // x axis: slider
+    function onlyUnique(value, index, self) {
+        return self.indexOf(value) === index;
+    }
+    const tickValues = chart.data.vals
+      .map(d => '1/' + new Date(d.date_time).getUTCFullYear()).filter(onlyUnique);
+    const xAxis2 = d3.axisBottom()
+      .tickSize(0)
+      .tickValues(tickValues)
+      .tickFormat((val) => val.replace('1/',''))
+      .scale(x2);
+
+
+    const xAxisG2 = chart.newGroup(styles['x-axis-2'], chart[styles.slider])
+      .attr('transform', `translate(0, ${chart.height + chart.slider.height})`)
+      .call(xAxis2);
 
     // x axis - main chart
     const xAxis = d3.axisBottom()
@@ -88,6 +133,13 @@ class SlidingLine extends Chart {
       .domain(chart.yDomainDefault)
       .nice()
       .range([0, chart.height])
+
+    // y scale: incidence - slider
+    // Never changes
+    const y2 = d3.scaleLinear()
+      .domain(chart.yDomainDefault)
+      .nice()
+      .range([0, chart.slider.height])
 
     // y scale: vacc cov. - main chart
     // Never changes
@@ -229,47 +281,47 @@ class SlidingLine extends Chart {
       return valueLineSegments;
     };
 
-        // Add vaccination line to chart
-        const formatVaccVals = () => {
-          const output = [];
-          const vals = chart.data.vaccVals;
-          chart.data.vaccVals.forEach((v, i) => {
+    // Add vaccination line to chart
+    const formatVaccVals = () => {
+      const output = [];
+      const vals = chart.data.vaccVals;
+      chart.data.vaccVals.forEach((v, i) => {
 
-            // For first val do nothing special
-            if (i === 0) {
-              output.push(v);
-              return
-            }
+        // For first val do nothing special
+        if (i === 0) {
+          output.push(v);
+          return
+        }
 
-            // For all other values, append the value, and also a fake point that
-            // has the last point's value and this point's datetime.
-            const fakePoint = {
-              value: vals[i-1].value,
-              date_time: v.date_time,
-            };
-            output.push(fakePoint);
-            output.push(v);
-            if (i === vals.length - 1) {
-              const pointDt = new Date(v.date_time.replace(/-/g, '/'));
-              const year = pointDt.getUTCFullYear();
-              pointDt.setUTCFullYear(year + 1);
-              const fakeDtStr = pointDt.toString();
-              const fakeFuturePoint = {
-                value: v.value,
-                date_time: fakeDtStr,
-              };
-              output.push(fakeFuturePoint);
-            }
-          });
-
-          return output;
+        // For all other values, append the value, and also a fake point that
+        // has the last point's value and this point's datetime.
+        const fakePoint = {
+          value: vals[i-1].value,
+          date_time: v.date_time,
         };
-        const vaccLineData = formatVaccVals();
-        chart.newGroup(styles.lineVacc)
-          .selectAll('path')
-          .data([vaccLineData])
-          .enter().append('path')
-            .attr('d', d => lineVacc(d));
+        output.push(fakePoint);
+        output.push(v);
+        if (i === vals.length - 1) {
+          const pointDt = new Date(v.date_time.replace(/-/g, '/'));
+          const year = pointDt.getUTCFullYear();
+          pointDt.setUTCFullYear(year + 1);
+          const fakeDtStr = pointDt.toString();
+          const fakeFuturePoint = {
+            value: v.value,
+            date_time: fakeDtStr,
+          };
+          output.push(fakeFuturePoint);
+        }
+      });
+
+      return output;
+    };
+    const vaccLineData = formatVaccVals();
+    chart.newGroup(styles.lineVacc)
+      .selectAll('path')
+      .data([vaccLineData])
+      .enter().append('path')
+        .attr('d', d => lineVacc(d));
 
     // Add line to chart
     const valueLineSegments = getValueLineSegments();
@@ -278,6 +330,25 @@ class SlidingLine extends Chart {
       .data(valueLineSegments)
       .enter().append('path')
         .attr('d', d => line(d));
+
+    // Add rects to slider
+    chart[styles.slider].selectAll('rect')
+      .data(chart.data.vals.filter(d => d.value !== null))
+      .enter().append('rect')
+        .attr('x', d => {
+          return x2(new Date(d['date_time'].replace(/-/g, '/')).toLocaleString("en-US", {
+            month: 'numeric',
+            year: 'numeric',
+            timeZone: "UTC"
+          }))
+        })
+        .attr('y', d => {
+          return chart.height + (chart.slider.height - (chart.slider.height - y2(d.value)));
+          // return chart.height + chart.slider.height;
+        }) // TODO check
+        .attr('width', x2.bandwidth()) // todo bands
+        .attr('height', d => chart.slider.height - y2(d.value))
+        .attr('class', styles.sliderRect);
 
     // Add null areas to chart
     const nullLineSegments = getNullLineSegments();
