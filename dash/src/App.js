@@ -74,15 +74,25 @@ const App = () => {
   const [detailsComponent, setDetailsComponent] = React.useState(null)
 
   async function getMapObservations() {
+    const queries = {
+      caseload: ObservationQuery(6, 'monthly', Util.formatDatetimeApi(Util.today())),
+      incidence: ObservationQuery(15, 'monthly', Util.formatDatetimeApi(Util.today())),
+      vaccination: ObservationQuery(4, 'yearly', '2018-01-01'),
+    };
+
+    const results = {};
+    for (let q in queries) {
+      results[q] = await queries[q];
+    }
     // get the bubble data
-    setBubbleObservations(await ObservationQuery(6, 'monthly', Util.formatDatetimeApi(Util.today())));
+    setBubbleObservations(results['caseload']);
 
     // get the incidence data
-    setIncidenceObservations(await ObservationQuery(15, 'monthly', Util.formatDatetimeApi(Util.today())));
+    setIncidenceObservations(results['incidence']);
 
     // get the fill data
     // TODO make this work the same way as the other "get most recent data queries", since it doesn't seem to
-    setFillObservations(await ObservationQuery(4, 'yearly', '2018-01-01'));
+    setFillObservations(results['vaccination']);
     setLoading(false);
   }
 
@@ -114,15 +124,23 @@ const App = () => {
 
   const getIncidenceQuartile = (allObsTmp, countryObs) => {
     const allObs = allObsTmp.filter(o => {
-      return o.value !== null;
+      return o.value && o.value !== null && o.value > 0;
     })
-    .map(o => o.value);
+    .map(o => o.value)
+    .sort();
 
+    console.log('allObs');
+    console.log(allObs);
     const quartiles = [
       d3.quantile(allObs, .25),
       d3.quantile(allObs, .5),
       d3.quantile(allObs, .75),
     ];
+    console.log('quartiles');
+    console.log(quartiles);
+
+    console.log('countryObs.value')
+    console.log(countryObs.value)
 
     if (countryObs.value < quartiles[0]) {
       return 0;
@@ -131,6 +149,7 @@ const App = () => {
       return 1;
     }
     else if (countryObs.value < quartiles[2]) {
+      console.log('DING!')
       return 2;
     }
     else if (countryObs.value >= quartiles[2]) {
@@ -150,38 +169,46 @@ const App = () => {
       // Function to make API calls to get data for the state variables above.
       const getDetailsData = async (country) => {
 
-        // Country basic info
-        var countryPopQ = await ObservationQuery(3, 'yearly', '2018-01-01', '2018-01-01', country);
-        const countryPop = countryPopQ[0];
-        const countryName = countryPopQ[0]['place_name'];
-        const countryIso2 = countryPopQ[0]['place_iso'];
+        // Get all needed values in parallel
+        const queries = {
+          countryPopQ: ObservationQuery(3, 'yearly', '2018-01-01', '2018-01-01', country),
+          countryGDPQ: ObservationQuery(14, 'yearly', '2018-01-01', '2018-01-01', country),
+          countryJeeImmunQ: ObservationQuery(16, 'occasion', undefined, undefined, country),
+          countryJeeSurvQ: ObservationQuery(17, 'occasion', undefined, undefined, country),
+          countryJeeMcmQ: ObservationQuery(18, 'occasion', undefined, undefined, country),
+          countryIncidenceHistoryFull: ObservationQuery(15, 'monthly', '2019-10-01', '2010-01-01', country),
+          countryVaccHistory: ObservationQuery(4, 'yearly', '2018-01-01', '2010-01-01', country),
+        };
 
-        var countryGDPQ = await ObservationQuery(14, 'yearly', '2018-01-01', '2018-01-01', country);
-        const countryGDP = countryGDPQ[0];
+        const results = {};
+        for (let q in queries) {
+          results[q] = await queries[q];
+        }
+
+        // Country basic info
+        const countryPop = results.countryPopQ[0];
+        const countryName = results.countryPopQ[0]['place_name'];
+        const countryIso2 = results.countryPopQ[0]['place_iso'];
+        const countryGDP = results.countryGDPQ[0];
 
         // Latest relevant JEE scores.
-        const countryJeeImmunQ = await ObservationQuery(16, 'occasion', undefined, undefined, country);
-        const countryJeeImmun = countryJeeImmunQ[0];
-        const countryJeeSurvQ = await ObservationQuery(17, 'occasion', undefined, undefined, country);
-        const countryJeeSurv = countryJeeSurvQ[0];
-        const countryJeeMcmQ = await ObservationQuery(18, 'occasion', undefined, undefined, country);
-        const countryJeeMcm = countryJeeMcmQ[0];
+        const countryJeeImmun = results.countryJeeImmunQ[0];
+        const countryJeeSurv = results.countryJeeSurvQ[0];
+        const countryJeeMcm = results.countryJeeMcmQ[0];
 
         // Incidence history and latest observation
-        const countryIncidenceHistoryFull = await ObservationQuery(15, 'monthly', '2019-10-01', '2010-01-01', country);
-        const countryIncidenceHistory = countryIncidenceHistoryFull
+        const countryIncidenceHistory = results.countryIncidenceHistoryFull
           .filter(d => d.value !== null);
         const countryIncidenceLatest = countryIncidenceHistory.length > 0 ? countryIncidenceHistory[countryIncidenceHistory.length - 1] : {};
 
         // Vacc. coverage history and latest observation
-        const countryVaccHistory = await ObservationQuery(4, 'yearly', '2018-01-01', '2010-01-01', country);
-        const countryVaccLatest = countryVaccHistory.length > 0 ? countryVaccHistory[countryVaccHistory.length - 1] : {};
+        const countryVaccLatest = results.countryVaccHistory.length > 0 ? results.countryVaccHistory[results.countryVaccHistory.length - 1] : {};
 
         // Get quartile of incidence
         const countryIncidenceQuartile = getIncidenceQuartile(incidenceObservations, countryIncidenceLatest);
 
         // Currently unused
-        const caseHistoryQ = await ObservationQuery(6, 'monthly', '2010-01-01', '2018-01-01', country);
+        // const caseHistoryQ = await ObservationQuery(6, 'monthly', '2010-01-01', '2018-01-01', country);
 
         setDetailsComponent(<Details
           id={country}
@@ -192,11 +219,10 @@ const App = () => {
           countryJeeImmun={countryJeeImmun}
           countryJeeSurv={countryJeeSurv}
           countryJeeMcm={countryJeeMcm}
-          caseHistoryQ={caseHistoryQ}
-          countryIncidenceHistory={countryIncidenceHistoryFull  }
+          countryIncidenceHistory={results.countryIncidenceHistoryFull}
           countryIncidenceLatest={countryIncidenceLatest}
           countryIncidenceQuartile={countryIncidenceQuartile}
-          countryVaccHistory={countryVaccHistory}
+          countryVaccHistory={results.countryVaccHistory}
           countryVaccLatest={countryVaccLatest}
         />);
       }

@@ -91,7 +91,7 @@ const Details = (props) => {
   	} else if (score < 4.5) {
       return {
         label: 'Demonstrated',
-        color: 'green',
+        color: 'lightgreen',
         value: score,
       };
     }
