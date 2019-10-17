@@ -364,48 +364,50 @@ const Details = (props) => {
                       ...(props.countryJeeMcm ? props.countryJeeMcm : {value: null}),
                     },
                   ].map(item =>
-                    <div className={styles.item}>
-                      <span className={styles.title}>
-                        {item.title} {item.date_time_fmt(item)}
-                      </span>
-                      <div className={styles.content}>
-                        {
-                          // Display formatted value and label
-                          (item.value !== null && (
-                            <span>
-                              <span className={styles.value}>
-                                {item.value_fmt(item.value)}
-                              </span>
-                              {
-                                item.value_label && <span className={styles.label}>
-                                  &nbsp;{item.value_label}
+                    <div className={styles.itemContainer}>
+                      <div className={styles.item}>
+                        <span className={styles.title}>
+                          {item.title} {item.date_time_fmt(item)}
+                        </span>
+                        <div className={styles.content}>
+                          {
+                            // Display formatted value and label
+                            (item.value !== null && (
+                              <span>
+                                <span className={styles.value}>
+                                  {item.value_fmt(item.value)}
                                 </span>
-                              }
-                            </span>
-                          ))
-                        }
+                                {
+                                  item.value_label && <span className={styles.label}>
+                                    &nbsp;{item.value_label}
+                                  </span>
+                                }
+                              </span>
+                            ))
+                          }
+                          {
+                            // Data not available message, if applicable.
+                            (item.value === null && (
+                              <span className={'notAvail'}>
+                                Data not available
+                              </span>
+                            ))
+                          }
+                        </div>
                         {
-                          // Data not available message, if applicable.
-                          (item.value === null && (
-                            <span className={'notAvail'}>
-                              Data not available
-                            </span>
-                          ))
+                          // Display data source text if available.
+                          (item.data_source && !item.notAvail && !item.hideSource) &&
+                            <div className={'dataSource'}>
+                              Source: {item.data_source}{ item.updated_at && (
+                                  ' as of ' + new Date(item.updated_at).toLocaleString('en-us', {
+                                    month: 'short',
+                                    year: 'numeric',
+                                  })
+                                )
+                              }
+                            </div>
                         }
                       </div>
-                      {
-                        // Display data source text if available.
-                        (item.data_source && !item.notAvail && !item.hideSource) &&
-                          <div className={'dataSource'}>
-                            Source: {item.data_source}{ item.updated_at && (
-                                ' as of ' + new Date(item.updated_at).toLocaleString('en-us', {
-                                  month: 'short',
-                                  year: 'numeric',
-                                })
-                              )
-                            }
-                          </div>
-                      }
                     </div>
                   )
                 }
@@ -436,53 +438,55 @@ const Details = (props) => {
                     ...(props.countryIncidenceHistory.length > 0 ? { value: props.countryIncidenceHistory } : { value: null }),
                   },
                 ].map(item =>
-                  <div className={styles.item}>
-                    <span className={styles.title}>
-                      {item.title} {item.date_time_fmt(item)}
-                    </span>
-                    <div className={styles.content}>
-                      {
-                        // Display formatted value and label
-                        ((item.value !== null && typeof item.value !== 'object') && (
-                          <span>
-                            <span className={styles.value}>
-                              {item.value_fmt(item.value)}
-                            </span>
-                            {
-                              item.value_label && <span className={styles.label}>
-                                &nbsp;{item.value_label}
+                  <div className={styles.itemContainer}>
+                    <div className={styles.item}>
+                      <span className={styles.title}>
+                        {item.title} {item.date_time_fmt(item)}
+                      </span>
+                      <div className={styles.content}>
+                        {
+                          // Display formatted value and label
+                          ((item.value !== null && typeof item.value !== 'object') && (
+                            <span>
+                              <span className={styles.value}>
+                                {item.value_fmt(item.value)}
                               </span>
+                              {
+                                item.value_label && <span className={styles.label}>
+                                  &nbsp;{item.value_label}
+                                </span>
+                              }
+                            </span>
+                          ))
+                        }
+                        {
+                          // Data not available message, if applicable.
+                          (item.value === null && (
+                            <span className={'notAvail'}>
+                              Data not available
+                            </span>
+                          ))
+                        }
+                        {
+                          // Display chart if there is one
+                          (item.chart_jsx !== undefined) &&
+                            item.chart_jsx(item.value)
+                        }
+                      </div>
+                      {
+                        // Display data source text if available.
+                        (item.data_source && !item.notAvail) &&
+                          <div className={'dataSource'}>
+                            Source: {item.data_source}{ item.updated_at && (
+                                ' as of ' + new Date(item.updated_at).toLocaleString('en-us', {
+                                  month: 'short',
+                                  year: 'numeric',
+                                })
+                              )
                             }
-                          </span>
-                        ))
-                      }
-                      {
-                        // Data not available message, if applicable.
-                        (item.value === null && (
-                          <span className={'notAvail'}>
-                            Data not available
-                          </span>
-                        ))
-                      }
-                      {
-                        // Display chart if there is one
-                        (item.chart_jsx !== undefined) &&
-                          item.chart_jsx(item.value)
+                          </div>
                       }
                     </div>
-                    {
-                      // Display data source text if available.
-                      (item.data_source && !item.notAvail) &&
-                        <div className={'dataSource'}>
-                          Source: {item.data_source}{ item.updated_at && (
-                              ' as of ' + new Date(item.updated_at).toLocaleString('en-us', {
-                                month: 'short',
-                                year: 'numeric',
-                              })
-                            )
-                          }
-                        </div>
-                    }
                   </div>
                 )
               }
