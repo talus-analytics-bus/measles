@@ -10,10 +10,12 @@ Util.getDateTimeRange = (item) => {
   const firstStr = new Date(first.replace(/-/g, '/')).toLocaleString('en-us', {
     month: 'short',
     year: 'numeric',
+    timeZone: 'UTC',
   });
   const lastStr = new Date(last.replace(/-/g, '/')).toLocaleString('en-us', {
     month: 'short',
     year: 'numeric',
+    timeZone: 'UTC',
   });
   if (firstStr === lastStr) return `(${firstStr})`;
   else return `(${firstStr} to ${lastStr})`;

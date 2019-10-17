@@ -11,15 +11,6 @@ import styles from './geomPopup.module.scss'
 const GeomPopup = ({ popupData }) => {
   console.log(popupData)
 
-  const measlesTimestamp = new Date('7/01/2019').toLocaleString('en-us', { // TODO correctly
-    month: 'short',
-    year: 'numeric',
-  });
-
-  const vaccinationTimestamp = new Date('1/01/2018').toLocaleString('en-us', { // TODO correctly
-    year: 'numeric',
-  });
-
   /**
    * Return + if delta > 0, - if less, none otherwise.
    * @method getDeltaSign
@@ -166,6 +157,7 @@ const GeomPopup = ({ popupData }) => {
                           ' as of ' + new Date(d.dataSourceLastUpdated).toLocaleString('en-us', { // TODO correctly
                             month: 'short',
                             year: 'numeric',
+                            timeZone: 'UTC',
                           })
                         )
                       }
