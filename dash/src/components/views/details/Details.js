@@ -322,6 +322,34 @@ const Details = (props) => {
     );
   };
 
+  /**
+   * Return correct data source text for sliding line chart (vaccination and
+   * incidence).
+   * @method getSlidingLineDataSources
+   */
+  const getSlidingLineDataSources = () => {
+
+    const incidenceDatum = props.countryIncidenceHistory[0];
+    const incidenceUpdated = new Date(incidenceDatum.updated_at).toLocaleString('en-us', {
+      month: 'short',
+      year: 'numeric',
+      timeZone: 'UTC',
+    });
+    const incidenceSource = `Source for incidence: ${incidenceDatum.data_source} as of ${incidenceUpdated}.`;
+
+    const vaccineDatum = props.countryVaccHistory[0];
+    const vaccineUpdated = new Date(vaccineDatum.updated_at).toLocaleString('en-us', {
+      month: 'short',
+      year: 'numeric',
+      timeZone: 'UTC',
+    });
+    const vaccineSource = `Source for vaccination coverage: ${vaccineDatum.data_source} as of ${vaccineUpdated}.`;
+    const sources = [];
+    if (incidenceDatum) sources.push(incidenceSource);
+    if (vaccineSource) sources.push(vaccineSource);
+    return sources.join(' ');
+  };
+
   // Effect hook to load API data.
   React.useEffect(() => {
 
@@ -480,6 +508,7 @@ const Details = (props) => {
                     'title': 'Incidence over time',
                     'chart_jsx': getSlidingLineJsx,
                     'date_time_fmt': Util.getDateTimeRange,
+                    'data_source': getSlidingLineDataSources,
                     ...(props.countryIncidenceHistory.length > 0 ? { value: props.countryIncidenceHistory } : { value: null }),
                   },
                 ].map(item =>
@@ -520,7 +549,7 @@ const Details = (props) => {
                       </div>
                       {
                         // Display data source text if available.
-                        (item.data_source && !item.notAvail) &&
+                        (typeof item.data_source !== 'function' && item.data_source && !item.notAvail) &&
                           <div className={'dataSource'}>
                             Source: {item.data_source}{ item.updated_at && (
                                 ' as of ' + new Date(item.updated_at).toLocaleString('en-us', {
@@ -529,6 +558,14 @@ const Details = (props) => {
                                 })
                               )
                             }
+                          </div>
+                      }
+                      {
+                        (typeof item.data_source === 'function') &&
+                          <div className={'dataSource'}>
+                          {
+                            item.data_source()
+                          }
                           </div>
                       }
                     </div>
