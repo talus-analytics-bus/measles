@@ -26,6 +26,21 @@
   url(../fonts/openSans/regular/OpenSans-Regular.eot) format('eot');
 }
 
+@font-face {
+    font-family: 'open_sanssemibold';
+    src: url('../fonts/openSans/semibold/OpenSans-Semibold.eot');
+    src: url('../fonts/openSans/semibold/OpenSans-Semibold.eot?#iefix') format('embedded-opentype'),
+         /* url('../fonts/openSans/semibold/OpenSans-Semibold.woff2') format('woff2'), */
+         url('../fonts/openSans/semibold/OpenSans-Semibold.woff') format('woff'),
+         url('../fonts/openSans/semibold/OpenSans-Semibold.ttf') format('truetype'),
+         url('../fonts/openSans/semibold/OpenSans-Semibold.svg#open_sanssemibold') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+
+
+
 /* Open Sans */
 @font-face {
   font-family: 'Open Sans';
@@ -33,6 +48,8 @@
   font-weight: 600;
   src: local('Open Sans'), local('OpenSans-Semibold'),
   url(../fonts/openSans/semibold/OpenSans-Semibold.ttf) format('ttf'),
+  url(../fonts/openSans/semibold/OpenSans-Semibold.woff) format('woff'),
+  url(../fonts/openSans/semibold/OpenSans-Semibold.eot) format('eot');
 }
 
 @font-face {

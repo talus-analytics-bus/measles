@@ -15,18 +15,18 @@
     clip-path: url('#plotArea');
   }
 }
-.lineNull {
-  path {
-    stroke-dasharray: 4;
-    stroke-width: 3px;
-    stroke: lighten(#5781ab, 15%);
-  }
-}
+// .lineNull {
+//   path {
+//     stroke-dasharray: 4;
+//     stroke-width: 3px;
+//     stroke: lighten(#5781ab, 15%);
+//   }
+// }
 .lineVacc {
   path {
     stroke: #333333;
-    stroke-width: 1px;
-    stroke-dasharray: 4;
+    stroke-width: 1.5px;
+    stroke-dasharray: 6;
     stroke-linecap: square;
   }
 }
@@ -37,15 +37,27 @@
   }
 }
 
-.x-axis, .y-axis {
+.x-axis, .y-axis, .y-axis-right {
+  path, line {
+    stroke: #b2b2b2;
+  }
+  text {
+    font-family:'Open Sans', sans-serif;
+    font-size: 1.5em;
+    fill: $dark-grey;
+  }
   .label {
-    font-family: 'Open Sans', sans-serif;
+    font-family: 'open_sanssemibold', sans-serif;
     font-weight: 600;
     text-align: center;
     fill: $dark-grey;
     text-anchor: middle;
-    font-size: 2em;
+    font-size: 1.75em;
   }
+}
+.y-axis-right .label {
+  fill: $dark-grey;
+  transform: rotate(90deg) !important;
 }
 .y-axis .label {
   transform: rotate(-90deg);

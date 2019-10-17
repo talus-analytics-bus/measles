@@ -1,6 +1,8 @@
 import * as d3 from 'd3/dist/d3.min';
 import Chart from "../../../chart/Chart.js";
+import Util from "../../../misc/Util.js";
 import styles from './slidingline.module.scss';
+
 
 class SlidingLine extends Chart {
   constructor(
@@ -74,6 +76,7 @@ class SlidingLine extends Chart {
 
     // x axis - main chart
     const xAxis = d3.axisBottom()
+      .tickSizeOuter(0)
       .scale(x);
     const xAxisG = chart.newGroup(styles['x-axis'])
       .attr('transform', `translate(0, ${chart.height})`)
@@ -83,6 +86,7 @@ class SlidingLine extends Chart {
     // Never changes
     const y = d3.scaleLinear()
       .domain(chart.yDomainDefault)
+      .nice()
       .range([0, chart.height])
 
     // y scale: vacc cov. - main chart
@@ -93,16 +97,9 @@ class SlidingLine extends Chart {
 
     // y axis - main chart - left
     const yAxis = d3.axisLeft()
-      .scale(y);
-    const yAxisG = chart.newGroup(styles['y-axis'])
-      .call(yAxis);
-
-    // y axis - main chart - right
-    const yAxisRight = d3.axisRight()
-      .scale(yRight);
-    const yAxisGRight = chart.newGroup('y-axis-right')
-      .attr('transform', `translate(${chart.width}, 0)`)
-      .call(yAxisRight);
+      .scale(y)
+      .ticks(5)
+      .tickSizeOuter(0)
 
     // Define line function - main chart
     const line = d3.line()
@@ -232,6 +229,48 @@ class SlidingLine extends Chart {
       return valueLineSegments;
     };
 
+        // Add vaccination line to chart
+        const formatVaccVals = () => {
+          const output = [];
+          const vals = chart.data.vaccVals;
+          chart.data.vaccVals.forEach((v, i) => {
+
+            // For first val do nothing special
+            if (i === 0) {
+              output.push(v);
+              return
+            }
+
+            // For all other values, append the value, and also a fake point that
+            // has the last point's value and this point's datetime.
+            const fakePoint = {
+              value: vals[i-1].value,
+              date_time: v.date_time,
+            };
+            output.push(fakePoint);
+            output.push(v);
+            if (i === vals.length - 1) {
+              const pointDt = new Date(v.date_time.replace(/-/g, '/'));
+              const year = pointDt.getUTCFullYear();
+              pointDt.setUTCFullYear(year + 1);
+              const fakeDtStr = pointDt.toString();
+              const fakeFuturePoint = {
+                value: v.value,
+                date_time: fakeDtStr,
+              };
+              output.push(fakeFuturePoint);
+            }
+          });
+
+          return output;
+        };
+        const vaccLineData = formatVaccVals();
+        chart.newGroup(styles.lineVacc)
+          .selectAll('path')
+          .data([vaccLineData])
+          .enter().append('path')
+            .attr('d', d => lineVacc(d));
+
     // Add line to chart
     const valueLineSegments = getValueLineSegments();
     chart.newGroup(styles.lineValue)
@@ -248,56 +287,20 @@ class SlidingLine extends Chart {
       .enter().append('path')
         .attr('d', d => area(d));
 
-    // Add vaccination line to chart
-    const formatVaccVals = () => {
-      const output = [];
-      const vals = chart.data.vaccVals;
-      chart.data.vaccVals.forEach((v, i) => {
+        const yAxisG = chart.newGroup(styles['y-axis'])
+          .call(yAxis);
 
-        // For first val do nothing special
-        if (i === 0) {
-          output.push(v);
-          return
-        }
+        // y axis - main chart - right
+        const yAxisRight = d3.axisRight()
+          .scale(yRight)
+          .tickFormat((val) => Util.percentize(val))
+          .tickValues([0, 25, 50, 75, 100])
+          .tickSizeOuter(0)
 
-        // For all other values, append the value, and also a fake point that
-        // has the last point's value and this point's datetime.
-        const fakePoint = {
-          value: vals[i-1].value,
-          date_time: v.date_time,
-        };
-        output.push(fakePoint);
-        output.push(v);
-        if (i === vals.length - 1) {
-          const pointDt = new Date(v.date_time.replace(/-/g, '/'));
-          const year = pointDt.getUTCFullYear();
-          pointDt.setUTCFullYear(year + 1);
-          const fakeDtStr = pointDt.toString();
-          const fakeFuturePoint = {
-            value: v.value,
-            date_time: fakeDtStr,
-          };
-          output.push(fakeFuturePoint);
-        }
-      });
-      // Sort
-      const sortByDtString = (aTmp, bTmp) => {
-        const a = new Date(aTmp.date_time.replace(/-/g, '/'));
-        const b = new Date(bTmp.date_time.replace(/-/g, '/'));
-        if (a > b) return 1;
-        if (a < b) return -1;
-        else return 0;
-      };
-      return output;
-      // return output.sort(sortByDtString);
-    };
-    const vaccLineData = formatVaccVals();
-    chart.newGroup(styles.lineVacc)
-      .selectAll('path')
-      .data([vaccLineData])
-      .enter().append('path')
-        .attr('d', d => lineVacc(d));
-
+        const yAxisGRight = chart.newGroup(styles['y-axis-right'])
+          .attr('transform', `translate(${chart.width}, 0)`)
+          .classed(styles['y-axis'], true)
+          .call(yAxisRight);
 
     // Add axis labels
     // TODO make y-axis label not clash with tick labels
@@ -307,12 +310,17 @@ class SlidingLine extends Chart {
       .attr('y', -chart.margin.left + 15)
       .text('Monthly incidence of measles');
 
-    // chart[styles['x-axis']].append('text')
-    //   .attr('class', styles.label)
-      // .attr('x', chart.width / 2)
-      // .attr('y', chart.margin.bottom)
-    //   .text('Time');
-    //
+    const yAxisRightLabel = chart[styles['y-axis-right']].append('text')
+      .attr('class', styles.label)
+      .attr('x', chart.height / 2)
+      .attr('y', -85)
+    yAxisRightLabel.append('tspan')
+    .attr('x', chart.height / 2)
+      .text('Vaccination coverage');
+    yAxisRightLabel.append('tspan')
+    .attr('x', chart.height / 2)
+      .attr('dy', '1.2em')
+      .text('(% of infants)');
 
     // Reduce width at the end
     chart.svg.node().parentElement.classList.add(styles.drawn);

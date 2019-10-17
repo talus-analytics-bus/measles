@@ -295,10 +295,11 @@ const Details = (props) => {
     const chartParams = {
       data: props.countryIncidenceHistory,
       vaccData: props.countryVaccHistory,
+      noResizeEvent: true,
       margin: {
         top: 20,
-        right: 30,
-        bottom: 20,
+        right: 110,
+        bottom: 30,
         left: 60,
       },
     };
