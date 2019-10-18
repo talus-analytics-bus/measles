@@ -30,6 +30,10 @@ jobs:
           command: cd dash; rm yarn.lock; yarn install --network-timeout 1000000
 
       - run:
+          name: Setup environment variables
+          command: cd dash; export MVM_TEST=blorp
+
+      - run:
           name: deploy
           command: cd dash; yarn run deploy
 
