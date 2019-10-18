@@ -171,6 +171,7 @@ const Details = (props) => {
   };
 
   const getWedgeChartBin = () => {
+    if (props.countryIncidenceLatest.value === 0) return -9999;
     const val = props.countryIncidenceQuartile;
     switch (val) {
       case 0:
