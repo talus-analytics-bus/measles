@@ -104,6 +104,11 @@ body,
     }
   }
 
+  // Position popup in front of legend
+  .mapboxgl-popup {
+    z-index: 2;
+  }
+
   // Curve corners of content box, set cursor.
   .mapboxgl-popup-content {
     border-radius: $border-radius;

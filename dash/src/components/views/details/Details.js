@@ -374,7 +374,7 @@ const Details = (props) => {
         top: 20,
         right: 110,
         bottom: 60,
-        left: 60,
+        left: 100,
       },
     };
 

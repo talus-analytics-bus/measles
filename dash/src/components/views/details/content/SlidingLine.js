@@ -420,12 +420,47 @@ class SlidingLine extends Chart {
           .call(yAxisRight);
 
     // Add axis labels
-    // TODO make y-axis label not clash with tick labels
-    chart[styles['y-axis']].append('text')
+    const getYLabelPos = () => {
+
+      // data: all tick labels shown in chart, as formatted.
+      const data = y.tickFormat()(
+        y.domain()[0] // largest y-value
+      );
+      console.log('data')
+      console.log(data)
+
+      // Add fake tick labels
+			const fakeText = chart.svg.selectAll('.fake-text').data([data]).enter().append("text").text(d => d)
+  			.attr('class','tick fake-text')
+  			.style('font-size','15px'); // TODO same fontsize as chart
+
+      // Calculate position based on fake tick labels and remove them
+    	const maxLabelWidth = d3.max(fakeText.nodes(), d => d.getBBox().width)
+			fakeText.remove();
+
+      // Return ypos as longest tick label length plus a margin.
+      const margin = 45;
+      const labelShift = -(maxLabelWidth + margin);
+
+      // Adjust left margin of chart based on label shifting
+      chart.svg.style('margin-left', -(chart.margin.left + labelShift) + 'px')
+
+			return labelShift;
+		};
+
+    const yAxisLeftYPos = getYLabelPos();
+    const yAxisLabel = chart[styles['y-axis']].append('text')
       .attr('class', styles.label)
       .attr('x', -chart.height / 2)
-      .attr('y', -chart.margin.left + 15)
+      .attr('y', yAxisLeftYPos)
+    yAxisLabel.append('tspan')
+    .attr('x', -chart.height / 2)
       .text('Monthly incidence of measles');
+    yAxisLabel.append('tspan')
+    .attr('x', -chart.height / 2)
+      .attr('dy', '1.2em')
+      .text('(cases per 1M people)');
+      // .text('Monthly incidence of measles');
 
     const yAxisRightLabel = chart[styles['y-axis-right']].append('text')
       .attr('class', styles.label)
@@ -448,104 +483,104 @@ class SlidingLine extends Chart {
   		.extent([[0, chart.height], [chart.width, chart.height + chart.slider.height]])
       .handleSize(12);
 
-      const getBrushStartPos = () => {
-        // Get latest year of data from x2 domain
-        const newYear = +(x2.domain()[x2.domain().length - 1].split('/')[1])
+    const getBrushStartPos = () => {
+      // Get latest year of data from x2 domain
+      const newYear = +(x2.domain()[x2.domain().length - 1].split('/')[1])
 
-        // Get oldest year of data from x2 domain
-        const oldYear = +(x2.domain()[0].split('/')[1])
+      // Get oldest year of data from x2 domain
+      const oldYear = +(x2.domain()[0].split('/')[1])
 
-        // Start year = latest year minus 3 or the oldest year if that's sooner
-        const startYear = newYear - oldYear < 3 ? oldYear : newYear - 3;
+      // Start year = latest year minus 3 or the oldest year if that's sooner
+      const startYear = newYear - oldYear < 3 ? oldYear : newYear - 3;
 
-        // Get xpos of start year from x2 domain and return it
-        const startYearXPos = x2('1/' + startYear);
-        return startYearXPos;
-      };
+      // Get xpos of start year from x2 domain and return it
+      const startYearXPos = x2('1/' + startYear);
+      return startYearXPos;
+    };
 
-      const gBrush = chart[styles.slider].append('g')
-    		.attr('class', 'brush')
-    		.call(brush)
+    const gBrush = chart[styles.slider].append('g')
+  		.attr('class', 'brush')
+  		.call(brush)
 
-        // add brush handles (from https://bl.ocks.org/Fil/2d43867ba1f36a05459c7113c7f6f98a)
-      var brushResizePath = function(d) {
-          var e = +(d.type == "e"),
-              x = e ? 1 : -1,
-              y = (chart.slider.height * .75);
-          return "M" + (.5 * x) + "," + y + "A6,6 0 0 " + e + " " + (6.5 * x) + "," + (y + 6) + "V" + (2 * y - 6) +
-            "A6,6 0 0 " + e + " " + (.5 * x) + "," + (2 * y) + "Z" + "M" + (2.5 * x) + "," + (y + 8) + "V" + (2 * y - 8) +
-            "M" + (4.5 * x) + "," + (y + 8) + "V" + (2 * y - 8);
+      // add brush handles (from https://bl.ocks.org/Fil/2d43867ba1f36a05459c7113c7f6f98a)
+    var brushResizePath = function(d) {
+        var e = +(d.type == "e"),
+            x = e ? 1 : -1,
+            y = (chart.slider.height * .75);
+        return "M" + (.5 * x) + "," + y + "A6,6 0 0 " + e + " " + (6.5 * x) + "," + (y + 6) + "V" + (2 * y - 6) +
+          "A6,6 0 0 " + e + " " + (.5 * x) + "," + (2 * y) + "Z" + "M" + (2.5 * x) + "," + (y + 8) + "V" + (2 * y - 8) +
+          "M" + (4.5 * x) + "," + (y + 8) + "V" + (2 * y - 8);
+    }
+
+    var handle = gBrush.selectAll(".handle--custom")
+      .data([{type: "w"}, {type: "e"}])
+      .enter().append("path")
+        .attr("class", "handle--custom")
+        // .attr("stroke", "#888")
+        // .attr("fill", '#eee')
+        .attr("cursor", "ew-resize")
+        .attr("d", brushResizePath);
+
+    const overlayRects = gBrush.selectAll(styles.overlayRect)
+      .data([1, 2])
+      .enter().append('rect')
+        .attr('class', d => `${styles.overlayRect} ${styles['overlayRect-' + d]}`)
+        .attr('height', chart.slider.height)
+        .attr('x', 0)
+        .attr('y', chart.height)
+        .lower();
+
+    brush
+		.on('brush start end', () => {
+			const s = d3.event.selection || x2.range();
+
+      if (s == null) {
+        handle.attr("display", "none");
+        // circle.classed("active", false);
+      } else {
+        // var sx = s.map(x.invert);
+        // circle.classed("active", function(d) { return sx[0] <= d && d <= sx[1]; });
+        handle.attr("display", null).attr("transform", function(d, i) { return "translate(" + [ s[i] + .5*( Math.pow(-1,(i))), chart.height - chart.slider.height*.625] + ")"; });
       }
 
-      var handle = gBrush.selectAll(".handle--custom")
-        .data([{type: "w"}, {type: "e"}])
-        .enter().append("path")
-          .attr("class", "handle--custom")
-          // .attr("stroke", "#888")
-          // .attr("fill", '#eee')
-          .attr("cursor", "ew-resize")
-          .attr("d", brushResizePath);
+      const eachBand = x2.step();
+      const getDomainInvertVals = (val) => {
 
-      const overlayRects = gBrush.selectAll(styles.overlayRect)
-        .data([1, 2])
-        .enter().append('rect')
-          .attr('class', d => `${styles.overlayRect} ${styles['overlayRect-' + d]}`)
-          .attr('height', chart.slider.height)
-          .attr('x', 0)
-          .attr('y', chart.height)
-          .lower();
-
-      brush
-  		.on('brush start end', () => {
-  			const s = d3.event.selection || x2.range();
-
-        if (s == null) {
-          handle.attr("display", "none");
-          // circle.classed("active", false);
-        } else {
-          // var sx = s.map(x.invert);
-          // circle.classed("active", function(d) { return sx[0] <= d && d <= sx[1]; });
-          handle.attr("display", null).attr("transform", function(d, i) { return "translate(" + [ s[i] + .5*( Math.pow(-1,(i))), chart.height - chart.slider.height*.625] + ")"; });
-        }
-
-        const eachBand = x2.step();
-        const getDomainInvertVals = (val) => {
-
-          let index = Math.ceil((val / eachBand));
-          if (index > chart.data.vals.length - 1) index = chart.data.vals.length - 1;
-          // console.log('index = ' + index);
-          // TODO elegantly
-          return new Date (
-            chart.data.vals[index]['date_time'].replace(/-/g, '/')
-          );
-        };
+        let index = Math.ceil((val / eachBand));
+        if (index > chart.data.vals.length - 1) index = chart.data.vals.length - 1;
+        // console.log('index = ' + index);
+        // TODO elegantly
+        return new Date (
+          chart.data.vals[index]['date_time'].replace(/-/g, '/')
+        );
+      };
 
 
-        // Update main chart x axis
-        const invertedVals = s.map(d => {
-          return getDomainInvertVals(d);
+      // Update main chart x axis
+      const invertedVals = s.map(d => {
+        return getDomainInvertVals(d);
+      });
+			x.domain(invertedVals);
+			chart[styles['x-axis']].call(xAxis);
+
+      // Reposition overlay rects (to gray out bars outside the window)
+      overlayRects
+        .attr('width', function (d, i) {
+          if (i === 0) return s[0];
+          else return chart.width - s[1];
+        })
+        .attr('x', function (d, i) {
+          if (i === 1) return s[1];
+          else return 0;
         });
-  			x.domain(invertedVals);
-  			chart[styles['x-axis']].call(xAxis);
 
-        // Reposition overlay rects (to gray out bars outside the window)
-        overlayRects
-          .attr('width', function (d, i) {
-            if (i === 0) return s[0];
-            else return chart.width - s[1];
-          })
-          .attr('x', function (d, i) {
-            if (i === 1) return s[1];
-            else return 0;
-          });
-
-        // Reposition chart elements
-  			chart[styles.lineValue].selectAll('path'). attr('d', d => line(d));
-  			chart[styles.lineVacc].selectAll('path'). attr('d', d => lineVacc(d));
-  			chart[styles.areaNull].selectAll('path'). attr('d', d => area(d));
-  		})
-      gBrush
-      .call(brush.move, [getBrushStartPos(), chart.width]);
+      // Reposition chart elements
+			chart[styles.lineValue].selectAll('path'). attr('d', d => line(d));
+			chart[styles.lineVacc].selectAll('path'). attr('d', d => lineVacc(d));
+			chart[styles.areaNull].selectAll('path'). attr('d', d => area(d));
+		})
+    gBrush
+    .call(brush.move, [getBrushStartPos(), chart.width]);
 
 
     // Reduce width at the end
