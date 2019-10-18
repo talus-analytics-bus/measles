@@ -4,6 +4,10 @@ import * as d3 from 'd3/dist/d3.min';
 const Util = {};
 
 Util.API_URL = process.env.API_URL || 'http://localhost:5002';
+console.log('Util.API_URL')
+console.log(Util.API_URL)
+console.log('process.env')
+console.log(process.env)
 
 Util.getDateTimeRange = (item) => {
   const data = item.value;
