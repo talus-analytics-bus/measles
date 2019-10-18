@@ -1,0 +1,25 @@
+@import '../../../assets/styles/colors.scss';
+
+#slidingLineTooltip {
+  .tooltipContainer {
+    display: flex;
+    flex-flow: column;
+    background-color: white;
+    padding: 5px;
+    .tooltipContent {
+      display: flex;
+      flex-flow: column;
+      background-color: white;
+      .item {
+        &:not(:last-child) {
+          margin-bottom: 5px;
+        }
+        .name {
+          font-family: 'open_sanssemibold', sans-serif;
+        }
+      }
+    }
+    box-shadow: 3px 3px 2.5px 0 rgba(0, 0, 0, 0.3);
+    -webkit-box-shadow: 3px 3px 2.5px 0 rgba(0, 0, 0, 0.3);
+  }
+}

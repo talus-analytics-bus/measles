@@ -66,14 +66,12 @@ class SlidingLine extends Chart {
           .attr('x', 0)
           .attr('y', 0)
           .attr('width', chart.width)
-          .attr('height', chart.height)
+          .attr('height', chart.height);
 
     if (chart.data.vals.length < 1) {
       // TODO show "no data" message
       return
     }
-
-
 
     // x scale: Time - main chart
     // global min/max to start
@@ -380,14 +378,6 @@ class SlidingLine extends Chart {
       .enter().append('path')
         .attr('d', d => line(d));
 
-        // Setup tooltip
-        chart[styles.lineValue]
-          .attr('data-tip', true)
-          .attr('data-for', 'slidingline-tooltip')
-          .on('mouseover', function updateTooltip () {
-            chart.params.setTooltipData({ message: 'Woo! ' + new Date() });
-          })
-
     // Add rects to slider
     chart[styles.slider].selectAll('rect')
       .data(chart.data.vals)
@@ -590,6 +580,97 @@ class SlidingLine extends Chart {
     gBrush
     .call(brush.move, [getBrushStartPos(), chart.width]);
 
+
+    // Add tooltip line
+    chart.newGroup(styles.tooltipLine)
+      .append('line')
+        .attr('x1', 0)
+        .attr('x2', 0)
+        .attr('y1', 0)
+        .attr('y2', chart.height);
+
+
+    // create tooltip hover overlay
+    chart.newGroup('tooltipOverlay')
+      .append('rect')
+        .attr('class', 'tooltipOverlay')
+        .attr('x', 0)
+        .attr('y', 0)
+        .attr('data-tip', true)
+        // .attr('data-for', 'slidingLineTooltip')
+        .attr('data-for', chart.params.tooltipClassName)
+        .attr('width', chart.width)
+        .attr('height', chart.height)
+        .style('fill', 'transparent')
+        .on('mouseover', function showTooltipLine () {
+          chart[styles.tooltipLine]
+            .select('line')
+              .transition(500)
+              .style('opacity', 1);
+        })
+        .on('mouseout', function hideTooltipLine () {
+          chart[styles.tooltipLine]
+            .select('line')
+              .transition(500)
+              .style('opacity', 0);
+        })
+        .on('mousemove', function tooltipLineUpdate () {
+
+          // First, snap line to months
+          const posXCursor = d3.mouse(this)[0];
+          const xValCursor = x.invert(posXCursor);
+          // console.log(xValCursor);
+          const xDateCursor = new Date(xValCursor);
+          let xValLine, posXLine;
+          const nextMonth = d3.timeMonth(new Date(xDateCursor).setMonth(xDateCursor.getMonth() + 1));
+          const isCloserToNextMonth = (xDateCursor - d3.timeMonth(xDateCursor)) > (nextMonth - xDateCursor);
+          if (isCloserToNextMonth) {
+            xValLine = nextMonth;
+          } else {
+            xValLine = d3.timeMonth(xDateCursor);
+          }
+          posXLine = x(xValLine);
+          chart[styles.tooltipLine]
+            .select('line')
+              .attr('x1', posXLine)
+              .attr('x2', posXLine);
+
+          // Then, get the vaccination and incidence data for this point.
+          const xDateLine = new Date(xValLine);
+          const xDateLineStrComponents = {
+            year: (xDateLine.getUTCFullYear()).toString(),
+            month: (xDateLine.getUTCMonth() + 1) <= 9 ?  '0' + (xDateLine.getUTCMonth() + 1).toString() : (xDateLine.getUTCMonth() + 1).toString(),
+          };
+          const xDateLineStr = `${xDateLineStrComponents.year}-${xDateLineStrComponents.month}`;
+          const incidence = chart.data.vals.find(d => d.date_time.startsWith(xDateLineStr));
+          const vacc = chart.data.vaccVals.find(d => d.date_time.startsWith(xDateLineStrComponents.year));
+
+          const items = [];
+          if (incidence && incidence.value !== null) items.push(
+            {
+              name: 'Incidence',
+              datum: incidence,
+              period: 'month',
+              value: Util.formatIncidence(incidence.value),
+              label: 'cases per 1M population',
+            }
+          );
+          if (vacc) items.push(
+            {
+              name: 'Vaccination',
+              datum: vacc,
+              period: 'year',
+              value: Util.percentize(vacc.value),
+              label: 'of infants',
+            }
+          );
+
+          chart.params.setTooltipData(
+            {
+              items: items
+            }
+          );
+        });
 
     // Reduce width at the end
     chart.svg.node().parentElement.classList.add(styles.drawn);

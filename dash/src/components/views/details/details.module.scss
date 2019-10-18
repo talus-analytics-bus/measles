@@ -309,3 +309,14 @@ $spacing: 20px;
     }
   }
 }
+
+#slidingLineTooltip {
+  .tooltipContainer {
+    background-color: white !important;
+    .tooltipContent {
+      background-color: white !important;
+      color:red;
+      span { color: red;}
+    }
+  }
+}

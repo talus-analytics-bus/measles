@@ -16,6 +16,7 @@ import * as d3 from 'd3/dist/d3.min';
 
 import classNames from 'classnames'
 import styles from './details.module.scss'
+import stylesTooltip from './tooltip.module.scss'
 
 // If DEMO_DATE exists, use it (frames all data in site relative to the demo
 // date that is specified). Otherwise, today's date will be used ("now").
@@ -374,8 +375,6 @@ const Details = (props) => {
 
     // Animate JEE block colors
     const jeeBlocks = document.getElementsByClassName(styles.jeeBlock);
-    console.log('jeeBlocks')
-    console.log(jeeBlocks)
     for (let i = 0; i < jeeBlocks.length; i++) {
       const el = jeeBlocks[i];
       // el.style.backgroundColor = '#cecece';
@@ -388,6 +387,7 @@ const Details = (props) => {
       vaccData: props.countryVaccHistory,
       noResizeEvent: true,
       setTooltipData: setTooltipData,
+      tooltipClassName: stylesTooltip.slidingLineTooltip,
       margin: {
         top: 20,
         right: 110,
@@ -416,8 +416,6 @@ const Details = (props) => {
 
 
   // If loading do not show JSX content.
-  console.log('props')
-  console.log(props)
   if (false) return (<div></div>);
   else {
 
@@ -606,14 +604,29 @@ const Details = (props) => {
               }
               </div>
               <ReactTooltip
-                id='slidingline-tooltip'
+                id={stylesTooltip.slidingLineTooltip}
                 type='slidingLine'
-                className='slidingline-tooltip'
+                className='slidingLineTooltip'
                 place="right"
                 effect="float"
                 getContent={ () =>
                   tooltipData &&
-                    <div>{tooltipData.message}</div>
+                    <div className={stylesTooltip.tooltipContainer}>
+                      <div className={stylesTooltip.tooltipContent}>
+                      {
+                        tooltipData.items.map(item =>
+                          <div className={stylesTooltip.item}>
+                            <div className={stylesTooltip.name}>{item.name} {Util.getDatetimeStamp(item.datum, item.period)}</div>
+                            <div>
+                              <span className={stylesTooltip.value}>{item.value}</span>
+                              &nbsp;
+                              <span className={stylesTooltip.label}>{item.label}</span>
+                            </div>
+                          </div>
+                        )
+                      }
+                      </div>
+                    </div>
                 }
                 />
             </div>

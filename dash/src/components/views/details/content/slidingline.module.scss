@@ -82,3 +82,10 @@
     fill: white;
   }
 }
+
+.tooltipLine {
+  stroke: $grey;
+  stroke-width: 2px;
+  // opacity: 0;
+  // transition: opacity 1s;
+}
