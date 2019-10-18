@@ -37,6 +37,7 @@ const initMap = (map, fillObservations, bubbleObservations, incidenceObservation
       }
     });
 
+    const stepFrac = 1/6;
     map.addLayer({
       id: 'geom-fills',
       type: 'fill',
@@ -48,11 +49,11 @@ const initMap = (map, fillObservations, bubbleObservations, incidenceObservation
           ["feature-state", "value"],
               '#b3b3b3',
               0, '#d6f0b2',
-              0.35, '#b9d7a8',
-              0.5, '#7fcdbb',
-              0.65, '#41b6c4',
-              0.8, '#2c7fb8',
-              0.95, '#303d91'
+              stepFrac*1, '#b9d7a8',
+              stepFrac*2, '#7fcdbb',
+              stepFrac*3, '#41b6c4',
+              stepFrac*4, '#2c7fb8',
+              stepFrac*5, '#303d91'
         ],
         'fill-opacity': 1,
       }

@@ -123,31 +123,33 @@ const Details = (props) => {
     // 0.8, '#2c7fb8',
     // 0.95, '#303d91'
 
-    if (val < 35) {
+    const stepFrac = 100/6;
+
+    if (val < stepFrac*1) {
       return {
         i: 0,
         color: '#d6f0b2',
       };
     }
-    else if (val < 5) {
+    else if (val < stepFrac*2) {
       return {
         i: 1,
         color: '#b9d7a8',
       };
     }
-    else if (val < 65) {
+    else if (val < stepFrac*3) {
       return {
         i: 2,
         color: '#7fcdbb',
       };
     }
-    else if (val < 8) {
+    else if (val < stepFrac*4) {
       return {
         i: 3,
         color: '#41b6c4',
       };
     }
-    else if (val < 95) {
+    else if (val < stepFrac*5) {
       return {
         i: 4,
         color: '#2c7fb8',
@@ -480,7 +482,7 @@ const Details = (props) => {
                         </div>
                         {
                           // Display data source text if available.
-                          (item.data_source && !item.notAvail && !item.hideSource) &&
+                          (item.data_source && item.value !== null && !item.notAvail && !item.hideSource) &&
                             <div className={'dataSource'}>
                               Source: {item.data_source}{ item.updated_at && (
                                   ' as of ' + new Date(item.updated_at).toLocaleString('en-us', {

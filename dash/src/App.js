@@ -23,15 +23,15 @@ import 'material-design-icons/iconfont/material-icons.css'
 // queries
 import ObservationQuery from './components/misc/ObservationQuery.js'
 
-var API_BASE = process.env.REACT_APP_API_BASE_URL
-if (typeof API_BASE === 'undefined') {
-  API_BASE = 'http://localhost:5002'
-}
+// var API_BASE = process.env.REACT_APP_API_BASE_URL
+// if (typeof API_BASE === 'undefined') {
+//   API_BASE = 'http://localhost:5002'
+// }
 
-var DEMO_DATE = process.env.DEMO_DATE
-if (typeof DEMO_DATE === 'undefined') {
-  DEMO_DATE = '2025-07-04T23:56:00'
-}
+// var DEMO_DATE = process.env.DEMO_DATE
+// if (typeof DEMO_DATE === 'undefined') {
+//   DEMO_DATE = '2025-07-04T23:56:00'
+// }
 
 //: React.FC
 const App = () => {

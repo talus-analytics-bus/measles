@@ -426,8 +426,6 @@ class SlidingLine extends Chart {
       const data = y.tickFormat()(
         y.domain()[0] // largest y-value
       );
-      console.log('data')
-      console.log(data)
 
       // Add fake tick labels
 			const fakeText = chart.svg.selectAll('.fake-text').data([data]).enter().append("text").text(d => d)
@@ -439,7 +437,7 @@ class SlidingLine extends Chart {
 			fakeText.remove();
 
       // Return ypos as longest tick label length plus a margin.
-      const margin = 45;
+      const margin = 50;
       const labelShift = -(maxLabelWidth + margin);
 
       // Adjust left margin of chart based on label shifting
@@ -459,7 +457,7 @@ class SlidingLine extends Chart {
     yAxisLabel.append('tspan')
     .attr('x', -chart.height / 2)
       .attr('dy', '1.2em')
-      .text('(cases per 1M people)');
+      .text('(cases per 1M population)');
       // .text('Monthly incidence of measles');
 
     const yAxisRightLabel = chart[styles['y-axis-right']].append('text')

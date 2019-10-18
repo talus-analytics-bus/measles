@@ -277,6 +277,9 @@ $spacing: 20px;
       height: $slidingLineWidth/2.2;
       width: $slidingLineWidth;
       margin-left: 20px;
+      svg {
+        margin-top: 10px;
+      }
       // Other styles for this chart are in slidingline.module.scss
     }
   }

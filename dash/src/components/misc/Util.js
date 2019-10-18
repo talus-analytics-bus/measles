@@ -3,6 +3,8 @@ import * as d3 from 'd3/dist/d3.min';
 // Utility functions.
 const Util = {};
 
+Util.API_URL = process.env.API_URL || 'http://localhost:5002';
+
 Util.getDateTimeRange = (item) => {
   const data = item.value;
   const first = data[0]['date_time'];
