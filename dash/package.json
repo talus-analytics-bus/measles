@@ -26,6 +26,7 @@
     "react-router-dom": "^5.0.1",
     "react-scripts": "3.0.1",
     "react-select-search": "^0.9.6",
+    "react-tooltip": "^3.11.1",
     "reactjs-popup": "^1.4.1",
     "typescript": "3.5.1"
   },
