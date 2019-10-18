@@ -26,10 +26,6 @@ jobs:
       - aws-cli/configure
 
       - run:
-          name: yarn build dash
-          command: cd dash; rm yarn.lock; yarn install --network-timeout 1000000
-
-      - run:
           name: Setup environment variables
           command: |
             echo 'export MY_ENV_VAR="FOO"' >> $BASH_ENV
@@ -37,6 +33,10 @@ jobs:
       - run:
           name: "What was my custom environment variable?"
           command: echo ${MY_ENV_VAR}
+
+      - run:
+          name: yarn build dash
+          command: cd dash; rm yarn.lock; yarn install --network-timeout 1000000
 
       - run:
           name: deploy
