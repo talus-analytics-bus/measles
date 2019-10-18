@@ -98,11 +98,6 @@ class SlidingLine extends Chart {
       .range([0, chart.width])
       .paddingInner(0);
 
-    console.log('x2')
-    console.log(x2)
-    console.log('x2Domain')
-    console.log(x2Domain)
-
     // x axis: slider
     function onlyUnique(value, index, self) {
         return self.indexOf(value) === index;
@@ -680,7 +675,6 @@ class SlidingLine extends Chart {
     // Update function: Draw lines, add tooltips, etc.
     // Assumption: Data themselves do not change.
     chart.update = () => {
-      console.log('chart.update()');
 
       // Draw incidence line (solid blue, no label)
 
