@@ -31,7 +31,12 @@ jobs:
 
       - run:
           name: Setup environment variables
-          command: cd dash; export MVM_TEST=blorp
+          command: |
+            echo 'export MY_ENV_VAR="FOO"' >> $BASH_ENV
+
+      - run:
+          name: "What was my custom environment variable?"
+          command: echo ${MY_ENV_VAR}
 
       - run:
           name: deploy
