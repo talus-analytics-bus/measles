@@ -3,11 +3,14 @@ import * as d3 from 'd3/dist/d3.min';
 // Utility functions.
 const Util = {};
 
-Util.API_URL = process.env.API_URL || 'http://localhost:5002';
-console.log('Util.API_URL')
-console.log(Util.API_URL)
-console.log('process.env')
-console.log(process.env)
+const getApiUrl = () => {
+  if (process.env.NODE_ENV === 'production') {
+    if (location.href.search('https') > -1) return 'https://measles-api.talusanalytics.com';
+    else return 'http://measles-api-dev.us-west-1.elasticbeanstalk.com/';
+  } else return 'http://localhost:5002';
+};
+
+Util.API_URL = getApiUrl();
 
 Util.getDateTimeRange = (item) => {
   const data = item.value;

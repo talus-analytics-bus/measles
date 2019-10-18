@@ -111,7 +111,7 @@ $spacing: 20px;
           .jeeBlocks {
             margin-right: 5px;
             .jeeBlock {
-              &.green { background-color: $jee-green; }
+              &.green { transition: background-color 1s; background-color: $jee-green; }
               &.lightgreen { background-color: $jee-green-light; }
               &.yellow { background-color: $jee-yellow; }
               &.lightyellow { background-color: $jee-yellow-light; }
@@ -122,6 +122,7 @@ $spacing: 20px;
               width: $jeeBlockSize;
               background-color: #cecece;
               margin-bottom: 1px;
+              transition: background-color 1s;
               &:last-child {
                 margin-bottom: 0;
               }

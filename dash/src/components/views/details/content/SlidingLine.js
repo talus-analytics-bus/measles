@@ -73,6 +73,8 @@ class SlidingLine extends Chart {
       return
     }
 
+
+
     // x scale: Time - main chart
     // global min/max to start
     const x = d3.scaleTime()
@@ -377,6 +379,14 @@ class SlidingLine extends Chart {
       .data(valueLineSegments)
       .enter().append('path')
         .attr('d', d => line(d));
+
+        // Setup tooltip
+        chart[styles.lineValue]
+          .attr('data-tip', true)
+          .attr('data-for', 'slidingline-tooltip')
+          .on('mouseover', function updateTooltip () {
+            chart.params.setTooltipData({ message: 'Woo! ' + new Date() });
+          })
 
     // Add rects to slider
     chart[styles.slider].selectAll('rect')

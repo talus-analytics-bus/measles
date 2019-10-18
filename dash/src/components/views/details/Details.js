@@ -38,6 +38,9 @@ const Details = (props) => {
   // Track whether the sliding line chart has been drawn
   const [ slidingLine, setSlidingLine ]  = React.useState(null);
 
+  // Track SlidingLine chart tooltip data
+  const [ tooltipData, setTooltipData ]  = React.useState(null);
+
   // Get data for current country.
   const country = props.id;
 
@@ -94,7 +97,7 @@ const Details = (props) => {
         <div className={styles.jeeBlocks}>
         {
           [4, 3, 2, 1, 0].map(i =>
-            (i <= scoreLabeling.i) ? <div className={classNames(styles.jeeBlock, styles[scoreLabeling.color])} />
+            (i <= scoreLabeling.i) ? <div style={ { 'backgroundColor': '#cecece' } } className={classNames(styles.jeeBlock, styles[scoreLabeling.color])} />
               : <div className={classNames(styles.jeeBlock)} />
           )
         }
@@ -369,12 +372,22 @@ const Details = (props) => {
   // Effect hook to load API data.
   React.useEffect(() => {
 
-    // For sliding line chart, only use "trimmed" data.
+    // Animate JEE block colors
+    const jeeBlocks = document.getElementsByClassName(styles.jeeBlock);
+    console.log('jeeBlocks')
+    console.log(jeeBlocks)
+    for (let i = 0; i < jeeBlocks.length; i++) {
+      const el = jeeBlocks[i];
+      // el.style.backgroundColor = '#cecece';
+      el.style.backgroundColor = '';
+    }
 
+    // Setup sliding line chart params
     const chartParams = {
       data: props.countryIncidenceHistory,
       vaccData: props.countryVaccHistory,
       noResizeEvent: true,
+      setTooltipData: setTooltipData,
       margin: {
         top: 20,
         right: 110,
@@ -396,6 +409,9 @@ const Details = (props) => {
         chartParams,
       )
     );
+
+    // Rebuild tooltips after the chart is drawn
+    ReactTooltip.rebuild();
   }, [])
 
 
@@ -589,6 +605,17 @@ const Details = (props) => {
                 )
               }
               </div>
+              <ReactTooltip
+                id='slidingline-tooltip'
+                type='slidingLine'
+                className='slidingline-tooltip'
+                place="right"
+                effect="float"
+                getContent={ () =>
+                  tooltipData &&
+                    <div>{tooltipData.message}</div>
+                }
+                />
             </div>
     );
   }
