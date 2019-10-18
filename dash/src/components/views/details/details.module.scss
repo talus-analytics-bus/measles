@@ -93,17 +93,41 @@ $spacing: 20px;
         font-weight: bold;
 
         .jee {
-          padding-left: 5px;
+          // padding-left: 5px;
           padding-bottom: 5px;
           margin-top: 5px;
           line-height: 2.5;
           font-size: .8em;
-          &.green { border-color: $jee-green; }
-          &.lightgreen { border-color: $jee-green-light; }
-          &.yellow { border-color: $jee-yellow; }
-          &.lightyellow { border-color: $jee-yellow-light; }
-          &.red { border-color: $jee-red; }
-          &.gray { border-color: $jee-gray; }
+          // &.green { border-color: $jee-green; }
+          // &.lightgreen { border-color: $jee-green-light; }
+          // &.yellow { border-color: $jee-yellow; }
+          // &.lightyellow { border-color: $jee-yellow-light; }
+          // &.red { border-color: $jee-red; }
+          // &.gray { border-color: $jee-gray; }
+
+          display: flex;
+
+          $jeeBlockSize: 13.6px;
+          .jeeBlocks {
+            margin-right: 5px;
+            .jeeBlock {
+              &.green { background-color: $jee-green; }
+              &.lightgreen { background-color: $jee-green-light; }
+              &.yellow { background-color: $jee-yellow; }
+              &.lightyellow { background-color: $jee-yellow-light; }
+              &.red { background-color: $jee-red; }
+              &.gray { background-color: $jee-gray; }
+              // position: absolute;
+              height: $jeeBlockSize;
+              width: $jeeBlockSize;
+              background-color: #cecece;
+              margin-bottom: 1px;
+              &:last-child {
+                margin-bottom: 0;
+              }
+              // border: 1px solid #f1f1f1;
+            }
+          }
         }
       }
       .label {
@@ -220,7 +244,7 @@ $spacing: 20px;
     width: 100%;
     .itemContainer {
       &:not(:last-child) {
-      // &:first-child {
+        // &:first-child {
         border-bottom: 1px solid #b2b2b2;
         padding-bottom: 10px;
       }

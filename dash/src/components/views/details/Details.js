@@ -4,6 +4,7 @@ import axios from 'axios'
 import { Link } from 'react-router-dom'
 import Chart from '../../chart/Chart.js'
 import SlidingLine from './content/SlidingLine.js'
+import ReactTooltip from 'react-tooltip'; // for sliding line
 
 import MiniMap from '../../../components/map/MiniMap.js'
 
@@ -39,31 +40,6 @@ const Details = (props) => {
 
   // Get data for current country.
   const country = props.id;
-  // const [countryName, setCountryName] = React.useState('');
-  // const [countryIso2, setCountryIso2] = React.useState('');
-  //
-  // // total population
-  // const [countryPop, setCountryPop] = React.useState({});
-  //
-  // // GDP per capita
-  // const [countryGDP, setCountryGDP] = React.useState({});
-  //
-  // // JEE Score
-  // const [countryJEE, setCountryJEE] = React.useState({});
-
-  //Policies (doubt we get this by October?)
-
-  // // Vaccination coverage
-  // const coverage = props.coverage;
-  //
-  // // Reported cases
-  // const cases = props.cases;
-  //
-  // // Reported cases over time
-  // const [caseHistory, setCaseHistory]  = React.useState([]);
-  //
-  // // Vaccination coverage over time
-  // const [coverageHistory, setCoverageHistory] = React.useState([]);
 
   /**
    * Returns JEE score colors and labels
@@ -75,30 +51,35 @@ const Details = (props) => {
         label: 'None',
         color: 'red',
         value: score,
+        i: 0,
       };
   	} else if (score < 2.5) {
       return {
         label: 'Limited',
         color: 'lightyellow',
         value: score,
+        i: 1,
       };
   	} else if (score < 3.5) {
       return {
         label: 'Developed',
         color: 'yellow',
         value: score,
+        i: 2,
       };
   	} else if (score < 4.5) {
       return {
         label: 'Demonstrated',
         color: 'lightgreen',
         value: score,
+        i: 3,
       };
     }
     return {
       label: 'Sustainable',
       color: 'green',
       value: score,
+      i: 4,
     };
   };
 
@@ -109,11 +90,32 @@ const Details = (props) => {
   const getScoreJsx = (score) => {
     const scoreLabeling = getScoreLabeling(score);
     return (
-      <div className={classNames(styles.jee, styles[scoreLabeling.color])} style={ { 'borderStyle': 'solid', 'borderWidth': '0 0 0 10px' } }>
-        {scoreLabeling.label}
+      <div className={classNames(styles.jee, styles[scoreLabeling.color])}>
+        <div className={styles.jeeBlocks}>
+        {
+          [4, 3, 2, 1, 0].map(i =>
+            (i <= scoreLabeling.i) ? <div className={classNames(styles.jeeBlock, styles[scoreLabeling.color])} />
+              : <div className={classNames(styles.jeeBlock)} />
+          )
+        }
+        </div>
+        <span>{scoreLabeling.label}</span>
       </div>
     );
   };
+
+  // /**
+  //  * Get JSX for rendering JEE scores.
+  //  * @method getScoreJsx
+  //  */
+  // const getScoreJsx = (score) => {
+  //   const scoreLabeling = getScoreLabeling(score);
+  //   return (
+  //     <div className={classNames(styles.jee, styles[scoreLabeling.color])} style={ { 'borderStyle': 'solid', 'borderWidth': '0 0 0 10px' } }>
+  //       {scoreLabeling.label}
+  //     </div>
+  //   );
+  // };
 
   const getVaccinationChartBin = (val) => {
     // 0, '#d6f0b2',
