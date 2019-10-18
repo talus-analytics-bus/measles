@@ -95,7 +95,8 @@ class SlidingLine extends Chart {
 
     const x2 = d3.scaleBand()
       .domain(x2Domain) // never changes
-      .range([0, chart.width]);
+      .range([0, chart.width])
+      .paddingInner(0);
 
     console.log('x2')
     console.log(x2)
@@ -158,7 +159,7 @@ class SlidingLine extends Chart {
     // x axis - main chart
     const xAxis = d3.axisBottom()
       .tickSizeOuter(0)
-      .ticks(5)
+      .ticks(7)
       .tickFormat(multiFormat)
       .scale(x);
     const xAxisG = chart.newGroup(styles['x-axis'])
@@ -379,7 +380,8 @@ class SlidingLine extends Chart {
 
     // Add rects to slider
     chart[styles.slider].selectAll('rect')
-      .data(chart.data.vals.filter(d => d.value !== null))
+      .data(chart.data.vals)
+      // .data(chart.data.vals.filter(d => d.value !== null)
       .enter().append('rect')
         .attr('x', d => {
           return x2(new Date(d['date_time'].replace(/-/g, '/')).toLocaleString("en-US", {
@@ -389,12 +391,17 @@ class SlidingLine extends Chart {
           }))
         })
         .attr('y', d => {
-          return chart.height + (chart.slider.height - (chart.slider.height - y2(d.value)));
+          const val = d.value !== null ? d.value : y2.domain()[0];
+          return chart.height + (chart.slider.height - (chart.slider.height - y2(val)));
           // return chart.height + chart.slider.height;
         }) // TODO check
         .attr('width', x2.bandwidth()) // todo bands
-        .attr('height', d => chart.slider.height - y2(d.value))
-        .attr('class', styles.sliderRect);
+        .attr('height', d => {
+          const val = d.value !== null ? d.value : y2.domain()[0];
+          return chart.slider.height - y2(val)
+        })
+        .attr('class', styles.sliderRect)
+        .classed(styles.nullBar, d => d.value === null);
 
 
         const yAxisG = chart.newGroup(styles['y-axis'])

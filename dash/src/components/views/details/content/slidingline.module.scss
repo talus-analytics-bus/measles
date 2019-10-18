@@ -59,8 +59,14 @@
 .slider {
   .sliderRect {
     fill: $value-red;
+    stroke: white;
+    stroke-width: .25px;
     &.dim {
       opacity: .5;
+    }
+    &.nullBar {
+      fill: #e6e6e6;
+      stroke-width: 0;
     }
   }
 

@@ -79,7 +79,7 @@ const Details = (props) => {
   	} else if (score < 2.5) {
       return {
         label: 'Limited',
-        color: 'yellow',
+        color: 'lightyellow',
         value: score,
       };
   	} else if (score < 3.5) {
