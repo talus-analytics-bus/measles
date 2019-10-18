@@ -129,10 +129,10 @@ class SlidingLine extends Chart {
     formatMonth = d3.timeFormat("%b"),
     formatYear = d3.timeFormat("%Y");
 
-    function multiFormat(date) {
-      return (d3.timeYear(date) < date ? formatMonth
-          : formatYear)(date);
-    }
+    // function multiFormat(date) {
+    //   return (d3.timeYear(date) < date ? formatMonth
+    //       : formatYear)(date);
+    // }
     // function multiFormat(date) {
     //   return (d3.timeSecond(date) < date ? formatMillisecond
     //       : d3.timeMinute(date) < date ? formatSecond
@@ -142,6 +142,18 @@ class SlidingLine extends Chart {
     //       : d3.timeYear(date) < date ? formatMonth
     //       : formatYear)(date);
     // }
+    function multiFormat(date) {
+
+      let format;
+      if (d3.timeMonth(date) < date) {
+        this.parentElement.remove();
+      } else if (d3.timeYear(date) < date) {
+        format = formatMonth(date);
+      } else {
+        format = formatYear(date);
+      }
+      return format;
+    }
 
     // x axis - main chart
     const xAxis = d3.axisBottom()
@@ -422,21 +434,98 @@ class SlidingLine extends Chart {
 
 
     // add brush to slider
+    let start;
 		const brush = d3.brushX()
   		.extent([[0, chart.height], [chart.width, chart.height + chart.slider.height]])
-  		.on('brush end', () => {
-        console.log('brush end');
+      .handleSize(12)
+      // .on('brush start', function () {
+      //   const s = d3.event.selection;
+      //   if (s[1] - s[0] < 50) {
+      //     if (d3.event.sourceEvent) {
+      //       const _brush = chart[styles.slider].select('.brush');
+      //       if (d3.event.sourceEvent.target.classList.contains('handle--w')) {
+      //         console.log('West handle too small')
+      //         console.log([ s[1]-50, s[1] ])
+      //
+      //         _brush.call(brush.move, [ s[1]-50, s[1] ]);
+      //       }
+      //       else if (d3.event.sourceEvent.target.classList.contains('handle--e')) {
+      //         console.log('East handle too small')
+      //         console.log([ s[0], s[0]+50 ])
+      //         brush.move([ s[0], s[0]+50 ]);
+      //         _brush.call(brush.move, [ s[0], s[0]+50 ]);
+      //       }
+      //
+      //
+      //     }
+      //   }
+      // })
+  		.on('brush start end', () => {
   			const s = d3.event.selection || x2.range();
-        console.log('s');
-        console.log(s);
+        // console.log('d3.event');
+        // console.log(d3.event);
+        // // if (d3.event.sourceEvent && d3.event.sourceEvent.sourceEvent) return;
+        // // // Lower limit for brush width
+        // // if (s[1] - s[0] < 50) {
+        // //   freeze = true
+        // //   console.log('d3.event')
+        // //   console.log(d3.event)
+        // //
+        //
+        // const movedOtherHandle = d3.event.sourceEvent && d3.event.sourceEvent.sourceEvent;
+        // if (movedOtherHandle) {
+        //   if (start === 'w') {
+        //     console.log('Moved from west')
+        //     d3.event.target.extent([s[1]-50, s[1]]);
+        //   }
+        //   else if (start === 'e') {
+        //     console.log('Moved from east')
+        //     d3.event.target.extent([ s[0], s[0]+50 ]);
+        //   }
+        //   return
+        // }
+        //   if (d3.event.sourceEvent && !d3.event.sourceEvent.sourceEvent && d3.event.sourceEvent.target) {
+        // //     const _brush = chart[styles.slider].select('.brush');
+        //     if (d3.event.sourceEvent.target.classList.contains('handle--w')) {
+        //       start = 'w';
+        // //       console.log('West handle too small')
+        // //       console.log([ s[1]-50, s[1] ])
+        // //
+        // //       _brush.call(brush.move, [ s[1]-50, s[1] ]);
+        // //       freeze = false;
+        //     }
+        //     else if (d3.event.sourceEvent.target.classList.contains('handle--e')) {
+        //       start = 'e';
+        // //       console.log('East handle too small')
+        // //       console.log([ s[0], s[0]+50 ])
+        // //       // brush.move([ s[0], s[0]+50 ]);
+        // //       _brush.call(brush.move, [ s[0], s[0]+50 ]);
+        // //       freeze = false;
+        //     }
+        // //   }
+        // }
+        //
+        // // if (freeze) return;
+        // if (s[1]-s[0] < 50) {
+        //
+        //   // d3.event.target.extent([s[0],s[0]+50]);
+        //   const _brush = chart[styles.slider].select('.brush');
+        //
+        //   if (start === 'w') {
+        //     _brush.call(brush.move, [ s[1]-50, s[1] ]);
+        //   }
+        //   else if (start === 'e') {
+        //     _brush.call(brush.move, [ s[0], s[0]+50 ]);
+        //   }
+        //   return
+        // }
 
         const eachBand = x2.step();
         const getDomainInvertVals = (val) => {
 
           let index = Math.ceil((val / eachBand));
-          console.log('index = ' + index)
           if (index > chart.data.vals.length - 1) index = chart.data.vals.length - 1;
-
+          // console.log('index = ' + index);
           // TODO elegantly
           return new Date (
             chart.data.vals[index]['date_time'].replace(/-/g, '/')
@@ -460,10 +549,28 @@ class SlidingLine extends Chart {
   			chart[styles.lineVacc].selectAll('path'). attr('d', d => lineVacc(d));
   			chart[styles.areaNull].selectAll('path'). attr('d', d => area(d));
   		});
+      console.log('brush')
+      console.log(brush)
+
+    const getBrushStartPos = () => {
+      // Get latest year of data from x2 domain
+      const newYear = +(x2.domain()[x2.domain().length - 1].split('/')[1])
+
+      // Get oldest year of data from x2 domain
+      const oldYear = +(x2.domain()[0].split('/')[1])
+
+      // Start year = latest year minus 3 or the oldest year if that's sooner
+      const startYear = newYear - oldYear < 3 ? oldYear : newYear - 3;
+
+      // Get xpos of start year from x2 domain and return it
+      const startYearXPos = x2('1/' + startYear);
+      return startYearXPos;
+    };
 
 		chart[styles.slider].append('g')
   		.attr('class', 'brush')
   		.call(brush)
+  		.call(brush.move, [getBrushStartPos(), chart.width])
 
     // Reduce width at the end
     chart.svg.node().parentElement.classList.add(styles.drawn);

@@ -461,6 +461,21 @@ $button-shadow: rgba(0, 0, 0, 0.2);
   font-family: 'Material Icons' !important;
 }
 
+// Slider on details page.
+rect.overlay {
+  fill: rgba(255, 255, 255, 0.47843137254901963);
+}
+g.brush {
+  rect.selection {
+    fill: none;
+    stroke: $dark-grey;
+  }
+  rect.handle {
+    fill: #b3b3b3;
+    stroke: $dark-grey;
+  }
+}
+
 @import "../node_modules/react-bootstrap-table-next/dist/react-bootstrap-table2.min.css";
 @import './assets/styles/fonts.css';
 @import './assets/styles/global.scss';
