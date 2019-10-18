@@ -433,92 +433,73 @@ class SlidingLine extends Chart {
       .text('(% of infants)');
 
 
+
+
     // add brush to slider
     let start;
 		const brush = d3.brushX()
   		.extent([[0, chart.height], [chart.width, chart.height + chart.slider.height]])
-      .handleSize(12)
-      // .on('brush start', function () {
-      //   const s = d3.event.selection;
-      //   if (s[1] - s[0] < 50) {
-      //     if (d3.event.sourceEvent) {
-      //       const _brush = chart[styles.slider].select('.brush');
-      //       if (d3.event.sourceEvent.target.classList.contains('handle--w')) {
-      //         console.log('West handle too small')
-      //         console.log([ s[1]-50, s[1] ])
-      //
-      //         _brush.call(brush.move, [ s[1]-50, s[1] ]);
-      //       }
-      //       else if (d3.event.sourceEvent.target.classList.contains('handle--e')) {
-      //         console.log('East handle too small')
-      //         console.log([ s[0], s[0]+50 ])
-      //         brush.move([ s[0], s[0]+50 ]);
-      //         _brush.call(brush.move, [ s[0], s[0]+50 ]);
-      //       }
-      //
-      //
-      //     }
-      //   }
-      // })
+      .handleSize(12);
+
+      const getBrushStartPos = () => {
+        // Get latest year of data from x2 domain
+        const newYear = +(x2.domain()[x2.domain().length - 1].split('/')[1])
+
+        // Get oldest year of data from x2 domain
+        const oldYear = +(x2.domain()[0].split('/')[1])
+
+        // Start year = latest year minus 3 or the oldest year if that's sooner
+        const startYear = newYear - oldYear < 3 ? oldYear : newYear - 3;
+
+        // Get xpos of start year from x2 domain and return it
+        const startYearXPos = x2('1/' + startYear);
+        return startYearXPos;
+      };
+
+      const gBrush = chart[styles.slider].append('g')
+    		.attr('class', 'brush')
+    		.call(brush)
+
+        // add brush handles (from https://bl.ocks.org/Fil/2d43867ba1f36a05459c7113c7f6f98a)
+      var brushResizePath = function(d) {
+          var e = +(d.type == "e"),
+              x = e ? 1 : -1,
+              y = (chart.slider.height * .75);
+          return "M" + (.5 * x) + "," + y + "A6,6 0 0 " + e + " " + (6.5 * x) + "," + (y + 6) + "V" + (2 * y - 6) +
+            "A6,6 0 0 " + e + " " + (.5 * x) + "," + (2 * y) + "Z" + "M" + (2.5 * x) + "," + (y + 8) + "V" + (2 * y - 8) +
+            "M" + (4.5 * x) + "," + (y + 8) + "V" + (2 * y - 8);
+      }
+
+      var handle = gBrush.selectAll(".handle--custom")
+        .data([{type: "w"}, {type: "e"}])
+        .enter().append("path")
+          .attr("class", "handle--custom")
+          // .attr("stroke", "#888")
+          // .attr("fill", '#eee')
+          .attr("cursor", "ew-resize")
+          .attr("d", brushResizePath);
+
+      const overlayRects = gBrush.selectAll(styles.overlayRect)
+        .data([1, 2])
+        .enter().append('rect')
+          .attr('class', d => `${styles.overlayRect} ${styles['overlayRect-' + d]}`)
+          .attr('height', chart.slider.height)
+          .attr('x', 0)
+          .attr('y', chart.height)
+          .lower();
+
+      brush
   		.on('brush start end', () => {
   			const s = d3.event.selection || x2.range();
-        // console.log('d3.event');
-        // console.log(d3.event);
-        // // if (d3.event.sourceEvent && d3.event.sourceEvent.sourceEvent) return;
-        // // // Lower limit for brush width
-        // // if (s[1] - s[0] < 50) {
-        // //   freeze = true
-        // //   console.log('d3.event')
-        // //   console.log(d3.event)
-        // //
-        //
-        // const movedOtherHandle = d3.event.sourceEvent && d3.event.sourceEvent.sourceEvent;
-        // if (movedOtherHandle) {
-        //   if (start === 'w') {
-        //     console.log('Moved from west')
-        //     d3.event.target.extent([s[1]-50, s[1]]);
-        //   }
-        //   else if (start === 'e') {
-        //     console.log('Moved from east')
-        //     d3.event.target.extent([ s[0], s[0]+50 ]);
-        //   }
-        //   return
-        // }
-        //   if (d3.event.sourceEvent && !d3.event.sourceEvent.sourceEvent && d3.event.sourceEvent.target) {
-        // //     const _brush = chart[styles.slider].select('.brush');
-        //     if (d3.event.sourceEvent.target.classList.contains('handle--w')) {
-        //       start = 'w';
-        // //       console.log('West handle too small')
-        // //       console.log([ s[1]-50, s[1] ])
-        // //
-        // //       _brush.call(brush.move, [ s[1]-50, s[1] ]);
-        // //       freeze = false;
-        //     }
-        //     else if (d3.event.sourceEvent.target.classList.contains('handle--e')) {
-        //       start = 'e';
-        // //       console.log('East handle too small')
-        // //       console.log([ s[0], s[0]+50 ])
-        // //       // brush.move([ s[0], s[0]+50 ]);
-        // //       _brush.call(brush.move, [ s[0], s[0]+50 ]);
-        // //       freeze = false;
-        //     }
-        // //   }
-        // }
-        //
-        // // if (freeze) return;
-        // if (s[1]-s[0] < 50) {
-        //
-        //   // d3.event.target.extent([s[0],s[0]+50]);
-        //   const _brush = chart[styles.slider].select('.brush');
-        //
-        //   if (start === 'w') {
-        //     _brush.call(brush.move, [ s[1]-50, s[1] ]);
-        //   }
-        //   else if (start === 'e') {
-        //     _brush.call(brush.move, [ s[0], s[0]+50 ]);
-        //   }
-        //   return
-        // }
+
+        if (s == null) {
+          handle.attr("display", "none");
+          // circle.classed("active", false);
+        } else {
+          // var sx = s.map(x.invert);
+          // circle.classed("active", function(d) { return sx[0] <= d && d <= sx[1]; });
+          handle.attr("display", null).attr("transform", function(d, i) { return "translate(" + [ s[i] + .5*( Math.pow(-1,(i))), chart.height - chart.slider.height*.625] + ")"; });
+        }
 
         const eachBand = x2.step();
         const getDomainInvertVals = (val) => {
@@ -540,37 +521,25 @@ class SlidingLine extends Chart {
   			x.domain(invertedVals);
   			chart[styles['x-axis']].call(xAxis);
 
-  			// chart.selectAll('.point, .sec-point')
-  			// .attr('cx', d => x(d.data.date))
-  			// .attr('cy', d => y(d[1]));
+        // Reposition overlay rects (to gray out bars outside the window)
+        overlayRects
+          .attr('width', function (d, i) {
+            if (i === 0) return s[0];
+            else return chart.width - s[1];
+          })
+          .attr('x', function (d, i) {
+            if (i === 1) return s[1];
+            else return 0;
+          });
 
         // Reposition chart elements
   			chart[styles.lineValue].selectAll('path'). attr('d', d => line(d));
   			chart[styles.lineVacc].selectAll('path'). attr('d', d => lineVacc(d));
   			chart[styles.areaNull].selectAll('path'). attr('d', d => area(d));
-  		});
-      console.log('brush')
-      console.log(brush)
+  		})
+      gBrush
+      .call(brush.move, [getBrushStartPos(), chart.width]);
 
-    const getBrushStartPos = () => {
-      // Get latest year of data from x2 domain
-      const newYear = +(x2.domain()[x2.domain().length - 1].split('/')[1])
-
-      // Get oldest year of data from x2 domain
-      const oldYear = +(x2.domain()[0].split('/')[1])
-
-      // Start year = latest year minus 3 or the oldest year if that's sooner
-      const startYear = newYear - oldYear < 3 ? oldYear : newYear - 3;
-
-      // Get xpos of start year from x2 domain and return it
-      const startYearXPos = x2('1/' + startYear);
-      return startYearXPos;
-    };
-
-		chart[styles.slider].append('g')
-  		.attr('class', 'brush')
-  		.call(brush)
-  		.call(brush.move, [getBrushStartPos(), chart.width])
 
     // Reduce width at the end
     chart.svg.node().parentElement.classList.add(styles.drawn);

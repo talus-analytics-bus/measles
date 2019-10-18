@@ -300,15 +300,26 @@ const Details = (props) => {
               {
                 label: 'Monthly incidence',
                 class: styles.monthlyIncidence,
+                shape: 'line',
               },
               {
                 label: 'Vaccination coverage',
                 class: styles.vaccinationCoverage,
+                shape: 'line',
+              },
+              {
+                label: 'Incidence not reported',
+                class: styles.noIncidence,
+                shape: 'rect',
               },
             ].map(entry =>
               <div className={styles.entry}>
-                <svg width="18" height="10">
-                  <line className={classNames(styles.symbol, entry.class)} x1="0" x2="18" y1="5" y2="5" />
+                <svg width="18" height="18">
+                {
+                  entry.shape === 'line' ?
+                      <line className={classNames(styles.symbol, entry.class)} x1="0" x2="18" y1="9" y2="9" />
+                      :  <rect className={classNames(styles.symbol, entry.class)} x="0" y="0" height="18" width="18" />
+                }
                 </svg>
                 <div className={styles.label}>
                   {entry.label}

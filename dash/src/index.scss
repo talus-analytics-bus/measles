@@ -463,17 +463,21 @@ $button-shadow: rgba(0, 0, 0, 0.2);
 
 // Slider on details page.
 rect.overlay {
-  fill: rgba(255, 255, 255, 0.47843137254901963);
+  // fill: rgba(255, 255, 255, 0.47843137254901963);
 }
 g.brush {
   rect.selection {
     fill: none;
     stroke: $dark-grey;
   }
-  rect.handle {
-    fill: #b3b3b3;
+  path.handle--custom {
     stroke: $dark-grey;
+    fill: #e6e6e6;
   }
+  // rect.handle {
+  //   fill: #b3b3b3;
+  //   stroke: $dark-grey;
+  // }
 }
 
 @import "../node_modules/react-bootstrap-table-next/dist/react-bootstrap-table2.min.css";

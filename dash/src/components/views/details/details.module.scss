@@ -247,7 +247,6 @@ $spacing: 20px;
         margin-right: 20px;
         .symbol {
           width: 20px;
-          height: 0;
           border-top: 2px solid black;
           margin-right: 5px;
           &.monthlyIncidence {
@@ -255,12 +254,17 @@ $spacing: 20px;
             stroke-width: 3px;
             stroke-linecap: round;
             stroke-linejoin: round;
+            height: 0;
           }
           &.vaccinationCoverage {
             stroke: #333333;
             stroke-width: 1.5px;
             stroke-dasharray: 6, 6;
             stroke-linecap: square;
+            height: 0;
+          }
+          &.noIncidence {
+            fill: #e6e6e6;
           }
         }
         .label {
