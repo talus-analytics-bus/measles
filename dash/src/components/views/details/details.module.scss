@@ -260,7 +260,7 @@ $spacing: 20px;
     }
   }
 
-  $slidingLineWidth: 725px;
+  $slidingLineWidth: 750px;
   .slidingLineContainer {
     .slidingLineLegend {
       display: flex;
@@ -301,7 +301,7 @@ $spacing: 20px;
     .slidingLine {
       height: $slidingLineWidth/2.2;
       width: $slidingLineWidth;
-      margin-left: 20px;
+      // margin-left: 20px;
       svg {
         margin-top: 10px;
       }

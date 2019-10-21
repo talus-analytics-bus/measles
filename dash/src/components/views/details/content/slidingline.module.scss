@@ -1,4 +1,7 @@
 @import '../../../../assets/styles/colors.scss';
+.invisible {
+  display: none;
+}
 .drawn {
   width: 0 !important;
   height: auto !important;
@@ -46,7 +49,7 @@
     text-align: center;
     fill: $dark-grey;
     text-anchor: middle;
-    font-size: 1.75em;
+    font-size: 1.55em;
   }
 }
 .y-axis-right .label {

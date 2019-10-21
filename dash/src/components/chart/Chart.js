@@ -20,6 +20,9 @@ class Chart {
       .append('g')
       .classed('outlines', true);
 
+    // Store as function
+    this.onResize = onResize;
+
     this.params = params;
 
     this.heighthWidthRatio = params.heighthWidthRatio;
@@ -418,7 +421,7 @@ function onResize(chart) {
   chart.chart
     .attr('transform', `translate(${chart.margin.left}, ${chart.margin.top})`);
 
-  chart.draw();
+  // chart.draw();
 
   if (chart.DEV) {
     chart.newGroup('outlines')

@@ -209,11 +209,13 @@ $logo-height: 70px;
         font-family: 'Gotham Book', sans-serif;
         font-size: .66em;
         .regionContainer {
-          pointer-events: auto !important;
+          
+          // TODO elegantly
+          &:nth-child(7) .region {
+            border-radius: 0 0 10px 10px;
+          }
           .region {
-            pointer-events: auto !important;
             span {
-              pointer-events: auto !important;
 
             }
             padding: 20px;
@@ -221,9 +223,6 @@ $logo-height: 70px;
 
             &:hover {
               background-color: lighten($light-grey-2, 5%);
-            }
-            &:last-child {
-              border-radius: 0 0 10px 10px;
             }
             &[currentitem="true"] {
               > span {
@@ -295,11 +294,12 @@ $logo-height: 70px;
               border-radius: 0 0 10px 10px;
             }
             .curCountryMarker {
-              height: 10px !important;
-              width: 10px !important;
+              height: 15px !important;
+              width: 15px !important;
               transform: none !important;
               margin-left: 5px !important;
-              top: -2px !important;
+              right: 10px;
+              position: absolute !important;
             }
           }
         }

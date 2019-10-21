@@ -13,6 +13,7 @@ Util.API_URL = getApiUrl();
 
 Util.getDateTimeRange = (item) => {
   const data = item.value;
+  if (data === null) return '';
   const first = data[0]['date_time'];
   const last = data[data.length - 1]['date_time'];
   const firstStr = new Date(first.replace(/-/g, '/')).toLocaleString('en-us', {
