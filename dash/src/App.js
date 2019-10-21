@@ -6,7 +6,7 @@ import classNames from 'classnames';
 import * as d3 from 'd3/dist/d3.min';
 
 // layout
-import Logo from './components/layout/logo/Logo'
+import Logo from './components/layout/logo/Logo.js'
 
 // map
 import Map from './components/map/Map'
@@ -22,16 +22,7 @@ import 'material-design-icons/iconfont/material-icons.css'
 
 // queries
 import ObservationQuery from './components/misc/ObservationQuery.js'
-
-// var API_BASE = process.env.REACT_APP_API_BASE_URL
-// if (typeof API_BASE === 'undefined') {
-//   API_BASE = 'http://localhost:5002'
-// }
-
-// var DEMO_DATE = process.env.DEMO_DATE
-// if (typeof DEMO_DATE === 'undefined') {
-//   DEMO_DATE = '2025-07-04T23:56:00'
-// }
+import PlaceQuery from './components/misc/PlaceQuery.js'
 
 //: React.FC
 const App = () => {
@@ -56,6 +47,11 @@ const App = () => {
     return initialState;
   });
 
+  const [places, setPlaces] = React.useState(() => {
+    const initialState = [];
+    return initialState;
+  });
+
   // Hide the "How to use this map" modal if it has already been displayed
   // once to the user.
   // turning off always until we need interval
@@ -73,11 +69,16 @@ const App = () => {
   // Track details component
   const [detailsComponent, setDetailsComponent] = React.useState(null)
 
-  async function getMapObservations() {
+  async function getAppData() {
+    const placesParams = {
+      place_id: null,
+      by_region: true,
+    };
     const queries = {
       caseload: ObservationQuery(6, 'monthly', Util.formatDatetimeApi(Util.today())),
       incidence: ObservationQuery(15, 'monthly', Util.formatDatetimeApi(Util.today())),
       vaccination: ObservationQuery(4, 'yearly', '2018-01-01'),
+      places: PlaceQuery(placesParams.place_id, placesParams.by_region),
     };
 
     const results = {};
@@ -90,6 +91,9 @@ const App = () => {
     // get the incidence data
     setIncidenceObservations(results['incidence']);
 
+    // get the places data
+    setPlaces(results['places']);
+
     // get the fill data
     // TODO make this work the same way as the other "get most recent data queries", since it doesn't seem to
     setFillObservations(results['vaccination']);
@@ -100,7 +104,7 @@ const App = () => {
   // again.
   let alreadyShowedWelcomeModal = false;
   React.useEffect(() => {
-    getMapObservations()
+    getAppData()
 
     // If welcome modal isn't being shown currently and it has not already been
     // shown, show it, and mark it as already shown.
@@ -261,7 +265,7 @@ const App = () => {
   return (
     <div className={styles.app}>
       <BrowserRouter>
-        <Logo page={page} loadingNav={loadingNav} />
+        <Logo page={page} loadingNav={loadingNav} places={places} />
         <Switch>
           <div>
             <Route exact path='/' component={ () => { setPage('map'); setLoadingNav(true); return renderMap; } } />
