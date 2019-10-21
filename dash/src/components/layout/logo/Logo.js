@@ -22,7 +22,7 @@ const Logo = (props) => {
   }
 
   document.getElementById('root').onclick = (e) => {
-    const navButtons = document.getElementById('navButtons');
+    const navButtons = document.getElementsByClassName(styles.navButtonContainer)[1]; // TODO elegantly
     if (navButtons.contains(e.target)) return;
     else {
       setShowLocationPicker(false);
