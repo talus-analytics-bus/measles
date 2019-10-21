@@ -209,7 +209,7 @@ $logo-height: 70px;
         font-family: 'Gotham Book', sans-serif;
         font-size: .66em;
         .regionContainer {
-          
+
           // TODO elegantly
           &:nth-child(7) .region {
             border-radius: 0 0 10px 10px;
@@ -241,6 +241,7 @@ $logo-height: 70px;
               display: none;
               position: relative;
               top: -10px;
+              // transition: opacity .25s;
 
               place-self: center;
               width: $regionPickerWidth*.66;

@@ -16,9 +16,8 @@ const Logo = (props) => {
   const [showLocationPicker, setShowLocationPicker] = React.useState(false);
 
   function countryOnClick (e) {
-    ReactTooltip.hide();
-    ReactTooltip.rebuild()
     setShowLocationPicker(false);
+    ReactTooltip.rebuild();
   }
 
   document.getElementById('root').onclick = (e) => {
@@ -37,7 +36,7 @@ const Logo = (props) => {
   const renderCountryPicker = (regionName) => {
 
     if (regionName === null) return;
-    document.getElementById('regionTooltip').scrollTop = 0;
+    if (showLocationPicker) document.getElementById('regionTooltip').scrollTop = 0;
     let curCountry = -9999;
     if (window.location.pathname.startsWith('/details'))
       curCountry = +window.location.pathname.split('/')[2];
@@ -50,6 +49,10 @@ const Logo = (props) => {
       )
     );
   };
+
+  React.useEffect(() => {
+    ReactTooltip.hide();
+  })
 
   /**
    * Callback for when a region is clicked in the menu.
