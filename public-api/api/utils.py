@@ -8,6 +8,30 @@ from pony.orm.core import QueryResult
 from werkzeug.exceptions import NotFound
 
 
+# Returns true if database entity class instance's attribute contains a value
+# in the filter set, false otherwise.
+def passes_filters(instance, filters):
+    instancePasses = True
+    for filterSetName in filters:
+
+        # Get filter set
+        filterSet = set(filters[filterSetName])
+
+        # Get instance attribute values
+        instanceSetTmp = getattr(instance, filterSetName)
+
+        # If wrong type, cast to set
+        instanceSet = None
+        if type(instanceSetTmp) != set:
+            instanceSet = set([instanceSetTmp])
+        else:
+            instanceSet = instanceSetTmp
+
+        # If instance fails one filter, it fails completely.
+        if len(instanceSet & filterSet) == 0:
+            passes = False
+    return instancePasses
+
 # A decorator to format API responses (Query objects) as
 # { data: [{...}, {...}] }
 def format_response(func):

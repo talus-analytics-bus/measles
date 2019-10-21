@@ -7,6 +7,7 @@ from flask_restplus import Resource
 from pony.orm import db_session
 
 # Local libraries
+from ..models import db
 from ..db import api
 from .. import schema
 from ..utils import format_response
@@ -272,3 +273,35 @@ class Trend(Resource):
             trends.append(trend)
 
         return trends
+
+# Initialize places catalog or specifics endpoint
+@api.route("/places", methods=["GET"])
+class Places(Resource):
+    parser = api.parser()
+    parser.add_argument('id', type=int, required=False,
+                        help="""Unique ID of place for which we're requesting info.
+                             If not provided, all places are returned.""")
+    parser.add_argument('by_region', type=bool, required=False,
+                        help="""If true, returns catalog of places by region.
+                             If not provided, places are not returned by region.""")
+
+    @api.doc(parser=parser)
+    @db_session
+    @format_response
+    def get(self):
+        params = request.args
+
+        # If we are to organize the places by region, then set the organizing
+        # attribute to the name of the region column in the places table.
+        organizing_attribute = None
+        if 'by_region' in params and params['by_region'] == 'true':
+            organizing_attribute = 'region_sdg'
+
+        # Setup filters
+        filters = {
+            'place_type': ['country'],
+        }
+
+        # Get and return places.
+        res = schema.getEntityInstances(db.Place, 'place_id', organizing_attribute, filters, params)
+        return res

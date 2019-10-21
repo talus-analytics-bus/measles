@@ -11,6 +11,7 @@ from pony.orm import select
 
 # Local libraries
 from .models import db
+from .utils import passes_filters
 
 
 # Cache responses for API requests that have previously been made so that the
@@ -41,6 +42,61 @@ def cached(func):
     # Return the function wrapper (for decoration)
     return wrapper
 
+
+# Define a generic endpoint query.
+def getEntityInstances(entity_class, id_field_name, organizing_attribute, filters, params):
+
+    # Get the entity instances.
+    allInstances = select(o for o in entity_class).order_by(entity_class.name)
+
+    # Filter them
+    instancesTmp = [o for o in allInstances if passes_filters(o, filters)]
+
+    # If id param is not in the filters (query params), then return all
+    # instances of the entity in the db. Otherwise return only the instance
+    # with that ID.
+    instances = None
+    if 'id' in params:
+        instances = [o for o in instancesTmp if getattr(o, id_field_name) == int(params['id'])]
+
+    else:
+        instances = instancesTmp
+
+    # And if there is an organizing attribute, return outputs organized
+    # by the values of that attribute.
+    if organizing_attribute != None:
+
+        # Get the values of the attribute
+        resKeys = select(getattr(o, organizing_attribute) for o in entity_class)[:]
+
+        # Organize outputs by these values.
+        res = []
+
+        # If true, skipp null value (None)
+        skipNull = True
+
+        # For each value of the organizing attribute that had data:
+        for key in resKeys:
+
+            # Skip nulls if desired
+            if skipNull and key == None:
+                continue
+
+            # Get ID and name of entity instance to return as output
+            dataSets = [(getattr(o, id_field_name), o.name) for o in instances if getattr(o, organizing_attribute) == key]
+
+            # Store the sets of data under the value of the organizing attribute
+            res.append(
+                {
+                    'name': key,
+                    'data': dataSets,
+                }
+            )
+        return res;
+
+    # Otherwise, return the instances without organizing them under an attribute
+    else:
+        return [(getattr(o, id_field_name), o.name) for o in instances]
 
 # Define a metric endpoint query.
 def getMetrics(filters):
