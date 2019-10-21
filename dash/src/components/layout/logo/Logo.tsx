@@ -8,9 +8,33 @@ import iconPin from '../../../assets/images/pin.svg'
 import iconFlag from '../../../assets/images/flag.svg'
 import iconGlobe from '../../../assets/images/globe.svg'
 import Popup from 'reactjs-popup'
+// import ReactTooltip from 'react-tooltip';
 
 const Logo: React.FC = (props: any) => {
   const page = props.page;
+
+  // Track whether the country picker menu is being shown.
+  const [showLocationPicker, setShowLocationPicker] = React.useState(false);
+
+  /**
+   * Return JSX for country picker menu that opens when you click the flag icon
+   * @method renderCountryPicker
+   */
+  const renderLocationPicker = () => {
+    return (
+      <div className={classNames(styles.locationPicker, { [styles.visible]: showLocationPicker })}>
+        <div className={styles.header}>
+          Countries by region
+        </div>
+        <div className={styles.content}>
+          {
+            // Region list
+          }
+        </div>
+      </div>
+    );
+  };
+
   const renderButton = (button: any) => {
     if (button.route) {
       return (
@@ -21,23 +45,30 @@ const Logo: React.FC = (props: any) => {
           </div>
         </Link>
       )
+
+    // If no route, then it's the country picker
     } else {
+
       return (
-        <Popup
-          closeOnDocumentClick={true}
-          modal
-          trigger={
-            <div className={classNames(styles.navButtonContainer, page === button.page ? styles.active : '')}>
-              <div className={classNames(styles.buttonSpinner)}></div>
-              <div className={classNames(styles.navButton)}>
-                <img src={button.icon} />
-              </div>
-            </div>
-          }
-        >
-          <div className={'dev'}>The country menu is currently being developed.</div>
-        </Popup>
-      )
+        <div className={classNames(styles.navButtonContainer, page === button.page ? styles.active : '')}>
+          <div className={classNames(styles.buttonSpinner)}></div>
+          {renderLocationPicker()}
+          <div onClick={() => setShowLocationPicker(!showLocationPicker)} className={classNames(styles.navButton)}>
+            <img src={button.icon} />
+          </div>
+        </div>
+      );
+      // return (
+      //   <Popup
+      //     closeOnDocumentClick={true}
+      //     modal
+      //     trigger={
+
+      //     }
+      //   >
+      //     <div className={'dev'}>The country menu is currently being developed.</div>
+      //   </Popup>
+      // );
     }
   };
   const renderButtonSpinner = () => {

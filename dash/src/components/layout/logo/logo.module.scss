@@ -47,6 +47,12 @@ $logo-height: 70px;
     $spinnerSize: $navButtonSize + $spinnerShift; // 4px = borders
     .navButtonContainer {
       position:relative;
+
+      &:nth-child(2) {
+        .navButton {
+          z-index: 1;
+        }
+      }
     }
     // Circle
     .buttonSpinner {
@@ -152,4 +158,43 @@ $logo-height: 70px;
     }
   }
 
+  .navButtonContainer .locationPicker {
+      background-color: white;
+      opacity: 0;
+      transition: opacity .25s;
+      // visibility: hidden;
+      height: 300px;
+      width: 300px;
+      position: absolute;
+      right: 0;
+      top: -10px;
+      border-radius: 10px;
+      box-shadow: 5px 5px 10px 0 rgba(0, 0, 0, 0.29);
+      -webkit-box-shadow: 5px 5px 10px 0 rgba(0, 0, 0, 0.29);
+      pointer-events: none;
+
+      &.visible {
+        opacity: 1;
+        transition: opacity .25s;
+        pointer-events: all;
+
+        & + .navButton {
+          border: 2px solid $light-grey-2;
+          box-shadow: none;
+          -webkit-box-shadow: none;
+        }
+      }
+
+      .header {
+        display: flex;
+        flex-flow: column;
+        justify-content: center;
+        font-family: 'Gotham Bold';
+        background-color: $light-grey-2;
+        border-radius: 10px 10px 0 0;
+        height: 80px;
+        padding-left: 20px;
+        margin: auto 0;
+      }
+  }
 }
