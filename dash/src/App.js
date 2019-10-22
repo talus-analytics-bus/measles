@@ -24,6 +24,9 @@ import 'material-design-icons/iconfont/material-icons.css'
 import ObservationQuery from './components/misc/ObservationQuery.js'
 import PlaceQuery from './components/misc/PlaceQuery.js'
 
+// charts
+import MiniLine from './components/views/global/content/MiniLine.js'
+
 //: React.FC
 const App = () => {
 
@@ -248,24 +251,43 @@ const App = () => {
 
         // Initialize chart parameters.
         const chartParams = {
-          MiniLine: {
-            domain: [new Date('2016/01/01'), Util.today()],
-          },
-        };
+          MiniLine: [
+            {
+              class: MiniLine,
+              params: {
+                domain: [new Date('2016/01/01'), Util.today()],
+              }
+            },
+            {
+              class: MiniLine,
+              params: {
+                domain: [new Date('2016/01/01'), Util.today()],
+              }
+            },
+          ],
+          Scatter: [{params: {}}],
+          PagingBar: [{params: {}}],
+        }
 
         // Get all needed values in parallel
         // TODO
         const queries = {
-          // TODO
+          // TODO - make global and yearly
           globalIncidenceHistory: ObservationQuery(
             15,
             'monthly',
-            Util.formatDatetimeApi(chartParams.MiniLine.domain[1]),
-            Util.formatDatetimeApi(chartParams.MiniLine.domain[0]),
+            Util.formatDatetimeApi(chartParams.MiniLine[0].params.domain[1]),
+            Util.formatDatetimeApi(chartParams.MiniLine[0].params.domain[0]),
             43, // China
           ),
-          // TODO
-          globalVaccHistory: ObservationQuery(4, 'yearly', '2018-01-01', '2016-01-01', 43),
+          // TODO - make global
+          globalVaccHistory: ObservationQuery(
+            4,
+            'yearly',
+            Util.formatDatetimeApi(chartParams.MiniLine[0].params.domain[1]),
+            Util.formatDatetimeApi(chartParams.MiniLine[0].params.domain[0]),
+            43, // China
+          ),
         };
 
         const results = {};
@@ -277,11 +299,7 @@ const App = () => {
         // Global info
 
         // Initialize chart data
-        const chartData = {
-          MiniLine: [undefined, undefined],
-          Scatter: undefined,
-          PagingBar: undefined,
-        }
+
 
         // Mini line chart 1 - Global annual incidence
         // TODO
@@ -299,8 +317,8 @@ const App = () => {
 
         // TODO ensure mini lines have partial data for current year if
         // possible.
-        chartData.MiniLine[0] = debugMiniLine1Data;
-        chartData.MiniLine[1] = results.globalVaccHistory;
+        chartParams.MiniLine[0].params.data = debugMiniLine1Data;
+        chartParams.MiniLine[1].params.data = results.globalVaccHistory;
 
         // // Incidence history and latest observation
         // // Do not show null values in data for now
@@ -333,7 +351,7 @@ const App = () => {
         //     .reverse();
 
         setGlobalComponent(<Global
-          chartData={chartData}
+          chartParams={chartParams}
         />);
       }
       getGlobalData(id);

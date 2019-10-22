@@ -19,8 +19,8 @@ const Global = (props) => {
   // Manage loading state (don't show if loading, etc.)
   const [loading, setLoading] = React.useState(true)
 
-  // // Track whether the sliding line chart has been drawn
-  // const [ slidingLine, setSlidingLine ]  = React.useState(null);
+  // Track whether the first mini line chart has been drawn
+  const [ charts, setCharts ]  = React.useState([]);
   //
   // // Track SlidingLine chart tooltip data
   // const [ tooltipData, setTooltipData ]  = React.useState(null);
@@ -34,14 +34,34 @@ const Global = (props) => {
   // Effect hook to load API data.
   React.useEffect(() => {
 
-    // // Setup sliding line chart params
+
+    // Update chart variables
+    const chartsToSet = [];
+    for (let chartTypeName in props.chartParams) {
+      // If multiple charts of this type, add all of them.
+      const chartType = props.chartParams[chartTypeName];
+      chartType.forEach(function (chart, i) {
+        if (!chart.class) return;
+        const chartInstance = new chart.class(
+          '.' + chart.class.name + '-' + i,
+          chart.params,
+        );
+        chartsToSet.push(chartInstance);
+      });
+    }
+
+    console.log('chartsToSet')
+    console.log(chartsToSet)
+    setCharts(chartsToSet);
+
+    //
+
+    // // Setup mini line chart 1 params
     // const chartParams = {
-    //   data: props.countryIncidenceHistory,
-    //   vaccData: props.countryVaccHistory,
-    //   noResizeEvent: true,
-    //   setTooltipData: setTooltipData,
+    //   // data: props.countryIncidenceHistory,
+    //   // setTooltipData: setTooltipData,
     //   tooltipClassName: stylesTooltip.slidingLineTooltip,
-    //   setShowReset: setShowReset,
+    //   // setShowReset: setShowReset,
     //   margin: {
     //     top: 20,
     //     right: 98,
@@ -64,9 +84,9 @@ const Global = (props) => {
     //       chartParams,
     //     )
     //   );
-    //
-    // // Rebuild tooltips after the chart is drawn
-    // ReactTooltip.rebuild();
+
+    // Rebuild tooltips after the chart is drawn
+    ReactTooltip.rebuild();
   }, [])
 
   // If loading do not show JSX content.
@@ -82,6 +102,8 @@ const Global = (props) => {
                   <MiniMap countryIso2={props.countryIso2}/>
                 }
               </div>
+              <div className={classNames(styles.MiniLine, 'MiniLine-0')} />
+              <div className={classNames(styles.MiniLine, 'MiniLine-1')} />
               {
                 [
                   // {

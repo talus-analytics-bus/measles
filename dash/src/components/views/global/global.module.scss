@@ -4,6 +4,11 @@ $drawer-width: 360px;
 $header-height: 100px;
 $button-width: 200px;
 $spacing: 20px;
+.MiniLine {
+  height: 200px;
+  width: auto;
+}
+
 .details {
   display: flex;
   flex-flow: row;
