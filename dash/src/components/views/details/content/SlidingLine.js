@@ -287,70 +287,6 @@ class SlidingLine extends Chart {
 
     // Get "value" line segments -- all segments where data are available (not
     // null).
-    const getNullLineSegments = () => {
-      const valueLineSegments = [];
-      let start, end, prev;
-      let segment = [];
-      chart.data.vals.forEach(datum => {
-
-        // If no start and datum not-null, datum is start
-        // If there was a previous datum, also include it
-        if (!start && datum.value === null) {
-          start = datum;
-          if (prev) segment.push(prev);
-          segment.push(datum);
-          // console.log('If no start and datum not-null, datum is start')
-          prev = datum;
-          return;
-        }
-        // If no start and datum null, continue
-        if (!start && datum.value !== null) {
-          // console.log('If no start and datum null, continue')
-          prev = datum;
-          return;
-        }
-        // If start and datum not-null, push to segment
-        if (start && datum.value === null) {
-          segment.push(datum);
-          // console.log('If start and datum not-null, push to segment')
-          prev = datum;
-          return;
-        }
-        // If start and datum null, push to segment, and start new one
-        if (start && datum.value !== null) {
-          // segment.push(datum);
-          start = undefined;
-          valueLineSegments.push(segment);
-          segment = [];
-          // console.log('If start and datum null, push to segment, and start new one')
-          prev = datum;
-          return;
-        }
-        // console.log('Error: reached unreachable state');
-      });
-
-      if (segment.length > 0) {
-        // console.log('segment - ending')
-        // console.log(segment)
-        valueLineSegments.push(segment);
-        segment = [];
-        // console.log('If ending segment has values, push them')
-      }
-      // console.log('nullLineSegments')
-      // console.log(valueLineSegments)
-      return valueLineSegments;
-    };
-
-    // Add null areas to chart
-    const nullLineSegments = getNullLineSegments();
-    chart.newGroup(styles.areaNull)
-      .selectAll('path')
-      .data(nullLineSegments)
-      .enter().append('path')
-        .attr('d', d => area(d));
-
-    // Get "value" line segments -- all segments where data are available (not
-    // null).
     const getValueLineSegments = () => {
       const valueLineSegments = [];
       let start, end, prev;
@@ -361,7 +297,7 @@ class SlidingLine extends Chart {
         // If there was a previous datum, also include it
         if (!start && datum.value !== null) {
           start = datum;
-          if (prev) segment.push(prev);
+          // if (prev) segment.push(prev);
           segment.push(datum);
           // console.log('If no start and datum not-null, datum is start')
           prev = datum;
@@ -400,47 +336,7 @@ class SlidingLine extends Chart {
       return valueLineSegments;
     };
 
-    // Add vaccination line to chart
-    const formatVaccVals = () => {
-      const output = [];
-      const vals = chart.data.vaccVals;
-      chart.data.vaccVals.forEach((v, i) => {
 
-        // For first val do nothing special
-        if (i === 0) {
-          output.push(v);
-          return
-        }
-
-        // For all other values, append the value, and also a fake point that
-        // has the last point's value and this point's datetime.
-        const fakePoint = {
-          value: vals[i-1].value,
-          date_time: v.date_time,
-        };
-        output.push(fakePoint);
-        output.push(v);
-        if (i === vals.length - 1) {
-          const pointDt = new Date(v.date_time.replace(/-/g, '/'));
-          const year = pointDt.getUTCFullYear();
-          pointDt.setUTCFullYear(year + 1);
-          const fakeDtStr = pointDt.toString();
-          const fakeFuturePoint = {
-            value: v.value,
-            date_time: fakeDtStr,
-          };
-          output.push(fakeFuturePoint);
-        }
-      });
-
-      return output;
-    };
-    const vaccLineData = formatVaccVals();
-    chart.newGroup(styles.lineVacc)
-      .selectAll('path')
-      .data([vaccLineData])
-      .enter().append('path')
-        .attr('d', d => lineVacc(d));
 
     // Add line to chart
     const valueLineSegments = getValueLineSegments();
@@ -449,6 +345,113 @@ class SlidingLine extends Chart {
       .data(valueLineSegments)
       .enter().append('path')
         .attr('d', d => line(d));
+
+        // Add vaccination line to chart
+        const formatVaccVals = () => {
+          const output = [];
+          const vals = chart.data.vaccVals;
+          chart.data.vaccVals.forEach((v, i) => {
+
+            // For first val do nothing special
+            if (i === 0) {
+              output.push(v);
+              return
+            }
+
+            // For all other values, append the value, and also a fake point that
+            // has the last point's value and this point's datetime.
+            const fakePoint = {
+              value: vals[i-1].value,
+              date_time: v.date_time,
+            };
+            output.push(fakePoint);
+            output.push(v);
+            if (i === vals.length - 1) {
+              const pointDt = new Date(v.date_time.replace(/-/g, '/'));
+              const year = pointDt.getUTCFullYear();
+              pointDt.setUTCFullYear(year + 1);
+              const fakeDtStr = pointDt.toString();
+              const fakeFuturePoint = {
+                value: v.value,
+                date_time: fakeDtStr,
+              };
+              output.push(fakeFuturePoint);
+            }
+          });
+
+          return output;
+        };
+
+
+        // Get "value" line segments -- all segments where data are available (not
+        // null).
+        const getNullLineSegments = () => {
+          const valueLineSegments = [];
+          let start, end, prev;
+          let segment = [];
+          chart.data.vals.forEach(datum => {
+
+            // If no start and datum not-null, datum is start
+            // If there was a previous datum, also include it
+            if (!start && datum.value === null) {
+              start = datum;
+              if (prev) segment.push(prev);
+              segment.push(datum);
+              // console.log('If no start and datum not-null, datum is start')
+              prev = datum;
+              return;
+            }
+            // If no start and datum null, continue
+            if (!start && datum.value !== null) {
+              // console.log('If no start and datum null, continue')
+              prev = datum;
+              return;
+            }
+            // If start and datum null, push to segment
+            if (start && datum.value === null) {
+              segment.push(datum);
+              // console.log('If start and datum not-null, push to segment')
+              prev = datum;
+              return;
+            }
+            // If start and datum not-null, push to segment, and start new one
+            if (start && datum.value !== null) {
+              segment.push(datum);
+              start = undefined;
+              valueLineSegments.push(segment);
+              segment = [];
+              // console.log('If start and datum null, push to segment, and start new one')
+              prev = datum;
+              return;
+            }
+            // console.log('Error: reached unreachable state');
+          });
+
+          if (segment.length > 0) {
+            // console.log('segment - ending')
+            // console.log(segment)
+            valueLineSegments.push(segment);
+            segment = [];
+            // console.log('If ending segment has values, push them')
+          }
+          // console.log('nullLineSegments')
+          // console.log(valueLineSegments)
+          return valueLineSegments;
+        };
+
+        // Add null areas to chart
+        const nullLineSegments = getNullLineSegments();
+        chart.newGroup(styles.areaNull)
+          .selectAll('path')
+          .data(nullLineSegments)
+          .enter().append('path')
+            .attr('d', d => area(d));
+      const vaccLineData = formatVaccVals();
+      chart.newGroup(styles.lineVacc)
+        .selectAll('path')
+        .data([vaccLineData])
+        .enter().append('path')
+          .attr('d', d => lineVacc(d));
 
     // Add rects to slider
     chart[styles.slider].selectAll('rect')
