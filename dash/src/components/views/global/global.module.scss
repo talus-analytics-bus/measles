@@ -70,7 +70,6 @@ $spacing: 20px;
       color: $dark-grey;
       font-family: 'Open Sans', sans-serif;
       font-size: 1.1em;
-      // font-size: 1.46em;
       font-weight: bold;
 
       .info {
@@ -83,7 +82,7 @@ $spacing: 20px;
 
     .content {
       display: flex;
-      flex-flow: row;
+      flex-flow: column;
       justify-content: space-between;
 
       .value {

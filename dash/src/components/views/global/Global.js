@@ -89,6 +89,41 @@ const Global = (props) => {
     ReactTooltip.rebuild();
   }, [])
 
+
+  const getMiniLineJsx = () => {
+
+    // Get data for miniline infographic
+    const miniLineData = [
+      props.chartParams.MiniLine[0].params.data,
+      props.chartParams.MiniLine[1].params.data
+    ];
+    const infographicValues = [
+      miniLineData[0].length > 0 ?
+        miniLineData[0][miniLineData[0].length - 1] :
+        {value: null},
+        miniLineData[1].length > 0 ?
+          miniLineData[1][miniLineData[1].length - 1] :
+          {value: null},
+    ];
+    return [
+      {
+        'title': 'Global annual incidence',
+        'chart_jsx': () => <div className={classNames(styles.MiniLine, 'MiniLine-0')} />,
+        'value_fmt': Util.formatIncidence,
+        'value_label': 'cases per 1M population',
+        'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'year')},
+        ...infographicValues[0]
+      },
+      {
+        'title': 'Global vaccination coverage',
+        'chart_jsx': () => <div className={classNames(styles.MiniLine, 'MiniLine-1')} />,
+        'value_fmt': Util.percentize,
+        'value_label': 'of infants',
+        'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'year')},
+        ...infographicValues[1]
+      },
+    ];
+  };
   // If loading do not show JSX content.
   console.log('props')
   console.log(props)
@@ -102,15 +137,14 @@ const Global = (props) => {
                   <MiniMap countryIso2={props.countryIso2}/>
                 }
               </div>
-              <div className={classNames(styles.MiniLine, 'MiniLine-0')} />
-              <div className={classNames(styles.MiniLine, 'MiniLine-1')} />
               {
                 [
+                  ...getMiniLineJsx(),
                   // {
-                  //   'title': 'Population',
-                  //   'value_fmt': Util.comma,
-                  //   'value_label': 'people',
-                  //   'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'year')}, // TODO
+                  //   'title': 'Global annual incidence',
+                  //   'value_fmt': Util.formatIncidence,
+                  //   'value_label': 'cases per 1M population',
+                  //   'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'year')},
                   //   ...(props.countryPop ? props.countryPop : {value: null}),
                   // },
                   // {
@@ -161,6 +195,10 @@ const Global = (props) => {
                               }
                             </span>
                           ))
+                        }
+                        {
+                          // Show chart if applicable
+                          (item.chart_jsx !== undefined) && item.chart_jsx()
                         }
                         {
                           // Data not available message, if applicable.

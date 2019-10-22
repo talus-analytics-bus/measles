@@ -11,8 +11,6 @@ class MiniLine extends Chart {
     params = {}
   ) {
 
-    console.log('selector')
-    console.log(selector)
     super(selector, params);
 
     this.params = params;
@@ -70,7 +68,7 @@ class MiniLine extends Chart {
     if (!this.params.margin) {
       this.params.margin = {
         top: 20,
-        right: 20,
+        right: 0,
         bottom: 22,
         left: 20,
       };
@@ -110,44 +108,50 @@ class MiniLine extends Chart {
       .domain(this.xDomainDefault) // min and max time vary w. window size
       .range([0, chart.width]);
 
-    // Time formatting
-    var formatMillisecond = d3.timeFormat(".%L"),
-    formatSecond = d3.timeFormat(":%S"),
-    formatMinute = d3.timeFormat("%I:%M"),
-    formatHour = d3.timeFormat("%I %p"),
-    formatDay = d3.timeFormat("%a %d"),
-    formatWeek = d3.timeFormat("%b %d"),
-    formatMonth = d3.timeFormat("%b"),
-    formatYear = d3.timeFormat("%Y");
-
-    function multiFormat(date) {
-
-      let format;
-      if (d3.timeMonth(date) < date) {
-        this.parentElement.remove();
-      } else if (d3.timeYear(date) < date) {
-        this.parentElement.remove();
-      } else {
-        format = formatYear(date);
-      }
-      return formatYear(date);
-    }
-
-    // x axis - main chart
-    const xAxis = d3.axisBottom()
-      .tickSize(0)
-      .ticks(4)
-      .tickFormat(multiFormat)
-      .tickPadding(10)
-      .scale(x);
-
-    const xAxisG = chart.newGroup(styles['x-axis'])
-      .attr('transform', `translate(0, ${chart.height})`)
-      .call(xAxis);
-
     // y scale: incidence - main chart
     // Never changes
     const y = chart.y;
+
+    // Define line function - main chart
+    const line = d3.line()
+      .x(d => x(new Date(d.date_time.replace(/-/g, '/'))))
+      .y(d => y(d.value));
+
+
+        // Time formatting
+        var formatMillisecond = d3.timeFormat(".%L"),
+        formatSecond = d3.timeFormat(":%S"),
+        formatMinute = d3.timeFormat("%I:%M"),
+        formatHour = d3.timeFormat("%I %p"),
+        formatDay = d3.timeFormat("%a %d"),
+        formatWeek = d3.timeFormat("%b %d"),
+        formatMonth = d3.timeFormat("%b"),
+        formatYear = d3.timeFormat("%Y");
+
+        function multiFormat(date) {
+
+          let format;
+          if (d3.timeMonth(date) < date) {
+            this.parentElement.remove();
+          } else if (d3.timeYear(date) < date) {
+            this.parentElement.remove();
+          } else {
+            format = formatYear(date);
+          }
+          return formatYear(date);
+        }
+
+        // x axis - main chart
+        const xAxis = d3.axisBottom()
+          .tickSize(0)
+          .ticks(4)
+          .tickFormat(multiFormat)
+          .tickPadding(10)
+          .scale(x);
+
+        const xAxisG = chart.newGroup(styles['x-axis'])
+          .attr('transform', `translate(0, ${chart.height})`)
+          .call(xAxis);
 
     // y scale: vacc cov. - main chart
     // Never changes
@@ -166,157 +170,6 @@ class MiniLine extends Chart {
       .ticks(2)
       .tickSizeOuter(0)
       .tickSizeInner(-chart.width)
-
-    // Define line function - main chart
-    const line = d3.line()
-      .x(d => x(new Date(d.date_time.replace(/-/g, '/'))))
-      .y(d => y(d.value));
-    const lineVacc = d3.line()
-      .x(d => x(new Date(d.date_time.replace(/-/g, '/'))))
-      .y(d => yRight(d.value));
-
-    // Define rectangle area function - main chart, nulls
-    const area = d3.area()
-    .x(d => x(
-      new Date(d.date_time.replace(/-/g, '/'))
-    ))
-    .y0(chart.height)
-		.y1(0);
-
-    // Get "value" line segments -- all segments where data are available (not
-    // null).
-    const getValueLineSegments = () => {
-      const valueLineSegments = [];
-      let start, end, prev;
-      let segment = [];
-      chart.data.vals.forEach(datum => {
-
-        // If no start and datum not-null, datum is start
-        // If there was a previous datum, also include it
-        if (!start && datum.value !== null) {
-          start = datum;
-          // if (prev) segment.push(prev);
-          segment.push(datum);
-          // console.log('If no start and datum not-null, datum is start')
-          prev = datum;
-          return;
-        }
-        // If no start and datum null, continue
-        if (!start && datum.value === null) {
-          // console.log('If no start and datum null, continue')
-          prev = datum;
-          return;
-        }
-        // If start and datum not-null, push to segment
-        if (start && datum.value !== null) {
-          segment.push(datum);
-          // console.log('If start and datum not-null, push to segment')
-          prev = datum;
-          return;
-        }
-        // If start and datum null, push to segment, and start new one
-        if (start && datum.value === null) {
-          // segment.push(datum);
-          start = undefined;
-          valueLineSegments.push(segment);
-          segment = [];
-          // console.log('If start and datum null, push to segment, and start new one')
-          prev = datum;
-          return;
-        }
-        // console.log('Error: reached unreachable state');
-      });
-
-      if (segment.length > 0) {
-        valueLineSegments.push(segment);
-        segment = [];
-      }
-      return valueLineSegments;
-    };
-
-    // Add line to chart
-    const valueLineSegments = getValueLineSegments();
-    chart.newGroup(styles.lineValue)
-      .selectAll('path')
-      .data(valueLineSegments)
-      .enter().append('path')
-        .attr('class', d => styles[d[0].metric])
-        .attr('d', d => line(d));
-
-    // Add points to chart
-    chart.newGroup(styles.pointValue)
-      .selectAll('circle')
-      .data(chart.data.vals)
-      .enter().append('circle')
-        .attr('class', d => styles[d.metric])
-        .attr('cx', d => x(new Date(d.date_time.replace(/-/g, '/'))))
-        .attr('cy', d => y(d.value))
-        .attr('r', 5);
-        // .attr('d', d => line(d));
-
-    // Get "value" line segments -- all segments where data are available (not
-    // null).
-    const getNullLineSegments = () => {
-      const valueLineSegments = [];
-      let start, end, prev;
-      let segment = [];
-      chart.data.vals.forEach(datum => {
-
-        // If no start and datum not-null, datum is start
-        // If there was a previous datum, also include it
-        if (!start && datum.value === null) {
-          start = datum;
-          if (prev) segment.push(prev);
-          segment.push(datum);
-          // console.log('If no start and datum not-null, datum is start')
-          prev = datum;
-          return;
-        }
-        // If no start and datum null, continue
-        if (!start && datum.value !== null) {
-          // console.log('If no start and datum null, continue')
-          prev = datum;
-          return;
-        }
-        // If start and datum null, push to segment
-        if (start && datum.value === null) {
-          segment.push(datum);
-          // console.log('If start and datum not-null, push to segment')
-          prev = datum;
-          return;
-        }
-        // If start and datum not-null, push to segment, and start new one
-        if (start && datum.value !== null) {
-          segment.push(datum);
-          start = undefined;
-          valueLineSegments.push(segment);
-          segment = [];
-          // console.log('If start and datum null, push to segment, and start new one')
-          prev = datum;
-          return;
-        }
-        // console.log('Error: reached unreachable state');
-      });
-
-      if (segment.length > 0) {
-        // console.log('segment - ending')
-        // console.log(segment)
-        valueLineSegments.push(segment);
-        segment = [];
-        // console.log('If ending segment has values, push them')
-      }
-      // console.log('nullLineSegments')
-      // console.log(valueLineSegments)
-      return valueLineSegments;
-    };
-
-    // Add null areas to chart
-    const nullLineSegments = getNullLineSegments();
-    chart.newGroup(styles.areaNull)
-      .selectAll('path')
-      .data(nullLineSegments)
-      .enter().append('path')
-        .attr('d', d => area(d));
 
     const yAxisG = chart.newGroup(styles['y-axis'])
       .call(yAxis);
@@ -351,6 +204,75 @@ class MiniLine extends Chart {
     .attr('x', -chart.height / 2)
       .attr('dy', (d, i) => (1.2*i) + 'em')
       .text(d => d);
+
+      // Get "value" line segments -- all segments where data are available (not
+      // null).
+      const getValueLineSegments = () => {
+        const valueLineSegments = [];
+        let start, end, prev;
+        let segment = [];
+        chart.data.vals.forEach(datum => {
+
+          // If no start and datum not-null, datum is start
+          // If there was a previous datum, also include it
+          if (!start && datum.value !== null) {
+            start = datum;
+            // if (prev) segment.push(prev);
+            segment.push(datum);
+            // console.log('If no start and datum not-null, datum is start')
+            prev = datum;
+            return;
+          }
+          // If no start and datum null, continue
+          if (!start && datum.value === null) {
+            // console.log('If no start and datum null, continue')
+            prev = datum;
+            return;
+          }
+          // If start and datum not-null, push to segment
+          if (start && datum.value !== null) {
+            segment.push(datum);
+            // console.log('If start and datum not-null, push to segment')
+            prev = datum;
+            return;
+          }
+          // If start and datum null, push to segment, and start new one
+          if (start && datum.value === null) {
+            // segment.push(datum);
+            start = undefined;
+            valueLineSegments.push(segment);
+            segment = [];
+            // console.log('If start and datum null, push to segment, and start new one')
+            prev = datum;
+            return;
+          }
+          // console.log('Error: reached unreachable state');
+        });
+
+        if (segment.length > 0) {
+          valueLineSegments.push(segment);
+          segment = [];
+        }
+        return valueLineSegments;
+      };
+
+    // Add line to chart
+    const valueLineSegments = getValueLineSegments();
+    chart.newGroup(styles.lineValue)
+      .selectAll('path')
+      .data(valueLineSegments)
+      .enter().append('path')
+        .attr('class', d => styles[d[0].metric])
+        .attr('d', d => line(d));
+    // Add points to chart
+    chart.newGroup(styles.pointValue)
+      .selectAll('circle')
+      .data(chart.data.vals)
+      .enter().append('circle')
+        .attr('class', d => styles[d.metric])
+        .attr('cx', d => x(new Date(d.date_time.replace(/-/g, '/'))))
+        .attr('cy', d => y(d.value))
+        .attr('r', 5);
 
     // Add tooltip line
     if (chart.params.setTooltipData !== undefined) {
