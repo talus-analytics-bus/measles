@@ -10,25 +10,11 @@ import MiniMap from '../../../components/map/MiniMap.js'
 
 // Utilities (date formatting, etc.)
 import Util from '../../../components/misc/Util.js'
-import worldMap from '../../../assets/images/world-map.svg'
-import ObservationQuery from '../../../components/misc/ObservationQuery.js'
 import * as d3 from 'd3/dist/d3.min';
 
 import classNames from 'classnames'
 import styles from './details.module.scss'
 import stylesTooltip from './tooltip.module.scss'
-
-// If DEMO_DATE exists, use it (frames all data in site relative to the demo
-// date that is specified). Otherwise, today's date will be used ("now").
-var DEMO_DATE = process.env.DEMO_DATE
-if (typeof DEMO_DATE === 'undefined') {
-  DEMO_DATE = '2025-07-04T23:56:00'
-}
-
-const now = DEMO_DATE !== undefined ? new Date(DEMO_DATE) : new Date();
-
-// import { facility } from '../../../types/index'
-const API_BASE = process.env.REACT_APP_API_BASE_URL;
 
 // FC for Details.
 const Details = (props) => {

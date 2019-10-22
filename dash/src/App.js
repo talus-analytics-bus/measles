@@ -13,8 +13,8 @@ import Map from './components/map/Map'
 import Util from './components/misc/Util.js'
 
 // views
-//import Alerts from './components/views/alerts/Alerts.js'
 import Details from './components/views/details/Details.js'
+import Global from './components/views/global/Global.js'
 
 // styles
 import styles from './App.module.scss'
@@ -68,6 +68,9 @@ const App = () => {
 
   // Track details component
   const [detailsComponent, setDetailsComponent] = React.useState(null)
+
+  // Track global component
+  const [globalComponent, setGlobalComponent] = React.useState(null)
 
   async function getAppData() {
     const placesParams = {
@@ -234,6 +237,74 @@ const App = () => {
     }
   }
 
+  const renderGlobal = id => {
+    if (loading) {
+      return <div />
+    }
+    else if (globalComponent === null) {
+
+      // Function to make API calls to get data for the state variables above.
+      const getGlobalData = async (country) => {
+
+        // Get all needed values in parallel
+        // TODO
+        const queries = {
+          countryPopQ: ObservationQuery(3, 'yearly', '2018-01-01', '2018-01-01', country),
+        };
+
+        const results = {};
+        for (let q in queries) {
+          results[q] = await queries[q];
+        }
+
+        // Country basic info
+        // Global info
+        // TODO
+        const test = results.countryPopQ[0];
+
+        // // Incidence history and latest observation
+        // // Do not show null values in data for now
+        // const foundNotNullVal = {
+        //   fromStart: false,
+        //   fromEnd: false,
+        // };
+        // const countryIncidenceHistory = results.countryIncidenceHistoryFull
+        //     .filter(d => {
+        //       if (foundNotNullVal.fromStart) return true;
+        //       else {
+        //         if (d.value === null) return false;
+        //         else {
+        //           foundNotNullVal.fromStart = true;
+        //           return true;
+        //         }
+        //       }
+        //     })
+        //     .reverse()
+        //     .filter(d => {
+        //       if (foundNotNullVal.fromEnd) return true;
+        //       else {
+        //         if (d.value === null) return false;
+        //         else {
+        //           foundNotNullVal.fromEnd = true;
+        //           return true;
+        //         }
+        //       }
+        //     })
+        //     .reverse();
+
+        setGlobalComponent(<Global
+          id={country}
+          test={test}
+        />);
+      }
+      getGlobalData(id);
+      return <div />;
+    } else {
+      setLoadingNav(false);
+      return globalComponent;
+    }
+  }
+
   // JSX for main app. Switch component allows links in the header to be used to
   // determine main app content.
   return (
@@ -244,7 +315,18 @@ const App = () => {
           <div>
             <Route exact path='/' component={ () => { setPage('map'); setLoadingNav(true); return renderMap; } } />
             <Route exact path='/map' component={ () => { setPage('map'); setLoadingNav(true); return renderMap; } } />
-            <Route exact path='/global' component={ () => { setPage('global'); return <div className={'dev global'}>The global page is currently being developed.</div>; } } />
+            {
+              false &&
+              <Route exact path='/global' component={ () => { setPage('global'); return <div className={'dev global'}>The global page is currently being developed.</div>; } } />
+            }
+            <Route
+              path='/global'
+              component={d => {
+                setPage('global');
+                setLoadingNav(true);
+                return renderGlobal()
+              }}
+            />
             <Route
               path='/details/:id'
               component={d => {

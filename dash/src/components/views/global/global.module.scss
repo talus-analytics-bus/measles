@@ -1,0 +1,332 @@
+@import '../../../assets/styles/colors.scss';
+
+$drawer-width: 360px;
+$header-height: 100px;
+$button-width: 200px;
+$spacing: 20px;
+.details {
+  display: flex;
+  flex-flow: row;
+
+  .sidebar {
+    display: flex;
+    flex-flow: column;
+    background-color: #f1f1f1;
+    padding: $spacing;
+    margin-left: $spacing*2;
+    margin-right: $spacing*2;
+    max-width: 30%;
+    min-width: 390px;
+  }
+  .title {
+    // Name of country or "Global caseload"
+    display: flex;
+    flex-flow: row;
+    align-items: center;
+
+    font-family: 'Raleway', serif;
+    font-weight: bold;
+    font-size: 1.8em;
+    line-height: 1;
+    // font-size: 2.2em;
+    color: black;
+
+    .flag {
+      height: 75px;
+      margin-right: $spacing;
+    }
+  }
+
+  .map {
+
+    height: 350px;
+    width: 513px;
+
+    // TODO confirm cross-browser compat.
+    transform: scale(.75);
+    transform-origin: top left;
+    margin-bottom: -90px;
+    // margin-right: -125px;
+
+    &, & * { cursor: default };
+
+    img {
+
+    }
+
+  }
+
+  .item {
+    display: flex;
+    flex-flow: column;
+    margin-top: $spacing;
+
+    .title {
+      color: $dark-grey;
+      font-family: 'Open Sans', sans-serif;
+      font-size: 1.1em;
+      // font-size: 1.46em;
+      font-weight: bold;
+
+      .info {
+        // TODO
+        img {
+          // TODO
+        }
+      }
+    }
+
+    .content {
+      display: flex;
+      flex-flow: row;
+      justify-content: space-between;
+
+      .value {
+        font-size: 2em;
+      }
+      .label {
+        font-size: 1.1em;
+      }
+      .value {
+        color: black;
+        font-family: 'rawline', serif;
+        font-weight: bold;
+
+        .jee {
+          // padding-left: 5px;
+          padding-bottom: 5px;
+          margin-top: 5px;
+          line-height: 2.5;
+          font-size: .8em;
+          // &.green { border-color: $jee-green; }
+          // &.lightgreen { border-color: $jee-green-light; }
+          // &.yellow { border-color: $jee-yellow; }
+          // &.lightyellow { border-color: $jee-yellow-light; }
+          // &.red { border-color: $jee-red; }
+          // &.gray { border-color: $jee-gray; }
+
+          display: flex;
+
+          $jeeBlockSize: 13.6px;
+          .jeeBlocks {
+            margin-right: 5px;
+            .jeeBlock {
+              &.green { transition: background-color 1s; background-color: $jee-green; }
+              &.lightgreen { background-color: $jee-green-light; }
+              &.yellow { background-color: $jee-yellow; }
+              &.lightyellow { background-color: $jee-yellow-light; }
+              &.red { background-color: $jee-red; }
+              &.gray { background-color: $jee-gray; }
+              // position: absolute;
+              height: $jeeBlockSize;
+              width: $jeeBlockSize;
+              background-color: #cecece;
+              margin-bottom: 1px;
+              transition: background-color 1s;
+              &:last-child {
+                margin-bottom: 0;
+              }
+              // border: 1px solid #f1f1f1;
+            }
+          }
+        }
+      }
+      .label {
+        color: $dark-grey;
+        font-family: 'Open Sans', sans-serif;
+      }
+      .chart {
+        display: flex;
+        flex-flow: row;
+        position: relative;
+        margin-bottom: 50px;
+
+        $rect-height: 30px;
+        .rect {
+          font-family: 'rawline', serif;
+          font-weight: 600;
+          font-size: 1.4em;
+          background-color: $light-grey-2;
+          width: $rect-height*2;
+          height: $rect-height - 2px;
+          margin-right: 2px;
+          text-align: center;
+          padding-bottom: 2px;
+          line-height: $rect-height - 2px;
+
+          border: 2.5px solid transparent;
+
+          &.active {
+            box-shadow: 3px 3px 2.5px 0 rgba(0, 0, 0, 0.3);
+            -webkit-box-shadow: 3px 3px 2.5px 0 rgba(0, 0, 0, 0.3);
+          }
+        }
+
+        $sep: -10px;
+        $wedge-size: .78px;
+        // $wedge-size: .9825px;
+        $wedge-height: 10px;
+        $wedge-slope: $wedge-size*10;
+
+        @for $i from 1 through 5 {
+          .trapezoid-#{$i} {
+            .bottom {
+              height: $wedge-height*$i*.8;
+              // height: $wedge-height*$i;
+            }
+          }
+        }
+
+        .trapezoidContainer {
+          display: flex;
+
+          .labelLeft, .labelRight {
+            bottom: calc(-2em - 10px);
+          }
+        }
+        .trapezoid {
+
+          font-family: 'rawline', serif;
+          font-weight: 600;
+          font-size: 1.4em;
+          margin-right: 2px;
+          margin-top: auto;
+          text-align: center;
+          padding-bottom: 2px;
+          line-height: $rect-height - 2px;
+
+          .shape {
+            margin:0 auto;
+          }
+
+          .top {
+            height:0;
+            border-width:0 0 $wedge-slope $wedge-size*100;
+            border-style:solid;
+            border-color:transparent $light-grey-2 $light-grey-2 transparent;
+          }
+
+          .bottom {
+            background-color: $light-grey-2;
+          }
+
+          &.active {
+            .bottom {
+              box-shadow: 3px 3px 2.5px 0 rgba(0, 0, 0, 0.3);
+              background-color: $value-red;
+            }
+            .top {
+              box-shadow: 3px 3px 2.5px 0 rgba(0, 0, 0, 0.3);
+              border-color:transparent $value-red $value-red transparent;
+            }
+          }
+        }
+
+        .labelLeft, .labelRight {
+          position: absolute;
+          white-space: nowrap;
+          line-height: 1;
+          margin-top: 10px;
+        }
+        .labelLeft {}
+        .labelRight {
+          right: 0;
+          text-align: right;
+        }
+      }
+    }
+  }
+  .source {
+    // Just use .dataSource from index.scss
+  }
+
+  $itemMaxWidth: 750px;
+  .main {
+    margin-right: $spacing*2;
+    margin-top: 10px;
+    width: 100%;
+    .itemContainer {
+      &:not(:last-child) {
+        // &:first-child {
+        border-bottom: 1px solid #b2b2b2;
+        padding-bottom: 10px;
+      }
+      .item {
+        max-width: $itemMaxWidth;
+        .title {
+          font-family: 'Raleway', sans-serif;
+          font-size: 1.1em * 1.18;
+          margin-bottom: 10px;
+        }
+      }
+    }
+  }
+
+  $slidingLineWidth: 750px;
+  .slidingLineContainer {
+    width: 100%;
+    .slidingLineLegend {
+      display: flex;
+      flex-flow: row;
+      .entry {
+        display: flex;
+        flex-flow: row;
+        align-items: center;
+        margin-right: 20px;
+        .symbol {
+          width: 20px;
+          border-top: 2px solid black;
+          margin-right: 5px;
+          &.monthlyIncidence {
+            stroke: $value-red;
+            stroke-width: 3px;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            height: 0;
+          }
+          &.vaccinationCoverage {
+            stroke: #333333;
+            stroke-width: 1.5px;
+            stroke-dasharray: 6, 6;
+            stroke-linecap: square;
+            height: 0;
+          }
+          &.noIncidence {
+            fill: #e6e6e6;
+          }
+        }
+        .label {
+          font-size: .9em;
+          margin-left: 5px;
+        }
+      }
+    }
+    button {
+      visibility: hidden;
+      opacity: 0;
+      transition: opacity .125s;
+      margin: 0;
+      margin-left: auto;
+    }
+    .slidingLine {
+      height: $slidingLineWidth/2.2;
+      width: $slidingLineWidth;
+      // margin-left: 20px;
+      svg {
+        margin-top: 10px;
+      }
+      // Other styles for this chart are in slidingline.module.scss
+    }
+  }
+}
+
+#slidingLineTooltip {
+  .tooltipContainer {
+    background-color: white !important;
+    .tooltipContent {
+      background-color: white !important;
+      color:red;
+      span { color: red;}
+    }
+  }
+}
