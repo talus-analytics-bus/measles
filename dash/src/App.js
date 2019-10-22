@@ -26,6 +26,7 @@ import PlaceQuery from './components/misc/PlaceQuery.js'
 
 // charts
 import MiniLine from './components/views/global/content/MiniLine.js'
+import Scatter from './components/views/global/content/Scatter.js'
 
 //: React.FC
 const App = () => {
@@ -247,7 +248,7 @@ const App = () => {
     else if (globalComponent === null) {
 
       // Function to make API calls to get data for the state variables above.
-      const getGlobalData = async (country) => {
+      const getGlobalData = async () => {
 
         // Initialize chart parameters.
         const chartParams = {
@@ -265,7 +266,14 @@ const App = () => {
               }
             },
           ],
-          Scatter: [{params: {}}],
+          Scatter: [
+            {
+              class: Scatter,
+              params: {
+                domain: [new Date('2016/01/01'), Util.today()],
+              }
+            },
+          ],
           PagingBar: [{params: {}}],
         }
 
@@ -288,13 +296,32 @@ const App = () => {
             Util.formatDatetimeApi(chartParams.MiniLine[0].params.domain[0]),
             43, // China
           ),
+          incidence: ObservationQuery(
+            15,
+            'monthly',
+            Util.formatDatetimeApi(chartParams.Scatter[0].params.domain[1]),
+            Util.formatDatetimeApi(chartParams.Scatter[0].params.domain[0]),
+          ),
+          vaccination: ObservationQuery(
+            4,
+            'yearly',
+            Util.formatDatetimeApi(chartParams.Scatter[0].params.domain[1]),
+            Util.formatDatetimeApi(chartParams.Scatter[0].params.domain[0]),
+          ),
+          population: ObservationQuery(
+            3,
+            'yearly',
+            Util.formatDatetimeApi(chartParams.Scatter[0].params.domain[1]),
+            Util.formatDatetimeApi(chartParams.Scatter[0].params.domain[0]),
+          ),
         };
 
         const results = {};
         for (let q in queries) {
           results[q] = await queries[q];
         }
-
+        console.log('results -- App.js')
+        console.log(results)
         // Country basic info
         // Global info
 
@@ -319,6 +346,11 @@ const App = () => {
         // possible.
         chartParams.MiniLine[0].params.data = debugMiniLine1Data;
         chartParams.MiniLine[1].params.data = results.globalVaccHistory;
+        chartParams.Scatter[0].params.data = {
+          x: results.vaccination,
+          y: results.incidence,
+          size: results.population,
+        };
 
         // // Incidence history and latest observation
         // // Do not show null values in data for now
@@ -352,6 +384,7 @@ const App = () => {
 
         setGlobalComponent(<Global
           chartParams={chartParams}
+          allIncidence={results.incidence}
         />);
       }
       getGlobalData(id);

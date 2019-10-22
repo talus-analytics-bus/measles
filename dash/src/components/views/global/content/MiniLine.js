@@ -268,7 +268,7 @@ class MiniLine extends Chart {
       .selectAll('circle')
       .data(chart.data.vals)
       .enter().append('circle')
-        .attr('class', d => styles[d.metric])
+        .attr('class', d => `${styles.miniLinePoint} ${styles[d.metric]}`)
         .attr('cx', d => x(new Date(d.date_time.replace(/-/g, '/'))))
         .attr('cy', d => y(d.value))
         .attr('r', 5);

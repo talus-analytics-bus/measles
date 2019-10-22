@@ -1,9 +1,9 @@
 import * as d3 from 'd3/dist/d3.min';
 import Chart from "../../../chart/Chart.js";
 import Util from "../../../misc/Util.js";
-import styles from './miniline.module.scss';
+import styles from './scatter.module.scss';
 
-class MiniLine extends Chart {
+class Scatter extends Chart {
 
   constructor(
     selector,
@@ -14,67 +14,22 @@ class MiniLine extends Chart {
 
     this.params = params;
 
-    this.data = {};
-    this.data.vals = params.data || []
+    this.data = {vals: {}};
+    this.data.vals.x = params.data.x || [];
+    this.data.vals.y = params.data.y || [];
+    this.data.vals.size = params.data.size || [];
 
-    if (this.data.vals.length > 0) {
-      let minTime, maxTime;
-      if (this.params.domain !== undefined) {
-        minTime = new Date(this.params.domain[0]);
-        maxTime = new Date(this.params.domain[1]);
-      } else {
-        minTime = new Date(
-          this.data.vals[0]['date_time'].replace(/-/g, '/')
-        );
-        maxTime = new Date(
-          this.data.vals[this.data.vals.length - 1]['date_time'].replace(/-/g, '/')
-        );
-      }
-
-      // Add padding to x axis
-      const usePadding = true;
-      const maxTimeComponents = {
-        month: maxTime.getUTCMonth(),
-        date: maxTime.getUTCDate(),
-      };
-      if (usePadding) {
-        minTime.setUTCFullYear(
-           minTime.getUTCFullYear() - 1
-        );
-        minTime.setUTCMonth(
-           12 - maxTimeComponents.month
-        );
-        minTime.setUTCDate(
-           maxTimeComponents.date
-        );
-      }
-      this.xDomainDefault = [
-        minTime,
-        maxTime,
-      ];
-    }
-
-    // If no default xdomain, hide line chart
-    if (this.xDomainDefault === undefined) {
-      return;
-    }
-
-    // Get max incidence from data.
-    // [ max, min ]
-    this.yDomainDefault = [d3.max(this.data.vals, d => d.value) || 5, 0];
-
-    // Adjust left margin to fit available space
+    // Default margins
     if (!this.params.margin) {
       this.params.margin = {
-        top: 20,
+        top: 40,
         right: 0,
-        bottom: 22,
-        left: 20,
+        bottom: 80,
+        left: 80,
       };
     }
 
     this.init();
-    this.params.margin.left = this.fitLeftMargin(this);
     this.onResize(this);
     this.draw();
   }
@@ -100,277 +55,287 @@ class MiniLine extends Chart {
       return
     }
 
-    // x scale: Time - main chart
-    // global min/max to start
-    const x = d3.scaleTime()
-      .domain(this.xDomainDefault) // min and max time vary w. window size
-      .range([0, chart.width])
-      .clamp(true);
+    // Define red color scale for bubbles
+    const yColor = d3.scaleLinear()
+      .domain([0, 1])
+      .range(['#d89da5', '#9d3e4c']);
 
-    // y scale: incidence - main chart
-    // Never changes
-    const y = chart.y;
+    // Define bubble size scale
+    const r = d3.scaleLinear()
+      .domain([0, 1])
+      .range([5, 50]) // heuristic for max bubble size
 
-    // Define line function - main chart
-    const line = d3.line()
-      .x(d => x(new Date(d.date_time.replace(/-/g, '/'))))
-      .y(d => y(d.value));
+    // Define x scale - vaccination coverage
+    const x = d3.scaleLinear()
+      .domain([0, 1])
+      .range([0, chart.width]);
 
-
-        // Time formatting
-        var formatMillisecond = d3.timeFormat(".%L"),
-        formatSecond = d3.timeFormat(":%S"),
-        formatMinute = d3.timeFormat("%I:%M"),
-        formatHour = d3.timeFormat("%I %p"),
-        formatDay = d3.timeFormat("%a %d"),
-        formatWeek = d3.timeFormat("%b %d"),
-        formatMonth = d3.timeFormat("%b"),
-        formatYear = d3.timeFormat("%Y");
-
-        function multiFormat(date) {
-
-          let format;
-          if (d3.timeMonth(date) < date) {
-            this.parentElement.remove();
-          } else if (d3.timeYear(date) < date) {
-            this.parentElement.remove();
-          } else {
-            format = formatYear(date);
-          }
-          return formatYear(date);
-        }
-
-        // x axis - main chart
-        const xAxis = d3.axisBottom()
-          .tickSize(0)
-          .ticks(4)
-          .tickFormat(multiFormat)
-          .tickPadding(10)
-          .scale(x);
-
-        const xAxisG = chart.newGroup(styles['x-axis'])
-          .attr('transform', `translate(0, ${chart.height})`)
-          .call(xAxis);
-
-    // y scale: vacc cov. - main chart
-    // Never changes
-    const yRight = d3.scaleLinear()
-      .domain([100, 0])
-      .range([0, chart.height])
-
-    // y axis - main chart - left
-    const yAxis = d3.axisLeft()
-      .scale(y)
-      .tickFormat((val) => {
+    // Define x axis - vaccination coverage
+    const xAxis = d3.axisBottom()
+      .tickSize(0)
+      .tickPadding(10)
+      .tickValues([0, 1])
+      .tickFormat(function (val) {
         if (val === 0) {
-          return 0;
-        } else return y.tickFormat()(val);
+            return '';
+        }
+        if (val === 1) return '';
+        else this.remove();
       })
-      .ticks(2)
-      .tickSizeOuter(0)
-      .tickSizeInner(-chart.width)
+      .scale(x);
+    const xAxisG = chart.newGroup(styles['x-axis'])
+      .call(xAxis)
+      .attr('transform', `translate(0, ${chart.height})`);
 
+    // Define y scale - incidence
+    const y = d3.scaleLinear()
+      .domain([0, 1])
+      .range([chart.height, 0]); // TODO check
+
+    // Define y axis - incidence
+    const yAxis = d3.axisLeft()
+      .tickSize(0)
+      .tickPadding(10)
+      .tickValues([0, 1])
+      .tickFormat(function (val) {
+        if (val === 0) return '';
+        if (val === 1) return '';
+        else this.remove();
+      })
+      .scale(y);
     const yAxisG = chart.newGroup(styles['y-axis'])
       .call(yAxis);
 
-    const yAxisLeftYPos = this.labelShift;
-    const yAxisLabel = chart[styles['y-axis']].append('text')
-      .attr('class', styles.label)
-      .attr('x', -chart.height / 2)
-      .attr('y', yAxisLeftYPos)
-
-
-    const getLabelData = () => {
-      switch (chart.data.vals[0].metric) {
-        case 'incidence_monthly': // DEBUG
-          return [
-            'Global yearly',
-            'incidence',
-          ];
-        default: // DEBUG
-          return [
-            'Global vaccination',
-            'coverage',
-          ];
-      }
-    };
-
-
-    const labelData = getLabelData();
-    yAxisLabel.selectAll('tspan')
-    .data(labelData)
-    .enter().append('tspan')
-    .attr('x', -chart.height / 2)
-      .attr('dy', (d, i) => (1.2*i) + 'em')
-      .text(d => d);
-
-      // Get "value" line segments -- all segments where data are available (not
-      // null).
-      const getValueLineSegments = () => {
-        const valueLineSegments = [];
-        let start, end, prev;
-        let segment = [];
-        chart.data.vals.forEach(datum => {
-
-          // If no start and datum not-null, datum is start
-          // If there was a previous datum, also include it
-          if (!start && datum.value !== null) {
-            start = datum;
-            // if (prev) segment.push(prev);
-            segment.push(datum);
-            // console.log('If no start and datum not-null, datum is start')
-            prev = datum;
-            return;
+      // Update xaxis tick labels
+      console.log(chart[styles['x-axis']])
+      chart[styles['x-axis']]
+        .selectAll('g.tick')
+        .each(function addXTickText (d, i) {
+          const tickLabel = d3.select(this).select('text');
+          if (i === 0) {
+            tickLabel
+              .attr('text-anchor', 'start');
+            tickLabel
+              .append('tspan')
+                .attr('x', 0)
+                .text('Lowest');
+            tickLabel
+              .append('tspan')
+                .attr('dy', '1.1em')
+                .attr('x', 0)
+                .text('coverage');
           }
-          // If no start and datum null, continue
-          if (!start && datum.value === null) {
-            // console.log('If no start and datum null, continue')
-            prev = datum;
-            return;
+          else if (i === 1) {
+            tickLabel
+              .attr('text-anchor', 'end');
+            tickLabel
+              .append('tspan')
+                .attr('x', 0)
+                .text('Highest');
+            tickLabel
+              .append('tspan')
+                .attr('dy', '1.1em')
+                .attr('x', 0)
+                .text('coverage');
           }
-          // If start and datum not-null, push to segment
-          if (start && datum.value !== null) {
-            segment.push(datum);
-            // console.log('If start and datum not-null, push to segment')
-            prev = datum;
-            return;
+        });
+      chart[styles['y-axis']]
+        .selectAll('g.tick')
+        .each(function addYTickText (d, i) {
+          const tickLabel = d3.select(this).select('text');
+          if (i === 0) {
+            tickLabel
+              .attr('text-anchor', 'end')
+              .attr('y', '-2.3em')
+              .attr('dy', 0)
+            tickLabel
+              .append('tspan')
+                .attr('x', -10)
+                .attr('dy', '1.1em')
+                .text('Lowest');
+            tickLabel
+              .append('tspan')
+                .attr('dy', '1.1em')
+                .attr('x', -10)
+                .text('incidence');
           }
-          // If start and datum null, push to segment, and start new one
-          if (start && datum.value === null) {
-            // segment.push(datum);
-            start = undefined;
-            valueLineSegments.push(segment);
-            segment = [];
-            // console.log('If start and datum null, push to segment, and start new one')
-            prev = datum;
-            return;
+          else if (i === 1) {
+            tickLabel
+              .attr('text-anchor', 'end')
+              .attr('y', '-.35em')
+              .attr('dy', 0)
+            tickLabel
+              .append('tspan')
+                .attr('x', -10)
+                .attr('dy', '1.1em')
+                .text('Highest');
+            tickLabel
+              .append('tspan')
+                .attr('dy', '1.1em')
+                .attr('x', -10)
+                .text('incidence');
           }
-          // console.log('Error: reached unreachable state');
         });
 
-        if (segment.length > 0) {
-          valueLineSegments.push(segment);
-          segment = [];
-        }
-        return valueLineSegments;
-      };
+    // Add x axis label
+    // Add y axis label
 
-    // Add line to chart
-    const valueLineSegments = getValueLineSegments();
-    chart.newGroup(styles.lineValue)
-      .selectAll('path')
-      .data(valueLineSegments)
-      .enter().append('path')
-        .attr('class', d => styles[d[0].metric])
-        .attr('d', d => line(d));
-    // Add points to chart
-    chart.newGroup(styles.pointValue)
-      .selectAll('circle')
-      .data(chart.data.vals)
-      .enter().append('circle')
-        .attr('class', d => styles[d.metric])
-        .attr('cx', d => x(new Date(d.date_time.replace(/-/g, '/'))))
-        .attr('cy', d => y(d.value))
-        .attr('r', 5);
+    // Add bubbles group (assume one datum per country). Enter one bubble for
+    // each that we have pop data for, in the update function.
+    const bubblesG = chart.newGroup('bubbles');
 
-    // Add tooltip line
-    if (chart.params.setTooltipData !== undefined) {
-      chart.newGroup(styles.tooltipLine)
-        .append('line')
-          .attr('x1', 0)
-          .attr('x2', 0)
-          .attr('y1', 0)
-          .attr('y2', chart.height);
+    // Add avg vaccination coverage line
+    const avgXLine = chart.newGroup('avgXLine')
+      .append('line')
+        .attr('class', styles.avgXLine)
+        .attr('x1', x(.5))
+        .attr('x2', x(.5))
+        .attr('y1', y(0))
+        .attr('y2', y(1));
 
-      // create tooltip hover overlay
-      chart.newGroup('tooltipOverlay')
-        .append('rect')
-          .attr('class', 'tooltipOverlay')
-          .attr('x', 0)
-          .attr('y', 0)
-          .attr('data-tip', true)
-          .attr('data-for', chart.params.tooltipClassName)
-          .attr('width', chart.width)
-          .attr('height', chart.height)
-          .style('fill', 'transparent')
-          .on('mouseover', function showTooltipLine () {
-
-          })
-          .on('mouseout', function hideTooltipLine () {
-            chart[styles.tooltipLine]
-              .select('line')
-                .classed(styles.visible, false);
-            chart.params.setTooltipData(null);
-          })
-          .on('mousemove', function tooltipLineUpdate () {
-
-            // First, snap line to months
-            const posXCursor = d3.mouse(this)[0];
-            const xValCursor = x.invert(posXCursor);
-            const xDateCursor = new Date(xValCursor);
-            let xValLine, posXLine;
-            const nextYear = d3.timeYear(new Date(xDateCursor).setUTCFullYear(xDateCursor.getUTCFullYear() + 1));
-            const isCloserToNextYear = (xDateCursor - d3.timeYear(xDateCursor)) > (nextYear - xDateCursor);
-            if (isCloserToNextYear) {
-              xValLine = nextYear;
-            } else {
-              xValLine = d3.timeYear(xDateCursor);
-            }
-            posXLine = x(xValLine);
-
-            // Then, get the vaccination and incidence data for this point.
-            const xDateLine = new Date(xValLine);
-            const xDateLineStrComponents = {
-              year: (xDateLine.getUTCFullYear()).toString(),
-              month: (xDateLine.getUTCMonth() + 1) <= 9 ?  '0' + (xDateLine.getUTCMonth() + 1).toString() : (xDateLine.getUTCMonth() + 1).toString(),
-            };
-            const xDateLineStr = `${xDateLineStrComponents.year}`;
-            const item = chart.data.vals.find(d => d.date_time.startsWith(xDateLineStr));
-
-            const items = [];
-            if (item && item.value !== null)
-              items.push(
-                Util.getTooltipItem(item)
-              );
-
-            // If there were data at this position, move the tooltip line there,
-            // otherwise, do not change its position.
-            if(items.length > 0) {
-              chart[styles.tooltipLine]
-                .select('line')
-                  .attr('x1', posXLine)
-                  .attr('x2', posXLine);
-
-              chart[styles.tooltipLine]
-                .select('line')
-                  .classed(styles.visible, true);
-
-              chart.params.setTooltipData(
-                {
-                  items: items
-                }
-              );
-            }
-          });
-    }
-
-    // Reduce width at the end
-    chart.svg.node().parentElement.classList.add(styles.drawn);
+    // TODO - Exclude "global" bubble.
+    //
 
     // TODO build rest of chart
 
     // Update function: Draw lines, add tooltips, etc.
-    // Assumption: Data themselves do not change.
-    chart.update = () => {
+    // Called: Every time the month/year slider is changed.
+    chart.update = (dt) => {
+      const sortBySize = (a, b) => {
+        if (a.value_normalized.size > b.value_normalized.size) return -1;
+        else if (a.value_normalized.size < b.value_normalized.size) return 1;
+        else return 0;
+      };
+      // Get month and year of data to show in scatter plot
+      console.log('dt')
+      console.log(dt)
+      // const month = dt.getUTCMonth() + 1;
+      // const year = dt.getUTCFullYear();
+      const yyyymmdd = Util.formatDatetimeApi(dt);
+      const yyyymmddArr = yyyymmdd.split('-');
+      const monthlyStr = `${yyyymmddArr[0]}-${yyyymmddArr[1]}`;
+      const yearlyStr = `${yyyymmddArr[0]}`;
 
-      // Draw incidence line (solid blue, no label)
+      // Get this data to bind
+      // y data
+      const yData = chart.data.vals.y.filter(d => {
+        return d.date_time.startsWith(monthlyStr);
+      });
+      const yDataMax = d3.max(yData, d => d.value);
+      yData.forEach(d => d.value_normalized = d.value / yDataMax );
+
+      // x data
+      const xData = chart.data.vals.x.filter(d => {
+        return d.date_time.startsWith(yearlyStr);
+      });
+      const xDataMax = d3.max(xData, d => d.value);
+      xData.forEach(d => d.value_normalized = d.value / xDataMax );
+
+      // size data
+      const sizeData = chart.data.vals.size.filter(d => {
+        return d.date_time.startsWith(yearlyStr);
+      });
+      const sizeDataMax = d3.max(sizeData, d => d.value);
+      sizeData.forEach(d => d.value_normalized = d.value / sizeDataMax );
+      // const sizeDataMax = Math.log10(d3.max(sizeData, d => d.value));
+      // sizeData.forEach(d => d.value_normalized = Math.log10(d.value) / sizeDataMax );
+
+      const data = [];
+      sizeData.forEach(sizeDatum => {
+        const placeId = sizeDatum.place_id;
+        const xDatum = xData.find(d => d.place_id === placeId);
+        const yDatum = yData.find(d => d.place_id === placeId);
+        if (yDatum && xDatum) {
+          data.push(
+            {
+              value_normalized: {
+                x: xDatum.value_normalized,
+                y: yDatum.value_normalized,
+                size: sizeDatum.value_normalized,
+              },
+              place_id: placeId,
+              place_name: xDatum.place_name,
+              date_time: yDatum.date_time,
+              xDatum: xDatum,
+              yDatum: yDatum,
+              sizeDatum: sizeDatum,
+            }
+          );
+        }
+      });
+      data.sort(sortBySize);
+      console.log('data')
+      console.log(data)
+
+      // Enter new bubbles based on place_id if needed (pos and color)
+      // Update existing bubbles by moving to new position and colors
+      // Move average vaccination level line to new position
+      const avgXLineVal = d3.mean(xData, d => d.value_normalized);
+      avgXLine
+        .transition(500)
+          .attr('x1', x(avgXLineVal))
+          .attr('x2', x(avgXLineVal));
+
+      // Move circle off edge of chart, x-axis
+      const getCircleXPos = (d) => {
+        // If x-pos is with r units of chart width, then shift it to a value
+        // equal to chart width minus r
+        const xPosDesired = x(d.value_normalized.x);
+        const curR = r(d.value_normalized.size);
+        let xPosFinal = xPosDesired;
+        if (chart.width - xPosDesired <= curR) {
+          xPosFinal = chart.width - curR;
+        }
+
+        // Similarly, don't let x pos hang circle off left side of plot
+        else if (xPosDesired - curR < 0) {
+          xPosFinal = curR;
+        }
+        return xPosFinal;
+      };
+
+      const getCircleYPos = (d) => {
+        const yPosDesired = y(d.value_normalized.y);
+        const curR = r(d.value_normalized.size);
+        let yPosFinal = yPosDesired;
+        if (yPosDesired + curR > chart.height) {
+          yPosFinal = chart.height - curR;
+        }
+
+        // Similarly, don't let y pos hang circle off left side of plot
+        else if (yPosDesired - curR < 0) {
+          yPosFinal = curR;
+        }
+        return yPosFinal;
+      };
+
+      // Enter new bubbles, update old
+      bubblesG.selectAll('circle')
+        .data(data, d => d.place_id)
+        .join(
+          enter => {
+            enter.append('circle')
+              .attr('class', styles.scatterCircle)
+              .attr('cx', d => getCircleXPos(d))
+              .attr('cy', d => getCircleYPos(d))
+              .attr('fill', d => yColor(d.value_normalized.y))
+              .attr('r', d => r(d.value_normalized.size));
+          },
+          update => {},
+          exit => {},
+        );
 
 
-      // Draw vaccination coverage line (dashed black, labeled, perhaps with
-      // year every time it "steps" if we are zoomed in enough?)
-      // TODO
     };
+
+    // Call update function, using most recent dt of data as the initial
+    // selection.
+    const nData = chart.data.vals.x.length;
+    const initDt = new Date(
+      chart.data.vals.x[nData - 1].date_time.replace(/-/g, '/')
+    );
+    chart.update(initDt);
   }
 }
 
-export default MiniLine;
+export default Scatter;

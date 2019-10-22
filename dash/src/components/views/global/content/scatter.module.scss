@@ -27,13 +27,11 @@
     }
   }
 }
-.lineVacc {
-  path {
-    stroke: #333333;
-    stroke-width: 1.5px;
-    stroke-dasharray: 6;
-    stroke-linecap: square;
-  }
+.avgXLine {
+  stroke: #333333;
+  stroke-width: 1px;
+  stroke-dasharray: 6;
+  stroke-linecap: square;
 }
 .areaNull {
   path {
@@ -44,9 +42,9 @@
 }
 
 .x-axis, .x-axis-2, .y-axis, .y-axis-right {
-  > path {
-    display: none;
-  }
+  // > path {
+  //   // display: none;
+  // }
   path, line {
     stroke: #6d6e70;
   }
@@ -65,11 +63,9 @@
   }
 }
 
-circle {
-  fill: $data-blue;
-  &.incidence_monthly {
-    fill: $value-red;
-  }
+circle.scatterCircle {
+  stroke: white;
+  stroke-width: .5px;
 }
 
 .y-axis-right .label {

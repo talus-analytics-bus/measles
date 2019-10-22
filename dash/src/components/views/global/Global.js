@@ -95,6 +95,16 @@ const Global = (props) => {
   }, [])
 
 
+  const getScatterJsx = () => {
+    return [
+      {
+        'title': 'Vaccination coverage and incidence by country',
+        'chart_jsx': () => <div className={classNames(styles.Scatter, 'Scatter-0')} />,
+        'date_time_fmt': () => '',
+      },
+    ]
+  };
+
   const getMiniLineJsx = () => {
 
     // Get data for miniline infographic
@@ -132,8 +142,6 @@ const Global = (props) => {
   // If loading do not show JSX content.
   console.log('props')
   console.log(props)
-  console.log('tooltipData')
-  console.log(tooltipData)
 
   return (<div className={styles.details}>
             <div className={styles.sidebar}>
@@ -238,6 +246,7 @@ const Global = (props) => {
             <div className={styles.main}>
             {
               [
+                ...getScatterJsx()
                 // {
                 //   'title': 'Vaccination coverage',
                 //   'chart_jsx': getVaccChart,
@@ -268,29 +277,6 @@ const Global = (props) => {
                       {item.title} {item.date_time_fmt(item)}
                     </span>
                     <div className={styles.content}>
-                      {
-                        // Display formatted value and label
-                        ((item.value !== null && typeof item.value !== 'object') && (
-                          <span>
-                            <span className={styles.value}>
-                              {item.value_fmt(item.value)}
-                            </span>
-                            {
-                              item.value_label && <span className={styles.label}>
-                                &nbsp;{item.value_label}
-                              </span>
-                            }
-                          </span>
-                        ))
-                      }
-                      {
-                        // Data not available message, if applicable.
-                        (item.value === null && (
-                          <span className={'notAvail'}>
-                            Data not available
-                          </span>
-                        ))
-                      }
                       {
                         // Display chart if there is one
                         (item.chart_jsx !== undefined) &&

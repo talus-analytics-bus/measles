@@ -9,6 +9,12 @@ $spacing: 20px;
   width: auto;
 }
 
+$scatterSize: 500px;
+.Scatter {
+  height: $scatterSize;
+  width: $scatterSize;
+}
+
 .details {
   display: flex;
   flex-flow: row;
