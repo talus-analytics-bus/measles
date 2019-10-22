@@ -21,9 +21,9 @@ const Global = (props) => {
 
   // Track whether the first mini line chart has been drawn
   const [ charts, setCharts ]  = React.useState([]);
-  //
-  // // Track SlidingLine chart tooltip data
-  // const [ tooltipData, setTooltipData ]  = React.useState(null);
+
+  // Track chart tooltip data
+  const [ tooltipData, setTooltipData ]  = React.useState(null);
   //
   // // Track whether to show reset view button on sliding line chart
   // const [ showReset, setShowReset ]  = React.useState(false);
@@ -34,7 +34,6 @@ const Global = (props) => {
   // Effect hook to load API data.
   React.useEffect(() => {
 
-
     // Update chart variables
     const chartsToSet = [];
     for (let chartTypeName in props.chartParams) {
@@ -42,6 +41,12 @@ const Global = (props) => {
       const chartType = props.chartParams[chartTypeName];
       chartType.forEach(function (chart, i) {
         if (!chart.class) return;
+        // Set tooltip data function
+        chart.params.setTooltipData = setTooltipData;
+        chart.params.noResizeEvent = true;
+        chart.params.tooltipClassName = stylesTooltip.globalTooltip;
+
+        // Create chart instance
         const chartInstance = new chart.class(
           '.' + chart.class.name + '-' + i,
           chart.params,
@@ -107,7 +112,7 @@ const Global = (props) => {
     ];
     return [
       {
-        'title': 'Global annual incidence',
+        'title': 'Global yearly incidence',
         'chart_jsx': () => <div className={classNames(styles.MiniLine, 'MiniLine-0')} />,
         'value_fmt': Util.formatIncidence,
         'value_label': 'cases per 1M population',
@@ -127,6 +132,9 @@ const Global = (props) => {
   // If loading do not show JSX content.
   console.log('props')
   console.log(props)
+  console.log('tooltipData')
+  console.log(tooltipData)
+
   return (<div className={styles.details}>
             <div className={styles.sidebar}>
               <div className={styles.title}>
@@ -316,17 +324,17 @@ const Global = (props) => {
             }
             </div>
             <ReactTooltip
-              id={stylesTooltip.slidingLineTooltip}
-              type='slidingLine'
-              className='slidingLineTooltip'
+              id={stylesTooltip.globalTooltip}
+              type='globalTooltip'
+              className='globalTooltip'
               place="right"
               effect="float"
               getContent={ () =>
-                false &&
+                tooltipData &&
                   <div className={stylesTooltip.tooltipContainer}>
                     <div className={stylesTooltip.tooltipContent}>
                     {
-                      [].items.map(item =>
+                      tooltipData.items.map(item =>
                         <div className={stylesTooltip.item}>
                           <div className={stylesTooltip.name}>{item.name} {Util.getDatetimeStamp(item.datum, item.period)}</div>
                           <div>

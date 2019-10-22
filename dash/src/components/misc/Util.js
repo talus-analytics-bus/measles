@@ -3,6 +3,27 @@ import * as d3 from 'd3/dist/d3.min';
 // Utility functions.
 const Util = {};
 
+Util.getTooltipItem = (datum) => {
+  switch (datum.metric) {
+    case 'incidence_monthly': // DEBUG
+      return {
+        name: 'Global yearly incidence',
+        datum: datum,
+        period: 'year',
+        value: Util.formatIncidence(datum.value),
+        label: 'cases per 1M population',
+      };
+    case 'coverage_mcv1_infant': // DEBUG
+      return {
+        name: 'Global vaccination coverage',
+        datum: datum,
+        period: 'year',
+        value: Util.percentize(datum.value),
+        label: 'of infants',
+      };
+  }
+};
+
 Util.quantiles = [
   {
     name: 'Very low',

@@ -3,7 +3,6 @@ import Chart from "../../../chart/Chart.js";
 import Util from "../../../misc/Util.js";
 import styles from './miniline.module.scss';
 
-
 class MiniLine extends Chart {
 
   constructor(
@@ -74,7 +73,6 @@ class MiniLine extends Chart {
       };
     }
 
-
     this.init();
     this.params.margin.left = this.fitLeftMargin(this);
     this.onResize(this);
@@ -106,7 +104,8 @@ class MiniLine extends Chart {
     // global min/max to start
     const x = d3.scaleTime()
       .domain(this.xDomainDefault) // min and max time vary w. window size
-      .range([0, chart.width]);
+      .range([0, chart.width])
+      .clamp(true);
 
     // y scale: incidence - main chart
     // Never changes
@@ -183,15 +182,15 @@ class MiniLine extends Chart {
 
     const getLabelData = () => {
       switch (chart.data.vals[0].metric) {
-        case 'incidence_monthly': // DBUG
+        case 'incidence_monthly': // DEBUG
           return [
-            'Global annual',
-            'incidence by year',
+            'Global yearly',
+            'incidence',
           ];
-        default:
+        default: // DEBUG
           return [
             'Global vaccination',
-            'coverage by year',
+            'coverage',
           ];
       }
     };
@@ -295,16 +294,13 @@ class MiniLine extends Chart {
           .attr('height', chart.height)
           .style('fill', 'transparent')
           .on('mouseover', function showTooltipLine () {
-            chart[styles.tooltipLine]
-              .select('line')
-                .transition(500)
-                .style('opacity', 1);
+
           })
           .on('mouseout', function hideTooltipLine () {
             chart[styles.tooltipLine]
               .select('line')
-                .transition(500)
-                .style('opacity', 0);
+                .classed(styles.visible, false);
+            chart.params.setTooltipData(null);
           })
           .on('mousemove', function tooltipLineUpdate () {
 
@@ -313,18 +309,14 @@ class MiniLine extends Chart {
             const xValCursor = x.invert(posXCursor);
             const xDateCursor = new Date(xValCursor);
             let xValLine, posXLine;
-            const nextMonth = d3.timeMonth(new Date(xDateCursor).setMonth(xDateCursor.getMonth() + 1));
-            const isCloserToNextMonth = (xDateCursor - d3.timeMonth(xDateCursor)) > (nextMonth - xDateCursor);
-            if (isCloserToNextMonth) {
-              xValLine = nextMonth;
+            const nextYear = d3.timeYear(new Date(xDateCursor).setUTCFullYear(xDateCursor.getUTCFullYear() + 1));
+            const isCloserToNextYear = (xDateCursor - d3.timeYear(xDateCursor)) > (nextYear - xDateCursor);
+            if (isCloserToNextYear) {
+              xValLine = nextYear;
             } else {
-              xValLine = d3.timeMonth(xDateCursor);
+              xValLine = d3.timeYear(xDateCursor);
             }
             posXLine = x(xValLine);
-            chart[styles.tooltipLine]
-              .select('line')
-                .attr('x1', posXLine)
-                .attr('x2', posXLine);
 
             // Then, get the vaccination and incidence data for this point.
             const xDateLine = new Date(xValLine);
@@ -332,24 +324,33 @@ class MiniLine extends Chart {
               year: (xDateLine.getUTCFullYear()).toString(),
               month: (xDateLine.getUTCMonth() + 1) <= 9 ?  '0' + (xDateLine.getUTCMonth() + 1).toString() : (xDateLine.getUTCMonth() + 1).toString(),
             };
-            const xDateLineStr = `${xDateLineStrComponents.year}-${xDateLineStrComponents.month}`;
+            const xDateLineStr = `${xDateLineStrComponents.year}`;
             const item = chart.data.vals.find(d => d.date_time.startsWith(xDateLineStr));
 
             const items = [];
-            if (item && item.value !== null) items.push(
-              {
-                name: 'Value',
-                datum: item,
-                period: 'month',
-                value: Util.formatIncidence(item.value),
-                label: 'Value label',
-              }
-            );
-            chart.params.setTooltipData(
-              {
-                items: items
-              }
-            );
+            if (item && item.value !== null)
+              items.push(
+                Util.getTooltipItem(item)
+              );
+
+            // If there were data at this position, move the tooltip line there,
+            // otherwise, do not change its position.
+            if(items.length > 0) {
+              chart[styles.tooltipLine]
+                .select('line')
+                  .attr('x1', posXLine)
+                  .attr('x2', posXLine);
+
+              chart[styles.tooltipLine]
+                .select('line')
+                  .classed(styles.visible, true);
+
+              chart.params.setTooltipData(
+                {
+                  items: items
+                }
+              );
+            }
           });
     }
 
