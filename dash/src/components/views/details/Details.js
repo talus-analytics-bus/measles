@@ -42,6 +42,9 @@ const Details = (props) => {
   // Track SlidingLine chart tooltip data
   const [ tooltipData, setTooltipData ]  = React.useState(null);
 
+  // Track whether to show reset view button on sliding line chart
+  const [ showReset, setShowReset ]  = React.useState(false);
+
   // Get data for current country.
   const country = props.id;
 
@@ -348,6 +351,31 @@ const Details = (props) => {
               </div>
             )
           }
+          {
+            // Add reset button, visible when chart sliding window is adjusted.
+            <button
+              onClick={
+                () => {
+                  if (slidingLine && slidingLine.resetView) {
+                    slidingLine.resetView();
+                  }
+                }
+              }
+              className={
+                classNames(
+                  'btn-secondary btn-sm',
+                )
+              }
+              style={
+                {
+                  'opacity': showReset ? 1 : 0,
+                  'visibility': showReset ? 'visible' : 'hidden',
+                }
+              }
+              >
+              Reset view
+            </button>
+          }
         </div>
         {
           !noLineData &&
@@ -415,6 +443,7 @@ const Details = (props) => {
       noResizeEvent: true,
       setTooltipData: setTooltipData,
       tooltipClassName: stylesTooltip.slidingLineTooltip,
+      setShowReset: setShowReset,
       margin: {
         top: 20,
         right: 98,

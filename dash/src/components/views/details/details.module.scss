@@ -262,6 +262,7 @@ $spacing: 20px;
 
   $slidingLineWidth: 750px;
   .slidingLineContainer {
+    width: 100%;
     .slidingLineLegend {
       display: flex;
       flex-flow: row;
@@ -297,6 +298,13 @@ $spacing: 20px;
           margin-left: 5px;
         }
       }
+    }
+    button {
+      visibility: hidden;
+      opacity: 0;
+      transition: opacity .125s;
+      margin: 0;
+      margin-left: auto;
     }
     .slidingLine {
       height: $slidingLineWidth/2.2;

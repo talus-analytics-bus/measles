@@ -312,6 +312,28 @@ table {
   cursor: pointer;
 }
 
+.btn-secondary {
+  background-color: transparent;
+  border: 1px solid black;
+  color: $dark-grey;
+  &:hover {
+    background-color: darken(white, 15%);
+    color: black;
+  }
+  &:active {
+    background-color: darken(white, 25%);
+  }
+}
+
+.btn-sm {
+  padding: 2.5px 5px;
+  font-weight: normal;
+  &:active {
+    -webkit-box-shadow: 0 0 5px .5px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 0 5px .5px rgba(0, 0, 0, 0.3);
+  }
+}
+
 .button.back {
   visibility: hidden;
 }

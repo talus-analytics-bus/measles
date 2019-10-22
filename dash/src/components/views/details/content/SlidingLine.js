@@ -593,8 +593,6 @@ class SlidingLine extends Chart {
       .data([{type: "w"}, {type: "e"}])
       .enter().append("path")
         .attr("class", "handle--custom")
-        // .attr("stroke", "#888")
-        // .attr("fill", '#eee')
         .attr("cursor", "ew-resize")
         .attr("d", brushResizePath);
 
@@ -609,14 +607,22 @@ class SlidingLine extends Chart {
 
     brush
 		.on('brush start end', () => {
-			const s = d3.event.selection || x2.range();
+
+      // Get current start/end positions of brush ([1, 2])
+      const s = d3.event.selection || x2.range();
+
+      // Show reset button if not default positions.
+      if (chart.brushStartPos) {
+        if (s[0] === chart.brushStartPos && s[1] === chart.width) {
+          chart.params.setShowReset(false);
+        } else {
+          chart.params.setShowReset(true);
+        }
+      }
 
       if (s == null) {
         handle.attr("display", "none");
-        // circle.classed("active", false);
       } else {
-        // var sx = s.map(x.invert);
-        // circle.classed("active", function(d) { return sx[0] <= d && d <= sx[1]; });
         handle.attr("display", null).attr("transform", function(d, i) { return "translate(" + [ s[i] + .5*( Math.pow(-1,(i))), chart.height - chart.slider.height*.625] + ")"; });
       }
 
@@ -656,8 +662,16 @@ class SlidingLine extends Chart {
 			chart[styles.lineVacc].selectAll('path'). attr('d', d => lineVacc(d));
 			chart[styles.areaNull].selectAll('path'). attr('d', d => area(d));
 		})
+    chart.brushStartPos = getBrushStartPos();
     gBrush
-    .call(brush.move, [getBrushStartPos(), chart.width]);
+      .call(brush.move, [chart.brushStartPos, chart.width]);
+
+    // Define function for resetting the brush view to default values, which is
+    // called by Detail.js if the reset button is clicked by the user.
+    chart.resetView = function resetView () {
+      gBrush
+        .call(brush.move, [chart.brushStartPos, chart.width]);
+    };
 
 
     // Add tooltip line
