@@ -42,9 +42,8 @@ const Logo = (props) => {
       curCountry = +window.location.pathname.split('/')[2];
     return (
       props.places.find(p => p.name === regionName).data.map((c) =>
-        <Link onClick={countryOnClick} className={styles.country} to={`/details/${c[0]}`}>
+        <Link onClick={countryOnClick} className={classNames(styles.country, {[styles.active]: c[0] === curCountry})} to={`/details/${c[0]}`}>
             {c[1]}
-            {(c[0] === curCountry) && <div className={classNames('general-marker', styles.curCountryMarker)}/>}
         </Link>
       )
     );

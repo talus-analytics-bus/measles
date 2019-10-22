@@ -226,7 +226,7 @@ $logo-height: 70px;
             }
             &[currentitem="true"] {
               > span {
-                color: #449fb7;
+                color: $selected-blue;
                 text-decoration: underline;
               }
 
@@ -290,6 +290,9 @@ $logo-height: 70px;
 
             &:hover {
               background-color: lighten($light-grey-2, 5%);
+            }
+            &.active, &.active:hover {
+              background-color: #8fc5d4;
             }
             &:last-child {
               border-radius: 0 0 10px 10px;
