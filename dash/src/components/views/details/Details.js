@@ -185,6 +185,9 @@ const Details = (props) => {
   const getWedgeChartBin = () => {
     if (props.countryIncidenceLatest.value === 0) return -9999;
     const val = props.countryIncidenceQuantile;
+    return {
+      i: val !== null? val : -9999,
+    };
     switch (val) {
       case 0:
         return {
@@ -220,7 +223,7 @@ const Details = (props) => {
     return (
       <div className={classNames(styles.chart, styles.vaccChart)}>
         {
-          [0,1,2,3].map(bin =>
+          [0,1,2,3,4].map(bin =>
             <div className={styles.trapezoidContainer}>
               <div
               className={classNames(

@@ -163,14 +163,16 @@ $spacing: 20px;
         }
 
         $sep: -10px;
-        $wedge-size: .9825px;
+        $wedge-size: .78px;
+        // $wedge-size: .9825px;
         $wedge-height: 10px;
         $wedge-slope: $wedge-size*10;
 
-        @for $i from 1 through 4 {
+        @for $i from 1 through 5 {
           .trapezoid-#{$i} {
             .bottom {
-              height: $wedge-height*$i;
+              height: $wedge-height*$i*.8;
+              // height: $wedge-height*$i;
             }
           }
         }
