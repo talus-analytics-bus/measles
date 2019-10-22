@@ -75,8 +75,7 @@ const Global = (props) => {
   return (<div className={styles.details}>
             <div className={styles.sidebar}>
               <div className={styles.title}>
-                {props.countryIso2 && <img src={`/flags/${props.countryIso2}.png`} className={styles.flag} />}
-                {props.countryName}
+                Global caseload
               </div>
               <div className={styles.map}>
                 {

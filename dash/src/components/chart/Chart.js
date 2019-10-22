@@ -387,6 +387,55 @@ class Chart {
 
   }
 
+  // Add axis labels
+  getYLabelPos (y) {
+    const chart = this;
+
+    // data: all tick labels shown in chart, as formatted.
+    const data = y.tickFormat()(
+      y.domain()[0] // largest y-value
+    );
+
+    // Add fake tick labels
+    const fakeText = chart.svg.selectAll('.fake-text').data([data]).enter().append("text").text(d => d)
+      .attr('class','tick fake-text')
+      .style('font-size','15px'); // TODO same fontsize as chart
+
+    // Calculate position based on fake tick labels and remove them
+    const maxLabelWidth = d3.max(fakeText.nodes(), d => d.getBBox().width)
+    fakeText.remove();
+
+    // Return ypos as longest tick label length plus a margin.
+    // Larger max label width menas more negative label shift and more positive margin
+    const marginLabel = 45 + maxLabelWidth; // 45 = width of svg text
+    this.labelShift = -marginLabel;
+
+    const marginAxis = 10;
+    // const marginShift = maxLabelWidth + marginAxis + marginLabel;
+    const marginShift = maxLabelWidth + marginAxis + 45 + 3;
+    this.marginShift = marginShift;
+
+    // Adjust left margin of chart based on label shifting
+    // chart.svg.style('margin-left', -(chart.margin.left + labelShift) + 'px')
+
+    // THEN zero width again
+    return marginShift;
+  };
+
+  fitLeftMargin () {
+
+    const chart = this;
+
+    // get incidence y-scale and y-axis
+    chart.y = d3.scaleLinear()
+      .domain(chart.yDomainDefault)
+      .nice()
+      .range([0, chart.height]);
+
+    const shift = chart.getYLabelPos(chart.y);
+    return shift;
+  }
+
   init() {
     this.initSizing();
   } // alias

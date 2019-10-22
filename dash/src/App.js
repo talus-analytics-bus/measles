@@ -246,10 +246,26 @@ const App = () => {
       // Function to make API calls to get data for the state variables above.
       const getGlobalData = async (country) => {
 
+        // Initialize chart parameters.
+        const chartParams = {
+          MiniLine: {
+            domain: [new Date('2016/01/01'), Util.today()],
+          },
+        };
+
         // Get all needed values in parallel
         // TODO
         const queries = {
-          countryPopQ: ObservationQuery(3, 'yearly', '2018-01-01', '2018-01-01', country),
+          // TODO
+          globalIncidenceHistory: ObservationQuery(
+            15,
+            'monthly',
+            Util.formatDatetimeApi(chartParams.MiniLine.domain[1]),
+            Util.formatDatetimeApi(chartParams.MiniLine.domain[0]),
+            43, // China
+          ),
+          // TODO
+          globalVaccHistory: ObservationQuery(4, 'yearly', '2018-01-01', '2016-01-01', 43),
         };
 
         const results = {};
@@ -259,8 +275,32 @@ const App = () => {
 
         // Country basic info
         // Global info
+
+        // Initialize chart data
+        const chartData = {
+          MiniLine: [undefined, undefined],
+          Scatter: undefined,
+          PagingBar: undefined,
+        }
+
+        // Mini line chart 1 - Global annual incidence
         // TODO
-        const test = results.countryPopQ[0];
+        // DEV: Use incidence observations for China on the first of Jan for
+        // 2016 - 2019 inclusive for now.
+        const debugMiniLine1Data = results.globalIncidenceHistory.filter(obs => {
+          const date = new Date(obs.date_time.replace(/-/g, '/'));
+
+          const isRightDate =
+            date.getUTCMonth() === 0
+            && date.getUTCDate() === 1;
+
+          return isRightDate;
+        });
+
+        // TODO ensure mini lines have partial data for current year if
+        // possible.
+        chartData.MiniLine[0] = debugMiniLine1Data;
+        chartData.MiniLine[1] = results.globalVaccHistory;
 
         // // Incidence history and latest observation
         // // Do not show null values in data for now
@@ -293,8 +333,7 @@ const App = () => {
         //     .reverse();
 
         setGlobalComponent(<Global
-          id={country}
-          test={test}
+          chartData={chartData}
         />);
       }
       getGlobalData(id);

@@ -1,10 +1,10 @@
 import * as d3 from 'd3/dist/d3.min';
 import Chart from "../../../chart/Chart.js";
 import Util from "../../../misc/Util.js";
-import styles from './slidingline.module.scss';
+import styles from './miniline.module.scss';
 
 
-class SlidingLine extends Chart {
+class MiniLine extends Chart {
 
   constructor(
     selector,
@@ -17,30 +17,13 @@ class SlidingLine extends Chart {
 
     this.data = {};
     this.data.vals = params.data || []
-    this.data.vaccVals = params.vaccData || []
-    this.show = {}
-    this.show.incidence = this.data.vals.length > 0;
-    this.show.vacc = this.data.vaccVals.length > 0;
 
-    // Get min and max time from data.
-    let minMaxData;
     if (this.data.vals.length > 0) {
-      minMaxData = this.data.vals;
-
-    } else if (this.data.vaccVals.length > 0) {
-      // Get x domain from vacc data
-      minMaxData = this.data.vaccVals;
-
-    } else {
-      // No line data at all, don't show line chart
-    }
-
-    if (minMaxData != undefined) {
       const minTime = new Date(
-        minMaxData[0]['date_time'].replace(/-/g, '/')
+        this.data.vals[0]['date_time'].replace(/-/g, '/')
       );
       const maxTime = new Date(
-        minMaxData[minMaxData.length - 1]['date_time'].replace(/-/g, '/')
+        this.data.vals[this.data.vals.length - 1]['date_time'].replace(/-/g, '/')
       );
       this.xDomainDefault = [minTime, maxTime];
     }
@@ -54,11 +37,6 @@ class SlidingLine extends Chart {
     // [ max, min ]
     this.yDomainDefault = [d3.max(this.data.vals, d => d.value) || 5, 0];
 
-    // Adjust margins if not showing incidence or vaccination
-    if (!this.show.vacc) {
-      this.params.margin.right = 0;
-    }
-
     // Adjust left margin to fit available space
 
     this.init();
@@ -66,62 +44,6 @@ class SlidingLine extends Chart {
     this.onResize(this);
     this.draw();
   }
-
-  fitLeftMargin () {
-
-    const chart = this;
-
-    console.log('chart')
-    console.log(chart)
-
-    // get incidence y-scale and y-axis
-    chart.y = d3.scaleLinear()
-      .domain(chart.yDomainDefault)
-      .nice()
-      .range([0, chart.height]);
-
-    const shift = chart.getYLabelPos(chart.y);
-
-    console.log('Should shift margin by: ' + shift)
-
-    // return chart.params.margin.left + 200;
-    return shift;
-  }
-
-  // Add axis labels
-  getYLabelPos (y) {
-    const chart = this;
-
-    // data: all tick labels shown in chart, as formatted.
-    const data = y.tickFormat()(
-      y.domain()[0] // largest y-value
-    );
-
-    // Add fake tick labels
-    const fakeText = chart.svg.selectAll('.fake-text').data([data]).enter().append("text").text(d => d)
-      .attr('class','tick fake-text')
-      .style('font-size','15px'); // TODO same fontsize as chart
-
-    // Calculate position based on fake tick labels and remove them
-    const maxLabelWidth = d3.max(fakeText.nodes(), d => d.getBBox().width)
-    fakeText.remove();
-
-    // Return ypos as longest tick label length plus a margin.
-    // Larger max label width menas more negative label shift and more positive margin
-    const marginLabel = 45 + maxLabelWidth; // 45 = width of svg text
-    this.labelShift = -marginLabel;
-
-    const marginAxis = 10;
-    // const marginShift = maxLabelWidth + marginAxis + marginLabel;
-    const marginShift = maxLabelWidth + marginAxis + 45 + 3;
-    this.marginShift = marginShift;
-
-    // Adjust left margin of chart based on label shifting
-    // chart.svg.style('margin-left', -(chart.margin.left + labelShift) + 'px')
-
-    // THEN zero width again
-    return marginShift;
-  };
 
   draw() {
 
@@ -784,4 +706,4 @@ class SlidingLine extends Chart {
   }
 }
 
-export default SlidingLine;
+export default MiniLine;

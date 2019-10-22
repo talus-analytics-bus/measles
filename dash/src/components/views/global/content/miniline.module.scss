@@ -1,0 +1,95 @@
+@import '../../../../assets/styles/colors.scss';
+// .invisible {
+//   display: none;
+// }
+// .drawn {
+//   width: 0 !important;
+//   height: auto !important;
+// }
+// .lineValue,
+// .lineVacc,
+// .lineNull {
+//   path {
+//     fill: none;
+//     stroke: $value-red;
+//     stroke-width: 3px;
+//     stroke-linecap: round;
+//     stroke-linejoin: round;
+//     clip-path: url('#plotArea');
+//   }
+// }
+// .lineVacc {
+//   path {
+//     stroke: #333333;
+//     stroke-width: 1.5px;
+//     stroke-dasharray: 6;
+//     stroke-linecap: square;
+//   }
+// }
+// .areaNull {
+//   path {
+//     // stroke: green;
+//     fill: $light-grey-2;
+//     clip-path: url('#plotArea');
+//   }
+// }
+//
+// .x-axis, .x-axis-2, .y-axis, .y-axis-right {
+//   path, line {
+//     stroke: #b2b2b2;
+//   }
+//   text {
+//     font-family:'Open Sans', sans-serif;
+//     font-size: 1.5em;
+//     fill: $dark-grey;
+//   }
+//   .label {
+//     font-family: 'open_sanssemibold', sans-serif;
+//     font-weight: 600;
+//     text-align: center;
+//     fill: $dark-grey;
+//     text-anchor: middle;
+//     font-size: 1.55em;
+//   }
+// }
+// .y-axis-right .label {
+//   fill: $dark-grey;
+//   transform: rotate(90deg) !important;
+// }
+// .y-axis .label {
+//   transform: rotate(-90deg);
+// }
+// .slider {
+//   .sliderRect {
+//     fill: $value-red;
+//     stroke: white;
+//     stroke-width: .25px;
+//     &.dim {
+//       opacity: .5;
+//     }
+//     &.nullBar {
+//       fill: #e6e6e6;
+//       stroke-width: 0;
+//     }
+//   }
+//
+// }
+// .overlayRect {
+//   fill: white;
+//   opacity: .5;
+//   .overlayRect-1 {
+//     fill: white;
+//
+//   }
+//   .overlayRect-2 {
+//     fill: white;
+//   }
+// }
+//
+// .tooltipLine {
+//   stroke: $grey;
+//   stroke-width: 2px;
+//   transform: translateX(.5px);
+//   // opacity: 0;
+//   // transition: opacity 1s;
+// }
