@@ -68,7 +68,7 @@ const GeomPopup = ({ popupData }) => {
           label: 'Incidence of measles' + `${Util.getDatetimeStamp(obs, 'month')}`,
           value: Util.formatIncidence(obs['value']) + ' cases per 1M population',
           valueNum: obs['value'],
-          value2: Util.getIncidenceQuantile(obs, {type: 'name'}),
+          // value2: Util.getIncidenceQuantile(obs, {type: 'name'}),
           notAvail: obs['value'] === null,
           dataSource: obs['data_source'],
           dataSourceLastUpdated: new Date (obs['updated_at']),
