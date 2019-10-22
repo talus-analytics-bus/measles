@@ -126,31 +126,50 @@ const App = () => {
       className={'map'}
       />
 
-  const getIncidenceQuartile = (allObsTmp, countryObs) => {
-    const allObs = allObsTmp.filter(o => {
-      return o.value && o.value !== null && o.value > 0;
-    })
-    .map(o => o.value)
-    .sort();
+  const getIncidenceQuantile = (allObsTmp, countryObs) => {
 
-    const quartiles = [
-      d3.quantile(allObs, .25),
-      d3.quantile(allObs, .5),
-      d3.quantile(allObs, .75),
+    // 0.2, 0.6, 1.4, and 4.1
+    const quantiles = [
+      .2,
+      .6,
+      1.4,
+      4.1,
     ];
 
-    if (countryObs.value < quartiles[0]) {
-      return 0;
+    for (let i = 0; i < quantiles.length; i++) {
+      if (countryObs.value < quantiles[i]) {
+        return i;
+      } else if (i === quantiles.length - 1 && countryObs.value >= quantiles[i]) {
+        return (i + 1);
+      }
     }
-    else if (countryObs.value < quartiles[1]) {
-      return 1;
-    }
-    else if (countryObs.value < quartiles[2]) {
-      return 2;
-    }
-    else if (countryObs.value >= quartiles[2]) {
-      return 3;
-    } else return null;
+    return null;
+
+    // const allObs = allObsTmp.filter(o => {
+    //   return o.value && o.value !== null && o.value > 0;
+    // })
+    // .map(o => o.value)
+    // .sort();
+    //
+    // const quartiles = [
+    //   d3.quantile(allObs, .25),
+    //   d3.quantile(allObs, .5),
+    //   d3.quantile(allObs, .75),
+    // ];
+    //
+    //
+    // if (countryObs.value < quartiles[0]) {
+    //   return 0;
+    // }
+    // else if (countryObs.value < quartiles[1]) {
+    //   return 1;
+    // }
+    // else if (countryObs.value < quartiles[2]) {
+    //   return 2;
+    // }
+    // else if (countryObs.value >= quartiles[2]) {
+    //   return 3;
+    // } else return null;
   };
 
   const renderDetails = id => {
@@ -231,7 +250,7 @@ const App = () => {
         const countryVaccLatest = results.countryVaccHistory.length > 0 ? results.countryVaccHistory[results.countryVaccHistory.length - 1] : {};
 
         // Get quartile of incidence
-        const countryIncidenceQuartile = getIncidenceQuartile(incidenceObservations, countryIncidenceLatest);
+        const countryIncidenceQuantile = getIncidenceQuantile(incidenceObservations, countryIncidenceLatest);
 
         // Currently unused
         // const caseHistoryQ = await ObservationQuery(6, 'monthly', '2010-01-01', '2018-01-01', country);
@@ -247,7 +266,7 @@ const App = () => {
           countryJeeMcm={countryJeeMcm}
           countryIncidenceHistory={countryIncidenceHistory}
           countryIncidenceLatest={countryIncidenceLatest}
-          countryIncidenceQuartile={countryIncidenceQuartile}
+          countryIncidenceQuantile={countryIncidenceQuantile}
           countryVaccHistory={results.countryVaccHistory}
           countryVaccLatest={countryVaccLatest}
         />);
