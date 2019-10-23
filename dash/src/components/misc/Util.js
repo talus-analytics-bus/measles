@@ -3,6 +3,13 @@ import * as d3 from 'd3/dist/d3.min';
 // Utility functions.
 const Util = {};
 
+Util.getUTCDate = (dt) => {
+  const utcYear = dt.getUTCFullYear();
+  const utcMonth = dt.getUTCMonth();
+  const utcDt = new Date(`${utcYear}/${utcMonth + 1}/1`);
+  return utcDt;
+};
+
 Util.getTooltipItem = (datum) => {
   switch (datum.metric) {
     case 'incidence_monthly': // DEBUG

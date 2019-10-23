@@ -33,8 +33,12 @@ const Global = (props) => {
   const scatterDataY = props.chartParams.Scatter[0].params.data.y;
   const nScatterDataY = scatterDataY.length;
   const latestScatterDatum = scatterDataY[nScatterDataY - 1];
-  const sliderMax = new Date(latestScatterDatum.date_time.replace(/-/g, '/'));
-  const sliderMin = new Date(scatterDataY[0].date_time.replace(/-/g, '/'));
+  const sliderMax = Util.getUTCDate(
+    new Date(latestScatterDatum.date_time.replace(/-/g, '/'))
+  );
+  const sliderMin = Util.getUTCDate(
+    new Date(scatterDataY[0].date_time.replace(/-/g, '/'))
+  );
   const [ curSliderVal, setCurSliderVal ] = React.useState(sliderMax);
 
   // Track whether slider tooltip should be visible
@@ -206,6 +210,11 @@ const Global = (props) => {
       markValue = markValue + 1;
     }
 
+
+    console.log('curSliderVal')
+    console.log(curSliderVal)
+    console.log('sliderMin')
+    console.log(sliderMin)
     const scatterSlider = (
       <div className={styles.sliderWrapper} style={wrapperStyle}>
         <Slider
@@ -223,14 +232,23 @@ const Global = (props) => {
           onAfterChange={handleSliderAfterChange}
         />
         <div className={styles.sliderControls}>
-          <i onClick={() => handleBackForward(-1)} className={classNames('material-icons')}>fast_rewind</i>
+          <i
+            onClick={() => handleBackForward(-1)}
+            className={classNames('material-icons', {
+              [styles.disabled]: curSliderVal <= sliderMin,
+            })}
+          >fast_rewind</i>
           {
             // Show play button if not playing
-            (!playing) ? <i onClick={handlePlay} className={classNames('material-icons')}>play_arrow</i>
+            (!playing) ? <i onClick={handlePlay} className={classNames('material-icons', {
+              [styles.disabled]: curSliderVal >= sliderMax,
+            })}>play_arrow</i>
             : <i onClick={handlePause} className={classNames('material-icons')}>pause</i>
           }
 
-          <i onClick={() => handleBackForward(+1)} className={classNames('material-icons')}>fast_forward</i>
+          <i onClick={() => handleBackForward(+1)} className={classNames('material-icons', {
+            [styles.disabled]: curSliderVal >= sliderMax,
+          })}>fast_forward</i>
         </div>
       </div>
     );

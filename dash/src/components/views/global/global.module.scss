@@ -36,6 +36,10 @@ $scatterSize: 75vh;
     margin-left: 20px;
     i {
       cursor: pointer;
+      &.disabled {
+        color: gray;
+        cursor: default;
+      }
     }
   }
 }
