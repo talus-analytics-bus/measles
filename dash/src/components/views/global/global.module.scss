@@ -16,6 +16,27 @@ $scatterSize: 75vh;
   // width: $scatterSize + 120px;
 }
 
+.sliderWrapper {
+  display: flex;
+  width: 500px;
+  // flex-flow: row;
+  align-items: center;
+  // div {
+  //   display: inline-block;
+  //
+  // }
+
+  .sliderControls {
+    display: flex;
+    // display: flex;
+    // flex-flow: row;
+    margin-left: 20px;
+    i {
+      cursor: pointer;
+    }
+  }
+}
+
 .details {
   display: flex;
   flex-flow: row;

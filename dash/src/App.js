@@ -299,6 +299,12 @@ const App = () => {
             Util.formatDatetimeApi(chartParams.MiniLine[0].params.domain[0]),
             43, // China
           ),
+          caseload: ObservationQuery(
+            6,
+            'monthly',
+            Util.formatDatetimeApi(chartParams.Scatter[0].params.domain[1]),
+            Util.formatDatetimeApi(chartParams.Scatter[0].params.domain[0]),
+          ),
           incidence: ObservationQuery(
             15,
             'monthly',
@@ -352,6 +358,7 @@ const App = () => {
         chartParams.Scatter[0].params.data = {
           x: results.vaccination,
           y: results.incidence,
+          y2: results.caseload,
           size: results.population,
         };
 

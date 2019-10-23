@@ -6,6 +6,22 @@ body,
 #root {
   height: 100%;
 
+  #sliderTooltip {
+    visibility: visible;
+    opacity: 1;
+    background-color: #e6e6e6;
+    color: $dark-grey;
+    padding: 5px;
+
+    &::after {
+      border-top-color: #e6e6e6;
+    }
+
+    // Freeze tooltip on scroll
+    z-index: 2; // beneath header
+    position: absolute; // not fixed
+  }
+
   // Slider
   .rc-slider-mark-text {
     color: #666;

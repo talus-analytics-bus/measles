@@ -73,36 +73,12 @@ const Global = (props) => {
     console.log(chartsToSet)
     setCharts(chartsToSet);
 
-    //
+    // Set init slider tooltip position
+    setTimeout(() => {
+      const tooltipEl = document.getElementsByClassName('rc-slider-handle')[0];
+      ReactTooltip.show(tooltipEl);
+    }, 100);
 
-    // // Setup mini line chart 1 params
-    // const chartParams = {
-    //   // data: props.countryIncidenceHistory,
-    //   // setTooltipData: setTooltipData,
-    //   tooltipClassName: stylesTooltip.slidingLineTooltip,
-    //   // setShowReset: setShowReset,
-    //   margin: {
-    //     top: 20,
-    //     right: 98,
-    //     bottom: 60,
-    //     left: 100,
-    //   },
-    // };
-    //
-    // // Sliding line chart defined in SlidingLine.js
-    // if (!noLineData)
-    //   setSlidingLine(
-    //     new SlidingLine(
-    //
-    //       // Selector of DOM element in Resilience.js component where the chart
-    //       // should be drawn.
-    //       '.' + styles.slidingLine,
-    //
-    //       // Chart parameters consumed by Chart.js and ResilienceRadarChart.js,
-    //       // defined above.
-    //       chartParams,
-    //     )
-    //   );
 
     // Rebuild tooltips after the chart is drawn
     ReactTooltip.rebuild();
@@ -114,6 +90,10 @@ const Global = (props) => {
     const utcYear = Math.floor(valNumeric);
     const utcMonth = Math.round((valNumeric - utcYear) * 12);
     const sliderDt = new Date(`${utcYear}/${utcMonth + 1}/1`);
+
+    // Update tooltip position
+    const tooltipEl = document.getElementsByClassName('rc-slider-handle')[0];
+    ReactTooltip.show(tooltipEl);
 
     // Set label value
     setCurSliderVal(sliderDt);
@@ -128,27 +108,21 @@ const Global = (props) => {
   // Returns slider and chart area for the scatterplot.
   const getScatterJsx = () => {
     const createSliderWithTooltip = Slider.createSliderWithTooltip;
-    const Range = createSliderWithTooltip(Slider.Range);
+    const Range = createSliderWithTooltip(Slider);
     const Handle = Slider.Handle;
 
-    const handle = (props) => {
-      const { value, dragging, index, ...restProps } = props;
+    const handle = (propsHandle) => {
+      const { value, dragging, index, ...restProps } = propsHandle;
+      console.log('propsHandle')
+      console.log(propsHandle)
       return (
-        <Tooltip
-          prefixCls="rc-slider-tooltip"
-          overlay={value}
-          visible={dragging}
-          placement="top"
-          key={index}
-        >
-          <Handle value={value} {...restProps} />
-        </Tooltip>
+        <Handle data-tip={true} data-for={'sliderTooltip'} {...restProps} />
       );
     };
     const wrapperStyle = {
-      width: 400,
+      width: '500px',
       marginLeft: 15,
-      marginTop: 15,
+      marginTop: 35,
     };
     const trackStyle = { backgroundColor: 'transparent', }
     const handleStyle = {
@@ -173,32 +147,37 @@ const Global = (props) => {
     }
 
     const scatterSlider = (
-      <div style={wrapperStyle}>
+      <div className={styles.sliderWrapper} style={wrapperStyle}>
         <Slider
           min={sliderMinValue}
           max={sliderMaxValue}
           defaultValue={sliderMaxValue}
           marks={{ 2016: 2016, 2017: 2017, 2018: 2018, 2019: 2019, }}
           step={1/12}
+          handle={handle}
           trackStyle={trackStyle}
           handleStyle={handleStyle}
           dotStyle={dotStyle}
           onChange={handleSliderChange}
           onAfterChange={handleSliderAfterChange}
         />
+        <div className={styles.sliderControls}>
+          <i className={classNames('material-icons')}>fast_rewind</i>
+          <i className={classNames('material-icons')}>play_arrow</i>
+          <i className={classNames('material-icons')}>fast_forward</i>
+        </div>
       </div>
     );
     const curSliderValStr = curSliderVal.toLocaleString('en-us', {
       month: 'short',
       year: 'numeric',
       timeZone: 'utc',
-    })
+    });
     const scatterSliderValue = <div className={styles.scatterSliderValue}>{curSliderValStr}</div>;
     const scatterArea = <div className={classNames(styles.Scatter, 'Scatter-0')} />;
     const scatterJsx = scatterArea;
     return (
       <div>
-        {scatterSliderValue}
         {scatterSlider}
         {scatterArea}
       </div>
@@ -252,6 +231,12 @@ const Global = (props) => {
   // If loading do not show JSX content.
   console.log('props')
   console.log(props)
+
+  const curSliderValStr = curSliderVal.toLocaleString('en-us', {
+    month: 'short',
+    year: 'numeric',
+    timeZone: 'utc',
+  });
 
   return (<div className={styles.details}>
             <div className={styles.sidebar}>
@@ -443,6 +428,21 @@ const Global = (props) => {
                     }
                     </div>
                   </div>
+              }
+              />
+            <ReactTooltip
+              id={'sliderTooltip'}
+              type='dark'
+              className={styles.sliderTooltip}
+              place="top"
+              effect="solid"
+              offset={{top: -8,}}
+              getContent={ () =>
+                <div>
+                {
+                  curSliderValStr
+                }
+                </div>
               }
               />
           </div>
