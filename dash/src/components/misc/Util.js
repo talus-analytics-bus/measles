@@ -14,19 +14,27 @@ Util.getTooltipItem = (datum) => {
   switch (datum.metric) {
     case 'incidence_monthly': // DEBUG
       return {
-        name: 'Global yearly incidence',
+        name: 'Monthly incidence',
         datum: datum,
-        period: 'year',
+        period: 'month',
         value: Util.formatIncidence(datum.value),
         label: 'cases per 1M population',
       };
     case 'coverage_mcv1_infant': // DEBUG
       return {
-        name: 'Global vaccination coverage',
+        name: 'Vaccination coverage',
         datum: datum,
         period: 'year',
         value: Util.percentize(datum.value),
         label: 'of infants',
+      };
+    case 'total_population':
+      return {
+        name: 'Total population',
+        datum: datum,
+        period: 'year',
+        value: Util.comma(datum.value),
+        label: 'people',
       };
   }
 };

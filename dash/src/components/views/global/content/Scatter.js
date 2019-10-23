@@ -107,7 +107,6 @@ class Scatter extends Chart {
       .call(yAxis);
 
       // Update xaxis tick labels
-      console.log(chart[styles['x-axis']])
       chart[styles['x-axis']]
         .selectAll('g.tick')
         .each(function addXTickText (d, i) {
@@ -359,9 +358,31 @@ class Scatter extends Chart {
               .attr('class', styles.scatterCircle)
               .attr('cx', d => getCircleXPos(d))
               .attr('cy', d => chart.height - r(d.value_normalized.size))
+              .attr('data-tip', true)
+              .attr('data-for', chart.params.tooltipClassName)
               .style('opacity', 0)
               .attr('fill', yColor(0))
-              .attr('r', d => r(0));
+              .attr('r', d => r(0))
+              .on('mouseenter', function showBubbleTooltip (d) {
+                const items = [];
+                [
+                  'yDatum',
+                  'xDatum',
+                  'sizeDatum',
+                ].forEach(itemName => {
+                  items.push(
+                    Util.getTooltipItem(d[itemName])
+                  );
+                });
+                console.log('items')
+                console.log(items)
+                chart.params.setTooltipData(
+                  {
+                    name: d.place_name,
+                    items: items,
+                  }
+                );
+              });
 
             newCircles
               .transition()

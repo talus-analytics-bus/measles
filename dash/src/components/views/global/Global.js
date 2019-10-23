@@ -499,6 +499,13 @@ const Global = (props) => {
                   <div className={stylesTooltip.tooltipContainer}>
                     <div className={stylesTooltip.tooltipContent}>
                     {
+                      // If name, show
+                      (tooltipData.name !== undefined) &&
+                      <div className={stylesTooltip.name}>
+                        {tooltipData.name}
+                      </div>
+                    }
+                    {
                       tooltipData.items.map(item =>
                         <div className={stylesTooltip.item}>
                           <div className={stylesTooltip.name}>{item.name} {Util.getDatetimeStamp(item.datum, item.period)}</div>
