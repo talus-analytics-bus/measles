@@ -159,12 +159,21 @@ class MiniLine extends Chart {
       .range([0, chart.height])
 
     // y axis - main chart - left
+    const getTickFormatFunction = (chart) => {
+      switch (chart.data.vals[0].metric) {
+        case 'incidence_monthly':
+          return (v) => v;
+        default:
+          return Util.percentize;
+      }
+    };
+    const yTickFormatFunc = getTickFormatFunction(chart);
     const yAxis = d3.axisLeft()
       .scale(y)
       .tickFormat((val) => {
         if (val === 0) {
           return 0;
-        } else return y.tickFormat()(val);
+        } else return yTickFormatFunc(val);
       })
       .ticks(2)
       .tickSizeOuter(0)

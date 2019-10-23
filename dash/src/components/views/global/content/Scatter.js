@@ -209,8 +209,6 @@ class Scatter extends Chart {
       // Get month and year of data to show in scatter plot
       console.log('dt')
       console.log(dt)
-      // const month = dt.getUTCMonth() + 1;
-      // const year = dt.getUTCFullYear();
       const yyyymmdd = Util.formatDatetimeApi(dt);
       const yyyymmddArr = yyyymmdd.split('-');
       const monthlyStr = `${yyyymmddArr[0]}-${yyyymmddArr[1]}`;
@@ -237,9 +235,8 @@ class Scatter extends Chart {
       });
       const sizeDataMax = d3.max(sizeData, d => d.value);
       sizeData.forEach(d => d.value_normalized = d.value / sizeDataMax );
-      // const sizeDataMax = Math.log10(d3.max(sizeData, d => d.value));
-      // sizeData.forEach(d => d.value_normalized = Math.log10(d.value) / sizeDataMax );
 
+      // Collate data points
       const data = [];
       sizeData.forEach(sizeDatum => {
         const placeId = sizeDatum.place_id;
@@ -263,16 +260,28 @@ class Scatter extends Chart {
           );
         }
       });
+
+      // Sort data by size so that largest circles are in the back.
       data.sort(sortBySize);
       console.log('data')
       console.log(data)
+
+      // Update x-scale domain so that far left side corresponds to the
+      // lowest normalized x value.
+      const xMin = d3.min(data, d => d.value_normalized.x);
+      x.domain([xMin, 1]);
+
+      // Ditto for the lower limit of the y-scale
+      const yMin = d3.min(data, d => d.value_normalized.y);
+      y.domain([yMin, 1]);
 
       // Enter new bubbles based on place_id if needed (pos and color)
       // Update existing bubbles by moving to new position and colors
       // Move average vaccination level line to new position
       const avgXLineVal = d3.mean(xData, d => d.value_normalized);
       avgXLine
-        .transition(500)
+        .transition()
+        .duration(500)
           .attr('x1', x(avgXLineVal))
           .attr('x2', x(avgXLineVal));
 
@@ -314,18 +323,41 @@ class Scatter extends Chart {
         .data(data, d => d.place_id)
         .join(
           enter => {
-            enter.append('circle')
+            const newCircles = enter.append('circle')
               .attr('class', styles.scatterCircle)
               .attr('cx', d => getCircleXPos(d))
-              .attr('cy', d => getCircleYPos(d))
-              .attr('fill', d => yColor(d.value_normalized.y))
-              .attr('r', d => r(d.value_normalized.size));
+              .attr('cy', d => chart.height - r(d.value_normalized.size))
+              .style('opacity', 0)
+              .attr('fill', yColor(0))
+              .attr('r', d => r(0));
+
+            newCircles
+              .transition()
+              .duration(2000)
+                .attr('cx', d => getCircleXPos(d))
+                .attr('cy', d => getCircleYPos(d))
+                .style('opacity', 1)
+                .attr('fill', d => yColor(d.value_normalized.y))
+                .attr('r', d => r(d.value_normalized.size));
+
+
           },
-          update => {},
-          exit => {},
+          update => {
+            update
+              .transition()
+              .duration(2000)
+                .attr('cx', d => getCircleXPos(d))
+                .attr('cy', d => getCircleYPos(d))
+                .attr('fill', d => yColor(d.value_normalized.y))
+                .attr('r', d => r(d.value_normalized.size));
+          },
+          exit => {
+            exit.remove();
+          },
         );
 
-
+      // Keep bubbles below other chart elements.
+      bubblesG.lower();
     };
 
     // Call update function, using most recent dt of data as the initial
@@ -335,6 +367,22 @@ class Scatter extends Chart {
       chart.data.vals.x[nData - 1].date_time.replace(/-/g, '/')
     );
     chart.update(initDt);
+
+    // TEST: Every second, go back in time by one month
+    const chartDebugTest = () => {
+      let prevDt = initDt;
+      for (let i = 0; i < 36; i++) {
+        const curDt = new Date(
+          prevDt
+        );
+        curDt.setUTCMonth(curDt.getUTCMonth() - 1);
+        setTimeout(() => {
+          chart.update(curDt);
+        }, 3000*i);
+        prevDt = curDt;
+      }
+    };
+    // setTimeout(chartDebugTest, 3000);
   }
 }
 
