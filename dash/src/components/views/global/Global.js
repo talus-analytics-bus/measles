@@ -37,6 +37,9 @@ const Global = (props) => {
   const sliderMin = new Date(scatterDataY[0].date_time.replace(/-/g, '/'));
   const [ curSliderVal, setCurSliderVal ] = React.useState(sliderMax);
 
+  // Track whether slider tooltip should be visible
+  const [ showSliderTooltip, setShowSliderTooltip ] = React.useState(false);
+
   // // Track whether to show reset view button on sliding line chart
   // const [ showReset, setShowReset ]  = React.useState(false);
 
@@ -69,24 +72,29 @@ const Global = (props) => {
         chartsToSet.push(chartInstance);
       });
     }
-    console.log('chartsToSet')
-    console.log(chartsToSet)
     setCharts(chartsToSet);
 
-    // Set init slider tooltip position
+    // Set init slider tooltip position and reveal tooltip
     setTimeout(() => {
       const tooltipEl = document.getElementsByClassName('rc-slider-handle')[0];
+      setShowSliderTooltip(true);
       ReactTooltip.show(tooltipEl);
-    }, 100);
-
+    }, 500);
 
     // Rebuild tooltips after the chart is drawn
     ReactTooltip.rebuild();
   }, [])
 
+  // Effect hook to update tooltip on slider
+  React.useEffect(() => {
+    // Set slider tooltip position
+    const tooltipEl = document.getElementsByClassName('rc-slider-handle')[0];
+    ReactTooltip.show(tooltipEl);
+
+  }, [curSliderVal])
 
   // Updates scatterplot and slider label when slider is changed.
-  const handleSliderChange = (valNumeric) => {
+  const handleSliderChange = (valNumeric, a, b) => {
     const utcYear = Math.floor(valNumeric);
     const utcMonth = Math.round((valNumeric - utcYear) * 12);
     const sliderDt = new Date(`${utcYear}/${utcMonth + 1}/1`);
@@ -105,6 +113,36 @@ const Global = (props) => {
     scatterChart.update(curSliderVal);
   };
 
+  const handlePlay = () => {
+    const scatterChart = charts.find(c => c.params.className === 'Scatter');
+
+    let prevDt = curSliderVal;
+    let i = 0;
+    while (prevDt < sliderMax) {
+      const curDt = new Date(
+        prevDt
+      );
+      curDt.setUTCMonth(curDt.getUTCMonth() + 1);
+      setTimeout(() => {
+        scatterChart.update(curDt);
+        setCurSliderVal(curDt);
+      }, 3000*i);
+      prevDt = curDt;
+      i = i + 1;
+    }
+  };
+  const handleBackForward = (change) => {
+    // Update slider
+    const newSliderVal = new Date(curSliderVal);
+    newSliderVal.setUTCMonth(
+      newSliderVal.getUTCMonth() + change
+    );
+    if (newSliderVal < sliderMin || newSliderVal > sliderMax) return;
+    setCurSliderVal(newSliderVal);
+    const scatterChart = charts.find(c => c.params.className === 'Scatter');
+    scatterChart.update(newSliderVal);
+  };
+
   // Returns slider and chart area for the scatterplot.
   const getScatterJsx = () => {
     const createSliderWithTooltip = Slider.createSliderWithTooltip;
@@ -113,8 +151,6 @@ const Global = (props) => {
 
     const handle = (propsHandle) => {
       const { value, dragging, index, ...restProps } = propsHandle;
-      console.log('propsHandle')
-      console.log(propsHandle)
       return (
         <Handle data-tip={true} data-for={'sliderTooltip'} {...restProps} />
       );
@@ -145,6 +181,7 @@ const Global = (props) => {
       marks[markValue] = markValue;
       markValue = markValue + 1;
     }
+    console.log('Actual slider updated')
 
     const scatterSlider = (
       <div className={styles.sliderWrapper} style={wrapperStyle}>
@@ -152,6 +189,7 @@ const Global = (props) => {
           min={sliderMinValue}
           max={sliderMaxValue}
           defaultValue={sliderMaxValue}
+          value={curSliderVal.getUTCFullYear() + (curSliderVal.getUTCMonth()/12)}
           marks={{ 2016: 2016, 2017: 2017, 2018: 2018, 2019: 2019, }}
           step={1/12}
           handle={handle}
@@ -162,9 +200,9 @@ const Global = (props) => {
           onAfterChange={handleSliderAfterChange}
         />
         <div className={styles.sliderControls}>
-          <i className={classNames('material-icons')}>fast_rewind</i>
-          <i className={classNames('material-icons')}>play_arrow</i>
-          <i className={classNames('material-icons')}>fast_forward</i>
+          <i onClick={() => handleBackForward(-1)} className={classNames('material-icons')}>fast_rewind</i>
+          <i onClick={handlePlay} className={classNames('material-icons')}>play_arrow</i>
+          <i onClick={() => handleBackForward(+1)} className={classNames('material-icons')}>fast_forward</i>
         </div>
       </div>
     );
@@ -433,9 +471,10 @@ const Global = (props) => {
             <ReactTooltip
               id={'sliderTooltip'}
               type='dark'
-              className={styles.sliderTooltip}
+              className={classNames(styles.sliderTooltip, {visible: showSliderTooltip})}
               place="top"
               effect="solid"
+              event="mousemove"
               offset={{top: -8,}}
               getContent={ () =>
                 <div>

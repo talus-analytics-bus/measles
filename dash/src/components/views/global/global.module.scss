@@ -15,6 +15,9 @@ $scatterSize: 75vh;
   width: 100%;
   // width: $scatterSize + 120px;
 }
+.visible {
+  opacity: 1;
+}
 
 .sliderWrapper {
   display: flex;

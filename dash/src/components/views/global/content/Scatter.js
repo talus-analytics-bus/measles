@@ -431,6 +431,20 @@ class Scatter extends Chart {
       }
     };
     // setTimeout(chartDebugTest, 3000);
+    //
+    // chart.play = (nSteps) => {
+    //   let prevDt = initDt;
+    //   for (let i = 0; i < nSteps; i++) {
+    //     const curDt = new Date(
+    //       prevDt
+    //     );
+    //     curDt.setUTCMonth(curDt.getUTCMonth() + 1);
+    //     setTimeout(() => {
+    //       chart.update(curDt);
+    //     }, 3000*i);
+    //     prevDt = curDt;
+    //   }
+    // };
   }
 }
 
