@@ -6,6 +6,11 @@ body,
 #root {
   height: 100%;
 
+  // Slider
+  .rc-slider-mark-text {
+    color: #666;
+  }
+
   .global.dev {
     margin-top: 60px;
     padding: 0;

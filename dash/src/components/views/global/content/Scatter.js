@@ -207,8 +207,6 @@ class Scatter extends Chart {
         else return 0;
       };
       // Get month and year of data to show in scatter plot
-      console.log('dt')
-      console.log(dt)
       const yyyymmdd = Util.formatDatetimeApi(dt);
       const yyyymmddArr = yyyymmdd.split('-');
       const monthlyStr = `${yyyymmddArr[0]}-${yyyymmddArr[1]}`;
@@ -222,10 +220,18 @@ class Scatter extends Chart {
       const yDataMax = d3.max(yData, d => d.value);
       yData.forEach(d => d.value_normalized = d.value / yDataMax );
 
-      // x data
-      const xData = chart.data.vals.x.filter(d => {
-        return d.date_time.startsWith(yearlyStr);
-      });
+      // x data - use most recent available
+      let xDataYearlyStr = yearlyStr;
+      let foundXData = false;
+      let xData;
+      while (!foundXData) {
+        xData = chart.data.vals.x.filter(d => {
+          return d.date_time.startsWith(xDataYearlyStr);
+        });
+        if (xData.length > 0) foundXData = true;
+        else xDataYearlyStr = ((+xDataYearlyStr)-1).toString();
+      }
+
       const xDataMax = d3.max(xData, d => d.value);
       xData.forEach(d => d.value_normalized = d.value / xDataMax );
 
@@ -263,8 +269,6 @@ class Scatter extends Chart {
 
       // Sort data by size so that largest circles are in the back.
       data.sort(sortBySize);
-      console.log('data')
-      console.log(data)
 
       // Update x-scale domain so that far left side corresponds to the
       // lowest normalized x value.
@@ -362,9 +366,9 @@ class Scatter extends Chart {
 
     // Call update function, using most recent dt of data as the initial
     // selection.
-    const nData = chart.data.vals.x.length;
+    const nData = chart.data.vals.y.length;
     const initDt = new Date(
-      chart.data.vals.x[nData - 1].date_time.replace(/-/g, '/')
+      chart.data.vals.y[nData - 1].date_time.replace(/-/g, '/')
     );
     chart.update(initDt);
 

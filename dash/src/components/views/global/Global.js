@@ -1,7 +1,10 @@
 import React from 'react'
 import Popup from 'reactjs-popup'
-import ReactTooltip from 'react-tooltip'; // for sliding line
-// import SlidingLine from './content/SlidingLine.js'
+import ReactTooltip from 'react-tooltip';
+import Tooltip from 'rc-tooltip';
+import Slider from 'rc-slider';
+import 'rc-slider/assets/index.css';
+import 'rc-tooltip/assets/bootstrap.css';
 
 import MiniMap from '../../../components/map/MiniMap.js'
 
@@ -23,8 +26,17 @@ const Global = (props) => {
   const [ charts, setCharts ]  = React.useState([]);
 
   // Track chart tooltip data
-  const [ tooltipData, setTooltipData ]  = React.useState(null);
-  //
+  const [ tooltipData, setTooltipData ] = React.useState(null);
+
+  // Track slider label value
+  // TODO initialize as first scatter datum
+  const scatterDataY = props.chartParams.Scatter[0].params.data.y;
+  const nScatterDataY = scatterDataY.length;
+  const latestScatterDatum = scatterDataY[nScatterDataY - 1];
+  const sliderMax = new Date(latestScatterDatum.date_time.replace(/-/g, '/'));
+  const sliderMin = new Date(scatterDataY[0].date_time.replace(/-/g, '/'));
+  const [ curSliderVal, setCurSliderVal ] = React.useState(sliderMax);
+
   // // Track whether to show reset view button on sliding line chart
   // const [ showReset, setShowReset ]  = React.useState(false);
 
@@ -45,6 +57,9 @@ const Global = (props) => {
         chart.params.setTooltipData = setTooltipData;
         chart.params.noResizeEvent = true;
         chart.params.tooltipClassName = stylesTooltip.globalTooltip;
+        if (chart.class.name === 'Scatter') {
+          chart.params.curSliderVal = curSliderVal;
+        }
 
         // Create chart instance
         console.log("'.' + chart.class.name + '-' + i")
@@ -56,7 +71,6 @@ const Global = (props) => {
         chartsToSet.push(chartInstance);
       });
     }
-
     console.log('chartsToSet')
     console.log(chartsToSet)
     setCharts(chartsToSet);
@@ -97,11 +111,107 @@ const Global = (props) => {
   }, [])
 
 
+  // Updates scatterplot and slider label when slider is changed.
+  const handleSliderChange = (valNumeric) => {
+    const utcYear = Math.floor(valNumeric);
+    const utcMonth = Math.round((valNumeric - utcYear) * 12);
+    const sliderDt = new Date(`${utcYear}/${utcMonth + 1}/1`);
+
+    // Set label value
+    setCurSliderVal(sliderDt);
+  };
+
+  const handleSliderAfterChange = () => {
+    // Set scatterplot update
+    const scatterChart = charts.find(c => c.constructor.name === 'Scatter');
+    scatterChart.update(curSliderVal);
+  };
+
+  // Returns slider and chart area for the scatterplot.
   const getScatterJsx = () => {
+    const createSliderWithTooltip = Slider.createSliderWithTooltip;
+    const Range = createSliderWithTooltip(Slider.Range);
+    const Handle = Slider.Handle;
+
+    const handle = (props) => {
+      const { value, dragging, index, ...restProps } = props;
+      return (
+        <Tooltip
+          prefixCls="rc-slider-tooltip"
+          overlay={value}
+          visible={dragging}
+          placement="top"
+          key={index}
+        >
+          <Handle value={value} {...restProps} />
+        </Tooltip>
+      );
+    };
+    const wrapperStyle = {
+      width: 400,
+      marginLeft: 15,
+      marginTop: 15,
+    };
+    const trackStyle = { backgroundColor: 'transparent', }
+    const handleStyle = {
+      backgroundColor: 'rgb(61, 91, 121)',
+      borderColor: 'white',
+      width: '20px',
+      height: '20px',
+      marginTop: '-8px',
+    }
+    const dotStyle = {
+      borderColor: '#96dbfa',
+    }
+
+    // TODO calculate min and max based on number of months, same with marks.
+    const sliderMinValue = sliderMin.getUTCFullYear();
+    const sliderMaxValue = sliderMax.getUTCFullYear() + (sliderMax.getUTCMonth() / 12);
+    const marks = {};
+    let markValue = sliderMinValue;
+    while (markValue <= sliderMaxValue + 1) {
+      marks[markValue] = markValue;
+      markValue = markValue + 1;
+    }
+
+    const scatterSlider = (
+      <div style={wrapperStyle}>
+        <Slider
+          min={sliderMinValue}
+          max={sliderMaxValue}
+          defaultValue={sliderMaxValue}
+          marks={{ 2016: 2016, 2017: 2017, 2018: 2018, 2019: 2019, }}
+          step={1/12}
+          trackStyle={trackStyle}
+          handleStyle={handleStyle}
+          dotStyle={dotStyle}
+          onChange={handleSliderChange}
+          onAfterChange={handleSliderAfterChange}
+        />
+      </div>
+    );
+    const curSliderValStr = curSliderVal.toLocaleString('en-us', {
+      month: 'short',
+      year: 'numeric',
+      timeZone: 'utc',
+    })
+    const scatterSliderValue = <div className={styles.scatterSliderValue}>{curSliderValStr}</div>;
+    const scatterArea = <div className={classNames(styles.Scatter, 'Scatter-0')} />;
+    const scatterJsx = scatterArea;
+    return (
+      <div>
+        {scatterSliderValue}
+        {scatterSlider}
+        {scatterArea}
+      </div>
+    );
+  };
+
+  const getScatterData = () => {
     return [
       {
         'title': 'Vaccination coverage and incidence by country',
-        'chart_jsx': () => <div className={classNames(styles.Scatter, 'Scatter-0')} />,
+        'chart_jsx': getScatterJsx,
         'date_time_fmt': () => '',
       },
     ]
@@ -248,7 +358,7 @@ const Global = (props) => {
             <div className={styles.main}>
             {
               [
-                ...getScatterJsx()
+                ...getScatterData()
                 // {
                 //   'title': 'Vaccination coverage',
                 //   'chart_jsx': getVaccChart,
