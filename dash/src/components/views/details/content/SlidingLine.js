@@ -484,7 +484,6 @@ class SlidingLine extends Chart {
     .attr('x', -chart.height / 2)
       .attr('dy', '1.2em')
       .text('(cases per 1M population)');
-      // .text('Monthly incidence of measles');
 
     const yAxisRightLabel = chart[styles['y-axis-right']].append('text')
       .attr('class', styles.label)

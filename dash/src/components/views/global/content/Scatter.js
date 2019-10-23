@@ -25,7 +25,7 @@ class Scatter extends Chart {
         top: 40,
         right: 0,
         bottom: 80,
-        left: 80,
+        left: 120, // +40
       };
     }
 
@@ -192,6 +192,32 @@ class Scatter extends Chart {
         .attr('x2', x(.5))
         .attr('y1', y(0))
         .attr('y2', y(1));
+
+    // Add y-axis label
+    const yAxisLabel = chart[styles['y-axis']].append('text')
+      .attr('y', -100)
+      .attr('class', styles.label);
+
+    yAxisLabel.append('tspan')
+    .attr('x', -chart.height / 2)
+      .text('Monthly incidence of measles');
+    yAxisLabel.append('tspan')
+    .attr('x', -chart.height / 2)
+      .attr('dy', '1.2em')
+      .text('(cases per 1M population)');
+
+    // // Add x-axis label
+    // const xAxisLabel = chart[styles['y-axis']].append('text')
+    //   .attr('y', -100)
+    //   .attr('class', styles.label);
+    //
+    // yAxisLabel.append('tspan')
+    // .attr('x', -chart.height / 2)
+    //   .text('Monthly incidence of measles');
+    // yAxisLabel.append('tspan')
+    // .attr('x', -chart.height / 2)
+    //   .attr('dy', '1.2em')
+    //   .text('(cases per 1M population)');
 
     // TODO - Exclude "global" bubble.
     //
@@ -362,6 +388,16 @@ class Scatter extends Chart {
 
       // Keep bubbles below other chart elements.
       bubblesG.lower();
+
+      // Update axis labels
+      const monthYearLabelString = dt.toLocaleString('en-us', {
+        month: 'short',
+        year: 'numeric',
+        timeZone: 'utc',
+      });
+
+      yAxisLabel.select('tspan')
+        .text(`Monthly incidence of measles in ${monthYearLabelString}`)
     };
 
     // Call update function, using most recent dt of data as the initial

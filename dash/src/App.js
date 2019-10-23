@@ -255,12 +255,14 @@ const App = () => {
           MiniLine: [
             {
               class: MiniLine,
+              className: 'MiniLine',
               params: {
                 domain: [new Date('2016/01/01'), Util.today()],
               }
             },
             {
               class: MiniLine,
+              className: 'MiniLine',
               params: {
                 domain: [new Date('2016/01/01'), Util.today()],
               }
@@ -269,6 +271,7 @@ const App = () => {
           Scatter: [
             {
               class: Scatter,
+              className: 'Scatter',
               params: {
                 domain: [new Date('2016/01/01'), Util.today()],
               }

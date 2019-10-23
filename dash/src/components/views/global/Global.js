@@ -57,15 +57,13 @@ const Global = (props) => {
         chart.params.setTooltipData = setTooltipData;
         chart.params.noResizeEvent = true;
         chart.params.tooltipClassName = stylesTooltip.globalTooltip;
-        if (chart.class.name === 'Scatter') {
+        if (chart.className === 'Scatter') {
           chart.params.curSliderVal = curSliderVal;
         }
 
         // Create chart instance
-        console.log("'.' + chart.class.name + '-' + i")
-        console.log('.' + chart.class.name + '-' + i)
         const chartInstance = new chart.class(
-          '.' + chart.class.name + '-' + i,
+          '.' + chart.className + '-' + i,
           chart.params,
         );
         chartsToSet.push(chartInstance);
