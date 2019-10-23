@@ -9,10 +9,11 @@ $spacing: 20px;
   width: auto;
 }
 
-$scatterSize: 500px;
+$scatterSize: 75vh;
 .Scatter {
   height: $scatterSize;
-  width: $scatterSize + 120px;
+  width: 100%;
+  // width: $scatterSize + 120px;
 }
 
 .details {
