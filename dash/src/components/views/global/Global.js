@@ -47,6 +47,8 @@ const Global = (props) => {
         chart.params.tooltipClassName = stylesTooltip.globalTooltip;
 
         // Create chart instance
+        console.log("'.' + chart.class.name + '-' + i")
+        console.log('.' + chart.class.name + '-' + i)
         const chartInstance = new chart.class(
           '.' + chart.class.name + '-' + i,
           chart.params,
