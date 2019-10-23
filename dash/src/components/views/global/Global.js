@@ -57,13 +57,13 @@ const Global = (props) => {
         chart.params.setTooltipData = setTooltipData;
         chart.params.noResizeEvent = true;
         chart.params.tooltipClassName = stylesTooltip.globalTooltip;
-        if (chart.className === 'Scatter') {
+        if (chart.params.className === 'Scatter') {
           chart.params.curSliderVal = curSliderVal;
         }
 
         // Create chart instance
         const chartInstance = new chart.class(
-          '.' + chart.className + '-' + i,
+          '.' + chart.params.className + '-' + i,
           chart.params,
         );
         chartsToSet.push(chartInstance);
@@ -121,7 +121,7 @@ const Global = (props) => {
 
   const handleSliderAfterChange = () => {
     // Set scatterplot update
-    const scatterChart = charts.find(c => c.constructor.name === 'Scatter');
+    const scatterChart = charts.find(c => c.params.className === 'Scatter');
     scatterChart.update(curSliderVal);
   };
 

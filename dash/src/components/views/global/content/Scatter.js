@@ -204,20 +204,22 @@ class Scatter extends Chart {
     yAxisLabel.append('tspan')
     .attr('x', -chart.height / 2)
       .attr('dy', '1.2em')
-      .text('(cases per 1M population)');
+      .text('(relative)');
 
-    // // Add x-axis label
-    // const xAxisLabel = chart[styles['y-axis']].append('text')
-    //   .attr('y', -100)
-    //   .attr('class', styles.label);
-    //
-    // yAxisLabel.append('tspan')
-    // .attr('x', -chart.height / 2)
-    //   .text('Monthly incidence of measles');
-    // yAxisLabel.append('tspan')
-    // .attr('x', -chart.height / 2)
-    //   .attr('dy', '1.2em')
-    //   .text('(cases per 1M population)');
+    // Add x-axis label
+    const xAxisLabel = chart[styles['x-axis']].append('text')
+      .attr('x', chart.width / 2)
+      .attr('y', chart.margin.bottom - 20)
+      .attr('class', styles.label);
+
+    xAxisLabel.append('tspan')
+      .attr('x', chart.width / 2)
+      .text('Vaccination coverage');
+
+    xAxisLabel.append('tspan')
+      .attr('x', chart.width / 2)
+      .attr('dy', '1.2em')
+      .text('(relative)');
 
     // TODO - Exclude "global" bubble.
     //
@@ -395,9 +397,15 @@ class Scatter extends Chart {
         year: 'numeric',
         timeZone: 'utc',
       });
+      // const yearLabelString = dt.toLocaleString('en-us', {
+      //   year: 'numeric',
+      //   timeZone: 'utc',
+      // });
 
-      yAxisLabel.select('tspan')
-        .text(`Monthly incidence of measles in ${monthYearLabelString}`)
+      yAxisLabel.select('tspan:nth-child(2)')
+        .text(`in ${monthYearLabelString} (relative)`);
+      xAxisLabel.select('tspan:nth-child(2)')
+        .text(`in ${xDataYearlyStr} (relative)`);
     };
 
     // Call update function, using most recent dt of data as the initial
