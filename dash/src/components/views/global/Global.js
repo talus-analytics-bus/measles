@@ -126,7 +126,7 @@ const Global = (props) => {
       setTimeout(() => {
         scatterChart.update(curDt);
         setCurSliderVal(curDt);
-      }, 3000*i);
+      }, 2000*i);
       prevDt = curDt;
       i = i + 1;
     }
