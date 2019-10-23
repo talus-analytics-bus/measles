@@ -40,6 +40,12 @@ const Global = (props) => {
   // Track whether slider tooltip should be visible
   const [ showSliderTooltip, setShowSliderTooltip ] = React.useState(false);
 
+  // Track whether slider is playing
+  const [ playing, setPlaying ] = React.useState(false);
+
+  // Track slider play timeouts
+  const [ playTimeouts, setPlayTimeouts ] = React.useState([]);
+
   // // Track whether to show reset view button on sliding line chart
   // const [ showReset, setShowReset ]  = React.useState(false);
 
@@ -113,23 +119,41 @@ const Global = (props) => {
     scatterChart.update(curSliderVal);
   };
 
+  const handlePause = () => {
+    setPlaying(false);
+    while (playTimeouts.length > 0) {
+      clearTimeout(playTimeouts.pop());
+    }
+    setPlayTimeouts([]);
+    // playTimeouts.forEach(playTimeout => clearTimeout(playTimeout));
+  };
   const handlePlay = () => {
     const scatterChart = charts.find(c => c.params.className === 'Scatter');
+    setPlaying(true);
+
 
     let prevDt = curSliderVal;
     let i = 0;
+    const newPlayTimeouts = [];
     while (prevDt < sliderMax) {
       const curDt = new Date(
         prevDt
       );
       curDt.setUTCMonth(curDt.getUTCMonth() + 1);
-      setTimeout(() => {
-        scatterChart.update(curDt);
-        setCurSliderVal(curDt);
-      }, 2000*i);
       prevDt = curDt;
+      const timeoutPrevDt = prevDt;
+      newPlayTimeouts.push(
+        setTimeout(() => {
+          if (timeoutPrevDt >= sliderMax) {
+            setPlaying(false);
+          }
+          scatterChart.update(curDt);
+          setCurSliderVal(curDt);
+        }, 2000*i)
+      );
       i = i + 1;
     }
+    setPlayTimeouts(newPlayTimeouts);
   };
   const handleBackForward = (change) => {
     // Update slider
@@ -181,7 +205,6 @@ const Global = (props) => {
       marks[markValue] = markValue;
       markValue = markValue + 1;
     }
-    console.log('Actual slider updated')
 
     const scatterSlider = (
       <div className={styles.sliderWrapper} style={wrapperStyle}>
@@ -201,7 +224,12 @@ const Global = (props) => {
         />
         <div className={styles.sliderControls}>
           <i onClick={() => handleBackForward(-1)} className={classNames('material-icons')}>fast_rewind</i>
-          <i onClick={handlePlay} className={classNames('material-icons')}>play_arrow</i>
+          {
+            // Show play button if not playing
+            (!playing) ? <i onClick={handlePlay} className={classNames('material-icons')}>play_arrow</i>
+            : <i onClick={handlePause} className={classNames('material-icons')}>pause</i>
+          }
+
           <i onClick={() => handleBackForward(+1)} className={classNames('material-icons')}>fast_forward</i>
         </div>
       </div>
