@@ -66,6 +66,9 @@
 circle.scatterCircle {
   stroke: white;
   stroke-width: .5px;
+  &.active {
+    fill: $data-blue;
+  }
 }
 
 .y-axis-right .label {

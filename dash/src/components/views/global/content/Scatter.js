@@ -363,6 +363,17 @@ class Scatter extends Chart {
               .style('opacity', 0)
               .attr('fill', yColor(0))
               .attr('r', d => r(0))
+              .on('click', function toggleSelectBubble (d) {
+                const thisBubble = d3.select(this);
+                const activateBubble = !thisBubble.classed(styles.active);
+                bubblesG.selectAll('circle')
+                  .classed(styles.active, false);
+                if (activateBubble) {
+                  thisBubble.classed(styles.active, true);
+                }
+
+                // Make name label visible
+              })
               .on('mouseenter', function showBubbleTooltip (d) {
                 const items = [];
                 [
@@ -382,7 +393,9 @@ class Scatter extends Chart {
                     items: items,
                   }
                 );
-              });
+              })
+              // .append('text')
+              //   .text(d => d.place_name);
 
             newCircles
               .transition()
