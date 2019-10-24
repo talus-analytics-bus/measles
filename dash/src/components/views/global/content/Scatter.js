@@ -88,20 +88,23 @@ class Scatter extends Chart {
       .attr('transform', `translate(0, ${chart.height})`);
 
     // Define y scale - incidence
-    const y = d3.scaleLinear()
-      .domain([0, 1])
+    const y = d3.scaleLog()
+      .domain([1, 1000])
       .range([chart.height, 0]); // TODO check
+
+      console.log('y')
+      console.log(y)
 
     // Define y axis - incidence
     const yAxis = d3.axisLeft()
       .tickSize(0)
       .tickPadding(10)
-      .tickValues([0, 1])
-      .tickFormat(function (val) {
-        if (val === 0) return '';
-        if (val === 1) return '';
-        else this.remove();
-      })
+      // .tickValues([0, 1])
+      // .tickFormat(function (val) {
+      //   if (val === 0) return '';
+      //   if (val === 1) return '';
+      //   else this.remove();
+      // })
       .scale(y);
     const yAxisG = chart.newGroup(styles['y-axis'])
       .call(yAxis);
@@ -280,7 +283,8 @@ class Scatter extends Chart {
             {
               value_normalized: {
                 x: xDatum.value_normalized,
-                y: yDatum.value_normalized,
+                y: yDatum.value,
+                // y: yDatum.value_normalized,
                 size: sizeDatum.value_normalized,
               },
               place_id: placeId,
@@ -304,7 +308,7 @@ class Scatter extends Chart {
 
       // Ditto for the lower limit of the y-scale
       const yMin = d3.min(data, d => d.value_normalized.y);
-      y.domain([yMin, 1]);
+      // y.domain([yMin, 1]);
 
       // Enter new bubbles based on place_id if needed (pos and color)
       // Update existing bubbles by moving to new position and colors
