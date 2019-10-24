@@ -71,7 +71,7 @@ Util.getTooltipItem = (datum) => {
         name: 'Total population',
         datum: datum,
         period: 'year',
-        value: Util.comma(datum.value),
+        value: Util.formatSI(datum.value),
         label: 'people',
       };
   }
@@ -300,7 +300,11 @@ Util.formatSI = (val) => {
 
   // If 1k or above, return SI value with two significant digits
   else if (val >= 1000 && val < 1000000) return d3.formatPrefix('.2f', 1000)(val); // k
-  else return d3.formatPrefix(',.2s', 1000000)(val); // M
+
+  // If 1k or above, return SI value with two significant digits
+  else if (val >= 1000000 && val < 1000000000) return d3.formatPrefix('.2f', 1000000)(val); // M
+
+  else return d3.formatPrefix(',.2s', 1000000000)(val).replace(/G/,"B"); // B
 };
 
 /**

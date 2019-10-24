@@ -480,7 +480,7 @@ const Details = (props) => {
                 [
                   {
                     'title': 'Population',
-                    'value_fmt': Util.comma,
+                    'value_fmt': Util.formatSI,
                     'value_label': 'people',
                     'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'year')}, // TODO
                     ...(props.countryPop ? props.countryPop : {value: null}),
