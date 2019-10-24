@@ -257,10 +257,36 @@ const Global = (props) => {
     const scatterSliderValue = <div className={styles.scatterSliderValue}>{curSliderValStr}</div>;
     const scatterArea = <div className={classNames(styles.Scatter, 'Scatter-0')} />;
     const scatterJsx = scatterArea;
+
+    // Scatter plot legend
+    const scatterLegend = (
+      <div className={styles.scatterLegend}>
+        <p className={styles.sectionName}>Population of country</p>
+        <div className={styles.legendEntryGroups}>
+          <div className={styles.legendEntryGroup}>
+            {
+              [1,2,3].map((d,i) =>
+                <div className={classNames(styles.legendEntry, styles.circle)}>
+                  <div className={classNames(styles.legendIcon, styles.circle)} />
+                  {
+                    (i === 0) && <div className={styles.legendLabel}>Low<br/>population</div>
+                  }
+                  {
+                    (i === 2) && <div className={styles.legendLabel}>High<br/>population</div>
+                  }
+                </div>
+              )
+            }
+          </div>
+        </div>
+      </div>
+    );
+
     return (
       <div>
         {scatterSlider}
         {scatterArea}
+        {scatterLegend}
       </div>
     );
   };
