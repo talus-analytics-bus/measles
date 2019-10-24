@@ -166,7 +166,7 @@ class Trend(Resource):
     @format_response
     def get(self):
         params = request.args
-        (view_flag, res, start, end) = schema.getTrend(params)
+        (view_flag, place_lists, start, end) = schema.getTrend(params)
 
         lag = int(params['lag'])
 
@@ -174,54 +174,61 @@ class Trend(Resource):
         end_dict = {}
 
         if view_flag:
-            for o in res:
-                place_id = o[7]
-                o_date = o[2]
-                no_tz_date = o_date.replace(tzinfo=None)
+            for place_id, place_list in place_lists.items():
+                counter = 0
 
-                o_dict = {
-                  'data_source': o[1],
-                  'date_time': o_date.strftime(strf_str),
-                  'definition': o[3],
-                  'metric': o[4],
-                  'observation_id': o[5],
-                  'place_fips': o[6],
-                  'place_id': place_id,
-                  'place_iso': o[8],
-                  'place_name': o[9],
-                  'updated_at': o[10],
-                  'value': o[11],
-                }
+                for o in place_list:
+                    o_date = o[2]
 
-                if no_tz_date == start:
-                    start_dict[place_id] = o_dict
-                elif no_tz_date == end:
-                    end_dict[place_id] = o_dict
+                    o_dict = {
+                      'data_source': o[1],
+                      'no_tz': o_date.replace(tzinfo=None),
+                      'date_time': o_date.strftime(strf_str),
+                      'definition': o[3],
+                      'metric': o[4],
+                      'observation_id': o[5],
+                      'place_fips': o[6],
+                      'place_id': place_id,
+                      'place_iso': o[8],
+                      'place_name': o[9],
+                      'updated_at': o[10],
+                      'value': o[11],
+                    }
+
+                    if counter == 0:
+                        start_dict[place_id] = o_dict
+                        counter += 1
+                    else:
+                        end_dict[place_id] = o_dict
         else:
-            formattedData = [r.to_dict(related_objects=True) for r in res]
+            for place_id, place_list in place_lists.items():
+                formattedData = [r.to_dict(related_objects=True) for r in place_list]
+                counter = 0
 
-            for o in formattedData:
-                o_date = o['date_time'].to_dict()['datetime']
-                no_tz_date = o_date.replace(tzinfo=None)
+                for o in formattedData:
+                    o_date = o['date_time'].to_dict()['datetime']
 
-                metric_info = o['metric'].to_dict()
-                o['metric'] = metric_info['metric_name']
-                o['definition'] = metric_info['metric_definition']
+                    metric_info = o['metric'].to_dict()
+                    o['metric'] = metric_info['metric_name']
+                    o['definition'] = metric_info['metric_definition']
 
-                o['date_time'] = o_date.strftime(strf_str)
+                    o['no_tz'] = o_date.replace(tzinfo=None)
 
-                place_info = o['place'].to_dict()
-                place_id = place_info['place_id']
-                o['place_id'] = place_id
-                o['place_name'] = place_info['name']
-                o['place_iso'] = place_info['iso2']
-                o['place_fips'] = place_info['fips']
-                del[o['place']]
+                    o['date_time'] = o_date.strftime(strf_str)
 
-                if no_tz_date == start:
-                    start_dict[place_id] = o
-                elif no_tz_date == end:
-                    end_dict[place_id] = o
+                    place_info = o['place'].to_dict()
+                    place_id = place_info['place_id']
+                    o['place_id'] = place_id
+                    o['place_name'] = place_info['name']
+                    o['place_iso'] = place_info['iso2']
+                    o['place_fips'] = place_info['fips']
+                    del[o['place']]
+
+                    if counter == 0:
+                        start_dict[place_id] = o
+                        counter += 1
+                    else:
+                        end_dict[place_id] = o
 
         trends = []
 
@@ -248,12 +255,12 @@ class Trend(Resource):
             try:
                 trend['percent_change'] = (end_value - start_value) / start_value
             except (TypeError, ZeroDivisionError):
-                if end_value == None:
+                if end_value is None:
                     trend['percent_change'] = None
                 elif start_value == 0 and end_value > 0:
-                    trend['percent_change'] = 1e10 #TODO make infinity
+                    trend['percent_change'] = 1e10  # TODO make infinity
                 elif start_value == 0 and end_value < 0:
-                    trend['percent_change'] = -1e10 #TODO make neg infinity
+                    trend['percent_change'] = -1e10  # TODO make neg infinity
                 else:
                     trend['percent_change'] = None
 
@@ -267,8 +274,13 @@ class Trend(Resource):
             trend['place_iso'] = end_obs['place_iso']
             trend['place_fips'] = end_obs['place_fips']
 
+            no_tz_date = end_obs['no_tz']
+
             # FIXME: make this work for realz
-            trend['stale_flag'] = False
+            if no_tz_date == end:
+                trend['stale_flag'] = False
+            else:
+                trend['stale_flag'] = True
 
             trends.append(trend)
 
@@ -303,5 +315,6 @@ class Places(Resource):
         }
 
         # Get and return places.
-        res = schema.getEntityInstances(db.Place, 'place_id', organizing_attribute, filters, params)
+        res = schema.getEntityInstances(db.Place, 'place_id', organizing_attribute,
+                                        filters, params)
         return res
