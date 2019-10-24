@@ -8,6 +8,10 @@
     padding: 5px;
     border: 1px solid $grey;
     .tooltipContent {
+      .tooltipName {
+        font-size: 1.5em;
+        font-weight: bold;
+      }
       display: flex;
       flex-flow: column;
       background-color: white;

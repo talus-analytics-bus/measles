@@ -13,6 +13,7 @@ $scatterSize: 75vh;
 .Scatter {
   height: $scatterSize;
   width: 100%;
+  margin-top: 20px;
   // width: $scatterSize + 120px;
 }
 .visible {
@@ -285,6 +286,11 @@ $scatterSize: 75vh;
     margin-top: 10px;
     width: 100%;
     .itemContainer {
+      &:first-child {
+        .item .title {
+          margin-bottom: 40px;
+        }
+      }
       &:not(:last-child) {
         // &:first-child {
         border-bottom: 1px solid #b2b2b2;

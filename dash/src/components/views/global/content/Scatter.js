@@ -22,8 +22,8 @@ class Scatter extends Chart {
     // Default margins
     if (!this.params.margin) {
       this.params.margin = {
-        top: 40,
-        right: 0,
+        top: 48,
+        right: 5,
         bottom: 80,
         left: 120, // +40
       };
@@ -41,14 +41,36 @@ class Scatter extends Chart {
     console.log(chart);
 
     // Create clipping path
-    chart.svg.append('defs')
-      .append('clipPath')
-        .attr('id', 'plotArea')
-        .append('rect')
-          .attr('x', 0)
-          .attr('y', 0)
-          .attr('width', chart.width)
-          .attr('height', chart.height);
+    const defs = chart.svg.append('defs');
+    // defs
+    //   .append('clipPath')
+    //     .attr('id', 'plotArea')
+    //     .append('rect')
+    //       .attr('x', 0)
+    //       .attr('y', 0)
+    //       .attr('width', chart.width)
+    //       .attr('height', chart.height);
+
+    // Create shadow definition
+    const filterDef = defs.append('filter')
+      .attr('id','f1')
+      .attr('x','0')
+      .attr('y','0')
+      .attr('width','200%')
+      .attr('height','200%')
+    filterDef.append('feOffset')
+      .attr('result','offOut')
+      .attr('in','SourceAlpha')
+      .attr('dx','2')
+      .attr('dy','2')
+    filterDef.append('feGaussianBlur')
+      .attr('result','blurOut')
+      .attr('in','offOut')
+      .attr('stdDeviation','2')
+    filterDef.append('feBlend')
+      .attr('in','SourceGraphic')
+      .attr('in2','blurOut')
+      .attr('mode','normal')
 
     if (chart.data.vals.length < 1) {
       // TODO show "no data" message
@@ -64,6 +86,11 @@ class Scatter extends Chart {
     const r = d3.scaleLinear()
       .domain([0, 1])
       .range([5, 50]) // heuristic for max bubble size
+
+    // Define bubble label size scale
+    const labelSize = (val) => {
+      return (r(val) / 2) + 10;
+    };
 
     // Define x scale - vaccination coverage
     const x = d3.scaleLinear()
@@ -176,12 +203,17 @@ class Scatter extends Chart {
           }
         });
 
-    // Add x axis label
-    // Add y axis label
+    // Add month and year label to center of plot
+    const monthYearLabel = chart.newGroup(styles.monthYearLabel)
+      .append('text')
+        .attr('class', styles.monthYearLabel)
+        .attr('x', chart.width/2)
+        .attr('y', chart.height/2)
+        .text('Aug 2019');
 
     // Add bubbles group (assume one datum per country). Enter one bubble for
     // each that we have pop data for, in the update function.
-    const bubblesG = chart.newGroup('bubbles');
+    const bubblesG = chart.newGroup(styles.bubbles);
 
     // Add avg vaccination coverage line
     const avgXLine = chart.newGroup('avgXLine')
@@ -190,7 +222,23 @@ class Scatter extends Chart {
         .attr('x1', x(.5))
         .attr('x2', x(.5))
         .attr('y1', y(0))
-        .attr('y2', y(1));
+        .attr('y2', y(1)-11);
+
+    // Add label for avg vaccination coverage line
+    const avgXLineLabel = chart['avgXLine'].append('text')
+      .attr('class', styles.avgXLineLabel)
+      .attr('x', x(.5))
+      .attr('y', y(1) - 36);
+    const avgXLineLabelShift = -143/2;
+    avgXLineLabel.append('tspan')
+      .attr('x', x(.5))
+      .attr('dx', avgXLineLabelShift)
+      .text('Average coverage');
+    avgXLineLabel.append('tspan')
+      .attr('x', x(.5))
+      .attr('dx', avgXLineLabelShift)
+      .attr('dy', '1.2em')
+      .text('across all countries');
 
     // Add y-axis label
     const yAxisLabel = chart[styles['y-axis']].append('text')
@@ -239,7 +287,6 @@ class Scatter extends Chart {
       const monthlyStr = `${yyyymmddArr[0]}-${yyyymmddArr[1]}`;
       const yearlyStr = `${yyyymmddArr[0]}`;
 
-      console.log('Updating data')
       // Get this data to bind
       // y data
       const yData = chart.data.vals.y.filter(d => {
@@ -316,6 +363,10 @@ class Scatter extends Chart {
         .duration(500)
           .attr('x1', x(avgXLineVal))
           .attr('x2', x(avgXLineVal));
+      avgXLineLabel.selectAll('tspan')
+        .transition()
+        .duration(500)
+          .attr('x', x(avgXLineVal))
 
       // Move circle off edge of chart, x-axis
       const getCircleXPos = (d) => {
@@ -350,8 +401,27 @@ class Scatter extends Chart {
         return yPosFinal;
       };
 
+      const getTextAnchor = (d) => {
+        const xPos = getCircleXPos(d);
+        const nearRightEdge = chart.width - xPos <= 25;
+        const nearLeftEdge = xPos <= 25;
+        if (nearRightEdge) return 'end';
+        else if (nearLeftEdge) return 'start';
+        else return 'middle';
+      }
+
+      const getTextDx = (d) => {
+        const xPos = getCircleXPos(d);
+        const nearRightEdge = chart.width - xPos <= 25;
+        const nearLeftEdge = xPos <= 25;
+        if (nearRightEdge) return r(d.value_normalized.size);
+        else if (nearLeftEdge) return -1*r(d.value_normalized.size);
+        else return 0;
+      }
+
       // Enter new bubbles, update old
       bubblesG.selectAll('g')
+        .attr('class', styles.bubbleG)
         .data(data, d => d.place_id)
         .join(
           enter => {
@@ -363,47 +433,70 @@ class Scatter extends Chart {
                   chart.height - r(d.value_normalized.size)
                 })`
               )
-              newCircleGs
+              .classed(styles.active, d => chart.params.activeBubble === d.place_id)
+              .attr('data-tip', true)
+              .attr('data-for', chart.params.tooltipClassName)
+              .on('click', function toggleSelectBubble (d) {
+                const thisG = d3.select(this);
+                const thisBubble = thisG.select('circle');
+                const activateBubble = !thisG.classed(styles.active);
+                bubblesG.selectAll('g')
+                  .classed(styles.active, false)
+                  .selectAll('circle')
+                    .attr('filter', 'none');
+                if (activateBubble) {
+                  chart.params.activeBubbleId = d.place_id;
+                  thisG.classed(styles.active, true);
+                  thisBubble.attr('filter', 'url(#f1)');
+                } else {
+                  chart.params.activeBubbleId = -9999;
+                }
+
+                bubblesG.selectAll('g').sort(function(a, b){
+                  if (activateBubble && a.place_id === d.place_id) return 1;
+                  else if (activateBubble && b.place_id === d.place_id) return -1;
+                  else if (a.value_normalized.size > b.value_normalized.size) return -1;
+                  else if (a.value_normalized.size <= b.value_normalized.size) return 1;
+                })
+
+                // Make name label visible
+              })
+              .on('mouseenter', function showBubbleTooltip (d) {
+                const items = [];
+                [
+                  'yDatum',
+                  'xDatum',
+                  'sizeDatum',
+                ].forEach(itemName => {
+                  items.push(
+                    Util.getTooltipItem(d[itemName])
+                  );
+                });
+                chart.params.setTooltipData(
+                  {
+                    name: d.place_name,
+                    items: items,
+                  }
+                );
+              })
+
+            newCircleGs
               .append('circle')
                 .attr('class', styles.scatterCircle)
-                .attr('data-tip', true)
-                .attr('data-for', chart.params.tooltipClassName)
                 .style('opacity', 0)
                 .attr('fill', yColor(0))
                 .attr('r', d => r(0))
-                .on('click', function toggleSelectBubble (d) {
-                  const thisBubble = d3.select(this);
-                  const activateBubble = !thisBubble.classed(styles.active);
-                  bubblesG.selectAll('circle')
-                    .classed(styles.active, false);
-                  if (activateBubble) {
-                    thisBubble.classed(styles.active, true);
-                  }
 
-                  // Make name label visible
-                })
-                .on('mouseenter', function showBubbleTooltip (d) {
-                  const items = [];
-                  [
-                    'yDatum',
-                    'xDatum',
-                    'sizeDatum',
-                  ].forEach(itemName => {
-                    items.push(
-                      Util.getTooltipItem(d[itemName])
-                    );
-                  });
-                  console.log('items')
-                  console.log(items)
-                  chart.params.setTooltipData(
-                    {
-                      name: d.place_name,
-                      items: items,
-                    }
-                  );
-                })
-                // .append('text')
-                //   .text(d => d.place_name);
+            newCircleGs
+              .append('text')
+                .attr('class', styles.scatterCircleLabel)
+                .attr('dy', d => (-1 * r(d.value_normalized.size)) - 1)
+                .attr('dx', d => getTextDx(d))
+                .style('text-anchor', d => getTextAnchor(d))
+                .style('font-size', d => labelSize(d.value_normalized.size))
+                .text(d => d.place_name)
+
+
 
             newCircleGs
               .transition()
@@ -425,6 +518,7 @@ class Scatter extends Chart {
           },
           update => {
             update
+              .classed(styles.active, d => chart.params.activeBubbleId === d.place_id)
               .transition()
               .duration(2000)
                 .attr('transform',
@@ -437,17 +531,27 @@ class Scatter extends Chart {
 
             update.selectAll('circle')
               .data(data, d => d.place_id)
-                .style('opacity', 1)
-                .attr('fill', d => yColor(d.value_normalized.y))
-                .attr('r', d => r(d.value_normalized.size));
+                .transition()
+                .duration(2000)
+                  .style('opacity', 1)
+                  .attr('fill', d => yColor(d.value_normalized.y))
+                  .attr('r', d => r(d.value_normalized.size));
+
+            update.selectAll('text')
+              .data(data, d => d.place_id)
+                .transition()
+                .duration(2000)
+                  .attr('dx', d => getTextDx(d))
+                  .style('text-anchor', d => getTextAnchor(d));
           },
           exit => {
             exit.remove();
           },
         );
 
-      // Keep bubbles below other chart elements.
+      // Keep bubbles below other chart elements, except month year label.
       bubblesG.lower();
+      chart[styles.monthYearLabel].lower();
 
       // Update axis labels
       const monthYearLabelString = dt.toLocaleString('en-us', {
@@ -455,11 +559,8 @@ class Scatter extends Chart {
         year: 'numeric',
         timeZone: 'utc',
       });
-      // const yearLabelString = dt.toLocaleString('en-us', {
-      //   year: 'numeric',
-      //   timeZone: 'utc',
-      // });
 
+      monthYearLabel.text(monthYearLabelString);
       yAxisLabel.select('tspan:nth-child(2)')
         .text(`in ${monthYearLabelString} (relative)`);
       xAxisLabel.select('tspan:nth-child(2)')
@@ -473,36 +574,9 @@ class Scatter extends Chart {
       chart.data.vals.y[nData - 1].date_time.replace(/-/g, '/')
     );
     chart.update(initDt);
-
-    // TEST: Every second, go back in time by one month
-    const chartDebugTest = () => {
-      let prevDt = initDt;
-      for (let i = 0; i < 36; i++) {
-        const curDt = new Date(
-          prevDt
-        );
-        curDt.setUTCMonth(curDt.getUTCMonth() - 1);
-        setTimeout(() => {
-          chart.update(curDt);
-        }, 3000*i);
-        prevDt = curDt;
-      }
-    };
-    // setTimeout(chartDebugTest, 3000);
-    //
-    // chart.play = (nSteps) => {
-    //   let prevDt = initDt;
-    //   for (let i = 0; i < nSteps; i++) {
-    //     const curDt = new Date(
-    //       prevDt
-    //     );
-    //     curDt.setUTCMonth(curDt.getUTCMonth() + 1);
-    //     setTimeout(() => {
-    //       chart.update(curDt);
-    //     }, 3000*i);
-    //     prevDt = curDt;
-    //   }
-    // };
+    
+    // Reduce width at the end
+    chart.svg.node().parentElement.classList.add(styles.drawn);
   }
 }
 

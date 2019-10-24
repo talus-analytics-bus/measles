@@ -186,7 +186,7 @@ const Global = (props) => {
     const wrapperStyle = {
       width: '500px',
       marginLeft: 15,
-      marginTop: 35,
+      // marginTop: 35,
     };
     const trackStyle = { backgroundColor: 'transparent', }
     const handleStyle = {
@@ -501,7 +501,7 @@ const Global = (props) => {
                     {
                       // If name, show
                       (tooltipData.name !== undefined) &&
-                      <div className={stylesTooltip.name}>
+                      <div className={stylesTooltip.tooltipName}>
                         {tooltipData.name}
                       </div>
                     }

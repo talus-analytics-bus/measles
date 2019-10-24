@@ -33,6 +33,12 @@
   stroke-dasharray: 6;
   stroke-linecap: square;
 }
+.avgXLineLabel {
+  text-anchor: start;
+  font-family: 'open_sanssemibold', sans-serif;
+  font-weight: 600;
+  fill: $dark-grey;
+}
 .areaNull {
   path {
     // stroke: green;
@@ -41,7 +47,7 @@
   }
 }
 
-.x-axis, .x-axis-2, .y-axis, .y-axis-right {
+.x-axis, .x-axis-2, .y-axis, .y-axis-right, .avgXLineLabel {
   // > path {
   //   // display: none;
   // }
@@ -63,14 +69,47 @@
   }
 }
 
-circle.scatterCircle {
-  stroke: white;
-  stroke-width: .5px;
-  transition: fill .25s;
-  &.active {
+g.bubbles {
+  circle.scatterCircle {
+    cursor: pointer;
+    stroke: white;
+    stroke-width: .5px;
+    transition: fill .25s;
+    &:hover {
+      & + text.scatterCircleLabel {
+        opacity: 1;
+      }
+    }
+  }
+  g.active circle.scatterCircle {
     fill: $data-blue;
     transition: fill .25s;
+    box-shadow: 2px 2px 5px 0 rgba(0, 0, 0, 0.68);
+    -webkit-box-shadow: 2px 2px 5px 0 rgba(0, 0, 0, 0.68);
+
+    & + text.scatterCircleLabel {
+      opacity: 1;
+      fill: $dark-grey !important;
+    }
   }
+}
+
+text.monthYearLabel {
+  text-anchor: middle;
+  font-weight: bold;
+  font-size: 4em;
+  fill: $light-grey-2;
+  font-family: 'Gotham Book', sans-serif;
+}
+
+text.scatterCircleLabel {
+  fill: $grey;
+  text-anchor: middle;
+  vertical-align: middle;
+  pointer-events: none;
+  z-index: 1000;
+  opacity: 0;
+  transition: opacity .25s;
 }
 
 .y-axis-right .label {
