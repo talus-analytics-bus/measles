@@ -66,8 +66,10 @@
 circle.scatterCircle {
   stroke: white;
   stroke-width: .5px;
+  transition: fill .25s;
   &.active {
     fill: $data-blue;
+    transition: fill .25s;
   }
 }
 

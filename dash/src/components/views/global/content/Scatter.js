@@ -239,6 +239,7 @@ class Scatter extends Chart {
       const monthlyStr = `${yyyymmddArr[0]}-${yyyymmddArr[1]}`;
       const yearlyStr = `${yyyymmddArr[0]}`;
 
+      console.log('Updating data')
       // Get this data to bind
       // y data
       const yData = chart.data.vals.y.filter(d => {
@@ -350,70 +351,93 @@ class Scatter extends Chart {
       };
 
       // Enter new bubbles, update old
-      bubblesG.selectAll('circle')
+      bubblesG.selectAll('g')
         .data(data, d => d.place_id)
         .join(
           enter => {
-            const newCircles = enter.append('circle')
-              .attr('class', styles.scatterCircle)
-              .attr('cx', d => getCircleXPos(d))
-              .attr('cy', d => chart.height - r(d.value_normalized.size))
-              .attr('data-tip', true)
-              .attr('data-for', chart.params.tooltipClassName)
-              .style('opacity', 0)
-              .attr('fill', yColor(0))
-              .attr('r', d => r(0))
-              .on('click', function toggleSelectBubble (d) {
-                const thisBubble = d3.select(this);
-                const activateBubble = !thisBubble.classed(styles.active);
-                bubblesG.selectAll('circle')
-                  .classed(styles.active, false);
-                if (activateBubble) {
-                  thisBubble.classed(styles.active, true);
-                }
-
-                // Make name label visible
-              })
-              .on('mouseenter', function showBubbleTooltip (d) {
-                const items = [];
-                [
-                  'yDatum',
-                  'xDatum',
-                  'sizeDatum',
-                ].forEach(itemName => {
-                  items.push(
-                    Util.getTooltipItem(d[itemName])
-                  );
-                });
-                console.log('items')
-                console.log(items)
-                chart.params.setTooltipData(
-                  {
-                    name: d.place_name,
-                    items: items,
+            const newCircleGs = enter.append('g')
+              .attr('transform',
+                d => `translate(${
+                  getCircleXPos(d)
+                }, ${
+                  chart.height - r(d.value_normalized.size)
+                })`
+              )
+              newCircleGs
+              .append('circle')
+                .attr('class', styles.scatterCircle)
+                .attr('data-tip', true)
+                .attr('data-for', chart.params.tooltipClassName)
+                .style('opacity', 0)
+                .attr('fill', yColor(0))
+                .attr('r', d => r(0))
+                .on('click', function toggleSelectBubble (d) {
+                  const thisBubble = d3.select(this);
+                  const activateBubble = !thisBubble.classed(styles.active);
+                  bubblesG.selectAll('circle')
+                    .classed(styles.active, false);
+                  if (activateBubble) {
+                    thisBubble.classed(styles.active, true);
                   }
-                );
-              })
-              // .append('text')
-              //   .text(d => d.place_name);
 
-            newCircles
+                  // Make name label visible
+                })
+                .on('mouseenter', function showBubbleTooltip (d) {
+                  const items = [];
+                  [
+                    'yDatum',
+                    'xDatum',
+                    'sizeDatum',
+                  ].forEach(itemName => {
+                    items.push(
+                      Util.getTooltipItem(d[itemName])
+                    );
+                  });
+                  console.log('items')
+                  console.log(items)
+                  chart.params.setTooltipData(
+                    {
+                      name: d.place_name,
+                      items: items,
+                    }
+                  );
+                })
+                // .append('text')
+                //   .text(d => d.place_name);
+
+            newCircleGs
               .transition()
               .duration(2000)
-                .attr('cx', d => getCircleXPos(d))
-                .attr('cy', d => getCircleYPos(d))
+                .attr('transform',
+                  d => `translate(${
+                    getCircleXPos(d)
+                  }, ${
+                    getCircleYPos(d)
+                  })`
+                );
+
+            newCircleGs.selectAll('circle')
+              .transition()
+              .duration(2000)
                 .style('opacity', 1)
                 .attr('fill', d => yColor(d.value_normalized.y))
                 .attr('r', d => r(d.value_normalized.size));
-
-
           },
           update => {
             update
               .transition()
               .duration(2000)
-                .attr('cx', d => getCircleXPos(d))
-                .attr('cy', d => getCircleYPos(d))
+                .attr('transform',
+                  d => `translate(${
+                    getCircleXPos(d)
+                  }, ${
+                    getCircleYPos(d)
+                  })`
+                );
+
+            update.selectAll('circle')
+              .data(data, d => d.place_id)
+                .style('opacity', 1)
                 .attr('fill', d => yColor(d.value_normalized.y))
                 .attr('r', d => r(d.value_normalized.size));
           },
