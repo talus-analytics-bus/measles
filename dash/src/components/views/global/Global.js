@@ -209,12 +209,6 @@ const Global = (props) => {
       marks[markValue] = markValue;
       markValue = markValue + 1;
     }
-
-
-    console.log('curSliderVal')
-    console.log(curSliderVal)
-    console.log('sliderMin')
-    console.log(sliderMin)
     const scatterSlider = (
       <div className={styles.sliderWrapper} style={wrapperStyle}>
         <Slider
@@ -268,12 +262,49 @@ const Global = (props) => {
     );
   };
 
+  /**
+   * Return correct data source text for scatter chart (vaccination and
+   * incidence).
+   * @method getScatterDataSources
+   */
+  const getScatterDataSources = () => {
+
+    let ySource, xSource;
+    const yDatum = props.chartParams.Scatter[0].params.data.y[0];
+    if (yDatum === undefined) yDatum = null;
+    else {
+      const yUpdated = new Date(yDatum.updated_at).toLocaleString('en-us', {
+        month: 'short',
+        year: 'numeric',
+        timeZone: 'UTC',
+      });
+      const yMetricName = Util.getScatterLabelData(yDatum).toLowerCase();
+      ySource = `Source for ${yMetricName}: ${yDatum.data_source} as of ${yUpdated}.`;
+    }
+
+    const xDatum = props.chartParams.Scatter[0].params.data.x[0];
+    if (xDatum === undefined) xSource = '';
+    else {
+      const xUpdated = new Date(xDatum.updated_at).toLocaleString('en-us', {
+        month: 'short',
+        year: 'numeric',
+        timeZone: 'UTC',
+      });
+      xSource = `Source for vaccination coverage: ${xDatum.data_source} as of ${xUpdated}.`;
+    }
+    const sources = [];
+    if (yDatum) sources.push(ySource);
+    if (xDatum) sources.push(xSource);
+    return sources.join(' ');
+  };
+
   const getScatterData = () => {
     return [
       {
         'title': 'Vaccination coverage and caseload by country',
         'chart_jsx': getScatterJsx,
         'date_time_fmt': () => '',
+        'data_source': getScatterDataSources,
       },
     ]
   };
@@ -335,40 +366,6 @@ const Global = (props) => {
               {
                 [
                   ...getMiniLineJsx(),
-                  // {
-                  //   'title': 'Global annual incidence',
-                  //   'value_fmt': Util.formatIncidence,
-                  //   'value_label': 'cases per 1M population',
-                  //   'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'year')},
-                  //   ...(props.countryPop ? props.countryPop : {value: null}),
-                  // },
-                  // {
-                  //   'title': 'Gross domestic product per capita',
-                  //   'value_fmt': Util.money,
-                  //   'value_label': 'USD',
-                  //   'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'year')}, // TODO
-                  //   ...(props.countryGDP ? props.countryGDP : {value: null}),
-                  // },
-                  // {
-                  //   'title': 'Immunization capacity',
-                  //   'value_fmt': getScoreJsx,
-                  //   'hideSource': true,
-                  //   'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'year')}, // TODO
-                  //   ...(props.countryJeeImmun ? props.countryJeeImmun : {value: null}),
-                  // },
-                  // {
-                  //   'title': 'Real-time surveillance capacity',
-                  //   'value_fmt': getScoreJsx,
-                  //   'hideSource': true,
-                  //   'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'year')}, // TODO
-                  //   ...(props.countryJeeSurv ? props.countryJeeSurv : {value: null}),
-                  // },
-                  // {
-                  //   'title': 'Medical countermeasures capacity',
-                  //   'value_fmt': getScoreJsx,
-                  //   'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'year')}, // TODO
-                  //   ...(props.countryJeeMcm ? props.countryJeeMcm : {value: null}),
-                  // },
                 ].map(item =>
                   <div className={styles.itemContainer}>
                     <div className={styles.item}>
@@ -426,29 +423,6 @@ const Global = (props) => {
             {
               [
                 ...getScatterData()
-                // {
-                //   'title': 'Vaccination coverage',
-                //   'chart_jsx': getVaccChart,
-                //   'value_fmt': Util.percentize,
-                //   'value_label': 'of infants',
-                //   'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'year')},
-                //   ...(props.countryVaccLatest.value !== undefined ? props.countryVaccLatest : { value: null }),
-                // },
-                // {
-                //   'title': 'Recent monthly incidence of measles',
-                //   'chart_jsx': getWedgeChart,
-                //   'value_fmt': Util.formatIncidence,
-                //   'value_label': 'cases per 1M population',
-                //   'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'month')},
-                //   ...(props.countryIncidenceLatest.value !== undefined ? props.countryIncidenceLatest : { value: null }),
-                // },
-                // {
-                //   'title': 'Incidence over time',
-                //   'chart_jsx': getSlidingLineJsx,
-                //   'date_time_fmt': Util.getDateTimeRange,
-                //   'data_source': getSlidingLineDataSources,
-                //   ...(props.countryIncidenceHistory.length > 0 ? { value: props.countryIncidenceHistory } : { value: null }),
-                // },
               ].map(item =>
                 <div className={styles.itemContainer}>
                   <div className={styles.item}>
