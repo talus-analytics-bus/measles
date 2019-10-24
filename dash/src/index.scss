@@ -6,6 +6,28 @@ body,
 #root {
   height: 100%;
 
+  #sliderTooltip {
+    visibility: visible;
+    opacity: 0;
+    &.visible { opacity: 1; }
+    background-color: #e6e6e6;
+    color: $dark-grey;
+    padding: 5px;
+
+    &::after {
+      border-top-color: #e6e6e6;
+    }
+
+    // Freeze tooltip on scroll
+    z-index: 2; // beneath header
+    position: absolute; // not fixed
+  }
+
+  // Slider
+  .rc-slider-mark-text {
+    color: #666;
+  }
+
   .global.dev {
     margin-top: 60px;
     padding: 0;
@@ -200,6 +222,7 @@ body,
   font-style: italic;
   text-align: right;
   margin-top: 5px;
+  clear: right;
 }
 
 body {
@@ -310,6 +333,28 @@ table {
 
 .button, button {
   cursor: pointer;
+}
+
+.btn-secondary {
+  background-color: transparent;
+  border: 1px solid black;
+  color: $dark-grey;
+  &:hover {
+    background-color: darken(white, 15%);
+    color: black;
+  }
+  &:active {
+    background-color: darken(white, 25%);
+  }
+}
+
+.btn-sm {
+  padding: 2.5px 5px;
+  font-weight: normal;
+  &:active {
+    -webkit-box-shadow: 0 0 5px .5px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 0 5px .5px rgba(0, 0, 0, 0.3);
+  }
 }
 
 .button.back {

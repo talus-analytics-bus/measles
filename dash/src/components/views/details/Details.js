@@ -10,25 +10,11 @@ import MiniMap from '../../../components/map/MiniMap.js'
 
 // Utilities (date formatting, etc.)
 import Util from '../../../components/misc/Util.js'
-import worldMap from '../../../assets/images/world-map.svg'
-import ObservationQuery from '../../../components/misc/ObservationQuery.js'
 import * as d3 from 'd3/dist/d3.min';
 
 import classNames from 'classnames'
 import styles from './details.module.scss'
 import stylesTooltip from './tooltip.module.scss'
-
-// If DEMO_DATE exists, use it (frames all data in site relative to the demo
-// date that is specified). Otherwise, today's date will be used ("now").
-var DEMO_DATE = process.env.DEMO_DATE
-if (typeof DEMO_DATE === 'undefined') {
-  DEMO_DATE = '2025-07-04T23:56:00'
-}
-
-const now = DEMO_DATE !== undefined ? new Date(DEMO_DATE) : new Date();
-
-// import { facility } from '../../../types/index'
-const API_BASE = process.env.REACT_APP_API_BASE_URL;
 
 // FC for Details.
 const Details = (props) => {
@@ -41,6 +27,9 @@ const Details = (props) => {
 
   // Track SlidingLine chart tooltip data
   const [ tooltipData, setTooltipData ]  = React.useState(null);
+
+  // Track whether to show reset view button on sliding line chart
+  const [ showReset, setShowReset ]  = React.useState(false);
 
   // Get data for current country.
   const country = props.id;
@@ -130,8 +119,13 @@ const Details = (props) => {
     // 0.95, '#303d91'
 
     const stepFrac = 100/6;
-
-    if (val < stepFrac*1) {
+    if (val === null) {
+      return {
+        i: -9999,
+        color: 'gray',
+      };
+    }
+    else if (val < stepFrac*1) {
       return {
         i: 0,
         color: '#d6f0b2',
@@ -176,7 +170,10 @@ const Details = (props) => {
 
   const getWedgeChartBin = () => {
     if (props.countryIncidenceLatest.value === 0) return -9999;
-    const val = props.countryIncidenceQuartile;
+    const val = props.countryIncidenceQuantile;
+    return {
+      i: val !== null? val : -9999,
+    };
     switch (val) {
       case 0:
         return {
@@ -212,7 +209,7 @@ const Details = (props) => {
     return (
       <div className={classNames(styles.chart, styles.vaccChart)}>
         {
-          [0,1,2,3].map(bin =>
+          [0,1,2,3,4].map(bin =>
             <div className={styles.trapezoidContainer}>
               <div
               className={classNames(
@@ -301,27 +298,34 @@ const Details = (props) => {
    * @method getSlidingLineJsx
    */
   const getSlidingLineJsx = () => {
+
+    // If no line data, do not render chart at all.
+    const legendEntries = noLineData ? [] :
+      [
+        {
+          label: 'Monthly incidence',
+          class: styles.monthlyIncidence,
+          shape: 'line',
+        },
+        {
+          label: 'Vaccination coverage',
+          class: styles.vaccinationCoverage,
+          shape: 'line',
+          skip: props.countryVaccHistory.length === 0,
+        },
+        {
+          label: 'Incidence not reported',
+          class: styles.noIncidence,
+          shape: 'rect',
+        },
+      ];
+
     return (
       <div className={styles.slidingLineContainer}>
         <div className={styles.slidingLineLegend}>
           {
-            [
-              {
-                label: 'Monthly incidence',
-                class: styles.monthlyIncidence,
-                shape: 'line',
-              },
-              {
-                label: 'Vaccination coverage',
-                class: styles.vaccinationCoverage,
-                shape: 'line',
-              },
-              {
-                label: 'Incidence not reported',
-                class: styles.noIncidence,
-                shape: 'rect',
-              },
-            ].map(entry =>
+            legendEntries.map(entry =>
+              (entry.skip !== true) &&
               <div className={styles.entry}>
                 <svg width="18" height="18">
                 {
@@ -336,8 +340,36 @@ const Details = (props) => {
               </div>
             )
           }
+          {
+            // Add reset button, visible when chart sliding window is adjusted.
+            <button
+              onClick={
+                () => {
+                  if (slidingLine && slidingLine.resetView) {
+                    slidingLine.resetView();
+                  }
+                }
+              }
+              className={
+                classNames(
+                  'btn-secondary btn-sm',
+                )
+              }
+              style={
+                {
+                  'opacity': showReset ? 1 : 0,
+                  'visibility': showReset ? 'visible' : 'hidden',
+                }
+              }
+              >
+              Reset view
+            </button>
+          }
         </div>
-        <div className={styles.slidingLine} />
+        {
+          !noLineData &&
+          <div className={styles.slidingLine} />
+        }
       </div>
     );
   };
@@ -349,26 +381,38 @@ const Details = (props) => {
    */
   const getSlidingLineDataSources = () => {
 
+    let incidenceSource, vaccineSource;
     const incidenceDatum = props.countryIncidenceHistory[0];
-    const incidenceUpdated = new Date(incidenceDatum.updated_at).toLocaleString('en-us', {
-      month: 'short',
-      year: 'numeric',
-      timeZone: 'UTC',
-    });
-    const incidenceSource = `Source for incidence: ${incidenceDatum.data_source} as of ${incidenceUpdated}.`;
+    if (incidenceDatum === undefined) incidenceSource = null;
+    else {
+      const incidenceUpdated = new Date(incidenceDatum.updated_at).toLocaleString('en-us', {
+        month: 'short',
+        year: 'numeric',
+        timeZone: 'UTC',
+      });
+      incidenceSource = `Source for incidence: ${incidenceDatum.data_source} as of ${incidenceUpdated}.`;
+    }
 
     const vaccineDatum = props.countryVaccHistory[0];
-    const vaccineUpdated = new Date(vaccineDatum.updated_at).toLocaleString('en-us', {
-      month: 'short',
-      year: 'numeric',
-      timeZone: 'UTC',
-    });
-    const vaccineSource = `Source for vaccination coverage: ${vaccineDatum.data_source} as of ${vaccineUpdated}.`;
+    if (vaccineDatum === undefined) vaccineSource = '';
+    else {
+      const vaccineUpdated = new Date(vaccineDatum.updated_at).toLocaleString('en-us', {
+        month: 'short',
+        year: 'numeric',
+        timeZone: 'UTC',
+      });
+      vaccineSource = `Source for vaccination coverage: ${vaccineDatum.data_source} as of ${vaccineUpdated}.`;
+    }
     const sources = [];
     if (incidenceDatum) sources.push(incidenceSource);
     if (vaccineSource) sources.push(vaccineSource);
     return sources.join(' ');
   };
+
+  // Is there any line data to plot?
+  const noLineData =
+    props.countryIncidenceHistory.length === 0
+    && props.countryVaccHistory.length === 0;
 
   // Effect hook to load API data.
   React.useEffect(() => {
@@ -388,158 +432,85 @@ const Details = (props) => {
       noResizeEvent: true,
       setTooltipData: setTooltipData,
       tooltipClassName: stylesTooltip.slidingLineTooltip,
+      setShowReset: setShowReset,
       margin: {
         top: 20,
-        right: 110,
+        right: 98,
         bottom: 60,
         left: 100,
       },
     };
 
     // Sliding line chart defined in SlidingLine.js
-    setSlidingLine(
-      new SlidingLine(
+    if (!noLineData)
+      setSlidingLine(
+        new SlidingLine(
 
-        // Selector of DOM element in Resilience.js component where the chart
-        // should be drawn.
-        '.' + styles.slidingLine,
+          // Selector of DOM element in Resilience.js component where the chart
+          // should be drawn.
+          '.' + styles.slidingLine,
 
-        // Chart parameters consumed by Chart.js and ResilienceRadarChart.js,
-        // defined above.
-        chartParams,
-      )
-    );
+          // Chart parameters consumed by Chart.js and ResilienceRadarChart.js,
+          // defined above.
+          chartParams,
+        )
+      );
 
     // Rebuild tooltips after the chart is drawn
     ReactTooltip.rebuild();
   }, [])
 
 
-  // If loading do not show JSX content.
-  if (false) return (<div></div>);
-  else {
 
-    return (<div className={styles.details}>
-              <div className={styles.sidebar}>
-                <div className={styles.title}>
-                  {props.countryIso2 && <img src={`/flags/${props.countryIso2}.png`} className={styles.flag} />}
-                  {props.countryName}
-                </div>
-                <div className={styles.map}>
-                  {
-                    <MiniMap countryIso2={props.countryIso2}/>
-                  }
-                </div>
+  // If loading do not show JSX content.
+  console.log('props')
+  console.log(props)
+  return (<div className={styles.details}>
+            <div className={styles.sidebar}>
+              <div className={styles.title}>
+                {props.countryIso2 && <img src={`/flags/${props.countryIso2}.png`} className={styles.flag} />}
+                {props.countryName}
+              </div>
+              <div className={styles.map}>
                 {
-                  [
-                    {
-                      'title': 'Population',
-                      'value_fmt': Util.comma,
-                      'value_label': 'people',
-                      'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'year')}, // TODO
-                      ...props.countryPop,
-                    },
-                    {
-                      'title': 'Gross domestic product per capita',
-                      'value_fmt': Util.money,
-                      'value_label': 'USD',
-                      'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'year')}, // TODO
-                      ...props.countryGDP,
-                    },
-                    {
-                      'title': 'Immunization capacity',
-                      'value_fmt': getScoreJsx,
-                      'hideSource': true,
-                      'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'year')}, // TODO
-                      ...(props.countryJeeImmun ? props.countryJeeImmun : {value: null}),
-                    },
-                    {
-                      'title': 'Real-time surveillance capacity',
-                      'value_fmt': getScoreJsx,
-                      'hideSource': true,
-                      'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'year')}, // TODO
-                      ...(props.countryJeeSurv ? props.countryJeeSurv : {value: null}),
-                    },
-                    {
-                      'title': 'Medical countermeasures capacity',
-                      'value_fmt': getScoreJsx,
-                      'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'year')}, // TODO
-                      ...(props.countryJeeMcm ? props.countryJeeMcm : {value: null}),
-                    },
-                  ].map(item =>
-                    <div className={styles.itemContainer}>
-                      <div className={styles.item}>
-                        <span className={styles.title}>
-                          {item.title} {item.date_time_fmt(item)}
-                        </span>
-                        <div className={styles.content}>
-                          {
-                            // Display formatted value and label
-                            (item.value !== null && (
-                              <span>
-                                <span className={styles.value}>
-                                  {item.value_fmt(item.value)}
-                                </span>
-                                {
-                                  item.value_label && <span className={styles.label}>
-                                    &nbsp;{item.value_label}
-                                  </span>
-                                }
-                              </span>
-                            ))
-                          }
-                          {
-                            // Data not available message, if applicable.
-                            (item.value === null && (
-                              <span className={'notAvail'}>
-                                Data not available
-                              </span>
-                            ))
-                          }
-                        </div>
-                        {
-                          // Display data source text if available.
-                          (item.data_source && item.value !== null && !item.notAvail && !item.hideSource) &&
-                            <div className={'dataSource'}>
-                              Source: {item.data_source}{ item.updated_at && (
-                                  ' as of ' + new Date(item.updated_at).toLocaleString('en-us', {
-                                    month: 'short',
-                                    year: 'numeric',
-                                  })
-                                )
-                              }
-                            </div>
-                        }
-                      </div>
-                    </div>
-                  )
+                  <MiniMap countryIso2={props.countryIso2}/>
                 }
               </div>
-              <div className={styles.main}>
               {
                 [
                   {
-                    'title': 'Vaccination coverage',
-                    'chart_jsx': getVaccChart,
-                    'value_fmt': Util.percentize,
-                    'value_label': 'of infants',
-                    'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'year')},
-                    ...(props.countryVaccLatest.value !== undefined ? props.countryVaccLatest : { value: null }),
+                    'title': 'Population',
+                    'value_fmt': Util.formatSI,
+                    'value_label': 'people',
+                    'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'year')}, // TODO
+                    ...(props.countryPop ? props.countryPop : {value: null}),
                   },
                   {
-                    'title': 'Recent monthly incidence of measles',
-                    'chart_jsx': getWedgeChart,
-                    'value_fmt': Util.formatIncidence,
-                    'value_label': 'cases per 1M population',
-                    'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'month')},
-                    ...(props.countryIncidenceLatest.value !== undefined ? props.countryIncidenceLatest : { value: null }),
+                    'title': 'Gross domestic product per capita',
+                    'value_fmt': Util.money,
+                    'value_label': 'USD',
+                    'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'year')}, // TODO
+                    ...(props.countryGDP ? props.countryGDP : {value: null}),
                   },
                   {
-                    'title': 'Incidence over time',
-                    'chart_jsx': getSlidingLineJsx,
-                    'date_time_fmt': Util.getDateTimeRange,
-                    'data_source': getSlidingLineDataSources,
-                    ...(props.countryIncidenceHistory.length > 0 ? { value: props.countryIncidenceHistory } : { value: null }),
+                    'title': 'Immunization capacity',
+                    'value_fmt': getScoreJsx,
+                    'hideSource': true,
+                    'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'year')}, // TODO
+                    ...(props.countryJeeImmun ? props.countryJeeImmun : {value: null}),
+                  },
+                  {
+                    'title': 'Real-time surveillance capacity',
+                    'value_fmt': getScoreJsx,
+                    'hideSource': true,
+                    'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'year')}, // TODO
+                    ...(props.countryJeeSurv ? props.countryJeeSurv : {value: null}),
+                  },
+                  {
+                    'title': 'Medical countermeasures capacity',
+                    'value_fmt': getScoreJsx,
+                    'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'year')}, // TODO
+                    ...(props.countryJeeMcm ? props.countryJeeMcm : {value: null}),
                   },
                 ].map(item =>
                   <div className={styles.itemContainer}>
@@ -550,7 +521,7 @@ const Details = (props) => {
                       <div className={styles.content}>
                         {
                           // Display formatted value and label
-                          ((item.value !== null && typeof item.value !== 'object') && (
+                          (item.value !== null && (
                             <span>
                               <span className={styles.value}>
                                 {item.value_fmt(item.value)}
@@ -571,15 +542,10 @@ const Details = (props) => {
                             </span>
                           ))
                         }
-                        {
-                          // Display chart if there is one
-                          (item.chart_jsx !== undefined) &&
-                            item.chart_jsx(item.value)
-                        }
                       </div>
                       {
                         // Display data source text if available.
-                        (typeof item.data_source !== 'function' && item.data_source && !item.notAvail) &&
+                        (item.data_source && item.value !== null && !item.notAvail && !item.hideSource) &&
                           <div className={'dataSource'}>
                             Source: {item.data_source}{ item.updated_at && (
                                 ' as of ' + new Date(item.updated_at).toLocaleString('en-us', {
@@ -590,48 +556,127 @@ const Details = (props) => {
                             }
                           </div>
                       }
-                      {
-                        (typeof item.data_source === 'function') &&
-                          <div className={'dataSource'}>
-                          {
-                            item.data_source()
-                          }
-                          </div>
-                      }
                     </div>
                   </div>
                 )
               }
-              </div>
-              <ReactTooltip
-                id={stylesTooltip.slidingLineTooltip}
-                type='slidingLine'
-                className='slidingLineTooltip'
-                place="right"
-                effect="float"
-                getContent={ () =>
-                  tooltipData &&
-                    <div className={stylesTooltip.tooltipContainer}>
-                      <div className={stylesTooltip.tooltipContent}>
-                      {
-                        tooltipData.items.map(item =>
-                          <div className={stylesTooltip.item}>
-                            <div className={stylesTooltip.name}>{item.name} {Util.getDatetimeStamp(item.datum, item.period)}</div>
-                            <div>
-                              <span className={stylesTooltip.value}>{item.value}</span>
-                              &nbsp;
-                              <span className={stylesTooltip.label}>{item.label}</span>
-                            </div>
-                          </div>
-                        )
-                      }
-                      </div>
-                    </div>
-                }
-                />
             </div>
+            <div className={styles.main}>
+            {
+              [
+                {
+                  'title': 'Vaccination coverage',
+                  'chart_jsx': getVaccChart,
+                  'value_fmt': Util.percentize,
+                  'value_label': 'of infants',
+                  'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'year')},
+                  ...(props.countryVaccLatest.value !== undefined ? props.countryVaccLatest : { value: null }),
+                },
+                {
+                  'title': 'Recent monthly incidence of measles',
+                  'chart_jsx': getWedgeChart,
+                  'value_fmt': Util.formatIncidence,
+                  'value_label': 'cases per 1M population',
+                  'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'month')},
+                  ...(props.countryIncidenceLatest.value !== undefined ? props.countryIncidenceLatest : { value: null }),
+                },
+                {
+                  'title': 'Incidence over time',
+                  'chart_jsx': getSlidingLineJsx,
+                  'date_time_fmt': Util.getDateTimeRange,
+                  'data_source': getSlidingLineDataSources,
+                  ...(props.countryIncidenceHistory.length > 0 ? { value: props.countryIncidenceHistory } : { value: null }),
+                },
+              ].map(item =>
+                <div className={styles.itemContainer}>
+                  <div className={styles.item}>
+                    <span className={styles.title}>
+                      {item.title} {item.date_time_fmt(item)}
+                    </span>
+                    <div className={styles.content}>
+                      {
+                        // Display formatted value and label
+                        ((item.value !== null && typeof item.value !== 'object') && (
+                          <span>
+                            <span className={styles.value}>
+                              {item.value_fmt(item.value)}
+                            </span>
+                            {
+                              item.value_label && <span className={styles.label}>
+                                &nbsp;{item.value_label}
+                              </span>
+                            }
+                          </span>
+                        ))
+                      }
+                      {
+                        // Data not available message, if applicable.
+                        (item.value === null && (
+                          <span className={'notAvail'}>
+                            Data not available
+                          </span>
+                        ))
+                      }
+                      {
+                        // Display chart if there is one
+                        (item.chart_jsx !== undefined) &&
+                          item.chart_jsx(item.value)
+                      }
+                    </div>
+                    {
+                      // Display data source text if available.
+                      (typeof item.data_source !== 'function' && item.data_source && !item.notAvail) &&
+                        <div className={'dataSource'}>
+                          Source: {item.data_source}{ item.updated_at && (
+                              ' as of ' + new Date(item.updated_at).toLocaleString('en-us', {
+                                month: 'short',
+                                year: 'numeric',
+                              })
+                            )
+                          }
+                        </div>
+                    }
+                    {
+                      (typeof item.data_source === 'function') &&
+                        <div className={'dataSource'}>
+                        {
+                          item.data_source()
+                        }
+                        </div>
+                    }
+                  </div>
+                </div>
+              )
+            }
+            </div>
+            <ReactTooltip
+              id={stylesTooltip.slidingLineTooltip}
+              type='slidingLine'
+              className='slidingLineTooltip'
+              place="right"
+              effect="float"
+              getContent={ () =>
+                tooltipData &&
+                  <div className={stylesTooltip.tooltipContainer}>
+                    <div className={stylesTooltip.tooltipContent}>
+                    {
+                      tooltipData.items.map(item =>
+                        <div className={stylesTooltip.item}>
+                          <div className={stylesTooltip.name}>{item.name} {Util.getDatetimeStamp(item.datum, item.period)}</div>
+                          <div>
+                            <span className={stylesTooltip.value}>{item.value}</span>
+                            &nbsp;
+                            <span className={stylesTooltip.label}>{item.label}</span>
+                          </div>
+                        </div>
+                      )
+                    }
+                    </div>
+                  </div>
+              }
+              />
+          </div>
     );
-  }
 };
 
 export default Details

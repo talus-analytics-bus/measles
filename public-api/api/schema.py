@@ -44,7 +44,7 @@ def cached(func):
 
 
 # Define a generic endpoint query.
-def getEntityInstances(entity_class, id_field_name, organizing_attribute, filters, params):
+def getEntityInstances(entity_class, id_field_name, organizing_attribute, order, filters, params):
 
     # Get the entity instances.
     allInstances = select(o for o in entity_class).order_by(entity_class.name)
@@ -66,8 +66,8 @@ def getEntityInstances(entity_class, id_field_name, organizing_attribute, filter
     # by the values of that attribute.
     if organizing_attribute is not None:
 
-        # Get the values of the attribute
-        resKeys = select(getattr(o, organizing_attribute) for o in entity_class)[:]
+        # # Get the values of the attribute
+        # resKeys = select(getattr(o, organizing_attribute) for o in entity_class)[:]
 
         # Organize outputs by these values.
         res = []
@@ -76,8 +76,7 @@ def getEntityInstances(entity_class, id_field_name, organizing_attribute, filter
         skipNull = True
 
         # For each value of the organizing attribute that had data:
-        for key in resKeys:
-
+        for key in order:
             # Skip nulls if desired
             if skipNull and key is None:
                 continue

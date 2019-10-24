@@ -6,15 +6,15 @@ import classNames from 'classnames';
 import * as d3 from 'd3/dist/d3.min';
 
 // layout
-import Logo from './components/layout/logo/Logo'
+import Logo from './components/layout/logo/Logo.js'
 
 // map
 import Map from './components/map/Map'
 import Util from './components/misc/Util.js'
 
 // views
-//import Alerts from './components/views/alerts/Alerts.js'
 import Details from './components/views/details/Details.js'
+import Global from './components/views/global/Global.js'
 
 // styles
 import styles from './App.module.scss'
@@ -22,16 +22,12 @@ import 'material-design-icons/iconfont/material-icons.css'
 
 // queries
 import ObservationQuery from './components/misc/ObservationQuery.js'
+import PlaceQuery from './components/misc/PlaceQuery.js'
 
-// var API_BASE = process.env.REACT_APP_API_BASE_URL
-// if (typeof API_BASE === 'undefined') {
-//   API_BASE = 'http://localhost:5002'
-// }
-
-// var DEMO_DATE = process.env.DEMO_DATE
-// if (typeof DEMO_DATE === 'undefined') {
-//   DEMO_DATE = '2025-07-04T23:56:00'
-// }
+// charts
+import MiniLine from './components/views/global/content/MiniLine.js'
+import Scatter from './components/views/global/content/Scatter.js'
+import PagingBar from './components/views/global/content/PagingBar.js'
 
 //: React.FC
 const App = () => {
@@ -56,6 +52,11 @@ const App = () => {
     return initialState;
   });
 
+  const [places, setPlaces] = React.useState(() => {
+    const initialState = [];
+    return initialState;
+  });
+
   // Hide the "How to use this map" modal if it has already been displayed
   // once to the user.
   // turning off always until we need interval
@@ -73,11 +74,19 @@ const App = () => {
   // Track details component
   const [detailsComponent, setDetailsComponent] = React.useState(null)
 
-  async function getMapObservations() {
+  // Track global component
+  const [globalComponent, setGlobalComponent] = React.useState(null)
+
+  async function getAppData() {
+    const placesParams = {
+      place_id: null,
+      by_region: true,
+    };
     const queries = {
       caseload: ObservationQuery(6, 'monthly', Util.formatDatetimeApi(Util.today())),
       incidence: ObservationQuery(15, 'monthly', Util.formatDatetimeApi(Util.today())),
       vaccination: ObservationQuery(4, 'yearly', '2018-01-01'),
+      places: PlaceQuery(placesParams.place_id, placesParams.by_region),
     };
 
     const results = {};
@@ -90,6 +99,9 @@ const App = () => {
     // get the incidence data
     setIncidenceObservations(results['incidence']);
 
+    // get the places data
+    setPlaces(results['places']);
+
     // get the fill data
     // TODO make this work the same way as the other "get most recent data queries", since it doesn't seem to
     setFillObservations(results['vaccination']);
@@ -100,7 +112,7 @@ const App = () => {
   // again.
   let alreadyShowedWelcomeModal = false;
   React.useEffect(() => {
-    getMapObservations()
+    getAppData()
 
     // If welcome modal isn't being shown currently and it has not already been
     // shown, show it, and mark it as already shown.
@@ -121,33 +133,6 @@ const App = () => {
       setLoadingNav={setLoadingNav}
       className={'map'}
       />
-
-  const getIncidenceQuartile = (allObsTmp, countryObs) => {
-    const allObs = allObsTmp.filter(o => {
-      return o.value && o.value !== null && o.value > 0;
-    })
-    .map(o => o.value)
-    .sort();
-
-    const quartiles = [
-      d3.quantile(allObs, .25),
-      d3.quantile(allObs, .5),
-      d3.quantile(allObs, .75),
-    ];
-
-    if (countryObs.value < quartiles[0]) {
-      return 0;
-    }
-    else if (countryObs.value < quartiles[1]) {
-      return 1;
-    }
-    else if (countryObs.value < quartiles[2]) {
-      return 2;
-    }
-    else if (countryObs.value >= quartiles[2]) {
-      return 3;
-    } else return null;
-  };
 
   const renderDetails = id => {
     if (loading) {
@@ -227,7 +212,8 @@ const App = () => {
         const countryVaccLatest = results.countryVaccHistory.length > 0 ? results.countryVaccHistory[results.countryVaccHistory.length - 1] : {};
 
         // Get quartile of incidence
-        const countryIncidenceQuartile = getIncidenceQuartile(incidenceObservations, countryIncidenceLatest);
+        const countryIncidenceQuantile = Util.getIncidenceQuantile(countryIncidenceLatest);
+        // const countryIncidenceQuantile = getIncidenceQuantile(incidenceObservations, countryIncidenceLatest);
 
         // Currently unused
         // const caseHistoryQ = await ObservationQuery(6, 'monthly', '2010-01-01', '2018-01-01', country);
@@ -243,7 +229,7 @@ const App = () => {
           countryJeeMcm={countryJeeMcm}
           countryIncidenceHistory={countryIncidenceHistory}
           countryIncidenceLatest={countryIncidenceLatest}
-          countryIncidenceQuartile={countryIncidenceQuartile}
+          countryIncidenceQuantile={countryIncidenceQuantile}
           countryVaccHistory={results.countryVaccHistory}
           countryVaccLatest={countryVaccLatest}
         />);
@@ -256,17 +242,204 @@ const App = () => {
     }
   }
 
+  const renderGlobal = id => {
+    if (loading) {
+      return <div />
+    }
+    else if (globalComponent === null) {
+
+      // Function to make API calls to get data for the state variables above.
+      const getGlobalData = async () => {
+
+        // Initialize chart parameters.
+        const chartParams = {
+          MiniLine: [
+            {
+              class: MiniLine,
+              params: {
+                domain: [new Date('2016/01/01'), Util.today()],
+                className: 'MiniLine',
+              }
+            },
+            {
+              class: MiniLine,
+              params: {
+                domain: [new Date('2016/01/01'), Util.today()],
+                className: 'MiniLine',
+              }
+            },
+          ],
+          Scatter: [
+            {
+              class: Scatter,
+              params: {
+                className: 'Scatter',
+                domain: [new Date('2016/01/01'), Util.today()],
+              }
+            },
+          ],
+          PagingBar: [
+            {
+              class: PagingBar,
+              params: {
+                className: 'PagingBar',
+                domain: [new Date('2016/01/01'), Util.today()],
+              }
+            },
+          ],
+        }
+
+        // Get all needed values in parallel
+        // TODO
+        const queries = {
+          // TODO - make global and yearly
+          globalIncidenceHistory: ObservationQuery(
+            15,
+            'monthly',
+            Util.formatDatetimeApi(chartParams.MiniLine[0].params.domain[1]),
+            Util.formatDatetimeApi(chartParams.MiniLine[0].params.domain[0]),
+            43, // China
+          ),
+          // TODO - make global
+          globalVaccHistory: ObservationQuery(
+            4,
+            'yearly',
+            Util.formatDatetimeApi(chartParams.MiniLine[0].params.domain[1]),
+            Util.formatDatetimeApi(chartParams.MiniLine[0].params.domain[0]),
+            43, // China
+          ),
+          caseload: ObservationQuery(
+            6,
+            'monthly',
+            Util.formatDatetimeApi(chartParams.Scatter[0].params.domain[1]),
+            Util.formatDatetimeApi(chartParams.Scatter[0].params.domain[0]),
+          ),
+          incidence: ObservationQuery(
+            15,
+            'monthly',
+            Util.formatDatetimeApi(chartParams.Scatter[0].params.domain[1]),
+            Util.formatDatetimeApi(chartParams.Scatter[0].params.domain[0]),
+          ),
+          vaccination: ObservationQuery(
+            4,
+            'yearly',
+            Util.formatDatetimeApi(chartParams.Scatter[0].params.domain[1]),
+            Util.formatDatetimeApi(chartParams.Scatter[0].params.domain[0]),
+          ),
+          population: ObservationQuery(
+            3,
+            'yearly',
+            Util.formatDatetimeApi(chartParams.Scatter[0].params.domain[1]),
+            Util.formatDatetimeApi(chartParams.Scatter[0].params.domain[0]),
+          ),
+        };
+
+        const results = {};
+        for (let q in queries) {
+          results[q] = await queries[q];
+        }
+        console.log('results -- App.js')
+        console.log(results)
+        // Country basic info
+        // Global info
+
+        // Initialize chart data
+
+
+        // Mini line chart 1 - Global annual incidence
+        // TODO
+        // DEV: Use incidence observations for China on the first of Jan for
+        // 2016 - 2019 inclusive for now.
+        const debugMiniLine1Data = results.globalIncidenceHistory.filter(obs => {
+          const date = new Date(obs.date_time.replace(/-/g, '/'));
+
+          const isRightDate =
+            date.getUTCMonth() === 0
+            && date.getUTCDate() === 1;
+
+          return isRightDate;
+        });
+
+        // TODO ensure mini lines have partial data for current year if
+        // possible.
+        chartParams.MiniLine[0].params.data = debugMiniLine1Data;
+        chartParams.MiniLine[1].params.data = results.globalVaccHistory;
+        chartParams.Scatter[0].params.data = {
+          x: results.vaccination,
+          y: results.caseload,
+          y2: results.incidence,
+          size: results.population,
+        };
+        chartParams.PagingBar[0].params.data = {
+          y: results.caseload,
+          y2: results.incidence,
+        };
+
+        // // Incidence history and latest observation
+        // // Do not show null values in data for now
+        // const foundNotNullVal = {
+        //   fromStart: false,
+        //   fromEnd: false,
+        // };
+        // const countryIncidenceHistory = results.countryIncidenceHistoryFull
+        //     .filter(d => {
+        //       if (foundNotNullVal.fromStart) return true;
+        //       else {
+        //         if (d.value === null) return false;
+        //         else {
+        //           foundNotNullVal.fromStart = true;
+        //           return true;
+        //         }
+        //       }
+        //     })
+        //     .reverse()
+        //     .filter(d => {
+        //       if (foundNotNullVal.fromEnd) return true;
+        //       else {
+        //         if (d.value === null) return false;
+        //         else {
+        //           foundNotNullVal.fromEnd = true;
+        //           return true;
+        //         }
+        //       }
+        //     })
+        //     .reverse();
+
+        setGlobalComponent(<Global
+          chartParams={chartParams}
+          allIncidence={results.incidence}
+        />);
+      }
+      getGlobalData(id);
+      return <div />;
+    } else {
+      setLoadingNav(false);
+      return globalComponent;
+    }
+  }
+
   // JSX for main app. Switch component allows links in the header to be used to
   // determine main app content.
   return (
     <div className={styles.app}>
       <BrowserRouter>
-        <Logo page={page} loadingNav={loadingNav} />
+        <Logo page={page} loadingNav={loadingNav} places={places} />
         <Switch>
           <div>
             <Route exact path='/' component={ () => { setPage('map'); setLoadingNav(true); return renderMap; } } />
             <Route exact path='/map' component={ () => { setPage('map'); setLoadingNav(true); return renderMap; } } />
-            <Route exact path='/global' component={ () => { setPage('global'); return <div className={'dev global'}>The global page is currently being developed.</div>; } } />
+            {
+              false &&
+              <Route exact path='/global' component={ () => { setPage('global'); return <div className={'dev global'}>The global page is currently being developed.</div>; } } />
+            }
+            <Route
+              path='/global'
+              component={d => {
+                setPage('global');
+                setLoadingNav(true);
+                return renderGlobal()
+              }}
+            />
             <Route
               path='/details/:id'
               component={d => {

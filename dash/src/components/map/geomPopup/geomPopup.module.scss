@@ -84,9 +84,25 @@ button {
       font-size: 1.67em;
       color: black;
       font-family: 'Gotham Bold';
+
+      .value2 {
+        font-size: .65em;
+        text-transform: uppercase;
+        font-weight: normal;
+        font-family: 'Open Sans';
+        text-align: right;
+        float: right;
+        line-height: 2;
+        // color: black;
+      }
+
       &.incidence {
         color: $value-red;
+        &.zero {
+          color: black;
+        }
       }
+
       &.notAvail {
         color: $grey;
         font-style: italic;

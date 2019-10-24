@@ -1,0 +1,36 @@
+@import '../../../assets/styles/colors.scss';
+
+#globalTooltip {
+  .tooltipContainer {
+    display: flex;
+    flex-flow: column;
+    background-color: white;
+    padding: 5px;
+    border: 1px solid $grey;
+    .tooltipContent {
+      .tooltipName {
+        font-size: 1.5em;
+        font-weight: bold;
+      }
+      display: flex;
+      flex-flow: column;
+      background-color: white;
+      .item {
+        &:not(:last-child) {
+          margin-bottom: 5px;
+        }
+        .name {
+          font-family: 'open_sanssemibold', sans-serif;
+        }
+      }
+    }
+    box-shadow: 3px 3px 2.5px 0 rgba(0, 0, 0, 0.3);
+    -webkit-box-shadow: 3px 3px 2.5px 0 rgba(0, 0, 0, 0.3);
+  }
+}
+
+#sliderTooltip {
+  visibility: visible !important;
+  opacity: 1 !important;
+  background-color: green;
+}

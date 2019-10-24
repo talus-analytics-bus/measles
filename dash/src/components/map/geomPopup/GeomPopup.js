@@ -67,6 +67,8 @@ const GeomPopup = ({ popupData }) => {
           slug: type,
           label: 'Incidence of measles' + `${Util.getDatetimeStamp(obs, 'month')}`,
           value: Util.formatIncidence(obs['value']) + ' cases per 1M population',
+          valueNum: obs['value'],
+          // value2: Util.getIncidenceQuantile(obs, {type: 'name'}),
           notAvail: obs['value'] === null,
           dataSource: obs['data_source'],
           dataSourceLastUpdated: new Date (obs['updated_at']),
@@ -104,6 +106,8 @@ const GeomPopup = ({ popupData }) => {
     }
   };
 
+  console.log(getTooltipMetricData(popupData, 'incidence'))
+
   return (
     <div className={styles.container}>
       <div className={styles.header}>
@@ -122,17 +126,27 @@ const GeomPopup = ({ popupData }) => {
               getTooltipMetricData(popupData, 'bubble'),
               getTooltipMetricData(popupData, 'fill'),
             ].map(d =>
-              <div className={classNames(styles[d.slug], styles.datum)}>
+              <div className={classNames(
+                styles[d.slug],
+                styles.datum
+              )}>
                 <p className={classNames(styles[d.slug], styles.label)}>{d.label}</p>
                 <p className={classNames(
                   styles[d.slug],
                   styles.value,
                   {
                     [styles['notAvail']]: d.notAvail,
+                    [styles.zero]: d.slug === 'incidence' && d.valueNum === 0,
                   },
                 )}>
                   {d.notAvail ? 'Recent data not available' : d.value}
                   {
+                    // If value2 exists, add that
+                    (d.value2 !== undefined) && <span className={styles.value2}>{d.value2}</span>
+                    // (d.value2 !== undefined) && <div className={styles.value2}>{d.value2}</div>
+                  }
+                  {
+                    // If delta exists, add that
                     (d.deltaData && d.deltaData.delta !== undefined) && !d.notAvail && <div className={classNames(styles.delta, {
                       [styles['inc']]: d.deltaData.delta > 0,
                       [styles['dec']]: d.deltaData.delta < 0,

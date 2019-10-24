@@ -315,6 +315,14 @@ class Places(Resource):
         }
 
         # Get and return places.
-        res = schema.getEntityInstances(db.Place, 'place_id', organizing_attribute,
-                                        filters, params)
+        order = [
+            "Sub-Saharan Africa",
+            "Northern Africa and Western Asia",
+            "Central and Southern Asia",
+            "Eastern and South-Eastern Asia",
+            "Oceania",
+            "Latin America and the Caribbean",
+            "Europe and Northern America",
+        ]
+        res = schema.getEntityInstances(db.Place, 'place_id', organizing_attribute, order, filters, params)
         return res

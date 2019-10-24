@@ -2,6 +2,146 @@ import * as d3 from 'd3/dist/d3.min';
 
 // Utility functions.
 const Util = {};
+
+Util.getScatterLabelData = (datum) => {
+  switch (datum.metric) {
+    case 'caseload_totalpop':
+      return 'Measles cases reported';
+    case 'incidence_monthly':
+      return 'Monthly incidence of measles';
+    default:
+      return '';
+  }
+};
+
+Util.getSvgChartLabelData = (datum) => {
+  switch (datum.metric) {
+    case 'caseload_totalpop':
+      return [
+        'Cases reported',
+      ];
+    case 'incidence_monthly': // DEBUG
+      return [
+        'Global yearly',
+        'incidence',
+      ];
+    default: // DEBUG
+      return [
+        'Global vaccination',
+        'coverage',
+      ];
+  }
+};
+
+Util.getUTCDate = (dt) => {
+  const utcYear = dt.getUTCFullYear();
+  const utcMonth = dt.getUTCMonth();
+  const utcDt = new Date(`${utcYear}/${utcMonth + 1}/1`);
+  return utcDt;
+};
+
+Util.getTooltipItem = (datum) => {
+  switch (datum.metric) {
+    case 'caseload_totalpop':
+      return {
+        name: 'Cases reported',
+        datum: datum,
+        period: 'month',
+        value: Util.comma(datum.value),
+        label: 'cases',
+      };
+    case 'incidence_monthly': // DEBUG
+      return {
+        name: 'Monthly incidence',
+        datum: datum,
+        period: 'month',
+        value: Util.formatIncidence(datum.value),
+        label: 'cases per 1M population',
+      };
+    case 'coverage_mcv1_infant': // DEBUG
+      return {
+        name: 'Vaccination coverage',
+        datum: datum,
+        period: 'year',
+        value: Util.percentize(datum.value),
+        label: 'of infants',
+      };
+    case 'total_population':
+      return {
+        name: 'Total population',
+        datum: datum,
+        period: 'year',
+        value: Util.formatSI(datum.value),
+        label: 'people',
+      };
+  }
+};
+
+Util.quantiles = [
+  {
+    name: 'Very low',
+    value: 0.2,
+  },
+  {
+    name: 'Low',
+    value: 0.6,
+  },
+  {
+    name: 'Average',
+    value: 1.4,
+  },
+  {
+    name: 'High',
+    value: 4.1,
+  },
+];
+
+// const getIncidenceQuantile = (allObsTmp, countryObs) => {
+Util.getIncidenceQuantile = (countryObs, params = {}) => {
+
+  if (countryObs.value === 0) {
+    if (params.type === 'name') return '';
+    return -9999;
+  }
+
+  for (let i = 0; i < Util.quantiles.length; i++) {
+    if (countryObs.value < Util.quantiles[i].value) {
+      if (params.type === 'name') return Util.quantiles[i].name;
+      else return i;
+    } else if (i === Util.quantiles.length - 1 && countryObs.value >= Util.quantiles[i].value) {
+      if (params.type === 'name') return 'Very high';
+      return (i + 1);
+    }
+  }
+  return null;
+
+  // const allObs = allObsTmp.filter(o => {
+  //   return o.value && o.value !== null && o.value > 0;
+  // })
+  // .map(o => o.value)
+  // .sort();
+  //
+  // const quartiles = [
+  //   d3.quantile(allObs, .25),
+  //   d3.quantile(allObs, .5),
+  //   d3.quantile(allObs, .75),
+  // ];
+  //
+  //
+  // if (countryObs.value < quartiles[0]) {
+  //   return 0;
+  // }
+  // else if (countryObs.value < quartiles[1]) {
+  //   return 1;
+  // }
+  // else if (countryObs.value < quartiles[2]) {
+  //   return 2;
+  // }
+  // else if (countryObs.value >= quartiles[2]) {
+  //   return 3;
+  // } else return null;
+};
+
 const getApiUrl = () => {
   if (process.env.NODE_ENV === 'production') {
     if (window.location.href.search('https') > -1) return 'https://measles-api.talusanalytics.com';
@@ -13,6 +153,7 @@ Util.API_URL = getApiUrl();
 
 Util.getDateTimeRange = (item) => {
   const data = item.value;
+  if (data === null) return '';
   const first = data[0]['date_time'];
   const last = data[data.length - 1]['date_time'];
   const firstStr = new Date(first.replace(/-/g, '/')).toLocaleString('en-us', {
@@ -159,7 +300,11 @@ Util.formatSI = (val) => {
 
   // If 1k or above, return SI value with two significant digits
   else if (val >= 1000 && val < 1000000) return d3.formatPrefix('.2f', 1000)(val); // k
-  else return d3.formatPrefix(',.2s', 1000000)(val); // M
+
+  // If 1k or above, return SI value with two significant digits
+  else if (val >= 1000000 && val < 1000000000) return d3.formatPrefix('.2f', 1000000)(val); // M
+
+  else return d3.formatPrefix(',.2s', 1000000000)(val).replace(/G/,"B"); // B
 };
 
 /**
