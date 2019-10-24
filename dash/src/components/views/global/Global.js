@@ -291,6 +291,18 @@ const Global = (props) => {
     );
   };
 
+  // Returns jsx for paging bar chart
+  const getPagingBarJsx = () => {
+
+    const area = <div className={classNames(styles.Scatter, 'PagingBar-0')} />;
+
+    return (
+      <div>
+        {area}
+      </div>
+    );
+  };
+
   /**
    * Return correct data source text for scatter chart (vaccination and
    * incidence).
@@ -334,6 +346,17 @@ const Global = (props) => {
         'chart_jsx': getScatterJsx,
         'date_time_fmt': () => '',
         'data_source': getScatterDataSources,
+      },
+    ]
+  };
+
+  const getBarData = () => {
+    return [
+      {
+        'title': 'Reported cases by country',
+        'chart_jsx': getPagingBarJsx,
+        'date_time_fmt': () => '',
+        // 'data_source': getBarDataSource,
       },
     ]
   };
@@ -383,18 +406,76 @@ const Global = (props) => {
   });
 
   return (<div className={styles.details}>
-            <div className={styles.sidebar}>
-              <div className={styles.title}>
-                Global caseload
-              </div>
-              <div className={styles.map}>
+            <div className={styles.top}>
+              <div className={styles.sidebar}>
+                <div className={styles.title}>
+                  Global caseload
+                </div>
+                <div className={styles.map}>
+                  {
+                    <MiniMap countryIso2={props.countryIso2}/>
+                  }
+                </div>
                 {
-                  <MiniMap countryIso2={props.countryIso2}/>
+                  [
+                    ...getMiniLineJsx(),
+                  ].map(item =>
+                    <div className={styles.itemContainer}>
+                      <div className={styles.item}>
+                        <span className={styles.title}>
+                          {item.title} {item.date_time_fmt(item)}
+                        </span>
+                        <div className={styles.content}>
+                          {
+                            // Display formatted value and label
+                            (item.value !== null && (
+                              <span>
+                                <span className={styles.value}>
+                                  {item.value_fmt(item.value)}
+                                </span>
+                                {
+                                  item.value_label && <span className={styles.label}>
+                                    &nbsp;{item.value_label}
+                                  </span>
+                                }
+                              </span>
+                            ))
+                          }
+                          {
+                            // Show chart if applicable
+                            (item.chart_jsx !== undefined) && item.chart_jsx()
+                          }
+                          {
+                            // Data not available message, if applicable.
+                            (item.value === null && (
+                              <span className={'notAvail'}>
+                                Data not available
+                              </span>
+                            ))
+                          }
+                        </div>
+                        {
+                          // Display data source text if available.
+                          (item.data_source && item.value !== null && !item.notAvail && !item.hideSource) &&
+                            <div className={'dataSource'}>
+                              Source: {item.data_source}{ item.updated_at && (
+                                  ' as of ' + new Date(item.updated_at).toLocaleString('en-us', {
+                                    month: 'short',
+                                    year: 'numeric',
+                                  })
+                                )
+                              }
+                            </div>
+                        }
+                      </div>
+                    </div>
+                  )
                 }
               </div>
+              <div className={styles.main}>
               {
                 [
-                  ...getMiniLineJsx(),
+                  ...getScatterData()
                 ].map(item =>
                   <div className={styles.itemContainer}>
                     <div className={styles.item}>
@@ -403,36 +484,14 @@ const Global = (props) => {
                       </span>
                       <div className={styles.content}>
                         {
-                          // Display formatted value and label
-                          (item.value !== null && (
-                            <span>
-                              <span className={styles.value}>
-                                {item.value_fmt(item.value)}
-                              </span>
-                              {
-                                item.value_label && <span className={styles.label}>
-                                  &nbsp;{item.value_label}
-                                </span>
-                              }
-                            </span>
-                          ))
-                        }
-                        {
-                          // Show chart if applicable
-                          (item.chart_jsx !== undefined) && item.chart_jsx()
-                        }
-                        {
-                          // Data not available message, if applicable.
-                          (item.value === null && (
-                            <span className={'notAvail'}>
-                              Data not available
-                            </span>
-                          ))
+                          // Display chart if there is one
+                          (item.chart_jsx !== undefined) &&
+                            item.chart_jsx(item.value)
                         }
                       </div>
                       {
                         // Display data source text if available.
-                        (item.data_source && item.value !== null && !item.notAvail && !item.hideSource) &&
+                        (typeof item.data_source !== 'function' && item.data_source && !item.notAvail) &&
                           <div className={'dataSource'}>
                             Source: {item.data_source}{ item.updated_at && (
                                 ' as of ' + new Date(item.updated_at).toLocaleString('en-us', {
@@ -443,15 +502,25 @@ const Global = (props) => {
                             }
                           </div>
                       }
+                      {
+                        (typeof item.data_source === 'function') &&
+                          <div className={'dataSource'}>
+                          {
+                            item.data_source()
+                          }
+                          </div>
+                      }
                     </div>
                   </div>
                 )
               }
+              </div>
             </div>
-            <div className={styles.main}>
+            <div className={styles.bottom}>
+            <div className={classNames(styles.main, styles.mainBottom)}>
             {
               [
-                ...getScatterData()
+                ...getBarData()
               ].map(item =>
                 <div className={styles.itemContainer}>
                   <div className={styles.item}>
@@ -541,6 +610,7 @@ const Global = (props) => {
               }
               />
           </div>
+        </div>
     );
 };
 

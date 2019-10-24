@@ -47,7 +47,16 @@ $scatterSize: 75vh;
 
 .details {
   display: flex;
-  flex-flow: row;
+  flex-flow: column;
+
+  .top {
+    display: flex;
+    flex-flow: row;
+  }
+  .bottom {
+    display: flex;
+    flex-flow: row;
+  }
 
   .sidebar {
     display: flex;

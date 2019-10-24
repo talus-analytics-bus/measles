@@ -27,6 +27,7 @@ import PlaceQuery from './components/misc/PlaceQuery.js'
 // charts
 import MiniLine from './components/views/global/content/MiniLine.js'
 import Scatter from './components/views/global/content/Scatter.js'
+import PagingBar from './components/views/global/content/PagingBar.js'
 
 //: React.FC
 const App = () => {
@@ -277,7 +278,15 @@ const App = () => {
               }
             },
           ],
-          PagingBar: [{params: {}}],
+          PagingBar: [
+            {
+              class: PagingBar,
+              params: {
+                className: 'PagingBar',
+                domain: [new Date('2016/01/01'), Util.today()],
+              }
+            },
+          ],
         }
 
         // Get all needed values in parallel
@@ -357,9 +366,13 @@ const App = () => {
         chartParams.MiniLine[1].params.data = results.globalVaccHistory;
         chartParams.Scatter[0].params.data = {
           x: results.vaccination,
-          y2: results.incidence,
           y: results.caseload,
+          y2: results.incidence,
           size: results.population,
+        };
+        chartParams.PagingBar[0].params.data = {
+          y: results.caseload,
+          y2: results.incidence,
         };
 
         // // Incidence history and latest observation
