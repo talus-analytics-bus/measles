@@ -491,13 +491,11 @@ class Scatter extends Chart {
             newCircleGs
               .append('text')
                 .attr('class', styles.scatterCircleLabel)
-                .attr('dy', d => (-1 * r(d.value_normalized.size)) - 1)
+                .attr('dy', d => (-1 * r(d.value_normalized.size)) - 2)
                 .attr('dx', d => getTextDx(d))
                 .style('text-anchor', d => getTextAnchor(d))
                 .style('font-size', d => labelSize(d.value_normalized.size))
                 .text(d => d.place_name)
-
-
 
             newCircleGs
               .transition()
