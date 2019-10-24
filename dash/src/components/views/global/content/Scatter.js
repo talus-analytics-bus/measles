@@ -78,9 +78,14 @@ class Scatter extends Chart {
     }
 
     // Define red color scale for bubbles
-    const yColor = d3.scaleLinear()
+    const yColorScale = d3.scaleLinear()
       .domain([0, 1])
-      .range(['#d89da5', '#9d3e4c']);
+      .range(['#e6c1c6', '#9d3e4c']);
+
+    const yColor = (val) => {
+      if (val === null) return '#b3b3b3'; // no data color
+      else return yColorScale(val);
+    };
 
     // Define bubble size scale
     const r = d3.scaleLinear()
@@ -278,6 +283,8 @@ class Scatter extends Chart {
     // Called: Every time the month/year slider is changed.
     chart.update = (dt) => {
       const sortBySize = (a, b) => {
+        if (a.value_normalized.y === null) return -1;
+        if (b.value_normalized.y === null) return 1;
         if (a.value_normalized.size > b.value_normalized.size) return -1;
         else if (a.value_normalized.size < b.value_normalized.size) return 1;
         else return 0;
@@ -294,7 +301,12 @@ class Scatter extends Chart {
         return d.date_time.startsWith(monthlyStr);
       });
       const yDataMax = d3.max(yData, d => d.value);
-      yData.forEach(d => d.value_normalized = d.value / yDataMax );
+      yData.forEach(d => {
+        if (d.value === null) d.value_normalized = null;
+        else {
+          d.value_normalized = d.value / yDataMax
+        }
+      });
 
       // x data - use most recent available
       let xDataYearlyStr = yearlyStr;
@@ -344,7 +356,8 @@ class Scatter extends Chart {
       });
 
       // Sort data by size so that largest circles are in the back.
-      data.sort(sortBySize);
+      data
+        .sort(sortBySize);
 
       // Update x-scale domain so that far left side corresponds to the
       // lowest normalized x value.
@@ -421,6 +434,8 @@ class Scatter extends Chart {
       }
 
       // Enter new bubbles, update old
+      console.log('data')
+      console.log(data)
       bubblesG.selectAll('g')
         .attr('class', styles.bubbleG)
         .data(data, d => d.place_id)

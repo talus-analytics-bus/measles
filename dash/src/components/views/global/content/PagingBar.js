@@ -15,17 +15,29 @@ class PagingBar extends Chart {
     this.params = params;
 
     this.data = {vals: {}};
-    this.data.vals.y = params.data.y || [];
+    this.data.vals.x = params.data.y || []; // horiz bar chart, so x = y
+
+    // TODO remove data not for the time period we need
+    // Sort data by descending value and assign page numbers
+    const pageLength = 15;
+    const sortFunc = Util.sortByField('value');
+    this.data.vals.x
+    .sort(sortFunc)
+    .forEach((v, i) => {
+      v.page = Math.floor(i / pageLength);
+    });
 
     // Default margins
     if (!this.params.margin) {
       this.params.margin = {
-        top: 68,
-        right: 5,
-        bottom: 80,
-        left: 120, // +40
+        top: 20,
+        right: 20,
+        bottom: 20,
+        left: 20,
       };
     }
+
+    // TODO set left margin based on the longest country name included.
 
     this.init();
     this.onResize(this);
@@ -37,6 +49,21 @@ class PagingBar extends Chart {
     const chart = this;
     console.log('chart');
     console.log(chart);
+
+    // x scale = cases or incidence
+    // Set domain in update function
+    const x = d3.scaleLinear()
+      .range([0, chart.width])
+      .nice();
+
+    const xAxis = d3.axisTop()
+      .tickFormat(Util.comma)
+      .ticks(5);
+
+    // y scale = country
+    // Set domain in update function
+    const y = d3.scaleOrdinal()
+      .range([0, chart.height]);
 
     // // Create clipping path
     // const defs = chart.svg.append('defs');
@@ -272,9 +299,16 @@ class PagingBar extends Chart {
     //
     // // TODO build rest of chart
 
-    // Update function: Draw lines, add tooltips, etc.
-    // Called: Every time the month/year slider is changed.
-    chart.update = (dt) => {
+    // Update function: Update chart to show countries on the given page num.
+    chart.update = (pageNumber = 1) => {
+
+      // Calculate x domain max.
+      const maxX = d3.max(chart.data.vals.x, d => d.value);
+      x.domain([0, maxX]);
+
+      // Set y domain based on countries in this page
+
+
       // const sortBySize = (a, b) => {
       //   if (a.value_normalized.size > b.value_normalized.size) return -1;
       //   else if (a.value_normalized.size < b.value_normalized.size) return 1;
@@ -564,16 +598,7 @@ class PagingBar extends Chart {
       //   .text(`in ${xDataYearlyStr} (relative)`);
     };
 
-    // Call update function, using most recent dt of data as the initial
-    // selection.
-    const nData = chart.data.vals.y.length;
-    const initDt = Util.getUTCDate(
-      new Date(
-        chart.data.vals.y[nData - 1].date_time.replace(/-/g, '/')
-      )
-    );
-
-    chart.update(initDt);
+    chart.update(1);
 
     // Reduce width at the end
     chart.svg.node().parentElement.classList.add(styles.drawn);

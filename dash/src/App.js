@@ -314,6 +314,12 @@ const App = () => {
             Util.formatDatetimeApi(chartParams.Scatter[0].params.domain[1]),
             Util.formatDatetimeApi(chartParams.Scatter[0].params.domain[0]),
           ),
+          incidence_12months: ObservationQuery( // DEBUG: replace with metric 24
+            6,
+            // 24,
+            'monthly',
+            Util.formatDatetimeApi(Util.today()),
+          ),
           incidence: ObservationQuery(
             15,
             'monthly',
@@ -371,8 +377,7 @@ const App = () => {
           size: results.population,
         };
         chartParams.PagingBar[0].params.data = {
-          y: results.caseload,
-          y2: results.incidence,
+          y: results.incidence_12months,
         };
 
         // // Incidence history and latest observation
