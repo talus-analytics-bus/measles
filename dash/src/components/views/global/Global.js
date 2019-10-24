@@ -129,7 +129,6 @@ const Global = (props) => {
       clearTimeout(playTimeouts.pop());
     }
     setPlayTimeouts([]);
-    // playTimeouts.forEach(playTimeout => clearTimeout(playTimeout));
   };
   const handlePlay = () => {
     const scatterChart = charts.find(c => c.params.className === 'Scatter');
@@ -160,11 +159,15 @@ const Global = (props) => {
     setPlayTimeouts(newPlayTimeouts);
   };
   const handleBackForward = (change) => {
+    // Stop playing if playing
+    handlePause();
+
     // Update slider
-    const newSliderVal = new Date(curSliderVal);
-    newSliderVal.setUTCMonth(
-      newSliderVal.getUTCMonth() + change
+    const newSliderValTmp = Util.getUTCDate(new Date(curSliderVal));
+    newSliderValTmp.setUTCMonth(
+      newSliderValTmp.getUTCMonth() + change
     );
+    const newSliderVal = Util.getUTCDate(newSliderValTmp);
     if (newSliderVal < sliderMin || newSliderVal > sliderMax) return;
     setCurSliderVal(newSliderVal);
     const scatterChart = charts.find(c => c.params.className === 'Scatter');
