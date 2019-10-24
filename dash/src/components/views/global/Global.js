@@ -121,6 +121,9 @@ const Global = (props) => {
     // Set scatterplot update
     const scatterChart = charts.find(c => c.params.className === 'Scatter');
     scatterChart.update(curSliderVal);
+
+    // Stop playing if needed
+    if (playing) handlePause();
   };
 
   const handlePause = () => {
@@ -160,7 +163,7 @@ const Global = (props) => {
   };
   const handleBackForward = (change) => {
     // Stop playing if playing
-    handlePause();
+    if (playing) handlePause();
 
     // Update slider
     const newSliderValTmp = Util.getUTCDate(new Date(curSliderVal));
