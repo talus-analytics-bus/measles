@@ -357,8 +357,8 @@ const App = () => {
         chartParams.MiniLine[1].params.data = results.globalVaccHistory;
         chartParams.Scatter[0].params.data = {
           x: results.vaccination,
-          y: results.incidence,
-          y2: results.caseload,
+          y2: results.incidence,
+          y: results.caseload,
           size: results.population,
         };
 

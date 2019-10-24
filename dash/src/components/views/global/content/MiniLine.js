@@ -188,30 +188,13 @@ class MiniLine extends Chart {
       .attr('x', -chart.height / 2)
       .attr('y', yAxisLeftYPos)
 
-
-    const getLabelData = () => {
-      switch (chart.data.vals[0].metric) {
-        case 'incidence_monthly': // DEBUG
-          return [
-            'Global yearly',
-            'incidence',
-          ];
-        default: // DEBUG
-          return [
-            'Global vaccination',
-            'coverage',
-          ];
-      }
-    };
-
-
-    const labelData = getLabelData();
+    const labelData = Util.getSvgChartLabelData(chart.data.vals[0]);
     yAxisLabel.selectAll('tspan')
     .data(labelData)
     .enter().append('tspan')
-    .attr('x', -chart.height / 2)
-      .attr('dy', (d, i) => (1.2*i) + 'em')
-      .text(d => d);
+      .attr('x', -chart.height / 2)
+        .attr('dy', (d, i) => (1.2*i) + 'em')
+        .text(d => d);
 
       // Get "value" line segments -- all segments where data are available (not
       // null).

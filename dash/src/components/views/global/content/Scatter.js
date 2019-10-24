@@ -22,7 +22,7 @@ class Scatter extends Chart {
     // Default margins
     if (!this.params.margin) {
       this.params.margin = {
-        top: 48,
+        top: 68,
         right: 5,
         bottom: 80,
         left: 120, // +40
@@ -222,13 +222,13 @@ class Scatter extends Chart {
         .attr('x1', x(.5))
         .attr('x2', x(.5))
         .attr('y1', y(0))
-        .attr('y2', y(1)-11);
+        .attr('y2', y(1)-31);
 
     // Add label for avg vaccination coverage line
     const avgXLineLabel = chart['avgXLine'].append('text')
       .attr('class', styles.avgXLineLabel)
       .attr('x', x(.5))
-      .attr('y', y(1) - 36);
+      .attr('y', y(1) - 56);
     const avgXLineLabelShift = -143/2;
     avgXLineLabel.append('tspan')
       .attr('x', x(.5))
@@ -247,7 +247,8 @@ class Scatter extends Chart {
 
     yAxisLabel.append('tspan')
     .attr('x', -chart.height / 2)
-      .text('Monthly incidence of measles');
+      .text(Util.getScatterLabelData(chart.params.data.y[0]));
+
     yAxisLabel.append('tspan')
     .attr('x', -chart.height / 2)
       .attr('dy', '1.2em')
@@ -570,11 +571,14 @@ class Scatter extends Chart {
     // Call update function, using most recent dt of data as the initial
     // selection.
     const nData = chart.data.vals.y.length;
-    const initDt = new Date(
-      chart.data.vals.y[nData - 1].date_time.replace(/-/g, '/')
+    const initDt = Util.getUTCDate(
+      new Date(
+        chart.data.vals.y[nData - 1].date_time.replace(/-/g, '/')
+      )
     );
+
     chart.update(initDt);
-    
+
     // Reduce width at the end
     chart.svg.node().parentElement.classList.add(styles.drawn);
   }

@@ -3,6 +3,36 @@ import * as d3 from 'd3/dist/d3.min';
 // Utility functions.
 const Util = {};
 
+Util.getScatterLabelData = (datum) => {
+  switch (datum.metric) {
+    case 'caseload_totalpop':
+      return 'Measles cases reported';
+    case 'incidence_monthly':
+      return 'Monthly incidence of measles';
+    default:
+      return '';
+  }
+};
+
+Util.getSvgChartLabelData = (datum) => {
+  switch (datum.metric) {
+    case 'caseload_totalpop':
+      return [
+        'Cases reported',
+      ];
+    case 'incidence_monthly': // DEBUG
+      return [
+        'Global yearly',
+        'incidence',
+      ];
+    default: // DEBUG
+      return [
+        'Global vaccination',
+        'coverage',
+      ];
+  }
+};
+
 Util.getUTCDate = (dt) => {
   const utcYear = dt.getUTCFullYear();
   const utcMonth = dt.getUTCMonth();
@@ -12,6 +42,14 @@ Util.getUTCDate = (dt) => {
 
 Util.getTooltipItem = (datum) => {
   switch (datum.metric) {
+    case 'caseload_totalpop':
+      return {
+        name: 'Cases reported',
+        datum: datum,
+        period: 'month',
+        value: Util.comma(datum.value),
+        label: 'cases',
+      };
     case 'incidence_monthly': // DEBUG
       return {
         name: 'Monthly incidence',
