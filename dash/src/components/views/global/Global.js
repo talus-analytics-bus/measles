@@ -350,13 +350,13 @@ const Global = (props) => {
     ]
   };
 
-  const getBarData = () => {
+  const getPagingBarData = () => {
     return [
       {
         'title': 'Reported cases by country',
         'chart_jsx': getPagingBarJsx,
         'date_time_fmt': () => '',
-        // 'data_source': getBarDataSource,
+        // 'data_source': getPagingBarDataSource,
       },
     ]
   };
@@ -520,7 +520,7 @@ const Global = (props) => {
             <div className={classNames(styles.main, styles.mainBottom)}>
             {
               [
-                ...getBarData()
+                ...getPagingBarData()
               ].map(item =>
                 <div className={styles.itemContainer}>
                   <div className={styles.item}>

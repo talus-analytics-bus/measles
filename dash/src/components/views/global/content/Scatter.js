@@ -178,12 +178,12 @@ class Scatter extends Chart {
               .append('tspan')
                 .attr('x', -10)
                 .attr('dy', '1.1em')
-                .text('Lowest');
+                .text('Fewest');
             tickLabel
               .append('tspan')
                 .attr('dy', '1.1em')
                 .attr('x', -10)
-                .text('incidence');
+                .text('cases');
           }
           else if (i === 1) {
             tickLabel
@@ -194,12 +194,12 @@ class Scatter extends Chart {
               .append('tspan')
                 .attr('x', -10)
                 .attr('dy', '1.1em')
-                .text('Highest');
+                .text('Most');
             tickLabel
               .append('tspan')
                 .attr('dy', '1.1em')
                 .attr('x', -10)
-                .text('incidence');
+                .text('cases');
           }
         });
 
