@@ -3,7 +3,7 @@
 ##
 
 # Standard libraries
-from datetime import datetime, date, time
+from datetime import datetime
 
 # Third party libraries
 from pony.orm import PrimaryKey, Required, Optional, Set
@@ -64,11 +64,12 @@ class Place(db.Entity):
     observations = Set("Observation")
     region_sdg = Optional(str)
 
+
 class Observation(db.Entity):
     observation_id = PrimaryKey(int, auto=True)
     metric = Required("Metric", column="metric_id")
     date_time = Required("DateTime", column="datetime_id")
     place = Required("Place", column="place_id")
-    value = Required(float)
+    value = Optional(float)
     data_source = Optional(str)
     updated_at = Optional(datetime)

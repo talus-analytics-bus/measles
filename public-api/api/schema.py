@@ -7,7 +7,7 @@ import functools
 from datetime import datetime, timedelta
 
 # Third party libraries
-from pony.orm import select
+from pony.orm import select, max
 
 # Local libraries
 from .models import db
@@ -64,7 +64,7 @@ def getEntityInstances(entity_class, id_field_name, organizing_attribute, order,
 
     # And if there is an organizing attribute, return outputs organized
     # by the values of that attribute.
-    if organizing_attribute != None:
+    if organizing_attribute is not None:
 
         # # Get the values of the attribute
         # resKeys = select(getattr(o, organizing_attribute) for o in entity_class)[:]
@@ -78,11 +78,12 @@ def getEntityInstances(entity_class, id_field_name, organizing_attribute, order,
         # For each value of the organizing attribute that had data:
         for key in order:
             # Skip nulls if desired
-            if skipNull and key == None:
+            if skipNull and key is None:
                 continue
 
             # Get ID and name of entity instance to return as output
-            dataSets = [(getattr(o, id_field_name), o.name) for o in instances if getattr(o, organizing_attribute) == key]
+            dataSets = [(getattr(o, id_field_name), o.name) for o in instances
+                        if getattr(o, organizing_attribute) == key]
 
             # Store the sets of data under the value of the organizing attribute
             res.append(
@@ -91,11 +92,12 @@ def getEntityInstances(entity_class, id_field_name, organizing_attribute, order,
                     'data': dataSets,
                 }
             )
-        return res;
+        return res
 
     # Otherwise, return the instances without organizing them under an attribute
     else:
         return [(getattr(o, id_field_name), o.name) for o in instances]
+
 
 # Define a metric endpoint query.
 def getMetrics(filters):
@@ -369,8 +371,10 @@ def getTrend(filters):
 
     start = get_start(t_rs, end, lag)
 
-    print('start, end')
-    print(start, end)
+    min_time = get_start(metric.temporal_resolution, end, metric.lag_allowed)
+
+    print('start, end, min')
+    print(start, end, min_time)
 
     if metric.is_view:
         q_str = f"""SELECT v.metric_id, v.data_source, d.dt,
@@ -382,7 +386,10 @@ def getTrend(filters):
                 LEFT JOIN place p ON v.place_id = p.place_id
                 LEFT JOIN metric m ON v.metric_id = m.metric_id
                 WHERE
-                d.dt in ('{start}', '{end}')"""
+                d.dt >= '{min_time}'
+                AND d.dt <= '{end}'
+                AND v.value IS NOT NULL
+                """
         if 'place_id' in filters:
             q_str += f" AND p.place_id = {filters['place_id']}"
 
@@ -390,19 +397,56 @@ def getTrend(filters):
         else:
             res = db.select(q_str)
 
-        print(res)
+        res_list = sorted(list(res), key=lambda o: (o.place_id, o.dt))
 
-        return (True, res, start, end)
     else:
         if 'place_id' in filters:
             res = select(o for o in db.Observation
                          if o.metric.metric_id == metric_id
-                         and o.date_time.datetime in (start, end)
+                         and o.date_time.datetime >= min_time
+                         and o.date_time.datetime <= end
+                         and o.value is not None
                          and o.place.place_id == filters['place_id'])
         else:
             res = select(o for o in db.Observation
                          if o.metric.metric_id == metric_id
-                         and o.date_time.datetime in (start, end))
+                         and o.date_time.datetime >= min_time
+                         and o.date_time.datetime <= end
+                         and o.value is not None)
 
-        # Return the query response
-        return (False, res, start, end)
+            res_list = sorted(list(res), key=lambda o: (o.place.place_id, o.date_time.datetime))
+
+    place_lists = {}
+    current_place = None
+
+    if metric.is_view:
+
+        for o in res_list:
+
+            if o.place_id == current_place:
+                place_lists[o.place_id].append(o)
+
+            else:
+                place_lists[o.place_id] = [o]
+
+            current_place = o.place_id
+
+        for place_id, pl in place_lists.items():
+            place_lists[place_id] = pl[-2:]
+
+        return (True, place_lists, start, end)
+
+    else:
+        for o in res_list:
+            if o.place.place_id == current_place:
+                place_lists[o.place.place_id].append(o)
+
+            else:
+                place_lists[o.place.place_id] = [o]
+
+            current_place = o.place.place_id
+
+        for place_id, pl in place_lists.items():
+            place_lists[place_id] = pl[-2:]
+
+        return (False, place_lists, start, end)
