@@ -89,6 +89,8 @@ class Observations(Resource):
                     lagged_places.append(o[7])
 
             for o in res:
+                print('o')
+                print(o)
 
                 if o.place_id in lagged_places:
                     continue
@@ -179,7 +181,6 @@ class Trend(Resource):
 
                 for o in place_list:
                     o_date = o[2]
-
                     o_dict = {
                       'data_source': o[1],
                       'no_tz': o_date.replace(tzinfo=None),

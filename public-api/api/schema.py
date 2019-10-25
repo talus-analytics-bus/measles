@@ -168,7 +168,7 @@ def manage_lag(metric, null_res, max_time, null_places, observations):
 
         lag_res_q_str = f"""SELECT v.metric_id, v.data_source, d.dt,
                             m.metric_definition, m.metric_name, v.observation_id,
-                            p.fips AS place_fips, p.place_id, p.iso AS place_iso,
+                            p.fips AS place_fips, p.place_id, p.iso2 AS place_iso,
                             p.name AS place_name, v.updated_at, v.value::FLOAT
                             FROM {metric.view_name} v
                             LEFT JOIN datetime d ON v.datetime_id = d.dt_id
@@ -181,8 +181,6 @@ def manage_lag(metric, null_res, max_time, null_places, observations):
         lag_res = db.select(lag_res_q_str)
 
     else:
-        print('null_places')
-        print(null_places)
         if len(null_places) > 1:
             lag_res = select(o for o in observations
                              if o.metric.metric_id == metric.metric_id
@@ -276,7 +274,7 @@ def getObservations(filters):
 
     view_q_str = f"""SELECT v.metric_id, v.data_source, d.dt,
                         m.metric_definition, m.metric_name, v.observation_id,
-                        p.fips AS place_fips, p.place_id, p.iso AS place_iso,
+                        p.fips AS place_fips, p.place_id, p.iso2 AS place_iso,
                         p.name AS place_name, v.updated_at, v.value::FLOAT
                         FROM {metric.view_name} v
                         LEFT JOIN datetime d ON v.datetime_id = d.dt_id
@@ -330,11 +328,7 @@ def getObservations(filters):
             if place_id is None:
                 null_res = []
                 null_places = []
-                print('res')
-                print(res[:])
                 for o in res:
-                    print('o')
-                    print(o)
                     if o.value is None:
                         null_res.append(o)
                         if is_view:
@@ -379,7 +373,7 @@ def getTrend(filters):
     if metric.is_view:
         q_str = f"""SELECT v.metric_id, v.data_source, d.dt,
                 m.metric_definition, m.metric_name, v.observation_id,
-                p.fips AS place_fips, p.place_id, p.iso AS place_iso,
+                p.fips AS place_fips, p.place_id, p.iso2 AS place_iso,
                 p.name AS place_name, v.updated_at, v.value::FLOAT
                 FROM {metric.view_name} v
                 LEFT JOIN datetime d ON v.datetime_id = d.dt_id
