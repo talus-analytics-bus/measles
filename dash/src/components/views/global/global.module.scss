@@ -55,6 +55,9 @@ $scatterSize: 75vh;
     margin-left: 40px;
     .itemContainer .item {
       max-width: unset;
+      .title {
+        font-size: 1.8em;
+      }
     }
   }
 
@@ -298,17 +301,17 @@ $scatterSize: 75vh;
     // Just use .dataSource from index.scss
   }
 
+  .main:not(.mainBottom) .itemContainer:first-child .item .title {
+    margin-bottom: 40px;
+  }
+
   $itemMaxWidth: 750px;
   .main {
     margin-right: $spacing*2;
     margin-top: 10px;
     width: 100%;
     .itemContainer {
-      &:first-child {
-        .item .title {
-          margin-bottom: 40px;
-        }
-      }
+
       &:not(:last-child) {
         // &:first-child {
         border-bottom: 1px solid #b2b2b2;
@@ -548,6 +551,7 @@ $scatterSize: 75vh;
   font-family: 'Open Sans', sans-serif;
 
   margin-bottom: 40px;
+  float: right;
 
   .pageNavs {
     .pageNav {

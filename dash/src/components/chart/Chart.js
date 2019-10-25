@@ -401,7 +401,7 @@ class Chart {
   }
 
   // Add axis labels
-  getYLabelPos (y, ordinal = false, labels = []) {
+  getYLabelPos (y, ordinal = false, labels = [], fontSize = '1em') {
     const chart = this;
 
     // data: all tick labels shown in chart, as formatted.
@@ -414,7 +414,7 @@ class Chart {
     // Add fake tick labels
     const fakeText = chart.svg.selectAll('.fake-text').data(data).enter().append("text").text(d => d)
       .attr('class','tick fake-text')
-      .style('font-size','15px'); // TODO same fontsize as chart
+      .style('font-size',fontSize); // TODO same fontsize as chart
 
     // Calculate position based on fake tick labels and remove them
     const maxLabelWidth = d3.max(fakeText.nodes(), d => d.getBBox().width)

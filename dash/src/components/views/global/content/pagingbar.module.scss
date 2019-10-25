@@ -48,15 +48,18 @@
 }
 
 .x-axis, .x-axis-2, .y-axis, .y-axis-right, .avgXLineLabel {
-  // > path {
-  //   // display: none;
-  // }
+
+  font-size: 16.5px;
+  &.y-axis text {
+    cursor: pointer !important;
+  }
+
   path, line {
     stroke: #6d6e70;
   }
   text {
     font-family:'Open Sans', sans-serif;
-    font-size: 1.5em;
+    font-size: 1em;
     fill: $dark-grey;
   }
   .label {
@@ -65,7 +68,7 @@
     text-align: center;
     fill: $dark-grey;
     text-anchor: middle;
-    font-size: 1.55em;
+    font-size: 1em;
   }
 }
 
@@ -159,8 +162,9 @@ text.scatterCircleLabel {
 // PagingBar
 .barGs {
   .barG {
+    cursor: pointer;
     rect {
-      fill: $data-blue;
+      // fill: $data-blue;
     }
     &.placeholder {
       display: none;

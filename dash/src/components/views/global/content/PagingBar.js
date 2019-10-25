@@ -90,7 +90,7 @@ class PagingBar extends Chart {
     // Default margins
     if (!this.params.margin) {
       this.params.margin = {
-        top: 20,
+        top: 47,
         right: 20,
         bottom: 20,
         left: 200,
@@ -101,7 +101,7 @@ class PagingBar extends Chart {
     this.init();
     // set left margin based on the longest country name included.
     const yLabels = this.data.bars.map(d => d.place_name);
-    this.params.margin.left = this.fitLeftMargin(yLabels, true) + 40;
+    this.params.margin.left = this.fitLeftMargin(yLabels, true) + 20;
     this.onResize(this);
     this.draw();
   }
@@ -109,6 +109,7 @@ class PagingBar extends Chart {
   draw() {
 
     const chart = this;
+    const yLabelShift = 20;
     console.log('chart - redrawing everything - mvm');
     console.log(chart);
 
@@ -121,6 +122,11 @@ class PagingBar extends Chart {
       .range([0, chart.width])
       .domain([0, maxX])
       .nice();
+
+    // Define red color scale for bubbles
+    const xColor = d3.scaleLinear()
+      .domain([0, maxX])
+      .range(['#e6c1c6', '#9d3e4c']);
 
     const xAxis = d3.axisTop()
       .scale(x)
@@ -142,9 +148,13 @@ class PagingBar extends Chart {
     const yAxis = d3.axisLeft()
       .tickPadding(40)
       .tickSizeInner(0)
-      .tickFormat((val) => {
+      .tickFormat(function (val) {
         if (val[0] === '_') return '';
-        else return val;
+        else {
+          console.log(this)
+          this.dataset.name = val;
+          return val;
+        }
       })
       .scale(y);
 
@@ -156,6 +166,31 @@ class PagingBar extends Chart {
 
     // Draw bars
     const barGs = chart.newGroup(styles.barGs);
+
+    // Add x-axis label
+    const xAxisLabel = chart[styles['x-axis']].append('text')
+      .attr('x', chart.width / 2)
+      .attr('y', '-2em')
+      .attr('class', styles.label);
+
+    xAxisLabel.append('tspan')
+      .attr('x', chart.width / 2)
+      .text('Measles cases reported');
+
+    // Add y-axis label
+    const yAxisLabel = chart[styles['y-axis']].append('text')
+      .attr('x', -chart.height / 2)
+      .attr('y', chart.labelShift - yAxis.tickPadding() + yLabelShift)
+      .attr('class', styles.label);
+
+    yAxisLabel.append('tspan')
+      .attr('x', -chart.height / 2)
+      .text('Country');
+
+    // Callback on click to route to country details page
+    const routeToCountryDetails = (id) => {
+      chart.params.setRedirectPath('/details/' + id);
+    };
 
     // Update function: Update chart to show countries on the given page num.
     chart.update = (pageNumber) => {
@@ -178,8 +213,18 @@ class PagingBar extends Chart {
       }
 
       // Set y domain based on countries in this page
-      y.domain(data.map(d => d.place_name));
+      const yTickLabels = data.map(d => d.place_name);
+      y.domain(yTickLabels);
       chart[styles['y-axis']].call(yAxis);
+
+      // Get position of y-label given widest y-axis tick label.
+      const xAxisLabelPos = chart.getYLabelPos(
+        y,
+        true,
+        yTickLabels,
+        '1em',
+      );
+      yAxisLabel.attr('y', chart.labelShift - yAxis.tickPadding() + yLabelShift)
 
       // Update bar values (should only need to happen once since underlying
       // data are not updated).
@@ -188,12 +233,16 @@ class PagingBar extends Chart {
         .join(
           enter => {
             const newBarGs = enter.append('g')
+              .attr('data-tip', true)
+              .attr('data-for', 'pagingBarTooltip')
               .attr('class', styles.barG)
-              .classed(styles.placeholder, d => d.placeholder === true);
+              .classed(styles.placeholder, d => d.placeholder === true)
+              .on('click', (d) => routeToCountryDetails(d.place_id));
 
             newBarGs.append('rect')
               .attr('x', 0)
               .attr('y', d => y(d.place_name))
+              .attr('fill', d => xColor(d.value))
               .attr('width', d => x(d.value))
               .attr('height', y.bandwidth())
               .attr('data-id', d => d.place_id);
@@ -203,6 +252,18 @@ class PagingBar extends Chart {
               .attr('y', d => y(d.place_name))
               .attr('height', y.bandwidth())
               .attr('href', d => `/flags/${d.place_iso}.png`);
+
+
+            // Set tick mark behavior
+            chart[styles['y-axis']].selectAll('g.tick')
+              .attr('data-tip', true)
+              .attr('data-for', 'pagingBarTooltip')
+              .on('click', (placeName) => {
+                const placeDatum = chart.data.bars.find(d => d.place_name === placeName);
+                if (placeDatum) {
+                  routeToCountryDetails(placeDatum.place_id);
+                }
+              });
 
             // newBarGs.append('rect')
           },

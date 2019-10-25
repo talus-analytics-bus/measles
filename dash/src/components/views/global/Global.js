@@ -1,4 +1,5 @@
 import React from 'react'
+import { Redirect } from 'react-router';
 import Popup from 'reactjs-popup'
 import ReactTooltip from 'react-tooltip';
 import Tooltip from 'rc-tooltip';
@@ -21,6 +22,9 @@ const Global = (props) => {
 
   // Manage loading state (don't show if loading, etc.)
   const [loading, setLoading] = React.useState(true)
+
+  // Manage redirect path
+  const [redirectPath, setRedirectPath] = React.useState(null)
 
   // Track whether the first mini line chart has been drawn
   const [ charts, setCharts ]  = React.useState([]);
@@ -82,6 +86,7 @@ const Global = (props) => {
           chart.params.curPage = curPage;
           chart.params.setCurPage = setCurPage;
           chart.params.setPageCount = setPageCount;
+          chart.params.setRedirectPath = setRedirectPath;
         }
 
         // Create chart instance
@@ -116,6 +121,9 @@ const Global = (props) => {
   React.useEffect(() => {
     const PagingBarChart = charts.find(d => d.params.className === 'PagingBar');
     if (PagingBarChart) PagingBarChart.update(curPage);
+
+    // Rebuild tooltips after the chart is drawn
+    ReactTooltip.rebuild();
   }, [curPage])
 
   // Updates scatterplot and slider label when slider is changed.
@@ -510,7 +518,16 @@ const Global = (props) => {
     timeZone: 'utc',
   });
 
-  return (<div className={styles.details}>
+  // If redirecting to country details page, do so
+  if (redirectPath !== null) {
+    return <Redirect push to={
+        {
+          pathname: redirectPath,
+        }
+      }
+    />
+  }
+  else return (<div className={styles.details}>
             <div className={styles.top}>
               <div className={styles.sidebar}>
                 <div className={styles.title}>
@@ -714,6 +731,21 @@ const Global = (props) => {
                 </div>
               }
               />
+            {
+              // Tooltip for paging bar chart
+              <ReactTooltip
+                id={'pagingBarTooltip'}
+                type='dark'
+                className={styles.sliderTooltip}
+                place="top"
+                effect="float"
+                getContent={ () =>
+                  <div>
+                    Click to view country details page
+                  </div>
+                }
+                />
+            }
           </div>
         </div>
     );
