@@ -3,6 +3,14 @@ import * as d3 from 'd3/dist/d3.min';
 // Utility functions.
 const Util = {};
 
+Util.getIntArray = (min, max) => {
+  const list = [];
+  for (let i = min; i <= max; i++) {
+      list.push(i);
+  }
+  return list;
+};
+
 Util.getScatterLabelData = (datum) => {
   switch (datum.metric) {
     case 'caseload_totalpop':

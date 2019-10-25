@@ -163,123 +163,136 @@ class Chart {
     return pattern;
   }
 
-  plotAxes(params = {}) {
-    /* Param Options:
-     *	* (x|y)Format -> format func for the x or y labels
-     *	* (x|y)Wrap: -> Maximum width of xlabe/ylabel before wrapping
-     *	* (x|y)Wrap(X|Y)Offset: -> X or Y offset for tspans
-     *  * (x|y)Align -> alignment for wrapped text, defaults to 'middle'
-     */
-    if (this.axes === undefined) {
-      this.newGroup('axes');
-
-      this.xAxisG = this.axes
-        .append('g')
-        .classed('x-axis', true);
-
-      this.yAxisG = this.axes
-        .append('g')
-        .classed('y-axis', true);
-
-      this.yAxisGrid = this.axes
-        .append('g')
-        .classed('y-grid', true)
-        .style('stroke-opacity', 0.25)
-    }
-
-    this.xAxisG.attr('transform', `translate(0, ${this.height})`);
-
-    if (params.noX !== true) {
-
-      const isTimeAxis = this.day || this.dates;
-      const ticks = isTimeAxis ? Math.min(8, (this.day || this.dates).length) : undefined;
-
-      const xAxis = d3.axisBottom(this.xScale)
-        .tickSize((params.tickSize === undefined) ? 6 : params.tickSize)
-        .tickFormat(params.xFormat);
-      if (ticks) xAxis.ticks(ticks);
-      // .ticks(Math.min(8, (this.day || this.dates).length));
-
-      if (params.tickValuesX !== undefined) {
-        xAxis.tickValues(params.tickValuesX);
-      }
-
-      this.xAxisG
-        .call(xAxis);
-    }
-
-    let yAxis = (() => {
-    });
-    if (!params.noY) {
-      const max = this.yScale.domain()[1];
-      yAxis = d3.axisLeft(this.yScale)
-        .tickSize((params.tickSize === undefined) ? 6 : params.tickSize)
-        .tickPadding(6)
-        .tickFormat(params.yFormat)
-        // .tickValues([0, 3.5, 5.5, 7.5, 10])
-        .ticks(params.numTicks || 4);
-
-      if (params.tickValuesY !== undefined) {
-        yAxis.tickValues(params.tickValuesY);
-      }
-      this.yAxisG
-      // .transition()
-      // .duration(600)
-        .call(yAxis);
-    }
-
-    if (!params.noYGrid) {
-      // const yGrid = d3.axisLeft(this.yScale)
-      // 	.tickSize(-this.width)
-      // 	.tickPadding(8)
-      // 	.tickFormat(params.yFormat)
-      // 	.ticks(params.numTicks || 4);
-      this.yAxisGrid
-      // .transition()
-      // .duration(600)
-        .call(
-          yAxis
-            .tickSize(-this.width)
-        );
-    }
-
-    this.yAxisGrid.selectAll('text').remove();
-    this.yAxisGrid.selectAll('.domain').remove();
-
-    if (!params.domainY) {
-      this.yAxisG.selectAll('.domain').remove();
-    }
-
-    // https://bl.ocks.org/mbostock/3371592
-    // this.yAxisG.select('.domain').remove();
-
-    // wrapping
-    // NOTE - assumes you've specified yFormat or xFormat
-    // otherwise will use toString()
-    ['x', 'y']
-      .filter(k => params[`${k}Wrap`] !== undefined)
-      .forEach(k => {
-        this[`${k}AxisG`].selectAll('text')
-          .style('text-anchor', (params[`${k}Align`] || 'middle'))
-          .html(d => {
-            return wordWrap(
-              (params[`${k}Format`] || ((x) => x.toString()))(d),
-              params[`${k}Wrap`],
-              (params[`${k}WrapXOffset`] || 0),
-              (params[`${k}WrapYOffset`] || 16),
-            );
-          });
-      });
-
-    // Remove y-domain line
-    if (params.removeYDomain === true) {
-      this.chart.select('path.domain').remove();
-    }
-
-    if (params.tickFontWeight !== undefined) {
-      this.chart.selectAll('g.y-axis text').style('font-weight', params.tickFontWeight);
-    }
+  /**
+   * Defines the x and y axis sections.
+   * @method plotAxes
+   */
+  plotAxisReact(styles, axis, type = 'y') {
+    const chart = this;
+    const axisG = chart.newGroup(styles[type + '-axis'])
+      .append('g')
+      .attr('class', styles[type + '-axis'])
+      .call(axis);
+    return axisG;
   }
+
+  // plotAxes(params = {}) {
+  //   /* Param Options:
+  //    *	* (x|y)Format -> format func for the x or y labels
+  //    *	* (x|y)Wrap: -> Maximum width of xlabe/ylabel before wrapping
+  //    *	* (x|y)Wrap(X|Y)Offset: -> X or Y offset for tspans
+  //    *  * (x|y)Align -> alignment for wrapped text, defaults to 'middle'
+  //    */
+  //   if (this.axes === undefined) {
+  //     this.newGroup('axes');
+  //
+  //     this.xAxisG = this.axes
+  //       .append('g')
+  //       .classed('x-axis', true);
+  //
+  //     this.yAxisG = this.axes
+  //       .append('g')
+  //       .classed('y-axis', true);
+  //
+  //     this.yAxisGrid = this.axes
+  //       .append('g')
+  //       .classed('y-grid', true)
+  //       .style('stroke-opacity', 0.25)
+  //   }
+  //
+  //   this.xAxisG.attr('transform', `translate(0, ${this.height})`);
+  //
+  //   if (params.noX !== true) {
+  //
+  //     const isTimeAxis = this.day || this.dates;
+  //     const ticks = isTimeAxis ? Math.min(8, (this.day || this.dates).length) : undefined;
+  //
+  //     const xAxis = d3.axisBottom(this.xScale)
+  //       .tickSize((params.tickSize === undefined) ? 6 : params.tickSize)
+  //       .tickFormat(params.xFormat);
+  //     if (ticks) xAxis.ticks(ticks);
+  //     // .ticks(Math.min(8, (this.day || this.dates).length));
+  //
+  //     if (params.tickValuesX !== undefined) {
+  //       xAxis.tickValues(params.tickValuesX);
+  //     }
+  //
+  //     this.xAxisG
+  //       .call(xAxis);
+  //   }
+  //
+  //   let yAxis = (() => {
+  //   });
+  //   if (!params.noY) {
+  //     const max = this.yScale.domain()[1];
+  //     yAxis = d3.axisLeft(this.yScale)
+  //       .tickSize((params.tickSize === undefined) ? 6 : params.tickSize)
+  //       .tickPadding(6)
+  //       .tickFormat(params.yFormat)
+  //       // .tickValues([0, 3.5, 5.5, 7.5, 10])
+  //       .ticks(params.numTicks || 4);
+  //
+  //     if (params.tickValuesY !== undefined) {
+  //       yAxis.tickValues(params.tickValuesY);
+  //     }
+  //     this.yAxisG
+  //     // .transition()
+  //     // .duration(600)
+  //       .call(yAxis);
+  //   }
+  //
+  //   if (!params.noYGrid) {
+  //     // const yGrid = d3.axisLeft(this.yScale)
+  //     // 	.tickSize(-this.width)
+  //     // 	.tickPadding(8)
+  //     // 	.tickFormat(params.yFormat)
+  //     // 	.ticks(params.numTicks || 4);
+  //     this.yAxisGrid
+  //     // .transition()
+  //     // .duration(600)
+  //       .call(
+  //         yAxis
+  //           .tickSize(-this.width)
+  //       );
+  //   }
+  //
+  //   this.yAxisGrid.selectAll('text').remove();
+  //   this.yAxisGrid.selectAll('.domain').remove();
+  //
+  //   if (!params.domainY) {
+  //     this.yAxisG.selectAll('.domain').remove();
+  //   }
+  //
+  //   // https://bl.ocks.org/mbostock/3371592
+  //   // this.yAxisG.select('.domain').remove();
+  //
+  //   // wrapping
+  //   // NOTE - assumes you've specified yFormat or xFormat
+  //   // otherwise will use toString()
+  //   ['x', 'y']
+  //     .filter(k => params[`${k}Wrap`] !== undefined)
+  //     .forEach(k => {
+  //       this[`${k}AxisG`].selectAll('text')
+  //         .style('text-anchor', (params[`${k}Align`] || 'middle'))
+  //         .html(d => {
+  //           return wordWrap(
+  //             (params[`${k}Format`] || ((x) => x.toString()))(d),
+  //             params[`${k}Wrap`],
+  //             (params[`${k}WrapXOffset`] || 0),
+  //             (params[`${k}WrapYOffset`] || 16),
+  //           );
+  //         });
+  //     });
+  //
+  //   // Remove y-domain line
+  //   if (params.removeYDomain === true) {
+  //     this.chart.select('path.domain').remove();
+  //   }
+  //
+  //   if (params.tickFontWeight !== undefined) {
+  //     this.chart.selectAll('g.y-axis text').style('font-weight', params.tickFontWeight);
+  //   }
+  // }
 
   ylabel(text, params = {}) {
     this.newGroup('ylabelgroup');

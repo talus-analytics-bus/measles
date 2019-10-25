@@ -16,6 +16,10 @@ $scatterSize: 75vh;
   margin-top: 20px;
   // width: $scatterSize + 120px;
 }
+
+.mainBottom {
+  margin-left: 40px;
+}
 .visible {
   opacity: 1;
 }
@@ -525,6 +529,43 @@ $scatterSize: 75vh;
           }
         }
       }
+    }
+  }
+}
+
+// Bar chart and page controls
+.PagingBar {
+  height: 500px;
+}
+.pageControls {
+  display: flex;
+  flex-flow: row;
+
+  font-family: 'Open Sans', sans-serif;
+
+  .pageControl {
+    border: none;
+    border-radius: 4px;
+    padding: 10px;
+    margin-right: 5px;
+    line-height: 10px;
+
+    cursor: pointer;
+
+    &:last-child {
+      margin-right: 0;
+    }
+
+    &.active {
+      font-weight: bold;
+    }
+
+    &:hover {
+      background-color: $light-grey-2;
+    }
+
+    &:active {
+      background-color: $light-grey;
     }
   }
 }

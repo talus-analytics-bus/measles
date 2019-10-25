@@ -50,8 +50,11 @@ const Global = (props) => {
   // Track slider play timeouts
   const [ playTimeouts, setPlayTimeouts ] = React.useState([]);
 
-  // // Track whether to show reset view button on sliding line chart
-  // const [ showReset, setShowReset ]  = React.useState(false);
+  // Track how many pages there are for the bar chart
+  const [ pageCount, setPageCount ]  = React.useState(1);
+
+  // Track which page we're on for the bar chart (1-indexed)
+  const [ curPage, setCurPage ]  = React.useState(1);
 
   // Get data for current country.
   const country = props.id;
@@ -72,6 +75,13 @@ const Global = (props) => {
         chart.params.tooltipClassName = stylesTooltip.globalTooltip;
         if (chart.params.className === 'Scatter') {
           chart.params.curSliderVal = curSliderVal;
+        }
+
+        // Set state variables and setters for PagingBar
+        else if (chart.params.className === 'PagingBar') {
+          chart.params.curPage = curPage;
+          chart.params.setCurPage = setCurPage;
+          chart.params.setPageCount = setPageCount;
         }
 
         // Create chart instance
@@ -101,7 +111,12 @@ const Global = (props) => {
     const tooltipEl = document.getElementsByClassName('rc-slider-handle')[0];
     ReactTooltip.show(tooltipEl);
 
-  }, [curSliderVal])
+  }, [curSliderVal]);
+
+  React.useEffect(() => {
+    const PagingBarChart = charts.find(d => d.params.className === 'PagingBar');
+    if (PagingBarChart) PagingBarChart.update(curPage);
+  }, [curPage])
 
   // Updates scatterplot and slider label when slider is changed.
   const handleSliderChange = (valNumeric, a, b) => {
@@ -331,11 +346,35 @@ const Global = (props) => {
   // Returns jsx for paging bar chart
   const getPagingBarJsx = () => {
 
-    const area = <div className={classNames(styles.Scatter, 'PagingBar-0')} />;
+    // Main chart area
+    const area = <div className={classNames(styles.PagingBar, 'PagingBar-0')} />;
 
+    // Page controls
+    const pageControls = (
+      <div className={styles.pageControls}>
+      {
+        Util.getIntArray(1, pageCount).map(i =>
+          <div
+            className={
+              classNames(
+                styles.pageControl,
+                {
+                  [styles.active]: i === curPage,
+                }
+              )
+            }
+            onClick={ () => setCurPage(i) }
+          >
+            {i}
+          </div>
+        )
+      }
+      </div>
+    );
     return (
       <div>
         {area}
+        {pageControls}
       </div>
     );
   };

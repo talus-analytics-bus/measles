@@ -155,3 +155,12 @@ text.scatterCircleLabel {
     transition: opacity .5s;
   }
 }
+
+// PagingBar
+.barGs {
+  .barG {
+    rect {
+      fill: $data-blue;
+    }
+  }
+}
