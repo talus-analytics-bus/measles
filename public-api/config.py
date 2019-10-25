@@ -11,7 +11,7 @@ from argparse import ArgumentParser
 from sqlalchemy import create_engine
 # from sqlalchemy.exc import OperationalError
 import pprint
-
+import os
 
 # Config class, instantiated in api/setup.py.
 class Config:
@@ -48,6 +48,12 @@ class Config:
         self.db = {k: v
                    for k, v in dict(cfg['session']).items()
                    if k not in ['datadir']}
+
+        # load env variables for things that aren't in the config
+        db_list = ['user', 'password', 'host', 'port', 'dbname']
+        for param in db_list:
+            if param not in self.db:
+                self.db[param] = os.environ[param]
 
         # Convert type of 'port' to integer
         print(self.db)
