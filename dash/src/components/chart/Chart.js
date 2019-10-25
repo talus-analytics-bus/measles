@@ -437,6 +437,23 @@ class Chart {
     return marginShift;
   };
 
+  // Get the width of the longest label in a set of text labels
+  getLongestLabelWidth (labels = [], fontSize = '1em', bold = false) {
+    const chart = this;
+
+    // Add fake tick labels
+    const fakeText = chart.svg.selectAll('.fake-text').data(labels).enter().append("text").text(d => d)
+      .attr('class','tick fake-text')
+      .style('font-weight', bold ? 'bold' : 'normal')
+      .style('font-size',fontSize); // TODO same fontsize as chart
+
+    // Calculate position based on fake tick labels and remove them
+    const maxLabelWidth = d3.max(fakeText.nodes(), d => d.getBBox().width)
+    fakeText.remove();
+
+    return maxLabelWidth;
+  };
+
   fitLeftMargin (initDomain, ordinal = false) {
 
     const chart = this;

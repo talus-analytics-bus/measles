@@ -169,6 +169,10 @@ text.scatterCircleLabel {
     &.placeholder {
       display: none;
     }
+    .valueLabel {
+      font-family: 'Open Sans', sans-serif;
+      font-weight: bold;
+    }
   }
 }
 

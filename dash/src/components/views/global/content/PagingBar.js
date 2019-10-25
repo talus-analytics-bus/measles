@@ -87,11 +87,21 @@ class PagingBar extends Chart {
     };
     setData();
 
+    // Get longest bar value label with and set margin to this value, in case
+    // it is hanging off the right size of the chart.
+    const barValueLabels = this.data.bars.map(d => Util.comma(d.value));
+    const longestBarValueWidth =
+      this.getLongestLabelWidth(
+        barValueLabels, // list of labels
+        '1em', // font-size
+        true // bold
+      );
+
     // Default margins
     if (!this.params.margin) {
       this.params.margin = {
         top: 47,
-        right: 20,
+        right: longestBarValueWidth + 5,
         bottom: 20,
         left: 200,
       };
@@ -265,7 +275,14 @@ class PagingBar extends Chart {
                 }
               });
 
-            // newBarGs.append('rect')
+            // Add bar value labels
+            newBarGs.append('text')
+              .attr('class', styles.valueLabel)
+              .text(d => Util.comma(d.value))
+              .attr('x', d => x(d.value) + 5)
+              .attr('y', d => y(d.place_name) + y.bandwidth()/2)
+              .attr('dy', '.375em');
+
           },
           update => {
             // NA
