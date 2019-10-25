@@ -401,16 +401,18 @@ class Chart {
   }
 
   // Add axis labels
-  getYLabelPos (y) {
+  getYLabelPos (y, ordinal = false, labels = []) {
     const chart = this;
 
     // data: all tick labels shown in chart, as formatted.
-    const data = y.tickFormat()(
-      y.domain()[0] // largest y-value
-    );
+    const data = ordinal ? labels : [
+      y.tickFormat()(
+        y.domain()[0] // largest y-value
+      )
+    ];
 
     // Add fake tick labels
-    const fakeText = chart.svg.selectAll('.fake-text').data([data]).enter().append("text").text(d => d)
+    const fakeText = chart.svg.selectAll('.fake-text').data(data).enter().append("text").text(d => d)
       .attr('class','tick fake-text')
       .style('font-size','15px'); // TODO same fontsize as chart
 
@@ -435,17 +437,23 @@ class Chart {
     return marginShift;
   };
 
-  fitLeftMargin () {
+  fitLeftMargin (initDomain, ordinal = false) {
 
     const chart = this;
+    const axisType = 'y';
+    const labels = ordinal ? initDomain : [];
 
     // get incidence y-scale and y-axis
-    chart.y = d3.scaleLinear()
-      .domain(chart.yDomainDefault)
+    chart[axisType] = d3.scaleLinear()
+      .domain(initDomain)
       .nice()
       .range([0, chart.height]);
 
-    const shift = chart.getYLabelPos(chart.y);
+    const shift = chart.getYLabelPos(
+      chart[axisType], // axis group
+      ordinal,
+      labels,
+    );
     return shift;
   }
 

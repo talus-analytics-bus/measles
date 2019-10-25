@@ -93,13 +93,19 @@ class PagingBar extends Chart {
         top: 20,
         right: 20,
         bottom: 20,
-        left: 20,
+        left: 200,
       };
     }
 
-    // TODO set left margin based on the longest country name included.
 
     this.init();
+    // set left margin based on the longest country name included.
+    const yLabels = this.data.bars.map(d => d.place_name);
+    console.log('yLabels')
+    console.log(yLabels)
+    console.log('this.fitLeftMargin(yLabels)')
+    console.log(this.fitLeftMargin(yLabels))
+    this.params.margin.left = this.fitLeftMargin(yLabels, true) + 40;
     this.onResize(this);
     this.draw();
   }
@@ -123,7 +129,7 @@ class PagingBar extends Chart {
     const xAxis = d3.axisTop()
       .scale(x)
       .ticks(5)
-      // .tickFormat(Util.comma);
+      .tickFormat(Util.comma);
 
     const xAxisG = chart.plotAxisReact(
       styles,
@@ -138,6 +144,8 @@ class PagingBar extends Chart {
       .padding(0.3);
 
     const yAxis = d3.axisLeft()
+      .tickPadding(40)
+      .tickSizeInner(0)
       .scale(y);
 
     const yAxisG = chart.plotAxisReact(
@@ -154,10 +162,10 @@ class PagingBar extends Chart {
 
       // Get data for this page
       const data = chart.data.bars.filter(d => d.page === pageNumber-1);
-      console.log('data')
-      console.log(data)
+
       // Set y domain based on countries in this page
-      y.domain(data.map(d => d.place_id));
+      y.domain(data.map(d => d.place_name));
+      chart[styles['y-axis']].call(yAxis);
 
       // Update bar values (should only need to happen once since underlying
       // data are not updated).
@@ -170,27 +178,26 @@ class PagingBar extends Chart {
 
             newBarGs.append('rect')
               .attr('x', 0)
-              .attr('y', d => y(d.place_id))
+              .attr('y', d => y(d.place_name))
               .attr('width', d => x(d.value))
               .attr('height', y.bandwidth())
               .attr('data-id', d => d.place_id);
 
+            newBarGs.append('image')
+              .attr('x', -32)
+              .attr('y', d => y(d.place_name))
+              .attr('height', y.bandwidth())
+              .attr('href', d => `/flags/${d.place_iso}.png`);
+
             // newBarGs.append('rect')
           },
           update => {
-            update.remove();
-          }, // NA
+            // NA
+          },
           exit => {
-            console.log('exit')
-            console.log(exit)
             exit.remove();
-          }, // NA
+          },
         );
-
-      // Debug: Print data for all bar groups
-      console.log('d3.selectAll(styles.barGs).data()')
-      console.log(d3.selectAll(styles.barGs).data())
-
     };
 
     chart.update(1);

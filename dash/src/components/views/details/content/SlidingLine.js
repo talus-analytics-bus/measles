@@ -62,7 +62,7 @@ class SlidingLine extends Chart {
     // Adjust left margin to fit available space
 
     this.init();
-    this.params.margin.left = this.fitLeftMargin(this);
+    this.params.margin.left = this.fitLeftMargin(this.yDomainDefault);
     this.onResize(this);
     this.draw();
   }
