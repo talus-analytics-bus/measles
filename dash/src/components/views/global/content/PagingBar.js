@@ -66,16 +66,16 @@ class PagingBar extends Chart {
 
       // TODO remove data not for the time period we need
       // Sort data by descending value and assign page numbers
-      const pageLength = 15;
+      this.params.pageLength = 15;
       const sortFunc = Util.sortByField('value');
       this.data.bars
         .sort(sortFunc)
         .forEach((v, i) => {
-          v.page = Math.floor(i / pageLength); // 0-indexed count
+          v.page = Math.floor(i / this.params.pageLength); // 0-indexed count
         });
 
         // Set page count so that page buttons are rendered.
-        const pageCount = Math.floor(this.data.bars.length / pageLength) + 1;
+        const pageCount = Math.floor(this.data.bars.length / this.params.pageLength) + 1;
         this.params.setPageCount(pageCount);
       };
 
@@ -142,6 +142,10 @@ class PagingBar extends Chart {
     const yAxis = d3.axisLeft()
       .tickPadding(40)
       .tickSizeInner(0)
+      .tickFormat((val) => {
+        if (val[0] === '_') return '';
+        else return val;
+      })
       .scale(y);
 
     const yAxisG = chart.plotAxisReact(
@@ -159,6 +163,20 @@ class PagingBar extends Chart {
       // Get data for this page
       const data = chart.data.bars.filter(d => d.page === pageNumber-1);
 
+      // Append dummy bars if needed
+      let i = 0;
+      while (data.length < chart.params.pageLength) {
+        data.push(
+          {
+            placeholder: true,
+            place_id: '_' + i++,
+            place_name: '_' + i++,
+            place_iso: '',
+            value: 0,
+          }
+        );
+      }
+
       // Set y domain based on countries in this page
       y.domain(data.map(d => d.place_name));
       chart[styles['y-axis']].call(yAxis);
@@ -171,6 +189,7 @@ class PagingBar extends Chart {
           enter => {
             const newBarGs = enter.append('g')
               .attr('class', styles.barG)
+              .classed(styles.placeholder, d => d.placeholder === true);
 
             newBarGs.append('rect')
               .attr('x', 0)
