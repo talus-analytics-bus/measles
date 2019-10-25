@@ -17,9 +17,6 @@ $scatterSize: 75vh;
   // width: $scatterSize + 120px;
 }
 
-.mainBottom {
-  margin-left: 40px;
-}
 .visible {
   opacity: 1;
 }
@@ -53,6 +50,13 @@ $scatterSize: 75vh;
 .details {
   display: flex;
   flex-flow: column;
+
+  .main.mainBottom {
+    margin-left: 40px;
+    .itemContainer .item {
+      max-width: unset;
+    }
+  }
 
   .top {
     display: flex;
@@ -543,12 +547,33 @@ $scatterSize: 75vh;
 
   font-family: 'Open Sans', sans-serif;
 
+  margin-bottom: 40px;
+
+  .pageNavs {
+    .pageNav {
+      margin: 0;
+      margin-right: 5px;
+
+      color: $dark-grey;
+      padding: 10px;
+      border: 1px solid $dark-grey;
+      font-weight: normal;
+
+      &.pageNext {}
+      &.pagePrev {}
+      &.disabled {
+        opacity: 0.5;
+        pointer-events: none;
+      }
+    }
+  }
+
   .pageControl {
     border: none;
     border-radius: 4px;
     padding: 10px;
     margin-right: 5px;
-    line-height: 10px;
+    line-height: 20px;
 
     cursor: pointer;
 

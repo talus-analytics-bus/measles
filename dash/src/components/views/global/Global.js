@@ -349,9 +349,38 @@ const Global = (props) => {
     // Main chart area
     const area = <div className={classNames(styles.PagingBar, 'PagingBar-0')} />;
 
-    // Page controls
-    const pageControls = (
+    // Paging left and right buttons
+    const pageNav = (
+      <div className={styles.pageNavs}>
+        <button
+          onClick={() => { if (curPage < pageCount) setCurPage(curPage + 1) } }
+          className={
+            classNames(
+              styles.pageNav,
+              styles.pageNext,
+              'btn-secondary',
+              {[styles.disabled]: curPage === pageCount,},
+            )
+          }>Next</button>
+        <button
+          onClick={() => { if (curPage > 1) setCurPage(curPage - 1) } }
+          className={
+            classNames(
+              styles.pageNav,
+              styles.pagePrev,
+              'btn-secondary',
+              {[styles.disabled]: curPage === 1,},
+            )
+          }>Previous</button>
+      </div>
+    );
+
+    // Page numbers
+    const pageNumbers = (
       <div className={styles.pageControls}>
+      {
+        pageNav
+      }
       {
         Util.getIntArray(1, pageCount).map(i =>
           <div
@@ -374,7 +403,7 @@ const Global = (props) => {
     return (
       <div>
         {area}
-        {pageControls}
+        {pageNumbers}
       </div>
     );
   };

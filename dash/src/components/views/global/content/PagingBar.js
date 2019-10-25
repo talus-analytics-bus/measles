@@ -101,10 +101,6 @@ class PagingBar extends Chart {
     this.init();
     // set left margin based on the longest country name included.
     const yLabels = this.data.bars.map(d => d.place_name);
-    console.log('yLabels')
-    console.log(yLabels)
-    console.log('this.fitLeftMargin(yLabels)')
-    console.log(this.fitLeftMargin(yLabels))
     this.params.margin.left = this.fitLeftMargin(yLabels, true) + 40;
     this.onResize(this);
     this.draw();

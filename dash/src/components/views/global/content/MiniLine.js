@@ -74,7 +74,7 @@ class MiniLine extends Chart {
     }
 
     this.init();
-    this.params.margin.left = this.fitLeftMargin(this);
+    this.params.margin.left = this.fitLeftMargin(this.yDomainDefault);
     this.onResize(this);
     this.draw();
   }
