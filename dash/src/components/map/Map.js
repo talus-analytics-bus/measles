@@ -2,6 +2,7 @@ import React from 'react'
 import ReactMapGL, { Marker, NavigationControl, Popup } from 'react-map-gl'
 import * as d3 from 'd3/dist/d3.min';
 import TrendQuery from '../misc/TrendQuery.js'
+import Util from '../misc/Util.js'
 import ObservationQuery from '../misc/ObservationQuery.js'
 import 'mapbox-gl/dist/mapbox-gl.css'
 import './map.scss'
@@ -45,7 +46,7 @@ const Map = ({ fillObservations, bubbleObservations, incidenceObservations, mapp
 
   async function getTrendObservations() {
     // get the bubble data
-    setTrendObservations(await TrendQuery(6, '2019-08-01'));
+    setTrendObservations(await TrendQuery(6, Util.formatDatetimeApi(Util.today())));
   }
 
   // Given incidence value, return scaled linear radius of marker.
