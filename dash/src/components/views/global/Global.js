@@ -58,7 +58,7 @@ const Global = (props) => {
   const [ sectionTitle, setSectionTitle ]  = React.useState('Measles cases reported by country'); // PLACEHOLDER
 
   // Track which data series is being shown in the paging bar chart.
-  const [ pagingBarData, setPagingBarData ]  = React.useState('caseload_totalpop'); // PLACEHOLDER
+  const [ pagingBarData, setPagingBarData ]  = React.useState('cumcaseload_totalpop'); // PLACEHOLDER
 
   // Track how many pages there are for the bar chart
   const [ pageCount, setPageCount ]  = React.useState(1);
@@ -361,36 +361,45 @@ const Global = (props) => {
   // Returns jsx for paging bar chart
   const getPagingBarJsx = () => {
 
+    // Get data values to format datetime stamps
+    const getDataToggleValues = (chartData) => {
+      const dataToggleValues = [];
+      for (let key in chartData) {
+        if (key === 'x') continue;
+        else {
+          dataToggleValues.push(
+            {
+              seriesName: key,
+              seriesData: chartData[key],
+              ...Util.getMetricChartParams(chartData[key][0].metric),
+            }
+          );
+        }
+      }
+      return dataToggleValues;
+    };
+    const chartData = props.chartParams.PagingBar[0].params.data;
+    const dataToggleValues = getDataToggleValues(chartData);
+
     // Radio toggle
     const toggle = (
       <div className={styles.dataToggles}>
       {
-        [
-          {
-            name: 'Total cases reported', // PLACEHOLDER
-            value: 'caseload_totalpop',
-            series: 'y',
-          },
-          {
-            name: 'Vaccination coverage', // PLACEHOLDER
-            value: 'coverage_mcv1_infant',
-            series: 'y2',
-          },
-        ].map((entry, i) =>
+        dataToggleValues.map((entry, i) =>
           <div className={styles.dataToggle}>
             <label for={entry.value}>
               <input
                 type="radio"
                 name="pagingBarData"
-                id={entry.value}
-                value={entry.value}
-                checked={pagingBarData === entry.value}
+                id={entry.metric}
+                value={entry.metric}
+                checked={pagingBarData === entry.metric}
                 onClick={() => {
-                  setPagingBarData(entry.value);
+                  setPagingBarData(entry.metric);
                   setCurPage(1);
                 }}
               />
-              {entry.name}
+              {entry.label}
             </label>
           </div>
         )
@@ -590,7 +599,7 @@ const Global = (props) => {
                     <div className={styles.itemContainer}>
                       <div className={styles.item}>
                         <span className={styles.title}>
-                          {item.title} {item.date_time_fmt(item)}
+                          {item.title} ({item.date_time_fmt(item)})
                         </span>
                         <div className={styles.content}>
                           {
@@ -747,7 +756,7 @@ const Global = (props) => {
                     {
                       tooltipData.items.map(item =>
                         <div className={stylesTooltip.item}>
-                          <div className={stylesTooltip.name}>{item.name} {Util.getDatetimeStamp(item.datum, item.period)}</div>
+                          <div className={stylesTooltip.name}>{item.name} ({Util.getDatetimeStamp(item.datum, item.period)})</div>
                           <div>
                             <span className={stylesTooltip.value}>{item.value}</span>
                             &nbsp;

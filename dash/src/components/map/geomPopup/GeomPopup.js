@@ -63,7 +63,7 @@ const GeomPopup = ({ popupData }) => {
         }
         else return {
           slug: type,
-          label: 'Incidence of measles' + `${Util.getDatetimeStamp(obs, 'month')}`,
+          label: 'Incidence of measles' + ` (${Util.getDatetimeStamp(obs, 'month')})`,
           value: Util.formatIncidence(obs['value']) + ' cases per 1M population',
           valueNum: obs['value'],
           // value2: Util.getIncidenceQuantile(obs, {type: 'name'}),
@@ -78,7 +78,7 @@ const GeomPopup = ({ popupData }) => {
         }
         else return {
           slug: 'cases',
-          label: 'Measles cases reported' + `${Util.getDatetimeStamp(obs, 'month')}`,
+          label: 'Measles cases reported' + ` (${Util.getDatetimeStamp(obs, 'month')})`,
           value: Util.comma(obs['value']) + ' ' + getPeopleNoun(obs['value']),
           deltaData: getDeltaData(popupData['trend']),
           notAvail: obs['value'] === null,
@@ -92,7 +92,7 @@ const GeomPopup = ({ popupData }) => {
         }
         else return {
           slug: 'vacc-coverage',
-          label: 'Vaccination coverage' + `${Util.getDatetimeStamp(obs, 'year')}`,
+          label: 'Vaccination coverage' + ` (${Util.getDatetimeStamp(obs, 'year')})`,
           value: parseFloat(obs['value']).toFixed(0)+"% of infants",
           dataSource: obs['data_source'],
           dataSourceLastUpdated: new Date (obs['updated_at']),

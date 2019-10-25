@@ -21,22 +21,59 @@ Util.vaccinationColors = [
 
 Util.getMetricChartParams = (metric) => {
   switch (metric) {
-    case 'caseload_totalpop':
+    case 'cumcaseload_totalpop':
       return {
         tickFormat: Util.comma,
         sort: 'desc',
+        metric: 'cumcaseload_totalpop',
+        label: 'New cases in past 12 months',
+        dateFmt: (allObs) => {
+          const firstObs = allObs[0];
+          const firstObsDt = new Date (
+            firstObs.date_time.replace(/-/g, '/')
+          );
+          const fakeObsDt = new Date (
+            firstObsDt
+          );
+          fakeObsDt.setUTCFullYear(fakeObsDt.getUTCFullYear() - 1);
+
+          const firstStr = fakeObsDt.toLocaleString('en-us', {
+            month: 'short',
+            year: 'numeric',
+            timeZone: 'UTC',
+          });
+          const lastStr = firstObsDt.toLocaleString('en-us', {
+            month: 'short',
+            year: 'numeric',
+            timeZone: 'UTC',
+          });
+
+          return `${firstStr} to ${lastStr}`;
+        },
+      };
+    case 'caseload_totalpop':
+      return {
+        tickFormat: Util.comma,
+        metric: 'caseload_totalpop',
+        sort: 'desc',
+        label: 'Total cases',
       };
 
     case 'coverage_mcv1_infant': // DEBUG
       return {
         tickFormat: Util.percentize,
+        metric: 'coverage_mcv1_infant',
         sort: 'asc',
+        label: 'Vaccination coverage (% of infants)',
+        dateFmt: (allObs) => Util.getDatetimeStamp(allObs[0], 'year'),
       };
     }
 };
 
 Util.setColorScaleProps = (metric, colorScale) => {
   switch (metric) {
+    case 'incidence_12months':
+    case 'cumcaseload_totalpop':
     case 'caseload_totalpop':
     case 'incidence_monthly':
       colorScale
@@ -54,6 +91,8 @@ Util.setColorScaleProps = (metric, colorScale) => {
 
 Util.getColorScaleForMetric = (metric, domain) => {
   switch (metric) {
+    case 'incidence_12months':
+    case 'cumcaseload_totalpop':
     case 'caseload_totalpop':
     case 'incidence_monthly':
       return d3.scaleLinear()
@@ -78,6 +117,7 @@ Util.getIntArray = (min, max) => {
 
 Util.getScatterLabelData = (datum) => {
   switch (datum.metric || datum) {
+    case 'incidence_12months':
     case 'caseload_totalpop':
       return 'Measles cases reported';
     case 'incidence_monthly':
@@ -289,7 +329,7 @@ Util.getDatetimeStamp = (datum, type = 'year') => {
       timeZone: 'UTC',
     });
   }
-  return ` (${datetimeStamp})`;
+  return `${datetimeStamp}`;
 };
 
 Util.importAll = (r) => {

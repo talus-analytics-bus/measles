@@ -516,7 +516,7 @@ const Details = (props) => {
                   <div className={styles.itemContainer}>
                     <div className={styles.item}>
                       <span className={styles.title}>
-                        {item.title} {item.date_time_fmt(item)}
+                        {item.title} ({item.date_time_fmt(item)})
                       </span>
                       <div className={styles.content}>
                         {

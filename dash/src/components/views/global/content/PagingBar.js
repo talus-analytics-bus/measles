@@ -22,7 +22,7 @@ class PagingBar extends Chart {
       const setXData = () => {
         // If current view is "total cases reported", show y, otherwise show y2
         // which is vaccination coverage.
-        if (view === 'caseload_totalpop') {
+        if (view === 'cumcaseload_totalpop') {
           this.data.vals.x = params.data.y || [];
         }
         else if (view === 'coverage_mcv1_infant') { // most recent vaccinatin cov. val.
@@ -90,7 +90,7 @@ class PagingBar extends Chart {
       setYData();
       setBarData();
     };
-    this.setData('caseload_totalpop'); // PLACEHOLDER
+    this.setData('cumcaseload_totalpop'); // PLACEHOLDER
 
     // Get longest bar value label with and set margin to this value, in case
     // it is hanging off the right size of the chart.
@@ -142,11 +142,7 @@ class PagingBar extends Chart {
       .nice();
 
     // Define red color scale for bubbles
-    let xColor = d3.scaleLinear()
-      .domain([0, maxX])
-      // .range(Util.getColorScaleRange(chart.params.view));
-      Util.setColorScaleProps(chart.params.view, xColor);
-
+    let xColor = Util.getColorScaleForMetric(chart.params.view, [0, maxX]);
 
     const xAxis = d3.axisTop()
       .scale(x)
@@ -229,9 +225,9 @@ class PagingBar extends Chart {
       }
 
       // X-axis label and section title
-      const xAxisLabelText = Util.getScatterLabelData(view);
-      xAxisLabel.text(Util.getScatterLabelData(view));
-      chart.params.setSectionTitle(xAxisLabelText + ' by country');
+      const xAxisLabelText = `${chart.xMetricParams.label} by country (${chart.xMetricParams.dateFmt(chart.data.vals.x)})`;
+      xAxisLabel.text(`${chart.xMetricParams.label} (${chart.xMetricParams.dateFmt(chart.data.vals.x)})`);
+      chart.params.setSectionTitle(`${chart.xMetricParams.label} by country (${chart.xMetricParams.dateFmt(chart.data.vals.x)})`);
 
       // Get data for this page
       const data = chart.data.bars.filter(d => d.page === pageNumber-1);
@@ -323,7 +319,7 @@ class PagingBar extends Chart {
         );
     };
 
-    chart.update(1, 'caseload_totalpop');
+    chart.update(1, 'cumcaseload_totalpop');
 
     // Reduce width at the end
     chart.svg.node().parentElement.classList.add(styles.drawn);

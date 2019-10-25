@@ -314,9 +314,9 @@ const App = () => {
             Util.formatDatetimeApi(chartParams.Scatter[0].params.domain[1]),
             Util.formatDatetimeApi(chartParams.Scatter[0].params.domain[0]),
           ),
-          incidence_12months: ObservationQuery( // DEBUG: replace with metric 24
-            6,
-            // 24,
+          caseload_12months: ObservationQuery( // DEBUG: replace with metric 24
+            // 6,
+            7,
             'monthly',
             Util.formatDatetimeApi(Util.today()),
           ),
@@ -382,7 +382,7 @@ const App = () => {
           size: results.population,
         };
         chartParams.PagingBar[0].params.data = {
-          y: results.incidence_12months,
+          y: results.caseload_12months,
           y2: results.vaccination_recent,
         };
 
