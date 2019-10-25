@@ -3,6 +3,71 @@ import * as d3 from 'd3/dist/d3.min';
 // Utility functions.
 const Util = {};
 
+// Color series used to indicate relative vaccination coverage from least to
+// most vaccinated.
+Util.vaccinationColors = [
+  '#d6f0b2',
+  '#b9d7a8',
+  '#7fcdbb',
+  '#41b6c4',
+  '#2c7fb8',
+  '#303d91'
+];
+
+// const vaccinationColorScale = (val) => {
+//
+//   return 'blue';
+// };
+
+Util.getMetricChartParams = (metric) => {
+  switch (metric) {
+    case 'caseload_totalpop':
+      return {
+        tickFormat: Util.comma,
+        sort: 'desc',
+      };
+
+    case 'coverage_mcv1_infant': // DEBUG
+      return {
+        tickFormat: Util.percentize,
+        sort: 'asc',
+      };
+    }
+};
+
+Util.setColorScaleProps = (metric, colorScale) => {
+  switch (metric) {
+    case 'caseload_totalpop':
+    case 'incidence_monthly':
+      colorScale
+        .interpolate(d3.interpolateRgb)
+        .range(['#e6c1c6', '#9d3e4c'])
+        return;
+
+    case 'coverage_mcv1_infant': // DEBUG
+      colorScale
+        .interpolate(d3.interpolateRgbBasis)
+        .range(Util.vaccinationColors)
+        return;
+    }
+};
+
+Util.getColorScaleForMetric = (metric, domain) => {
+  switch (metric) {
+    case 'caseload_totalpop':
+    case 'incidence_monthly':
+      return d3.scaleLinear()
+        .range(['#e6c1c6', '#9d3e4c'])
+        .domain(domain);
+        return;
+
+    case 'coverage_mcv1_infant': // DEBUG
+      return (val) => {
+        return d3.interpolateRgbBasis(Util.vaccinationColors)(val / 100);
+      };
+    }
+};
+
 Util.getIntArray = (min, max) => {
   const list = [];
   for (let i = min; i <= max; i++) {
@@ -12,11 +77,13 @@ Util.getIntArray = (min, max) => {
 };
 
 Util.getScatterLabelData = (datum) => {
-  switch (datum.metric) {
+  switch (datum.metric || datum) {
     case 'caseload_totalpop':
       return 'Measles cases reported';
     case 'incidence_monthly':
       return 'Monthly incidence of measles';
+    case 'coverage_mcv1_infant':
+      return 'Vaccination coverage';
     default:
       return '';
   }

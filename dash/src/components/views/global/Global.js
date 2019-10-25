@@ -54,6 +54,12 @@ const Global = (props) => {
   // Track slider play timeouts
   const [ playTimeouts, setPlayTimeouts ] = React.useState([]);
 
+  // Track which data series is being shown in the paging bar chart.
+  const [ sectionTitle, setSectionTitle ]  = React.useState('Measles cases reported by country'); // PLACEHOLDER
+
+  // Track which data series is being shown in the paging bar chart.
+  const [ pagingBarData, setPagingBarData ]  = React.useState('caseload_totalpop'); // PLACEHOLDER
+
   // Track how many pages there are for the bar chart
   const [ pageCount, setPageCount ]  = React.useState(1);
 
@@ -87,6 +93,7 @@ const Global = (props) => {
           chart.params.setCurPage = setCurPage;
           chart.params.setPageCount = setPageCount;
           chart.params.setRedirectPath = setRedirectPath;
+          chart.params.setSectionTitle = setSectionTitle;
         }
 
         // Create chart instance
@@ -120,11 +127,11 @@ const Global = (props) => {
 
   React.useEffect(() => {
     const PagingBarChart = charts.find(d => d.params.className === 'PagingBar');
-    if (PagingBarChart) PagingBarChart.update(curPage);
+    if (PagingBarChart) PagingBarChart.update(curPage, pagingBarData);
 
     // Rebuild tooltips after the chart is drawn
     ReactTooltip.rebuild();
-  }, [curPage])
+  }, [curPage, pagingBarData])
 
   // Updates scatterplot and slider label when slider is changed.
   const handleSliderChange = (valNumeric, a, b) => {
@@ -354,6 +361,43 @@ const Global = (props) => {
   // Returns jsx for paging bar chart
   const getPagingBarJsx = () => {
 
+    // Radio toggle
+    const toggle = (
+      <div className={styles.dataToggles}>
+      {
+        [
+          {
+            name: 'Total cases reported', // PLACEHOLDER
+            value: 'caseload_totalpop',
+            series: 'y',
+          },
+          {
+            name: 'Vaccination coverage', // PLACEHOLDER
+            value: 'coverage_mcv1_infant',
+            series: 'y2',
+          },
+        ].map((entry, i) =>
+          <div className={styles.dataToggle}>
+            <label for={entry.value}>
+              <input
+                type="radio"
+                name="pagingBarData"
+                id={entry.value}
+                value={entry.value}
+                checked={pagingBarData === entry.value}
+                onClick={() => {
+                  setPagingBarData(entry.value);
+                  setCurPage(1);
+                }}
+              />
+              {entry.name}
+            </label>
+          </div>
+        )
+      }
+      </div>
+    );
+
     // Main chart area
     const area = <div className={classNames(styles.PagingBar, 'PagingBar-0')} />;
 
@@ -410,6 +454,7 @@ const Global = (props) => {
     );
     return (
       <div>
+        {toggle}
         {area}
         {pageNumbers}
       </div>
@@ -466,7 +511,7 @@ const Global = (props) => {
   const getPagingBarData = () => {
     return [
       {
-        'title': 'Reported cases by country',
+        'title': sectionTitle,
         'chart_jsx': getPagingBarJsx,
         'date_time_fmt': () => '',
         // 'data_source': getPagingBarDataSource,

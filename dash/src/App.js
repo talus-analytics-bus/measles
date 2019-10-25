@@ -332,6 +332,11 @@ const App = () => {
             Util.formatDatetimeApi(chartParams.Scatter[0].params.domain[1]),
             Util.formatDatetimeApi(chartParams.Scatter[0].params.domain[0]),
           ),
+          vaccination_recent: ObservationQuery(
+            4,
+            'yearly',
+            Util.formatDatetimeApi(Util.today()),
+          ),
           population: ObservationQuery(
             3,
             'yearly',
@@ -378,6 +383,7 @@ const App = () => {
         };
         chartParams.PagingBar[0].params.data = {
           y: results.incidence_12months,
+          y2: results.vaccination_recent,
         };
 
         // // Incidence history and latest observation

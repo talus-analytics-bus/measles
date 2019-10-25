@@ -14,19 +14,19 @@ class PagingBar extends Chart {
 
     this.params = params;
 
-    const setData = () => {
+    this.setData = (view) => {
       this.data = {vals: {}};
+      this.params.view = view;
+      this.xMetricParams = Util.getMetricChartParams(view);
+
       const setXData = () => {
         // If current view is "total cases reported", show y, otherwise show y2
         // which is vaccination coverage.
-        let view;
-        if (this.params.view !== undefined) view = this.params.view;
-        else view = 'caseload_totalpop';
-
         if (view === 'caseload_totalpop') {
           this.data.vals.x = params.data.y || [];
         }
         else if (view === 'coverage_mcv1_infant') { // most recent vaccinatin cov. val.
+          console.log('Doing vacc')
           this.data.vals.x = params.data.y2 || [];
         }
         else {
@@ -59,6 +59,7 @@ class PagingBar extends Chart {
               {
                 ...yDatum,
                 value: xDatum.value,
+                join_id: yDatum.place_name + '-' + view,
               }
             );
           }
@@ -69,7 +70,12 @@ class PagingBar extends Chart {
       this.params.pageLength = 15;
       const sortFunc = Util.sortByField('value');
       this.data.bars
-        .sort(sortFunc)
+        .sort(sortFunc);
+
+      // Flip order if sort is reverse
+      if (this.xMetricParams.sort === 'asc') this.data.bars.reverse();
+
+      this.data.bars
         .forEach((v, i) => {
           v.page = Math.floor(i / this.params.pageLength); // 0-indexed count
         });
@@ -79,13 +85,12 @@ class PagingBar extends Chart {
         this.params.setPageCount(pageCount);
       };
 
-
       // Define x, y, and bar data series.
       setXData();
       setYData();
       setBarData();
     };
-    setData();
+    this.setData('caseload_totalpop'); // PLACEHOLDER
 
     // Get longest bar value label with and set margin to this value, in case
     // it is hanging off the right size of the chart.
@@ -123,6 +128,9 @@ class PagingBar extends Chart {
     console.log('chart - redrawing everything - mvm');
     console.log(chart);
 
+    // Draw bars
+    const barGs = chart.newGroup(styles.barGs);
+
     // x scale = cases or incidence
     // Calculate x domain max.
     const maxX = d3.max(chart.data.bars, d => d.value);
@@ -134,14 +142,16 @@ class PagingBar extends Chart {
       .nice();
 
     // Define red color scale for bubbles
-    const xColor = d3.scaleLinear()
+    let xColor = d3.scaleLinear()
       .domain([0, maxX])
-      .range(['#e6c1c6', '#9d3e4c']);
+      // .range(Util.getColorScaleRange(chart.params.view));
+      Util.setColorScaleProps(chart.params.view, xColor);
+
 
     const xAxis = d3.axisTop()
       .scale(x)
       .ticks(5)
-      .tickFormat(Util.comma);
+      .tickFormat(chart.xMetricParams.tickFormat);
 
     const xAxisG = chart.plotAxisReact(
       styles,
@@ -161,7 +171,6 @@ class PagingBar extends Chart {
       .tickFormat(function (val) {
         if (val[0] === '_') return '';
         else {
-          console.log(this)
           this.dataset.name = val;
           return val;
         }
@@ -174,9 +183,6 @@ class PagingBar extends Chart {
       'y',
     );
 
-    // Draw bars
-    const barGs = chart.newGroup(styles.barGs);
-
     // Add x-axis label
     const xAxisLabel = chart[styles['x-axis']].append('text')
       .attr('x', chart.width / 2)
@@ -184,8 +190,7 @@ class PagingBar extends Chart {
       .attr('class', styles.label);
 
     xAxisLabel.append('tspan')
-      .attr('x', chart.width / 2)
-      .text('Measles cases reported');
+      .attr('x', chart.width / 2);
 
     // Add y-axis label
     const yAxisLabel = chart[styles['y-axis']].append('text')
@@ -203,10 +208,35 @@ class PagingBar extends Chart {
     };
 
     // Update function: Update chart to show countries on the given page num.
-    chart.update = (pageNumber) => {
+    chart.update = (pageNumber, view) => {
+
+      // If view not the same as this view, set data and domains
+      if (view !== chart.params.view) {
+        chart.setData(view);
+
+        // update x scale
+        const maxX = d3.max(chart.data.bars, d => d.value);
+
+        // Set domain, update axis
+        x.domain([0, maxX])
+          .nice();
+        xAxis
+          .tickFormat(chart.xMetricParams.tickFormat)
+        chart[styles['x-axis']].call(xAxis);
+
+        // Set color scale
+        xColor = Util.getColorScaleForMetric(view, [0, maxX]);
+      }
+
+      // X-axis label and section title
+      const xAxisLabelText = Util.getScatterLabelData(view);
+      xAxisLabel.text(Util.getScatterLabelData(view));
+      chart.params.setSectionTitle(xAxisLabelText + ' by country');
 
       // Get data for this page
       const data = chart.data.bars.filter(d => d.page === pageNumber-1);
+      console.log('data')
+      console.log(data)
 
       // Append dummy bars if needed
       let i = 0;
@@ -239,12 +269,13 @@ class PagingBar extends Chart {
       // Update bar values (should only need to happen once since underlying
       // data are not updated).
       barGs.selectAll('g')
-        .data(data, d => d.place_id)
+        .data(data, d => d.join_id)
         .join(
           enter => {
             const newBarGs = enter.append('g')
               .attr('data-tip', true)
               .attr('data-for', 'pagingBarTooltip')
+              .attr('data-id', d => d.join_id)
               .attr('class', styles.barG)
               .classed(styles.placeholder, d => d.placeholder === true)
               .on('click', (d) => routeToCountryDetails(d.place_id));
@@ -255,7 +286,6 @@ class PagingBar extends Chart {
               .attr('fill', d => xColor(d.value))
               .attr('width', d => x(d.value))
               .attr('height', y.bandwidth())
-              .attr('data-id', d => d.place_id);
 
             newBarGs.append('image')
               .attr('x', -32)
@@ -278,7 +308,7 @@ class PagingBar extends Chart {
             // Add bar value labels
             newBarGs.append('text')
               .attr('class', styles.valueLabel)
-              .text(d => Util.comma(d.value))
+              .text(d => chart.xMetricParams.tickFormat(d.value))
               .attr('x', d => x(d.value) + 5)
               .attr('y', d => y(d.place_name) + y.bandwidth()/2)
               .attr('dy', '.375em');
@@ -293,7 +323,7 @@ class PagingBar extends Chart {
         );
     };
 
-    chart.update(1);
+    chart.update(1, 'caseload_totalpop');
 
     // Reduce width at the end
     chart.svg.node().parentElement.classList.add(styles.drawn);
