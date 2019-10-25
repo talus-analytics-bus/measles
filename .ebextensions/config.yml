@@ -1,2 +1,2 @@
 deploy:
-  artifact: deploy-api.zip
+  artifact: "deploy-api.zip"
