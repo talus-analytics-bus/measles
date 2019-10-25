@@ -121,6 +121,9 @@ const Global = (props) => {
     // Set scatterplot update
     const scatterChart = charts.find(c => c.params.className === 'Scatter');
     scatterChart.update(curSliderVal);
+
+    // Stop playing if needed
+    if (playing) handlePause();
   };
 
   const handlePause = () => {
@@ -160,7 +163,7 @@ const Global = (props) => {
   };
   const handleBackForward = (change) => {
     // Stop playing if playing
-    handlePause();
+    if (playing) handlePause();
 
     // Update slider
     const newSliderValTmp = Util.getUTCDate(new Date(curSliderVal));
@@ -261,24 +264,58 @@ const Global = (props) => {
     // Scatter plot legend
     const scatterLegend = (
       <div className={styles.scatterLegend}>
-        <p className={styles.sectionName}>Population of country</p>
-        <div className={styles.legendEntryGroups}>
-          <div className={styles.legendEntryGroup}>
-            {
-              [1,2,3].map((d,i) =>
-                <div className={classNames(styles.legendEntry, styles.circle)}>
-                  <div className={classNames(styles.legendIcon, styles.circle)} />
-                  {
-                    (i === 0) && <div className={styles.legendLabel}>Low<br/>population</div>
-                  }
-                  {
-                    (i === 2) && <div className={styles.legendLabel}>High<br/>population</div>
-                  }
-                </div>
-              )
-            }
+        <div className={styles.section}>
+          <p className={styles.sectionName}>Population of country</p>
+          <div className={styles.legendEntryGroups}>
+            <div className={styles.legendEntryGroup}>
+              {
+                [1,2,3].map((d,i) =>
+                  <div className={classNames(styles.legendEntry, styles.circle)}>
+                    <div className={classNames(styles.legendIcon, styles.circle)} />
+                    {
+                      (i === 0) && <div className={styles.legendLabel}>Lower<br/>pop.</div>
+                    }
+                    {
+                      (i === 2) && <div className={styles.legendLabel}>Higher<br/>pop.</div>
+                    }
+                  </div>
+                )
+              }
+            </div>
           </div>
         </div>
+        <div className={styles.section}>
+          <p className={styles.sectionName}>Measles cases reported</p>
+          <div className={styles.legendEntryGroups}>
+            <div className={styles.legendEntryGroup}>
+              {
+                [1,2,3].map((d,i) =>
+                  <div className={classNames(styles.legendEntry, styles.rect, styles.rectGradient)}>
+                    <div className={classNames(styles.legendIcon, styles.rect, styles.rectGradient)} />
+                    {
+                      (i === 0) && <div className={styles.legendLabel}>Fewer<br/>cases</div>
+                    }
+                    {
+                      (i === 2) && <div className={styles.legendLabel}>More<br/>cases</div>
+                    }
+                  </div>
+                )
+              }
+            </div>
+            <div className={styles.legendEntryGroup}>
+              {
+                [0].map((d,i) =>
+                  <div className={classNames(styles.legendEntry, styles.rect, styles.dataNotAvailable)}>
+                    <div className={classNames(styles.legendIcon, styles.rect, styles.dataNotAvailable)} />
+                    {
+                      (i === 0) && <div className={styles.legendLabel}>Data not<br/>reported</div>
+                    }
+                  </div>
+                )
+              }
+            </div>
+          </div>
+          </div>
       </div>
     );
 

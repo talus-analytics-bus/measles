@@ -82,7 +82,8 @@ g.bubbles {
     }
   }
   g.active circle.scatterCircle {
-    fill: $data-blue;
+    // fill: $data-blue;
+    stroke-width: 1px;
     transition: fill .25s;
     box-shadow: 2px 2px 5px 0 rgba(0, 0, 0, 0.68);
     -webkit-box-shadow: 2px 2px 5px 0 rgba(0, 0, 0, 0.68);

@@ -78,9 +78,14 @@ class Scatter extends Chart {
     }
 
     // Define red color scale for bubbles
-    const yColor = d3.scaleLinear()
+    const yColorScale = d3.scaleLinear()
       .domain([0, 1])
-      .range(['#d89da5', '#9d3e4c']);
+      .range(['#e6c1c6', '#9d3e4c']);
+
+    const yColor = (val) => {
+      if (val === null) return '#b3b3b3'; // no data color
+      else return yColorScale(val);
+    };
 
     // Define bubble size scale
     const r = d3.scaleLinear()
@@ -278,6 +283,8 @@ class Scatter extends Chart {
     // Called: Every time the month/year slider is changed.
     chart.update = (dt) => {
       const sortBySize = (a, b) => {
+        if (a.value_normalized.y === null) return -1;
+        if (b.value_normalized.y === null) return 1;
         if (a.value_normalized.size > b.value_normalized.size) return -1;
         else if (a.value_normalized.size < b.value_normalized.size) return 1;
         else return 0;
@@ -294,7 +301,12 @@ class Scatter extends Chart {
         return d.date_time.startsWith(monthlyStr);
       });
       const yDataMax = d3.max(yData, d => d.value);
-      yData.forEach(d => d.value_normalized = d.value / yDataMax );
+      yData.forEach(d => {
+        if (d.value === null) d.value_normalized = null;
+        else {
+          d.value_normalized = d.value / yDataMax
+        }
+      });
 
       // x data - use most recent available
       let xDataYearlyStr = yearlyStr;
@@ -344,7 +356,8 @@ class Scatter extends Chart {
       });
 
       // Sort data by size so that largest circles are in the back.
-      data.sort(sortBySize);
+      data
+        .sort(sortBySize);
 
       // Update x-scale domain so that far left side corresponds to the
       // lowest normalized x value.
@@ -421,6 +434,8 @@ class Scatter extends Chart {
       }
 
       // Enter new bubbles, update old
+      console.log('data')
+      console.log(data)
       bubblesG.selectAll('g')
         .attr('class', styles.bubbleG)
         .data(data, d => d.place_id)
@@ -488,14 +503,65 @@ class Scatter extends Chart {
                 .attr('fill', yColor(0))
                 .attr('r', d => r(0))
 
-            newCircleGs
+            const circleLabels = newCircleGs
               .append('text')
                 .attr('class', styles.scatterCircleLabel)
                 .attr('dy', d => (-1 * r(d.value_normalized.size)) - 2)
                 .attr('dx', d => getTextDx(d))
                 .style('text-anchor', d => getTextAnchor(d))
                 .style('font-size', d => labelSize(d.value_normalized.size))
-                .text(d => d.place_name)
+
+            circleLabels
+              .each(function appendTSpans (d) {
+                // Get label text
+                // If it's more than 20 chars try to wrap it
+                const tryTextWrap = d.place_name.length > 20;
+                let circleLabelTspans;
+                if (tryTextWrap) {
+                  circleLabelTspans = [];
+
+                  // Split names by word
+                  const words = d.place_name.split(' ');
+
+                  // Concatenate words for each tspan until over 20 chars
+                  let curTspan = '';
+                  for (let i = 0; i < words.length; i++) {
+                    const word = words[i];
+                    if ((curTspan + ' ' + word).length < 20) {
+                      curTspan += ' ' + word;
+                    } else {
+                      circleLabelTspans.push(curTspan);
+                      curTspan = word;
+                    }
+                  }
+                  if (curTspan !== '') circleLabelTspans.push(curTspan);
+                }
+
+                // Otherwise just use the name as-is
+                else {
+                  circleLabelTspans = [d.place_name];
+                }
+
+                // Append one tspan per line
+                d3.select(this).selectAll('tspan')
+                  .data(circleLabelTspans)
+                  .enter().append('tspan')
+                    .attr('x', 0)
+                    .attr('dy', (d, i) => {
+                      if (circleLabelTspans.length === 1) {
+                        return null;
+                      }
+                      else if (i === 0) {
+                        return -1 * circleLabelTspans.length + 'em';
+                      }
+                      else {
+                        return '1em';
+                      }
+
+                    })
+                    .text(d => d);
+              });
+
 
             newCircleGs
               .transition()
@@ -550,6 +616,7 @@ class Scatter extends Chart {
 
       // Keep bubbles below other chart elements, except month year label.
       bubblesG.lower();
+      chart['avgXLine'].lower();
       chart[styles.monthYearLabel].lower();
 
       // Update axis labels

@@ -4,8 +4,6 @@ import classNames from 'classnames'
 import Util from '../../misc/Util.js'
 
 import styles from './geomPopup.module.scss'
-// import flags from '../../../assets/images/flags/AD.png'
-// const flags = Util.importAll(require.context('../../../assets/images/flags/', false, /\.(png|jpe?g|svg)$/));
 
 // : React.FC
 const GeomPopup = ({ popupData }) => {
