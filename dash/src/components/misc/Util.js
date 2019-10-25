@@ -281,8 +281,8 @@ Util.getDateTimeRange = (item) => {
     year: 'numeric',
     timeZone: 'UTC',
   });
-  if (firstStr === lastStr) return `(${firstStr})`;
-  else return `(${firstStr} to ${lastStr})`;
+  if (firstStr === lastStr) return `${firstStr}`;
+  else return `${firstStr} to ${lastStr}`;
 };
 
 Util.formatDatetimeApi = (dt) => {
