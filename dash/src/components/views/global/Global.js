@@ -170,12 +170,17 @@ const Global = (props) => {
 
     let prevDt = curSliderVal;
     let i = 0;
+    let utcYear = curSliderVal.getUTCFullYear();
+    let utcMonth = curSliderVal.getUTCMonth();
     const newPlayTimeouts = [];
     while (prevDt < sliderMax) {
-      const curDt = new Date(
-        prevDt
-      );
-      curDt.setUTCMonth(curDt.getUTCMonth() + 1);
+      utcMonth++;
+      if (utcMonth > 11) {
+        utcMonth = 0;
+        utcYear += 1;
+      }
+      const curDt = new Date(`${utcYear}/${utcMonth + 1}/1`);
+
       prevDt = curDt;
       const timeoutPrevDt = prevDt;
       newPlayTimeouts.push(
