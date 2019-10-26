@@ -23,7 +23,7 @@ Util.getMetricChartParams = (metric) => {
   switch (metric) {
     case 'cumcaseload_totalpop':
       return {
-        tickFormat: Util.comma,
+        tickFormat: Util.formatSIInteger,
         sort: 'desc',
         metric: 'cumcaseload_totalpop',
         label: 'New cases in past 12 months',
@@ -446,6 +446,7 @@ Util.money = (val) => {
 
 Util.formatSIInteger = (val) => {
 	if (val === 0) return '0';
+  else if (val < 10) return val;
 	else return d3.format(".2s")(val);
 };
 
