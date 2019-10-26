@@ -401,15 +401,34 @@ class Chart {
   }
 
   // Add axis labels
-  getYLabelPos (y, ordinal = false, labels = [], fontSize = '1em') {
+  getYLabelPos (y, ordinal = false, labels = [], fontSize = '1em', useDrawnTicks = false) {
     const chart = this;
 
     // data: all tick labels shown in chart, as formatted.
-    const data = ordinal ? labels : [
-      y.tickFormat()(
-        y.domain()[0] // largest y-value
-      )
-    ];
+    let data, fakeAxis;
+    if (useDrawnTicks) {
+      data = [];
+      fakeAxis = chart.svg.append('g')
+        .attr('class', 'fakeAxis')
+        .call(chart.yAxis);
+
+      fakeAxis
+        .selectAll('g.tick text').each(function(d) {
+          data.push(this.textContent);
+        })
+      fakeAxis
+        .remove();
+    }
+    else {
+      data = ordinal ? labels : [
+        y.tickFormat()(
+          y.domain()[0] // largest y-value
+        )
+      ];
+    }
+
+    console.log('data')
+    console.log(data)
 
     // Add fake tick labels
     const fakeText = chart.svg.selectAll('.fake-text').data(data).enter().append("text").text(d => d)
@@ -454,23 +473,31 @@ class Chart {
     return maxLabelWidth;
   };
 
-  fitLeftMargin (initDomain, ordinal = false) {
+  fitLeftMargin (initDomain, ordinal = false, useDrawnTicks = false) {
 
     const chart = this;
     const axisType = 'y';
     const labels = ordinal ? initDomain : [];
 
-    // get incidence y-scale and y-axis
-    chart[axisType] = d3.scaleLinear()
-      .domain(initDomain)
-      .nice()
-      .range([0, chart.height]);
+    const yParams = chart.params.yMetricParams;
+
+    if (chart[axisType] === undefined)
+      chart[axisType] = d3.scaleLinear()
+        .domain(initDomain)
+        .nice()
+        .range([0, chart.height]);
+
+    const chartScale = chart[axisType];
 
     const shift = chart.getYLabelPos(
-      chart[axisType], // axis group
+      chart[axisType], // scale
       ordinal,
       labels,
+      '1em',
+      useDrawnTicks,
     );
+    console.log('shift')
+    console.log(shift)
     return shift;
   }
 

@@ -2,6 +2,7 @@
 
 #globalTooltip {
   .tooltipContainer {
+    max-width: 200px;
     display: flex;
     flex-flow: column;
     background-color: white;

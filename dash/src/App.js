@@ -293,20 +293,20 @@ const App = () => {
         // TODO
         const queries = {
           // TODO - make global and yearly
-          globalIncidenceHistory: ObservationQuery(
-            15,
+          miniLine1Data: ObservationQuery( // global monthly caseload
+            23,
             'monthly',
             Util.formatDatetimeApi(chartParams.MiniLine[0].params.domain[1]),
             Util.formatDatetimeApi(chartParams.MiniLine[0].params.domain[0]),
-            43, // China
+            315, // Global
+            'global',
           ),
           // TODO - make global
-          globalVaccHistory: ObservationQuery(
+          miniLine2Data: ObservationQuery(
             4,
             'yearly',
             Util.formatDatetimeApi(chartParams.MiniLine[0].params.domain[1]),
             Util.formatDatetimeApi(chartParams.MiniLine[0].params.domain[0]),
-            43, // China
           ),
           caseload: ObservationQuery(
             6,
@@ -361,20 +361,57 @@ const App = () => {
         // TODO
         // DEV: Use incidence observations for China on the first of Jan for
         // 2016 - 2019 inclusive for now.
-        const debugMiniLine1Data = results.globalIncidenceHistory.filter(obs => {
-          const date = new Date(obs.date_time.replace(/-/g, '/'));
-
-          const isRightDate =
-            date.getUTCMonth() === 0
-            && date.getUTCDate() === 1;
-
-          return isRightDate;
-        });
+        // const debugMiniLine1Data = results.globalIncidenceHistory.filter(obs => {
+        //   const date = new Date(obs.date_time.replace(/-/g, '/'));
+        //
+        //   const isRightDate =
+        //     date.getUTCMonth() === 0
+        //     && date.getUTCDate() === 1;
+        //
+        //   return isRightDate;
+        // });
 
         // TODO ensure mini lines have partial data for current year if
         // possible.
-        chartParams.MiniLine[0].params.data = debugMiniLine1Data;
-        chartParams.MiniLine[1].params.data = results.globalVaccHistory;
+        chartParams.MiniLine[0].params.data = results.miniLine1Data;
+
+
+        // Get average vaccination for each year based on average of countries
+        const averageVaccDataObj = {};
+        results.miniLine2Data.forEach(d => {
+          if (averageVaccDataObj[d.date_time] === undefined) {
+            if (d.value === null) return;
+            else {
+              d.metric = 'avg_coverage_mcv1_infant';
+              averageVaccDataObj[d.date_time] = {
+                ...d,
+                tempValues: [d.value],
+              };
+            }
+          }
+          else {
+            if (d.value === null) return;
+            else {
+              averageVaccDataObj[d.date_time].tempValues.push(d.value);
+            }
+          }
+        });
+
+        // Take averages -- TODO in database view, not in JS.
+        const averageVaccData = [];
+        for (let key in averageVaccDataObj) {
+          const curYearDatum = averageVaccDataObj[key];
+          curYearDatum.value = d3.mean(curYearDatum.tempValues);
+          delete curYearDatum.tempValues;
+          averageVaccData.push(curYearDatum);
+        }
+        console.log('averageVaccData')
+        console.log(averageVaccData)
+        chartParams.MiniLine[1].params.data = averageVaccData;
+        // chartParams.MiniLine[1].params.data = results.miniLine2Data;
+
+
+
         chartParams.Scatter[0].params.data = {
           x: results.vaccination,
           y: results.caseload,

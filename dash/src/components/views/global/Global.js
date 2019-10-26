@@ -545,15 +545,15 @@ const Global = (props) => {
     ];
     return [
       {
-        'title': 'Global yearly incidence',
+        'title': 'Reported measles cases',
         'chart_jsx': () => <div className={classNames(styles.MiniLine, 'MiniLine-0')} />,
-        'value_fmt': Util.formatIncidence,
-        'value_label': 'cases per 1M population',
-        'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'year')},
+        'value_fmt': Util.comma,
+        'value_label': 'cases',
+        'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'month')},
         ...infographicValues[0]
       },
       {
-        'title': 'Global vaccination coverage',
+        'title': 'Average vaccination coverage',
         'chart_jsx': () => <div className={classNames(styles.MiniLine, 'MiniLine-1')} />,
         'value_fmt': Util.percentize,
         'value_label': 'of infants',
@@ -756,12 +756,23 @@ const Global = (props) => {
                     {
                       tooltipData.items.map(item =>
                         <div className={stylesTooltip.item}>
-                          <div className={stylesTooltip.name}>{item.name} ({Util.getDatetimeStamp(item.datum, item.period)})</div>
-                          <div>
-                            <span className={stylesTooltip.value}>{item.value}</span>
-                            &nbsp;
-                            <span className={stylesTooltip.label}>{item.label}</span>
-                          </div>
+                          <div className={stylesTooltip.name}>{item.name} {item.value !== null ? `(${Util.getDatetimeStamp(item.datum, item.period)})` : ''}</div>
+                          {
+                            // Show value if reported
+                            item.value !== null &&
+                            <div>
+                              <span className={stylesTooltip.value}>{item.value}</span>
+                              &nbsp;
+                              <span className={stylesTooltip.label}>{item.label}</span>
+                            </div>
+                          }
+                          {
+                            // Write not reported otherwise
+                            item.value === null &&
+                            <div>
+                              <span className={classNames(stylesTooltip.value, 'notAvail')}>Not reported</span>
+                            </div>
+                          }
                         </div>
                       )
                     }

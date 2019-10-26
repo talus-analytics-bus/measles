@@ -220,7 +220,7 @@ def manage_lag(metric, null_res, max_time, null_places, observations):
 
 # Define an observation endpoint query.
 def getObservations(filters):
-    s_rs = ['planet', 'country', 'state', 'county', 'block_group', 'tract', 'point']
+    s_rs = ['planet', 'global', 'country', 'state', 'county', 'block_group', 'tract', 'point']
     t_rs = ['yearly', 'monthly', 'weekly', 'daily', 'occasion']
 
     # Initialize response as empty

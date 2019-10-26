@@ -58,13 +58,33 @@ Util.getMetricChartParams = (metric) => {
         sort: 'desc',
         label: 'Total cases',
       };
+    case 'monthlycaseload_totalpop':
+      return {
+        tickFormat: Util.comma,
+        metric: 'caseload_totalpop',
+        sort: 'desc',
+        temporal_resolution: 'monthly',
+        label: 'Global measles cases by month',
+      };
 
     case 'coverage_mcv1_infant': // DEBUG
       return {
         tickFormat: Util.percentize,
         metric: 'coverage_mcv1_infant',
+        temporal_resolution: 'yearly',
         sort: 'asc',
         label: 'Vaccination coverage (% of infants)',
+        dateFmt: (allObs) => Util.getDatetimeStamp(allObs[0], 'year'),
+      };
+
+    case 'avg_coverage_mcv1_infant': // DEBUG
+      return {
+        tickFormat: Util.percentize,
+        metric: 'avg_coverage_mcv1_infant',
+        temporal_resolution: 'yearly',
+        sort: 'asc',
+        defaultTicks: [0, 50, 100],
+        label: 'Average vaccination coverage of countries',
         dateFmt: (allObs) => Util.getDatetimeStamp(allObs[0], 'year'),
       };
     }
@@ -162,7 +182,7 @@ Util.getTooltipItem = (datum) => {
         name: 'Cases reported',
         datum: datum,
         period: 'month',
-        value: Util.comma(datum.value),
+        value: datum.value === null ? null : Util.comma(datum.value),
         label: 'cases',
       };
     case 'incidence_monthly': // DEBUG
@@ -170,12 +190,28 @@ Util.getTooltipItem = (datum) => {
         name: 'Monthly incidence',
         datum: datum,
         period: 'month',
-        value: Util.formatIncidence(datum.value),
+        value: datum.value === null ? null : Util.formatIncidence(datum.value),
         label: 'cases per 1M population',
+      };
+    case 'monthlycaseload_totalpop': // DEBUG
+      return {
+        name: 'Cases reported',
+        datum: datum,
+        period: 'month',
+        value: Util.comma(datum.value),
+        label: 'cases',
       };
     case 'coverage_mcv1_infant': // DEBUG
       return {
         name: 'Vaccination coverage',
+        datum: datum,
+        period: 'year',
+        value: Util.percentize(datum.value),
+        label: 'of infants',
+      };
+    case 'avg_coverage_mcv1_infant': // DEBUG
+      return {
+        name: 'Average vaccination coverage of countries',
         datum: datum,
         period: 'year',
         value: Util.percentize(datum.value),
@@ -461,5 +497,37 @@ Util.formatDate = (input) => {
     }
   );
 }
+
+Util.getWrappedText = (text, thresh = 20) => {
+  // Get label text
+  // If it's more than 20 chars try to wrap it
+  const tryTextWrap = text.length > thresh;
+  let svgLabelTspans;
+  if (tryTextWrap) {
+    svgLabelTspans = [];
+
+    // Split names by word
+    const words = text.split(' ');
+
+    // Concatenate words for each tspan until over 20 chars
+    let curTspan = '';
+    for (let i = 0; i < words.length; i++) {
+      const word = words[i];
+      if ((curTspan + ' ' + word).length < thresh) {
+        curTspan += ' ' + word;
+      } else {
+        svgLabelTspans.push(curTspan);
+        curTspan = word;
+      }
+    }
+    if (curTspan !== '') svgLabelTspans.push(curTspan);
+  }
+
+  // Otherwise just use the name as-is
+  else {
+    svgLabelTspans = [text];
+  }
+  return svgLabelTspans;
+};
 
 export default Util;
