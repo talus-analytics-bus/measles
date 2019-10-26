@@ -60,7 +60,7 @@ Util.getMetricChartParams = (metric) => {
       };
     case 'monthlycaseload_totalpop':
       return {
-        tickFormat: Util.formatSI,
+        tickFormat: Util.formatSIInteger,
         metric: 'monthlycaseload_totalpop',
         sort: 'desc',
         temporal_resolution: 'monthly',
@@ -443,6 +443,11 @@ Util.comma = function(num) {
 Util.money = (val) => {
   return Util.comma(val);
 }
+
+Util.formatSIInteger = (val) => {
+	if (val === 0) return '0';
+	else return d3.format(".2s")(val);
+};
 
 // Format using standard suffixes
 Util.formatSI = (val) => {
