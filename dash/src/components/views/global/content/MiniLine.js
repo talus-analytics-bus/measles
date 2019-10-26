@@ -88,16 +88,6 @@ class MiniLine extends Chart {
       this.yAxis.tickValues(this.params.yMetricParams.defaultTicks);
     }
 
-    // Adjust left margin to fit available space
-    if (!this.params.margin) {
-      this.params.margin = {
-        top: 35,
-        right: 0,
-        bottom: 22,
-        left: 20,
-      };
-    }
-
     this.params.margin.left = this.fitLeftMargin(this.yDomainDefault, false, true);
     this.onResize(this);
     this.draw();

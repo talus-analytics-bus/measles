@@ -13,6 +13,8 @@ class PagingBar extends Chart {
     super(selector, params);
 
     this.params = params;
+    console.log('params - mvmfilter')
+    console.log(params)
 
     this.setData = (view) => {
       this.data = {vals: {}};
@@ -101,19 +103,27 @@ class PagingBar extends Chart {
         '1em', // font-size
         true // bold
       );
+    // this.params.margin.right = longestBarValueWidth + 5;
 
     // Default margins
-    if (!this.params.margin) {
-      this.params.margin = {
-        top: 47,
-        right: longestBarValueWidth + 5,
-        bottom: 20,
-        left: 200,
-      };
-    }
+    // if (!this.params.margin) {
+    console.log('Construction chart: PagingBar.js - mvmfilter')
+    this.setMargin({
+      top: 47,
+      right: longestBarValueWidth + 5,
+      bottom: 20,
+      left: 200,
+    });
+      // this.params.margin = {
+      //   top: 47,
+      //   right: longestBarValueWidth + 5,
+      //   bottom: 20,
+      //   left: 200,
+      // };
+    // }
 
 
-    this.init();
+    // this.init();
     // set left margin based on the longest country name included.
     const yLabels = this.data.bars.map(d => d.place_name);
     this.params.margin.left = this.fitLeftMargin(yLabels, true) + 20;

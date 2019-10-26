@@ -7,12 +7,15 @@ class Chart {
     this.selector = selector;
     document.querySelector(selector).innerHTML = '';
     this.svg = d3.select(selector).append('svg');
-    this.margin = params.margin || {
-      top: 0,
-      bottom: 0,
-      left: 0,
-      right: 0,
-    };
+
+    if (!this.margin) this.margin = params.margin;
+    // this.margin = params.margin || {
+    //   top: 0,
+    //   bottom: 0,
+    //   left: 0,
+    //   right: 0,
+    // };
+
     this.chart = this.svg
       .append('g')
       .classed('chart', true);
@@ -386,17 +389,17 @@ class Chart {
     // initialize sizing
     onResize(this);
 
-    if (this.params.noResizeEvent !== true) {
-      // event listener
-      // https://css-tricks.com/snippets/jquery/done-resizing-event/
-      let timer;
-      window.addEventListener('resize', () => {
-        clearTimeout(timer);
-        timer = window.setTimeout(() => {
-          onResize(this);
-        }, 100);
-      });
-    }
+    // if (this.params.noResizeEvent !== true) {
+    //   // event listener
+    //   // https://css-tricks.com/snippets/jquery/done-resizing-event/
+    //   let timer;
+    //   window.addEventListener('resize', () => {
+    //     clearTimeout(timer);
+    //     timer = window.setTimeout(() => {
+    //       onResize(this);
+    //     }, 100);
+    //   });
+    // }
 
   }
 
@@ -426,9 +429,6 @@ class Chart {
         )
       ];
     }
-
-    console.log('data')
-    console.log(data)
 
     // Add fake tick labels
     const fakeText = chart.svg.selectAll('.fake-text').data(data).enter().append("text").text(d => d)
@@ -473,6 +473,12 @@ class Chart {
     return maxLabelWidth;
   };
 
+  setMargin(margin) {
+    const chart = this;
+    chart.margin = margin;
+    chart.params.margin = margin;
+  }
+
   fitLeftMargin (initDomain, ordinal = false, useDrawnTicks = false) {
 
     const chart = this;
@@ -496,8 +502,6 @@ class Chart {
       '1em',
       useDrawnTicks,
     );
-    console.log('shift')
-    console.log(shift)
     return shift;
   }
 
@@ -523,6 +527,8 @@ function onResize(chart) {
   }
 
   // set the contents to be the dimensions minus the margin
+  console.log('chart - Chart.js')
+  console.log(chart)
   chart.width = chart.containerwidth - chart.margin.left - chart.margin.right;
   chart.height = chart.containerheight - chart.margin.top - chart.margin.bottom;
 

@@ -235,18 +235,21 @@ const App = () => {
         />);
       }
       getDetailsData(id);
+      setLoadingNav(false);
+
       return <div />;
     } else {
-      setLoadingNav(false);
       return detailsComponent;
     }
   }
 
   const renderGlobal = id => {
     if (loading) {
+      console.log('Loading in App.js, returning <div />')
       return <div />
     }
     else if (globalComponent === null) {
+      console.log('globalComponent === null, making one')
 
       // Function to make API calls to get data for the state variables above.
       const getGlobalData = async () => {
@@ -259,6 +262,12 @@ const App = () => {
               params: {
                 domain: [new Date('2016/01/01'), Util.today()],
                 className: 'MiniLine',
+                margin: {
+                  top: 35,
+                  right: 0,
+                  bottom: 22,
+                  left: 20,
+                },
               }
             },
             {
@@ -266,6 +275,12 @@ const App = () => {
               params: {
                 domain: [new Date('2016/01/01'), Util.today()],
                 className: 'MiniLine',
+                margin: {
+                  top: 35,
+                  right: 0,
+                  bottom: 22,
+                  left: 20,
+                },
               }
             },
           ],
@@ -275,6 +290,12 @@ const App = () => {
               params: {
                 className: 'Scatter',
                 domain: [new Date('2016/01/01'), Util.today()],
+                margin: {
+                  top: 68,
+                  right: 5,
+                  bottom: 80,
+                  left: 120,
+                },
               }
             },
           ],
@@ -351,30 +372,7 @@ const App = () => {
         }
         console.log('results -- App.js')
         console.log(results)
-        // Country basic info
-        // Global info
-
-        // Initialize chart data
-
-
-        // Mini line chart 1 - Global annual incidence
-        // TODO
-        // DEV: Use incidence observations for China on the first of Jan for
-        // 2016 - 2019 inclusive for now.
-        // const debugMiniLine1Data = results.globalIncidenceHistory.filter(obs => {
-        //   const date = new Date(obs.date_time.replace(/-/g, '/'));
-        //
-        //   const isRightDate =
-        //     date.getUTCMonth() === 0
-        //     && date.getUTCDate() === 1;
-        //
-        //   return isRightDate;
-        // });
-
-        // TODO ensure mini lines have partial data for current year if
-        // possible.
         chartParams.MiniLine[0].params.data = results.miniLine1Data;
-
 
         // Get average vaccination for each year based on average of countries
         const averageVaccDataObj = {};
@@ -405,12 +403,8 @@ const App = () => {
           delete curYearDatum.tempValues;
           averageVaccData.push(curYearDatum);
         }
-        console.log('averageVaccData')
-        console.log(averageVaccData)
         chartParams.MiniLine[1].params.data = averageVaccData;
         // chartParams.MiniLine[1].params.data = results.miniLine2Data;
-
-
 
         chartParams.Scatter[0].params.data = {
           x: results.vaccination,
@@ -423,44 +417,15 @@ const App = () => {
           y2: results.vaccination_recent,
         };
 
-        // // Incidence history and latest observation
-        // // Do not show null values in data for now
-        // const foundNotNullVal = {
-        //   fromStart: false,
-        //   fromEnd: false,
-        // };
-        // const countryIncidenceHistory = results.countryIncidenceHistoryFull
-        //     .filter(d => {
-        //       if (foundNotNullVal.fromStart) return true;
-        //       else {
-        //         if (d.value === null) return false;
-        //         else {
-        //           foundNotNullVal.fromStart = true;
-        //           return true;
-        //         }
-        //       }
-        //     })
-        //     .reverse()
-        //     .filter(d => {
-        //       if (foundNotNullVal.fromEnd) return true;
-        //       else {
-        //         if (d.value === null) return false;
-        //         else {
-        //           foundNotNullVal.fromEnd = true;
-        //           return true;
-        //         }
-        //       }
-        //     })
-        //     .reverse();
-
         setGlobalComponent(<Global
           chartParams={chartParams}
-          allIncidence={results.incidence}
         />);
       }
       getGlobalData(id);
       return <div />;
     } else {
+      console.log('globalComponent created, returning it')
+
       setLoadingNav(false);
       return globalComponent;
     }
@@ -485,6 +450,7 @@ const App = () => {
               component={d => {
                 setPage('global');
                 setLoadingNav(true);
+                console.log('Routing to GLOBAL PAGE _ MMVMVM')
                 return renderGlobal()
               }}
             />

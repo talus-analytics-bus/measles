@@ -25,9 +25,11 @@ class Scatter extends Chart {
         top: 68,
         right: 5,
         bottom: 80,
-        left: 120, // +40
+        left: 120,
       };
     }
+
+    console.log('Doing scatter plot chart.')
 
     this.init();
     this.onResize(this);
@@ -42,14 +44,6 @@ class Scatter extends Chart {
 
     // Create clipping path
     const defs = chart.svg.append('defs');
-    // defs
-    //   .append('clipPath')
-    //     .attr('id', 'plotArea')
-    //     .append('rect')
-    //       .attr('x', 0)
-    //       .attr('y', 0)
-    //       .attr('width', chart.width)
-    //       .attr('height', chart.height);
 
     // Create shadow definition
     const filterDef = defs.append('filter')
