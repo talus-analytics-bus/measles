@@ -545,7 +545,7 @@ const Global = (props) => {
     ];
     return [
       {
-        'title': 'Reported measles cases',
+        'title': 'Cases reported globally',
         'chart_jsx': () => <div className={classNames(styles.MiniLine, 'MiniLine-0')} />,
         'value_fmt': Util.comma,
         'value_label': 'cases',
@@ -553,7 +553,7 @@ const Global = (props) => {
         ...infographicValues[0]
       },
       {
-        'title': 'Average vaccination coverage',
+        'title': 'Average vaccination coverage of countries',
         'chart_jsx': () => <div className={classNames(styles.MiniLine, 'MiniLine-1')} />,
         'value_fmt': Util.percentize,
         'value_label': 'of infants',

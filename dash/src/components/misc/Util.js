@@ -60,11 +60,11 @@ Util.getMetricChartParams = (metric) => {
       };
     case 'monthlycaseload_totalpop':
       return {
-        tickFormat: Util.comma,
-        metric: 'caseload_totalpop',
+        tickFormat: Util.formatSI,
+        metric: 'monthlycaseload_totalpop',
         sort: 'desc',
         temporal_resolution: 'monthly',
-        label: 'Global measles cases by month',
+        label: 'Cases reported globally',
       };
 
     case 'coverage_mcv1_infant': // DEBUG
