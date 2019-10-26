@@ -235,21 +235,19 @@ const App = () => {
         />);
       }
       getDetailsData(id);
-      setLoadingNav(false);
 
       return <div />;
     } else {
+      setLoadingNav(false);
       return detailsComponent;
     }
   }
 
   const renderGlobal = id => {
     if (loading) {
-      console.log('Loading in App.js, returning <div />')
       return <div />
     }
     else if (globalComponent === null) {
-      console.log('globalComponent === null, making one')
 
       // Function to make API calls to get data for the state variables above.
       const getGlobalData = async () => {
@@ -370,8 +368,6 @@ const App = () => {
         for (let q in queries) {
           results[q] = await queries[q];
         }
-        console.log('results -- App.js')
-        console.log(results)
         chartParams.MiniLine[0].params.data = results.miniLine1Data;
 
         // Get average vaccination for each year based on average of countries
@@ -424,7 +420,6 @@ const App = () => {
       getGlobalData(id);
       return <div />;
     } else {
-      console.log('globalComponent created, returning it')
 
       setLoadingNav(false);
       return globalComponent;
@@ -450,7 +445,6 @@ const App = () => {
               component={d => {
                 setPage('global');
                 setLoadingNav(true);
-                console.log('Routing to GLOBAL PAGE _ MMVMVM')
                 return renderGlobal()
               }}
             />
