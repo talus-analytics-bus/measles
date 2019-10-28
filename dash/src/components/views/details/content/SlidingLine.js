@@ -642,26 +642,26 @@ class SlidingLine extends Chart {
             month: (xDateLine.getUTCMonth() + 1) <= 9 ?  '0' + (xDateLine.getUTCMonth() + 1).toString() : (xDateLine.getUTCMonth() + 1).toString(),
           };
           const xDateLineStr = `${xDateLineStrComponents.year}-${xDateLineStrComponents.month}`;
-          const incidence = chart.data.vals.find(d => d.date_time.startsWith(xDateLineStr));
-          const vacc = chart.data.vaccVals.find(d => d.date_time.startsWith(xDateLineStrComponents.year));
+
+          // Get the datum for each y axis (left and right)
+          const yDatum = chart.data.vals.find(d => d.date_time.startsWith(xDateLineStr));
+          const y2Datum = chart.data.vaccVals.find(d => d.date_time.startsWith(xDateLineStrComponents.year));
 
           const items = [];
-          if (incidence && incidence.value !== null) items.push(
-            {
-              name: 'Incidence',
-              datum: incidence,
-              period: 'month',
-              value: Util.formatIncidence(incidence.value),
-              label: 'cases per 1M population',
+          [
+            yDatum,
+            y2Datum,
+          ].forEach(itemDatum => {
+            if (!itemDatum || itemDatum.value === null) return;
+            else {
+              items.push(
+                Util.getTooltipItem(itemDatum)
+              );
             }
-          );
-          if (vacc) items.push(
+          });
+          chart.params.setTooltipData(
             {
-              name: 'Vaccination',
-              datum: vacc,
-              period: 'year',
-              value: Util.percentize(vacc.value),
-              label: 'of infants',
+              items: items,
             }
           );
 
@@ -679,7 +679,7 @@ class SlidingLine extends Chart {
 
     // Update function: Change metric, basically redraw chart
     chart.update = (metric) => {
-
+      // Remove
     };
   }
 }
