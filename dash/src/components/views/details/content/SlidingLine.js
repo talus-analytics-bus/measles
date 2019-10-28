@@ -2,6 +2,7 @@ import * as d3 from 'd3/dist/d3.min';
 import Chart from "../../../chart/Chart.js";
 import Util from "../../../misc/Util.js";
 import styles from './slidingline.module.scss';
+import stylesDetails from '../details.module.scss';
 
 
 class SlidingLine extends Chart {
@@ -444,13 +445,14 @@ class SlidingLine extends Chart {
       .attr('class', styles.label)
       .attr('x', -chart.height / 2)
       .attr('y', yAxisLeftYPos)
+
     yAxisLabel.append('tspan')
     .attr('x', -chart.height / 2)
-      .text('Monthly incidence of measles');
+      .text(chart.params.metric === 'incidence_monthly' ? 'Monthly incidence of measles' : 'Total measles');
     yAxisLabel.append('tspan')
     .attr('x', -chart.height / 2)
       .attr('dy', '1.2em')
-      .text('(cases per 1M population)');
+      .text(chart.params.metric === 'incidence_monthly' ? '(cases per 1M population)' : 'cases reported');
 
     const yAxisRightLabel = chart[styles['y-axis-right']].append('text')
       .attr('class', styles.label)
@@ -484,6 +486,7 @@ class SlidingLine extends Chart {
       const startYearXPos = x2('1/' + startYear);
       return startYearXPos;
     };
+
 
     const gBrush = chart[styles.slider].append('g')
   		.attr('class', 'brush')
@@ -541,8 +544,9 @@ class SlidingLine extends Chart {
 
         let index = Math.ceil((val / eachBand));
         if (index > chart.data.vals.length - 1) index = chart.data.vals.length - 1;
-        // console.log('index = ' + index);
         // TODO elegantly
+        if (isNaN(index) || index < 0 || index >= chart.data.vals.length) return [0,0];
+        console.log('index = ' + index)
         return new Date (
           chart.data.vals[index]['date_time'].replace(/-/g, '/')
         );
@@ -555,6 +559,9 @@ class SlidingLine extends Chart {
       });
 			x.domain(invertedVals);
 			chart[styles['x-axis']].call(xAxis);
+
+      console.log('invertedVals')
+      console.log(invertedVals)
 
       // Reposition overlay rects (to gray out bars outside the window)
       overlayRects
@@ -571,10 +578,29 @@ class SlidingLine extends Chart {
 			chart[styles.lineValue].selectAll('path'). attr('d', d => line(d));
 			chart[styles.lineVacc].selectAll('path'). attr('d', d => lineVacc(d));
 			chart[styles.areaNull].selectAll('path'). attr('d', d => area(d));
+
+      // Store this position
+      console.log('s')
+      console.log(s)
+      chart.params.brushPosPercent = [s[0]/chart.width, s[1]/chart.width];
 		})
     chart.brushStartPos = getBrushStartPos();
-    gBrush
-      .call(brush.move, [chart.brushStartPos, chart.width]);
+    if (chart.params.brushPosPercent) {
+      console.log('chart.params.brushPosPercent');
+      console.log(chart.params.brushPosPercent);
+      const xVals = [
+        chart.params.brushPosPercent[0] * chart.width,
+        chart.params.brushPosPercent[1] * chart.width,
+      ];
+      console.log('xVals')
+      console.log(xVals)
+      gBrush
+        .call(brush.move, xVals);
+    }
+    else {
+      gBrush
+        .call(brush.move, [chart.brushStartPos, chart.width]);
+    }
 
     // Define function for resetting the brush view to default values, which is
     // called by Detail.js if the reset button is clicked by the user.
@@ -679,7 +705,28 @@ class SlidingLine extends Chart {
 
     // Update function: Change metric, basically redraw chart
     chart.update = (metric) => {
-      // Remove
+      // Hide chart components
+      chart.svg.node().parentElement.classList.remove(styles.drawn);
+      chart.svg.remove();
+
+      // Create new chart
+      const newSlidingLineChart = new SlidingLine(
+
+        // Selector of DOM element in Resilience.js component where the chart
+        // should be drawn.
+        '.' + stylesDetails.slidingLine,
+
+        // Chart parameters consumed by Chart.js and ResilienceRadarChart.js,
+        // defined above.
+        chart.params,
+      );
+      console.log('newSlidingLineChart')
+      console.log(newSlidingLineChart)
+      chart.params.setSlidingLine(
+        newSlidingLineChart
+      );
+
+
     };
   }
 }

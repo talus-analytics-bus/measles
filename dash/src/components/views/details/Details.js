@@ -482,6 +482,7 @@ const Details = (props) => {
       tooltipClassName: stylesTooltip.slidingLineTooltip,
       setShowReset: setShowReset,
       metric: slidingLineMetric,
+      setSlidingLine: setSlidingLine,
       margin: {
         top: 20,
         right: 98,
@@ -491,19 +492,21 @@ const Details = (props) => {
     };
 
     // Sliding line chart defined in SlidingLine.js
-    if (!noLineData)
-      setSlidingLine(
-        new SlidingLine(
+    if (!noLineData) {
+      const slidingLineChart = new SlidingLine(
 
-          // Selector of DOM element in Resilience.js component where the chart
-          // should be drawn.
-          '.' + styles.slidingLine,
+        // Selector of DOM element in Resilience.js component where the chart
+        // should be drawn.
+        '.' + styles.slidingLine,
 
-          // Chart parameters consumed by Chart.js and ResilienceRadarChart.js,
-          // defined above.
-          chartParams,
-        )
+        // Chart parameters consumed by Chart.js and ResilienceRadarChart.js,
+        // defined above.
+        chartParams,
       );
+      setSlidingLine(
+        slidingLineChart
+      );
+    }
 
     // Rebuild tooltips after the chart is drawn
     ReactTooltip.rebuild();
@@ -511,8 +514,11 @@ const Details = (props) => {
 
 
   React.useEffect(function changeSlidingLineMetric () {
-    console.log('slidingLine')
-    console.log(slidingLine)
+    if (slidingLine) {
+      slidingLine.params.metric = slidingLineMetric;
+      slidingLine.update(slidingLineMetric);
+    }
+    ReactTooltip.rebuild();
   },
   [slidingLineMetric]);
 
@@ -637,7 +643,7 @@ const Details = (props) => {
                   ...(props.countryIncidenceLatest.value !== undefined ? props.countryIncidenceLatest : { value: null }),
                 },
                 {
-                  'title': 'Incidence over time',
+                  'title': slidingLineMetric === 'caseload_totalpop' ? 'Total cases over time' : 'Monthly incidence over time',
                   'chart_jsx': getSlidingLineJsx,
                   'date_time_fmt': Util.getDateTimeRange,
                   'data_source': getSlidingLineDataSources,

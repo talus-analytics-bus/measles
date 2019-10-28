@@ -57,6 +57,7 @@ Util.getMetricChartParams = (metric) => {
         metric: 'caseload_totalpop',
         sort: 'desc',
         label: 'Total cases of measles (Total cases of measles)',
+        
       };
     case 'incidence_monthly':
       return {
