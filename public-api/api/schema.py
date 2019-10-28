@@ -49,7 +49,12 @@ def getEntityInstances(entity_class, id_field_name, organizing_attribute, order,
     # Get the entity instances.
     allInstances = select(o for o in entity_class).order_by(entity_class.name)
 
-    # Filter them
+    # If order was specified for org. attr. values, use it, otherwise
+    # get them from the data table.
+    if order == None:
+        order = select(getattr(o, organizing_attribute) for o in entity_class)
+
+    # Filter instances
     instancesTmp = [o for o in allInstances if passes_filters(o, filters)]
 
     # If id param is not in the filters (query params), then return all
@@ -128,7 +133,6 @@ temporal_resolution_error = Exception("Requested temporal resolution is finer th
 
 def get_start(t_rs, end, lag):
     if t_rs == 'yearly':
-        print('here: ', end.year, lag)
         start = datetime(end.year - lag, end.month, end.day)
     elif t_rs == 'monthly':
         # Convert the allowed lag value (months) to years and months (usually 0 years
@@ -338,7 +342,6 @@ def getObservations(filters):
 
                 lag = manage_lag(metric, null_res, max_time, null_places, observations)
             else:
-                print('made it to this place')
                 if list(res)[0].value is None:
                     lag = manage_lag(metric, res, max_time, [place_id], observations)
 
@@ -366,9 +369,6 @@ def getTrend(filters):
     start = get_start(t_rs, end, lag)
 
     min_time = get_start(metric.temporal_resolution, end, metric.lag_allowed)
-
-    print('start, end, min')
-    print(start, end, min_time)
 
     if metric.is_view:
         q_str = f"""SELECT v.metric_id, v.data_source, d.dt,

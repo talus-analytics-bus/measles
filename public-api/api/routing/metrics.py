@@ -89,8 +89,6 @@ class Observations(Resource):
                     lagged_places.append(o[7])
 
             for o in res:
-                print('o')
-                print(o)
 
                 if o.place_id in lagged_places:
                     continue
@@ -308,7 +306,7 @@ class Places(Resource):
         # attribute to the name of the region column in the places table.
         organizing_attribute = None
         if 'by_region' in params and params['by_region'] == 'true':
-            organizing_attribute = 'region_sdg'
+            organizing_attribute = 'region'
 
         # Setup filters
         filters = {
@@ -316,14 +314,14 @@ class Places(Resource):
         }
 
         # Get and return places.
+        # order = None
         order = [
-            "Sub-Saharan Africa",
-            "Northern Africa and Western Asia",
-            "Central and Southern Asia",
-            "Eastern and South-Eastern Asia",
-            "Oceania",
-            "Latin America and the Caribbean",
-            "Europe and Northern America",
-        ]
+          "Europe",
+          "Eastern Mediterranean",
+          "Africa",
+          "South-East Asia",
+          "Western Pacific",
+          "Americas"
+        ];
         res = schema.getEntityInstances(db.Place, 'place_id', organizing_attribute, order, filters, params)
         return res

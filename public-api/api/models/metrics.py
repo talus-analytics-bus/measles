@@ -62,7 +62,7 @@ class Place(db.Entity):
     poly = Optional("Poly", column="poly_id")
     point = Optional("Point", column="point_id")
     observations = Set("Observation")
-    region_sdg = Optional(str)
+    region = Optional(str)
 
 
 class Observation(db.Entity):

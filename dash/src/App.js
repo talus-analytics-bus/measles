@@ -240,6 +240,7 @@ const App = () => {
       return <div />;
     } else {
       setLoadingNav(false);
+      window.scrollTo(0,0);
       return detailsComponent;
     }
   }
@@ -430,7 +431,14 @@ const App = () => {
   // JSX for main app. Switch component allows links in the header to be used to
   // determine main app content.
   return (
-    <div className={styles.app}>
+    <div className={
+      classNames(
+        styles.app,
+        {
+          [styles.windowed]: page === 'map',
+        }
+      )
+    }>
       <BrowserRouter>
         <Nav page={page} loadingNav={loadingNav} places={places} />
         <Switch>
@@ -446,6 +454,7 @@ const App = () => {
               component={d => {
                 setPage('global');
                 setLoadingNav(true);
+                window.scrollTo(0,0);
                 return renderGlobal()
               }}
             />
@@ -454,12 +463,14 @@ const App = () => {
               component={d => {
                 setPage('details');
                 setLoadingNav(true);
+                window.scrollTo(0,0);
                 return renderDetails(d.match.params.id)
               }}
             />
             <Route exact path='/about' component={ () => {
               setPage('about');
               setLoadingNav(false);
+              window.scrollTo(0,0);
               return <About />;
             } } />
           </div>
