@@ -487,7 +487,6 @@ class SlidingLine extends Chart {
       return startYearXPos;
     };
 
-
     const gBrush = chart[styles.slider].append('g')
   		.attr('class', 'brush')
   		.call(brush)
@@ -560,9 +559,6 @@ class SlidingLine extends Chart {
 			x.domain(invertedVals);
 			chart[styles['x-axis']].call(xAxis);
 
-      console.log('invertedVals')
-      console.log(invertedVals)
-
       // Reposition overlay rects (to gray out bars outside the window)
       overlayRects
         .attr('width', function (d, i) {
@@ -582,19 +578,33 @@ class SlidingLine extends Chart {
       // Store this position
       chart.params.brushPosPercent = [s[0]/chart.width, s[1]/chart.width];
 		})
+
     chart.brushStartPos = getBrushStartPos();
-    if (chart.params.brushPosPercent) {
+
+    let initSelection;
+    if (chart.params.brushPosPercent && chart.params.onDefaultWindow !== true) {
       const xVals = [
         chart.params.brushPosPercent[0] * chart.width,
         chart.params.brushPosPercent[1] * chart.width,
       ];
       gBrush
         .call(brush.move, xVals);
+      initSelection = xVals;
     }
     else {
       gBrush
         .call(brush.move, [chart.brushStartPos, chart.width]);
+      initSelection = [chart.brushStartPos, chart.width];
     }
+
+    // Initialize show reset button
+    if (chart.brushStartPos === initSelection[0] && chart.width === initSelection[1]) {
+      chart.params.setShowReset(false);
+    }
+    else {
+      chart.params.setShowReset(true);
+    }
+
 
     // Define function for resetting the brush view to default values, which is
     // called by Detail.js if the reset button is clicked by the user.
@@ -714,8 +724,6 @@ class SlidingLine extends Chart {
         // defined above.
         chart.params,
       );
-      console.log('newSlidingLineChart')
-      console.log(newSlidingLineChart)
       chart.params.setSlidingLine(
         newSlidingLineChart
       );

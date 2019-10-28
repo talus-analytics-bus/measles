@@ -306,7 +306,7 @@ const Details = (props) => {
     const legendEntries = noLineData ? [] :
       [
         {
-          label: 'Monthly incidence',
+          label: slidingLineMetric === 'incidence_monthly' ? 'Monthly incidence' : 'Total cases',
           class: styles.monthlyIncidence,
           shape: 'line',
         },
@@ -317,7 +317,7 @@ const Details = (props) => {
           skip: props.countryVaccHistory.length === 0,
         },
         {
-          label: 'Incidence not reported',
+          label: slidingLineMetric === 'incidence_monthly' ? 'Incidence not reported' : 'Total cases not reported',
           class: styles.noIncidence,
           shape: 'rect',
         },
@@ -516,6 +516,11 @@ const Details = (props) => {
   React.useEffect(function changeSlidingLineMetric () {
     if (slidingLine) {
       slidingLine.params.metric = slidingLineMetric;
+
+      // Is the reset button currently showing, meaning the default window
+      // is being viewed?
+      slidingLine.params.onDefaultWindow = showReset === false;
+
       slidingLine.update(slidingLineMetric);
     }
     ReactTooltip.rebuild();
