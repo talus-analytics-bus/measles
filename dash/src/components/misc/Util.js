@@ -56,7 +56,14 @@ Util.getMetricChartParams = (metric) => {
         tickFormat: Util.comma,
         metric: 'caseload_totalpop',
         sort: 'desc',
-        label: 'Total cases',
+        label: 'Total cases of measles',
+      };
+    case 'incidence_monthly':
+      return {
+        tickFormat: Util.formatIncidence,
+        metric: 'incidence_monthly',
+        sort: 'desc',
+        label: 'Monthly incidence of measles (cases per 1M population)',
       };
     case 'monthlycaseload_totalpop':
       return {
