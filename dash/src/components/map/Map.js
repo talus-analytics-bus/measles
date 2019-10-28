@@ -6,6 +6,7 @@ import Util from '../misc/Util.js'
 import ObservationQuery from '../misc/ObservationQuery.js'
 import 'mapbox-gl/dist/mapbox-gl.css'
 import './map.scss'
+import styles from './map.module.scss'
 import initMap from './mapUtils'
 import Legend from './legend/Legend'
 import ResetZoom from './resetZoom/ResetZoom'
@@ -41,6 +42,11 @@ const Map = ({ fillObservations, bubbleObservations, incidenceObservations, mapp
 
   // HTML markers for bubbles
   const [markerComponents, setMarkerComponents] = React.useState([]);
+
+  // Track current bubble metric:
+  // caseload_totalpop
+  // incidence_monthly
+  const [bubbleMetric, setBubbleMetric]  = React.useState('caseload_totalpop');
 
   let mapRef = React.createRef()
 
@@ -412,6 +418,44 @@ const Map = ({ fillObservations, bubbleObservations, incidenceObservations, mapp
     return markerComponents.map(component => component);
   };
 
+  // JSX for bubble metric toggle
+  const renderdataToggles = () => {
+    const dataToggles = (
+      <div className={styles.dataToggles}>
+      <span>View caseload by</span>
+      {
+        [
+          {
+            metric: 'caseload_totalpop',
+            label: 'number of cases',
+          },
+          {
+            metric: 'incidence_monthly',
+            label: 'monthly incidence rate',
+          },
+        ].map((entry, i) =>
+          <div className={styles.dataToggle}>
+            <label for={entry.value}>
+              <input
+                type="radio"
+                name="bubbleData"
+                id={entry.metric}
+                value={entry.metric}
+                checked={bubbleMetric === entry.metric}
+                onClick={() => {
+                  setBubbleMetric(entry.metric)
+                }}
+              />
+              {entry.label}
+            </label>
+          </div>
+        )
+      }
+      </div>
+    )
+    return dataToggles;
+  };
+
   return (
     <ReactMapGL
       ref={map => { mapRef = map; }}
@@ -438,6 +482,9 @@ const Map = ({ fillObservations, bubbleObservations, incidenceObservations, mapp
       onStyleLoad={handleStyleLoad}
       doubleClickZoom={false} //remove 300ms delay on clicking
     >
+      {
+        renderdataToggles()
+      }
       {
         (markerComponents.length > 0) && renderMarkerComponents(incidenceObservations, mapRef)
       }
