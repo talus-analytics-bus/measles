@@ -169,6 +169,7 @@ const App = () => {
           countryJeeSurvQ: ObservationQuery(17, 'occasion', undefined, undefined, country),
           countryJeeMcmQ: ObservationQuery(18, 'occasion', undefined, undefined, country),
           countryIncidenceHistoryFull: ObservationQuery(15, 'monthly', '2019-10-01', '2010-01-01', country),
+          countryCaseloadHistoryFull: ObservationQuery(6, 'monthly', '2019-10-01', '2010-01-01', country),
           countryVaccHistory: ObservationQuery(4, 'yearly', '2018-01-01', '2010-01-01', country),
         };
 
@@ -188,35 +189,41 @@ const App = () => {
         const countryJeeSurv = results.countryJeeSurvQ[0];
         const countryJeeMcm = results.countryJeeMcmQ[0];
 
-        // Incidence history and latest observation
-        // Do not show null values in data for now
-        const foundNotNullVal = {
-          fromStart: false,
-          fromEnd: false,
+        // Clean up incidence and caseload history data
+        const cleanHistories = (dataName) => {
+          // Incidence history and latest observation
+          // Do not show null values in data for now
+          const foundNotNullVal = {
+            fromStart: false,
+            fromEnd: false,
+          };
+
+          return results[dataName]
+              .filter(d => {
+                if (foundNotNullVal.fromStart) return true;
+                else {
+                  if (d.value === null) return false;
+                  else {
+                    foundNotNullVal.fromStart = true;
+                    return true;
+                  }
+                }
+              })
+              .reverse()
+              .filter(d => {
+                if (foundNotNullVal.fromEnd) return true;
+                else {
+                  if (d.value === null) return false;
+                  else {
+                    foundNotNullVal.fromEnd = true;
+                    return true;
+                  }
+                }
+              })
+              .reverse();
         };
-        const countryIncidenceHistory = results.countryIncidenceHistoryFull
-            .filter(d => {
-              if (foundNotNullVal.fromStart) return true;
-              else {
-                if (d.value === null) return false;
-                else {
-                  foundNotNullVal.fromStart = true;
-                  return true;
-                }
-              }
-            })
-            .reverse()
-            .filter(d => {
-              if (foundNotNullVal.fromEnd) return true;
-              else {
-                if (d.value === null) return false;
-                else {
-                  foundNotNullVal.fromEnd = true;
-                  return true;
-                }
-              }
-            })
-            .reverse();
+        const countryIncidenceHistory = cleanHistories('countryIncidenceHistoryFull')
+        const countryCaseloadHistory = cleanHistories('countryCaseloadHistoryFull')
 
         // const countryIncidenceHistory = results.countryIncidenceHistoryFull
         //   .filter(d => d.value !== null);
@@ -243,6 +250,7 @@ const App = () => {
           countryJeeSurv={countryJeeSurv}
           countryJeeMcm={countryJeeMcm}
           countryIncidenceHistory={countryIncidenceHistory}
+          countryCaseloadHistory={countryCaseloadHistory}
           countryIncidenceLatest={countryIncidenceLatest}
           countryIncidenceQuantile={countryIncidenceQuantile}
           countryVaccHistory={results.countryVaccHistory}

@@ -473,7 +473,7 @@ const Details = (props) => {
     // Setup sliding line chart params
     const chartParams = {
       data: {
-        y: props.countryIncidenceHistory,
+        y: props.countryCaseloadHistory,
         y2: props.countryIncidenceHistory,
       },
       vaccData: props.countryVaccHistory,

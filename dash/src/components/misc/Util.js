@@ -56,7 +56,7 @@ Util.getMetricChartParams = (metric) => {
         tickFormat: Util.comma,
         metric: 'caseload_totalpop',
         sort: 'desc',
-        label: 'Total cases of measles',
+        label: 'Total cases of measles (Total cases of measles)',
       };
     case 'incidence_monthly':
       return {
@@ -190,7 +190,7 @@ Util.getTooltipItem = (datum) => {
         datum: datum,
         period: 'month',
         value: datum.value === null ? null : Util.comma(datum.value),
-        label: 'cases',
+        label: datum.value === 1 ? 'case' : 'cases',
       };
     case 'incidence_monthly': // DEBUG
       return {
