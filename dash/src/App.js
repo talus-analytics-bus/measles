@@ -6,7 +6,7 @@ import classNames from 'classnames';
 import * as d3 from 'd3/dist/d3.min';
 
 // layout
-import Logo from './components/layout/logo/Logo.js'
+import Nav from './components/layout/nav/Nav.js'
 
 // map
 import Map from './components/map/Map'
@@ -431,7 +431,7 @@ const App = () => {
   return (
     <div className={styles.app}>
       <BrowserRouter>
-        <Logo page={page} loadingNav={loadingNav} places={places} />
+        <Nav page={page} loadingNav={loadingNav} places={places} />
         <Switch>
           <div>
             <Route exact path='/' component={ () => { setPage('map'); setLoadingNav(true); return renderMap; } } />
