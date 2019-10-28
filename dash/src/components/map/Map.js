@@ -11,10 +11,11 @@ import initMap from './mapUtils'
 import Legend from './legend/Legend'
 import ResetZoom from './resetZoom/ResetZoom'
 import GeomPopup from './geomPopup/GeomPopup.js'
+import classNames from 'classnames'
 
 const TOKEN = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN
 
-const Map = ({ fillObservations, bubbleObservations, incidenceObservations, mappedFacilityTypes, setMappedFacilityTypes, setLoadingNav}) => {
+const Map = ({ fillObservations, bubbleObservations, incidenceObservations, mappedFacilityTypes, setMappedFacilityTypes, setLoadingNav, ...props}) => {
 
   const defaultViewport = {
     width: '100%',
@@ -42,6 +43,9 @@ const Map = ({ fillObservations, bubbleObservations, incidenceObservations, mapp
 
   // HTML markers for bubbles
   const [markerComponents, setMarkerComponents] = React.useState([]);
+
+  const [showDataToggles, setShowDataToggles] = React.useState(false);
+
 
   // Track current bubble metric:
   // caseload_totalpop
@@ -109,10 +113,8 @@ const Map = ({ fillObservations, bubbleObservations, incidenceObservations, mapp
     const map = mapRef.getMap();
 
     initMap(map, fillObservations, bubbleObservations, incidenceObservations, bubbleMetric, function afterMapLoaded () {
-
-      // getIncidenceObservations();
-      // getMarkerComponents(map, incidenceObservations);
       map.setLayoutProperty('metric-bubbles-' + bubbleMetric, 'visibility', 'visible');
+      if (!showDataToggles) setShowDataToggles(true);
     });
     getTrendObservations();
     console.log('updated loadingNav -- Map')
@@ -131,8 +133,11 @@ const Map = ({ fillObservations, bubbleObservations, incidenceObservations, mapp
     map.setLayoutProperty('metric-bubbles-caseload_totalpop', 'visibility', 'none');
     map.setLayoutProperty('metric-bubbles-' + bubbleMetric, 'visibility', 'visible');
 
-    // Update legend
   }, [bubbleMetric]);
+
+  const navTitleEl = document.getElementById('navTitle').textContent =
+    bubbleMetric === 'incidence_monthly' ? 'Vaccination coverage and incidence of measles'
+    : 'Vaccination coverage and cases of measles';
 
   /**
    * Reset the viewport to the default values. This is fired when the "Reset"
@@ -162,6 +167,16 @@ const Map = ({ fillObservations, bubbleObservations, incidenceObservations, mapp
     // Get map reference object.
     const map = mapRef.getMap();
 
+    const movedOnMap = e.target.classList.contains('overlays');
+    if (!movedOnMap) {
+      if (hoveredCountry) {
+        setHoverState({source: 'geoms', sourceLayer: 'countries_id_rpr', id: hoveredCountry.id }, false);
+        setHoverState({source: 'centroids', sourceLayer: 'centroids_id_rpr_latlon', id: hoveredCountry.id }, false);
+        hoveredCountry = undefined;
+      }
+      return;
+    }
+
     // Get list of features under the mouse cursor.
     const features = map.queryRenderedFeatures(e.point);
     const allCountries = map.queryRenderedFeatures(
@@ -181,13 +196,6 @@ const Map = ({ fillObservations, bubbleObservations, incidenceObservations, mapp
 
     const onCountry = countryFeature !== undefined;
     const onBubble = bubbleFeature !== undefined;
-
-    // // Clear hover feature state
-    // allCountries.forEach(f => {
-    //   const curFeatureState =
-    //     map.getFeatureState({source: 'geoms', sourceLayer: 'countries_id_rpr', id: f.id });
-    //   map.setFeatureState({source: 'geoms', sourceLayer: 'countries_id_rpr', id: f.id }, {hover: false, ...curFeatureState});
-    // });
 
     // Bubble takes precedence
     if (onBubble) {
@@ -232,8 +240,12 @@ const Map = ({ fillObservations, bubbleObservations, incidenceObservations, mapp
    * @param  {obj}    e Click event.
    */
   const handleClick = e => {
-    console.log('e')
-    console.log(e)
+
+    const movedOnMap = e.target.classList.contains('overlays');
+    if (!movedOnMap) {
+      return;
+    }
+
     /**
      * Returns true if user clicked any part of the legend or the filter menus
      * (rather than directly on the map), and false otherwise.
@@ -246,6 +258,7 @@ const Map = ({ fillObservations, bubbleObservations, incidenceObservations, mapp
         if (
           e.target.className.includes('legend')
           || e.target.className.includes('filter')
+          || e.target.className.includes(styles.dataToggles)
           || e.target.offsetParent.className.includes('legend')
           || e.target.offsetParent.className.includes('filter')) {
             return true;
@@ -433,9 +446,16 @@ const Map = ({ fillObservations, bubbleObservations, incidenceObservations, mapp
   };
 
   // JSX for bubble metric toggle
-  const renderdataToggles = () => {
+  const renderDataToggles = () => {
     const dataToggles = (
-      <div className={styles.dataToggles}>
+      <div className={
+        classNames(
+          styles.dataToggles,
+          {
+            [styles.visible]: showDataToggles,
+          }
+        )
+      }>
       <span>View caseload by</span>
       {
         [
@@ -470,8 +490,32 @@ const Map = ({ fillObservations, bubbleObservations, incidenceObservations, mapp
     return dataToggles;
   };
 
+  // Get legend labeling based on bubble metric
+  const getLegendBubbleLabeling = (bubbleMetric) => {
+    if (bubbleMetric === 'incidence_monthly') {
+      return {
+        navName: 'incidence of measles',
+        sectionName: 'Incidence of measles (monthly)',
+        noun: 'incidence',
+      };
+    }
+    else if (bubbleMetric === 'caseload_totalpop') {
+      return {
+        navName: 'cases of measles',
+        sectionName: 'Cases of measles',
+        noun: 'cases',
+      };
+    }
+    else {
+      console.log('[Error] unexpected metric: ' + bubbleMetric);
+      return {};
+    }
+  };
+  const legendBubbleLabeling = getLegendBubbleLabeling(bubbleMetric);
+
   return (
     <ReactMapGL
+      captureClick={true}
       ref={map => { mapRef = map; }}
       mapboxApiAccessToken={TOKEN}
       mapStyle='mapbox://styles/traethethird/ck0ia6pvc2cpc1cpe5nx5b7p5'
@@ -497,7 +541,7 @@ const Map = ({ fillObservations, bubbleObservations, incidenceObservations, mapp
       doubleClickZoom={false} //remove 300ms delay on clicking
     >
       {
-        renderdataToggles()
+        renderDataToggles()
       }
       {
         (markerComponents.length > 0) && renderMarkerComponents(incidenceObservations, mapRef)
@@ -512,7 +556,7 @@ const Map = ({ fillObservations, bubbleObservations, incidenceObservations, mapp
       >
         <NavigationControl />
       </div>
-      <Legend bubbleMetric={bubbleMetric}/>
+      <Legend legendBubbleLabeling={legendBubbleLabeling}/>
       {showReset && (<ResetZoom handleClick={resetViewport}/>)}
       {showGeomPopup && (
         <Popup

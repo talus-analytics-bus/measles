@@ -303,6 +303,7 @@ const initMap = (map, fillObservations, bubbleObservations, incidenceObservation
             ['linear'],
             ["feature-state", "value2"],
                 0, 0,
+                1, 5,
                 1000, 50
           ],
           'circle-color': [

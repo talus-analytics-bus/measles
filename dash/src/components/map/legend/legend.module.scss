@@ -9,6 +9,7 @@ $spacing: 5px;
   z-index: 2;
   bottom: 0;
   right: 10px;
+  pointer-events: fill;
 
   // Scale legend size to be smaller than default size.
   transform: translateY(calc(100% - 28px));

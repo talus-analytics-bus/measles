@@ -19,26 +19,7 @@ const Legend = (props: any) => {
     }
   };
 
-  // Get legend labeling based on bubble metric
-  const getLegendBubbleLabeling = (bubbleMetric: any) => {
-    if (bubbleMetric === 'incidence_monthly') {
-      return {
-        sectionName: 'Incidence of measles (monthly)',
-        noun: 'incidence',
-      };
-    }
-    else if (bubbleMetric === 'caseload_totalpop') {
-      return {
-        sectionName: 'Cases of measles',
-        noun: 'cases',
-      };
-    }
-    else {
-      console.log('[Error] unexpected metric: ' + bubbleMetric);
-      return {};
-    }
-  };
-  const legendBubbleLabeling = getLegendBubbleLabeling(props.bubbleMetric);
+  const legendBubbleLabeling = props.legendBubbleLabeling;
 
   return (
     <div

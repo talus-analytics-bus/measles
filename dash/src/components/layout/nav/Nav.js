@@ -180,7 +180,7 @@ const Nav = (props) => {
   const getPageTitle = (page) => {
     switch (page) {
       case 'map':
-        return 'Vaccination coverage and incidence of measles';
+        return 'Vaccination coverage and cases of measles';
       default:
         return ''; // TODO check this. Should we show the same for each page?
     }
@@ -206,7 +206,7 @@ const Nav = (props) => {
         <img src={logo} className={styles.img} alt='logo' />
       </Link>
       <div className={styles.text}>
-        <div className={styles.title}>{getPageTitle(page)}</div>
+        <div id={'navTitle'} className={styles.title}>{getPageTitle(page)}</div>
         {
           <div className={styles.subtitle}>{getPageSubtitle(page)}</div>
         }

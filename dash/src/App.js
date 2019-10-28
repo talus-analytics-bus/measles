@@ -58,6 +58,14 @@ const App = () => {
     return initialState;
   });
 
+  // set nav title
+  // const [navTitle, setNavTitle] = React.useState('');
+
+  // // function for setting nav title
+  // const changeNavTitle = React.useCallback((newNavTitle) => {
+  //   setNavTitle(newNavTitle);
+  // }, []);
+
   // Hide the "How to use this map" modal if it has already been displayed
   // once to the user.
   // turning off always until we need interval
@@ -123,6 +131,11 @@ const App = () => {
     }
   }, [])
 
+  // React.useEffect(() => {
+  //   console.log('navTitle')
+  //   console.log(navTitle)
+  // }, [navTitle])
+
   // Functions to render each page's elements.
   const renderMap = loading ? <div /> :
     <Map // map page
@@ -132,6 +145,7 @@ const App = () => {
       shownMapModal={shownMapModal} // don't show help modal more than once
       setShownMapModal={setShownMapModal} // update modal display status
       setLoadingNav={setLoadingNav}
+      // setNavTitle={changeNavTitle}
       className={'map'}
       />
 
