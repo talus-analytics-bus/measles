@@ -3,7 +3,7 @@ import classNames from 'classnames'
 import styles from './legend.module.scss'
 import Util from '../../misc/Util.js'
 
-const Legend = () => {
+const Legend = (props: any) => {
   const [open, setOpen] = React.useState(true)
 
   const noDataColor = '#b3b3b3';
@@ -18,6 +18,27 @@ const Legend = () => {
         return '';
     }
   };
+
+  // Get legend labeling based on bubble metric
+  const getLegendBubbleLabeling = (bubbleMetric: any) => {
+    if (bubbleMetric === 'incidence_monthly') {
+      return {
+        sectionName: 'Incidence of measles (monthly)',
+        noun: 'incidence',
+      };
+    }
+    else if (bubbleMetric === 'caseload_totalpop') {
+      return {
+        sectionName: 'Cases of measles',
+        noun: 'cases',
+      };
+    }
+    else {
+      console.log('[Error] unexpected metric: ' + bubbleMetric);
+      return {};
+    }
+  };
+  const legendBubbleLabeling = getLegendBubbleLabeling(props.bubbleMetric);
 
   return (
     <div
@@ -68,18 +89,18 @@ const Legend = () => {
         {
           // Incidence
           <div className={styles.section}>
-            <p className={styles.sectionName}>Incidence of measles (monthly)</p>
+            <p className={styles.sectionName}>{legendBubbleLabeling.sectionName}</p>
             <div className={styles.legendEntryGroups}>
               <div className={styles.legendEntryGroup}>
                 {
                   [1,2,3].map((d,i) =>
                     <div className={classNames(styles.legendEntry, styles.circle)}>
-                      <div className={classNames(styles.legendIcon, styles.circle)} />
+                    <div className={classNames(styles.legendIcon, styles.circle)} />
                       {
-                        (i === 0) && <div className={styles.legendLabel}>Low<br/>incidence</div>
+                        (i === 0) && <div className={styles.legendLabel}>Low<br/>{legendBubbleLabeling.noun}</div>
                       }
                       {
-                        (i === 2) && <div className={styles.legendLabel}>High<br/>incidence</div>
+                        (i === 2) && <div className={styles.legendLabel}>High<br/>{legendBubbleLabeling.noun}</div>
                       }
                     </div>
                   )

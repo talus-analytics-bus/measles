@@ -73,8 +73,6 @@ const Map = ({ fillObservations, bubbleObservations, incidenceObservations, mapp
   };
 
   function getMarkerComponents(map, observations) {
-    console.log('map')
-    console.log(map)
 
     const newMarkerComponents = [];
 
@@ -110,15 +108,31 @@ const Map = ({ fillObservations, bubbleObservations, incidenceObservations, mapp
   React.useEffect(() => {
     const map = mapRef.getMap();
 
-    initMap(map, fillObservations, bubbleObservations, incidenceObservations, function afterMapLoaded () {
+    initMap(map, fillObservations, bubbleObservations, incidenceObservations, bubbleMetric, function afterMapLoaded () {
 
       // getIncidenceObservations();
       // getMarkerComponents(map, incidenceObservations);
+      map.setLayoutProperty('metric-bubbles-' + bubbleMetric, 'visibility', 'visible');
     });
     getTrendObservations();
     console.log('updated loadingNav -- Map')
     setLoadingNav(false);
   }, [])
+
+  // When bubble metric is changed, show/hide the appropriate bubble layers.
+  React.useEffect(function setBubbleLayerVisibility () {
+    const map = mapRef.getMap();
+
+    // If map is not yet loaded, return
+    if (!map.loaded()) { return }
+
+    // Update map layer visibility to match user selection
+    map.setLayoutProperty('metric-bubbles-incidence_monthly', 'visibility', 'none');
+    map.setLayoutProperty('metric-bubbles-caseload_totalpop', 'visibility', 'none');
+    map.setLayoutProperty('metric-bubbles-' + bubbleMetric, 'visibility', 'visible');
+
+    // Update legend
+  }, [bubbleMetric]);
 
   /**
    * Reset the viewport to the default values. This is fired when the "Reset"
@@ -498,7 +512,7 @@ const Map = ({ fillObservations, bubbleObservations, incidenceObservations, mapp
       >
         <NavigationControl />
       </div>
-      <Legend />
+      <Legend bubbleMetric={bubbleMetric}/>
       {showReset && (<ResetZoom handleClick={resetViewport}/>)}
       {showGeomPopup && (
         <Popup
