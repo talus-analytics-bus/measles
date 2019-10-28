@@ -150,7 +150,7 @@ const Nav = (props) => {
       return (
         <Link to={button.route} className={classNames(page === button.page ? styles.active : '', styles.navButtonContainer)}>
           <div className={classNames(styles.buttonSpinner)}></div>
-          <div className={styles.navButton}>
+          <div className={styles.navButton} data-tip={button.tooltip} data-for={'navTooltip'}>
             <img src={button.icon} />
           </div>
         </Link>
@@ -163,7 +163,7 @@ const Nav = (props) => {
         <div className={classNames(styles.navButtonContainer, page === button.page ? styles.active : '')}>
           <div className={classNames(styles.buttonSpinner)}></div>
           {renderLocationPicker()}
-          <div onClick={(e) => { setShowLocationPicker(!showLocationPicker); e.stopPropagation(); return false; }} className={classNames(styles.navButton)}>
+          <div onClick={(e) => { setShowLocationPicker(!showLocationPicker); e.stopPropagation(); return false; }} className={classNames(styles.navButton)} data-tip={button.tooltip} data-for={'navTooltip'}>
             <img src={button.icon} />
           </div>
         </div>
@@ -245,6 +245,20 @@ const Nav = (props) => {
           ].map(button => renderButton(button))
         }
       </div>
+      <ReactTooltip
+        id={'navTooltip'}
+        type='dark'
+        place="top"
+        effect="float"
+        delayShow={500}
+        getContent={ (message) =>
+          <div>
+          {
+            message
+          }
+          </div>
+        }
+        />
     </div>
   )
 }

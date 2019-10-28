@@ -29,6 +29,10 @@
     margin-top: 60px;
     display: flex;
     flex-flow: column;
+    a {
+      pointer-events: none;
+      color: black;
+    }
     p {
       display: flex;
       .footnoteText { margin-left: 5px; }
