@@ -107,21 +107,27 @@ const initMap = (map, fillObservations, bubbleObservations, incidenceObservation
 
       const setupCircleBubbleState = () => {
 
-        incidenceObservations.forEach(( observation) => {
+        incidenceObservations.forEach((observation) => {
+          const caseLoadObservation = bubbleObservations.find(bubObs => bubObs.place_id === observation.place_id);
           const value = observation['value'];
+          let value2;
+          if (caseLoadObservation) {
+            value2 = caseLoadObservation['value'];
+          }
           const place_id = +observation['place_id']
           const stale = getStaleStatus(observation, 'month');
-          // const stale = observation['stale_flag'] || false;
 
           if (!value) {
             map.setFeatureState({source: 'centroids', sourceLayer: 'centroids_id_rpr_latlon', id: place_id }, {
               value: 0,
+              value2: value2 || 0,
               stale: stale,
             }
           );
           } else {
             const state = {
               value: value,
+              value2: value2 || 0,
               stale: stale,
             };
             map.setFeatureState({source: 'centroids', sourceLayer: 'centroids_id_rpr_latlon', id: place_id }, state);
@@ -248,9 +254,9 @@ const initMap = (map, fillObservations, bubbleObservations, incidenceObservation
           'circle-color': [
               'case',
               ['==', ['feature-state', 'stale'], false],
-              'green',
+              '#b02c3a',
               ['==', ['feature-state', 'stale'], true],
-              'green',
+              '#b02c3a',
               'white',
           ],
           'circle-opacity': [
@@ -295,10 +301,9 @@ const initMap = (map, fillObservations, bubbleObservations, incidenceObservation
         'circle-radius': [
             'interpolate',
             ['linear'],
-            ["feature-state", "value"],
+            ["feature-state", "value2"],
                 0, 0,
-                0.001, 5,
-                100, 150
+                1000, 50
           ],
           'circle-color': [
               'case',
@@ -320,7 +325,7 @@ const initMap = (map, fillObservations, bubbleObservations, incidenceObservation
               'case',
               ['==', ['feature-state', 'stale'], null],
               0,
-              ['==', ['feature-state', 'value'], 0],
+              ['==', ['feature-state', 'value2'], 0],
               0,
               ['==', ['feature-state', 'clicked'], true],
               2,
