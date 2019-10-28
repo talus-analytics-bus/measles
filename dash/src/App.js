@@ -15,6 +15,7 @@ import Util from './components/misc/Util.js'
 // views
 import Details from './components/views/details/Details.js'
 import Global from './components/views/global/Global.js'
+import About from './components/views/about/About.js'
 
 // styles
 import styles from './App.module.scss'
@@ -456,6 +457,11 @@ const App = () => {
                 return renderDetails(d.match.params.id)
               }}
             />
+            <Route exact path='/about' component={ () => {
+              setPage('about');
+              setLoadingNav(false);
+              return <About />;
+            } } />
           </div>
         </Switch>
         {

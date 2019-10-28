@@ -7,6 +7,7 @@ import logo from '../../../assets/images/measles_tracker.svg'
 import iconPin from '../../../assets/images/pin.svg'
 import iconFlag from '../../../assets/images/flag.svg'
 import iconGlobe from '../../../assets/images/globe.svg'
+import iconPage from '../../../assets/images/page.svg'
 import ReactTooltip from 'react-tooltip'
 
 const Nav = (props) => {
@@ -216,24 +217,30 @@ const Nav = (props) => {
             {
               id: 'pin',
               page: 'map',
-              route: '/map', // TODO rename
+              route: '/map',
               icon: iconPin,
-              tooltip: 'Click to view map of vaccination coverage and incidence of measles',
+              tooltip: 'Outbreak map',
             },
             {
               id: 'flag',
               page: 'details',
               icon: iconFlag,
               popup: true,
-              tooltip: 'Click to view map of vaccination coverage and incidence of measles',
+              tooltip: 'Country details',
             },
-
             {
               id: 'globe',
               page: 'global',
-              route: '/global', // TODO rename
+              route: '/global',
               icon: iconGlobe,
-              tooltip: 'Click to view map of vaccination coverage and incidence of measles',
+              tooltip: 'Global comparisons',
+            },
+            {
+              id: 'page',
+              page: 'about',
+              route: '/about',
+              icon: iconPage,
+              tooltip: 'About Measles Tracker',
             },
           ].map(button => renderButton(button))
         }

@@ -2,20 +2,82 @@
 
 .about {
   height: 100%;
-  max-width: 1010px;
+  max-width: 1300px;
   padding: 20px;
-  margin: 0 auto;
   border-left: 1px solid #979797;
   border-right: 1px solid #979797;
 
+  .footnote {
+      font-size: .75em;
+      vertical-align: super;
+      text-decoration: none;
+      // color: darken(#5781ab, 15%);
+  }
+
   .title {
     font-weight: bold;
-    // font-family: 'rawline', serif;
     font-size: 30px;
     color: #23385e;
   }
 
   p {
     margin: 10px 0;
+  }
+
+  // Space references
+  .referencesDivider {
+    margin-top: 60px;
+    display: flex;
+    flex-flow: column;
+    p {
+      display: flex;
+      .footnoteText { margin-left: 5px; }
+    }
+  }
+
+  // Table formatting
+  table {
+    border-spacing: 0;
+    border: .25px solid $light-grey;
+    padding-top: 0;
+
+    &.narrow {
+      max-width: 800px;
+    }
+    thead, tbody {
+      margin: 0;
+
+      p {
+        margin: 0;
+        padding: 0;
+      }
+      td {
+        width: unset;
+        padding: 10px;
+      }
+    }
+    thead {
+      tr {
+        background-color: darken(#5781ab, 15%);
+        color: white;
+
+        td {
+          border: .25px solid $light-grey;
+        }
+
+        &:first-child {
+          td {
+            text-align: center;
+          }
+        }
+      }
+    }
+    tbody {
+      tr {
+        &:nth-child(2n) {
+          background-color: $light-grey-2;
+        }
+      }
+    }
   }
 }
