@@ -580,20 +580,14 @@ class SlidingLine extends Chart {
 			chart[styles.areaNull].selectAll('path'). attr('d', d => area(d));
 
       // Store this position
-      console.log('s')
-      console.log(s)
       chart.params.brushPosPercent = [s[0]/chart.width, s[1]/chart.width];
 		})
     chart.brushStartPos = getBrushStartPos();
     if (chart.params.brushPosPercent) {
-      console.log('chart.params.brushPosPercent');
-      console.log(chart.params.brushPosPercent);
       const xVals = [
         chart.params.brushPosPercent[0] * chart.width,
         chart.params.brushPosPercent[1] * chart.width,
       ];
-      console.log('xVals')
-      console.log(xVals)
       gBrush
         .call(brush.move, xVals);
     }
