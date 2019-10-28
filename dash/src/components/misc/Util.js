@@ -57,7 +57,7 @@ Util.getMetricChartParams = (metric) => {
         metric: 'caseload_totalpop',
         sort: 'desc',
         label: 'Total cases of measles (Total cases of measles)',
-        
+
       };
     case 'incidence_monthly':
       return {
@@ -72,7 +72,7 @@ Util.getMetricChartParams = (metric) => {
         metric: 'monthlycaseload_totalpop',
         sort: 'desc',
         temporal_resolution: 'monthly',
-        label: 'Cases reported globally',
+        label: 'New cases reported globally',
       };
 
     case 'coverage_mcv1_infant': // DEBUG
@@ -147,7 +147,7 @@ Util.getScatterLabelData = (datum) => {
   switch (datum.metric || datum) {
     case 'incidence_12months':
     case 'caseload_totalpop':
-      return 'Measles cases reported';
+      return 'New measles cases reported';
     case 'incidence_monthly':
       return 'Monthly incidence of measles';
     case 'coverage_mcv1_infant':
@@ -161,7 +161,7 @@ Util.getSvgChartLabelData = (datum) => {
   switch (datum.metric) {
     case 'caseload_totalpop':
       return [
-        'Cases reported',
+        'New cases reported',
       ];
     case 'incidence_monthly': // DEBUG
       return [
@@ -187,7 +187,7 @@ Util.getTooltipItem = (datum) => {
   switch (datum.metric) {
     case 'caseload_totalpop':
       return {
-        name: 'Cases reported',
+        name: 'New cases reported',
         datum: datum,
         period: 'month',
         value: datum.value === null ? null : Util.comma(datum.value),
@@ -203,7 +203,7 @@ Util.getTooltipItem = (datum) => {
       };
     case 'monthlycaseload_totalpop': // DEBUG
       return {
-        name: 'Cases reported',
+        name: 'New cases reported',
         datum: datum,
         period: 'month',
         value: Util.comma(datum.value),

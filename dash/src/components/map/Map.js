@@ -137,7 +137,7 @@ const Map = ({ fillObservations, bubbleObservations, incidenceObservations, mapp
 
   const navTitleEl = document.getElementById('navTitle').textContent =
     bubbleMetric === 'incidence_monthly' ? 'Vaccination coverage and incidence of measles'
-    : 'Vaccination coverage and cases of measles';
+    : 'Vaccination coverage and new cases of measles';
 
   /**
    * Reset the viewport to the default values. This is fired when the "Reset"
@@ -501,8 +501,8 @@ const Map = ({ fillObservations, bubbleObservations, incidenceObservations, mapp
     }
     else if (bubbleMetric === 'caseload_totalpop') {
       return {
-        navName: 'cases of measles',
-        sectionName: 'Cases of measles',
+        navName: 'new cases of measles',
+        sectionName: 'New cases of measles last reported',
         noun: 'cases',
       };
     }

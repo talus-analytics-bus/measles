@@ -306,7 +306,7 @@ const Details = (props) => {
     const legendEntries = noLineData ? [] :
       [
         {
-          label: slidingLineMetric === 'incidence_monthly' ? 'Monthly incidence' : 'Total cases',
+          label: slidingLineMetric === 'incidence_monthly' ? 'Monthly incidence' : 'New cases',
           class: styles.monthlyIncidence,
           shape: 'line',
         },
@@ -317,7 +317,7 @@ const Details = (props) => {
           skip: props.countryVaccHistory.length === 0,
         },
         {
-          label: slidingLineMetric === 'incidence_monthly' ? 'Incidence not reported' : 'Total cases not reported',
+          label: slidingLineMetric === 'incidence_monthly' ? 'Incidence not reported' : 'Cases not reported',
           class: styles.noIncidence,
           shape: 'rect',
         },
@@ -648,7 +648,7 @@ const Details = (props) => {
                   ...(props.countryIncidenceLatest.value !== undefined ? props.countryIncidenceLatest : { value: null }),
                 },
                 {
-                  'title': slidingLineMetric === 'caseload_totalpop' ? 'Total cases over time' : 'Monthly incidence over time',
+                  'title': slidingLineMetric === 'caseload_totalpop' ? 'New cases by month' : 'Monthly incidence',
                   'chart_jsx': getSlidingLineJsx,
                   'date_time_fmt': Util.getDateTimeRange,
                   'data_source': getSlidingLineDataSources,
