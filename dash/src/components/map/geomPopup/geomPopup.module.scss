@@ -112,6 +112,14 @@ button {
         margin-left: 5px;
         max-width: 50%;
       }
+
+      &.notAvail .value {
+        color: $grey;
+        font-style: italic;
+        font-family: 'Gotham Book', serif;
+        font-size: 1em;
+      }
+
       .value {
         font-size: 1.67em;
         color: black;
@@ -126,13 +134,6 @@ button {
           float: right;
           line-height: 2;
           // color: black;
-        }
-
-        &.notAvail {
-          color: $grey;
-          font-style: italic;
-          font-family: 'Gotham Book', serif;
-          font-size: 1em;
         }
       }
     }

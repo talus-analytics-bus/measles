@@ -9,8 +9,14 @@ import styles from './geomPopup.module.scss'
 const GeomPopup = ({ popupData }) => {
   console.log(popupData)
 
+
+
   const detailsPath = '/details/' + popupData['place_id'];
   const flag = `/flags/${popupData['place_iso']}.png`;
+
+  // const flagTest = new File(`/flags/${popupData['place_iso']}.png`)
+  // console.log('flagTest')
+  // console.log(flagTest)
 
   const getTooltipMetricData = (popupData, type) => {
     const obs = popupData[type];
@@ -35,7 +41,7 @@ const GeomPopup = ({ popupData }) => {
         if (obs === undefined) return {
           notAvail: true,
           label: 'Measeles cases reported',
-          dateFmt: () => '',
+          dateFmt: '',
         }
         else return {
           slug: 'cases',
@@ -52,7 +58,7 @@ const GeomPopup = ({ popupData }) => {
         if (obs === undefined) return {
           notAvail: true,
           label: 'Vaccination coverage',
-          dateFmt: () => '',
+          dateFmt: '',
         }
         else return {
           slug: 'vacc-coverage',
@@ -70,12 +76,17 @@ const GeomPopup = ({ popupData }) => {
     }
   };
 
+  // // Hide image if not found
+  // const hideImage = (e) => {
+  //   e.target.src = null;
+  // };
+
   return (
     <div className={styles.container}>
       <div className={styles.header}>
         <div className={styles.titleContainer}>
           <p className={styles.stateName}>
-            {flag && <img src={flag} />}
+            {flag && popupData['fill'] !== undefined && <img src={flag} />}
             {popupData['fill'] ? popupData['fill']['place_name'] : popupData['place_name']}
           </p>
         </div>
@@ -95,7 +106,7 @@ const GeomPopup = ({ popupData }) => {
                 <p className={classNames(styles[d.slug], styles.label)}>
                   {d.label}
                   <br/>
-                  ({d.dateFmt})
+                  {d.dateFmt && `(${d.dateFmt})`}
                 </p>
                 <p className={classNames(
                   styles[d.slug],
