@@ -96,8 +96,10 @@ Util.getMetricChartParams = (metric) => {
       return {
         tickFormat: Util.comma,
         metric: 'caseload_totalpop',
+        units: 'people',
+        getUnits: (val) => val === 1 ? 'case' : 'cases',
         sort: 'desc',
-        label: 'Total cases of measles (Total cases of measles)',
+        label: 'Total cases of measles',
 
       };
     case 'incidence_monthly':
@@ -105,6 +107,8 @@ Util.getMetricChartParams = (metric) => {
         tickFormat: Util.formatIncidence,
         metric: 'incidence_monthly',
         sort: 'desc',
+        units: 'cases per 1M population',
+        getUnits: (val) => val === 1 ? 'case per 1M population' : 'cases per 1M population',
         label: 'Monthly incidence of measles (cases per 1M population)',
       };
     case 'monthlycaseload_totalpop':

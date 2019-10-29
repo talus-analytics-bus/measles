@@ -173,6 +173,13 @@ const App = () => {
           countryCaseloadHistoryFull: ObservationQuery(6, 'monthly', '2019-10-01', '2010-01-01', country),
           countryCaseloadTrend: await TrendQuery(6, Util.formatDatetimeApi(Util.today()), 6, country),
           countryVaccHistory: ObservationQuery(4, 'yearly', '2018-01-01', '2010-01-01', country),
+          caseload_12months: ObservationQuery(
+            7,
+            'monthly',
+            Util.formatDatetimeApi(Util.today()),
+            Util.formatDatetimeApi(Util.today()),
+            country
+          ),
         };
 
         const results = {};
@@ -293,6 +300,7 @@ const App = () => {
           countryJeeMcm={countryJeeMcm}
           countryIncidenceHistory={countryIncidenceHistory}
           countryCaseloadHistory={countryCaseloadHistory}
+          countryCaseload12Months={results.caseload_12months}
           // countryCaseloadTrend={fakeTrendValue}
           countryCaseloadTrend={results.countryCaseloadTrend}
           countryIncidenceLatest={countryIncidenceLatest}

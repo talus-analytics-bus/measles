@@ -539,12 +539,16 @@ class SlidingLine extends Chart {
       }
 
       const eachBand = x2.step();
+      const indices = [];
       const getDomainInvertVals = (val) => {
 
         let index = Math.ceil((val / eachBand));
         if (index > chart.data.vals.length - 1) index = chart.data.vals.length - 1;
         // TODO elegantly
         if (isNaN(index) || index < 0 || index >= chart.data.vals.length) return [0,0];
+
+        // Push index to array for later use
+        indices.push(index);
         return new Date (
           chart.data.vals[index]['date_time'].replace(/-/g, '/')
         );
@@ -576,6 +580,19 @@ class SlidingLine extends Chart {
 
       // Store this position
       chart.params.brushPosPercent = [s[0]/chart.width, s[1]/chart.width];
+
+      // Calculate total count to show in summary count metric
+      const dataForSummary = chart.data.vals.slice(
+        indices[0],
+        indices[1] + 1,
+      );
+      chart.params.setCountSummary(
+        d3.sum(dataForSummary, d => d.value)
+      );
+      chart.params.setCountSummaryDateRange(
+        Util.getDateTimeRange({value: dataForSummary})
+      );
+
 		})
 
     chart.brushStartPos = getBrushStartPos();

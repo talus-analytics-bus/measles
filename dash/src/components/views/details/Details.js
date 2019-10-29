@@ -31,6 +31,10 @@ const Details = (props) => {
   // Track SlidingLine chart tooltip data
   const [ tooltipData, setTooltipData ]  = React.useState(null);
 
+  // Track county summary for sliding line window view
+  const [ countSummary, setCountSummary ]  = React.useState(null);
+  const [ countSummaryDateRange, setCountSummaryDateRange ]  = React.useState(null);
+
   // Track whether to show reset view button on sliding line chart
   const [ showReset, setShowReset ]  = React.useState(false);
 
@@ -409,10 +413,35 @@ const Details = (props) => {
       </div>
     )
 
+
+    // Get count summary labeling
+    const metricParams = Util.getMetricChartParams(slidingLineMetric);
+
+    const countSummaryJsx = (
+      (countSummary !== null) && <div className={styles.countSummary}>
+        <span className={styles.value}>
+        {
+            metricParams.tickFormat(countSummary)
+        }
+        </span>
+        <span className={styles.label}>&nbsp;
+        {
+            metricParams.getUnits(countSummary)
+        }
+        </span>
+        <span> during time period shown (
+          {
+            countSummaryDateRange
+          }
+        )</span>
+      </div>
+    );
+
     return (
       <div className={styles.slidingLineContainer}>
         { dataToggles }
         { legend }
+        { countSummaryJsx }
         {
           !noLineData &&
           <div className={styles.slidingLine} />
@@ -547,6 +576,8 @@ const Details = (props) => {
       setShowReset: setShowReset,
       metric: slidingLineMetric,
       setSlidingLine: setSlidingLine,
+      setCountSummary: setCountSummary,
+      setCountSummaryDateRange: setCountSummaryDateRange,
       margin: {
         top: 20,
         right: 98,
@@ -578,6 +609,10 @@ const Details = (props) => {
 
   React.useEffect(function changeSlidingLineMetric () {
     if (slidingLine) {
+      // Remove countSummary for the moment
+      setCountSummary(null);
+
+      // Update selected metric.
       slidingLine.params.metric = slidingLineMetric;
 
       // Is the reset button currently showing, meaning the default window
