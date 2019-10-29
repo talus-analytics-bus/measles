@@ -42,3 +42,8 @@ __pycache__/
 /Bubblegum*
 /Moonlight*
 /ne_10m_admin_0_countries.zip
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml

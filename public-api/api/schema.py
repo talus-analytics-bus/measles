@@ -408,7 +408,7 @@ def getTrend(filters):
                          and o.date_time.datetime <= end
                          and o.value is not None)
 
-            res_list = sorted(list(res), key=lambda o: (o.place.place_id, o.date_time.datetime))
+        res_list = sorted(list(res), key=lambda o: (o.place.place_id, o.date_time.datetime))
 
     place_lists = {}
     current_place = None
