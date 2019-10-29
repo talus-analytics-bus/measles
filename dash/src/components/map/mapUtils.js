@@ -2,7 +2,7 @@
 
 import circleImg from '../../assets/images/circle@3x.png';
 import Util from '../../components/misc/Util.js';
-const initMap = (map, fillObservations, bubbleObservations, incidenceObservations, callback) => {
+const initMap = (map, fillObservations, bubbleObservations, incidenceObservations, bubbleMetric, callback) => {
 
   map.on('load', function() {
     initGeoms(fillObservations, bubbleObservations, incidenceObservations);
@@ -20,7 +20,6 @@ const initMap = (map, fillObservations, bubbleObservations, incidenceObservation
       map.addSource('centroids', {
         type: 'vector',
         url: 'mapbox://traethethird.9g6e0amc'
-        // url: 'mapbox://traethethird.5u7sntcb'
       })
 
     fillObservations.forEach(( observation) => {
@@ -108,21 +107,27 @@ const initMap = (map, fillObservations, bubbleObservations, incidenceObservation
 
       const setupCircleBubbleState = () => {
 
-        incidenceObservations.forEach(( observation) => {
+        incidenceObservations.forEach((observation) => {
+          const caseLoadObservation = bubbleObservations.find(bubObs => bubObs.place_id === observation.place_id);
           const value = observation['value'];
+          let value2;
+          if (caseLoadObservation) {
+            value2 = caseLoadObservation['value'];
+          }
           const place_id = +observation['place_id']
           const stale = getStaleStatus(observation, 'month');
-          // const stale = observation['stale_flag'] || false;
 
           if (!value) {
             map.setFeatureState({source: 'centroids', sourceLayer: 'centroids_id_rpr_latlon', id: place_id }, {
               value: 0,
+              value2: value2 || 0,
               stale: stale,
             }
           );
           } else {
             const state = {
               value: value,
+              value2: value2 || 0,
               stale: stale,
             };
             map.setFeatureState({source: 'centroids', sourceLayer: 'centroids_id_rpr_latlon', id: place_id }, state);
@@ -201,9 +206,39 @@ const initMap = (map, fillObservations, bubbleObservations, incidenceObservation
 
     // Display circles as circle layer.
     const setupCircleBubbles = () => {
+      // Get radius scale based on current bubble metric
+
+      // let radiusScale;
+      // console.log('metric = ' + bubbleMetric)
+      // if (bubbleMetric === 'caseload_totalpop') {
+      //   radiusScale = [
+      //       'interpolate',
+      //       ['linear'],
+      //       ["feature-state", "value"],
+      //           0, 0,
+      //           10000, 150
+      //     ];
+      // }
+      //
+      // // TODO
+      // else {
+      //   radiusScale = [
+      //       'interpolate',
+      //       ['linear'],
+      //       ["feature-state", "value"],
+      //           0, 0,
+      //           0.001, 5,
+      //           100, 150
+      //     ];
+      // }
+
       // Add centroids to map so they can be accessed via getSourceFeatures.
+      // Monthly incidence layer
       map.addLayer({
-        'id': 'metric-bubbles',
+        'id': 'metric-bubbles-incidence_monthly',
+        'layout': {
+          'visibility': 'none',
+        },
         'type': 'circle',
         'source': 'centroids',
         'source-layer': 'centroids_id_rpr_latlon',
@@ -215,6 +250,61 @@ const initMap = (map, fillObservations, bubbleObservations, incidenceObservation
                 0, 0,
                 0.001, 5,
                 100, 150
+          ],
+          'circle-color': [
+              'case',
+              ['==', ['feature-state', 'stale'], false],
+              '#b02c3a',
+              ['==', ['feature-state', 'stale'], true],
+              '#b02c3a',
+              'white',
+          ],
+          'circle-opacity': [
+              'case',
+              ['==', ['feature-state', 'stale'], null],
+              0,
+              ['==', ['feature-state', 'clicked'], true],
+              1,
+              0.85,
+          ],
+          'circle-stroke-width': [
+              'case',
+              ['==', ['feature-state', 'stale'], null],
+              0,
+              ['==', ['feature-state', 'value'], 0],
+              0,
+              ['==', ['feature-state', 'clicked'], true],
+              2,
+              ['==', ['feature-state', 'hover'], true],
+              2,
+              1,
+          ],
+          'circle-stroke-color': [
+              'case',
+              ['==', ['feature-state', 'stale'], false],
+              '#ffffff',
+              '#979797',
+          ],
+        }
+      }, "country-small");
+
+      // Number of cases layer
+      map.addLayer({
+        'id': 'metric-bubbles-caseload_totalpop',
+        'layout': {
+          'visibility': 'none',
+        },
+        'type': 'circle',
+        'source': 'centroids',
+        'source-layer': 'centroids_id_rpr_latlon',
+        'paint': {
+        'circle-radius': [
+            'interpolate',
+            ['linear'],
+            ["feature-state", "value2"],
+                0, 0,
+                1, 5,
+                1000, 50
           ],
           'circle-color': [
               'case',
@@ -236,7 +326,7 @@ const initMap = (map, fillObservations, bubbleObservations, incidenceObservation
               'case',
               ['==', ['feature-state', 'stale'], null],
               0,
-              ['==', ['feature-state', 'value'], 0],
+              ['==', ['feature-state', 'value2'], 0],
               0,
               ['==', ['feature-state', 'clicked'], true],
               2,
@@ -349,6 +439,7 @@ export const initMiniMap = (map, fillObservations, bubbleObservations, incidence
 
     // Display circles as circle layer.
     const setupCircleBubbles = () => {
+
       // Add centroids to map so they can be accessed via getSourceFeatures.
       map.addLayer({
         'id': 'metric-bubbles',

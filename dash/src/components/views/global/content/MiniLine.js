@@ -16,6 +16,7 @@ class MiniLine extends Chart {
 
     this.data = {};
     this.data.vals = params.data || []
+    this.params.yMetricParams = Util.getMetricChartParams(this.data.vals[0].metric);
 
     if (this.data.vals.length > 0) {
       let minTime, maxTime;
@@ -63,18 +64,31 @@ class MiniLine extends Chart {
     // [ max, min ]
     this.yDomainDefault = [d3.max(this.data.vals, d => d.value) || 5, 0];
 
-    // Adjust left margin to fit available space
-    if (!this.params.margin) {
-      this.params.margin = {
-        top: 20,
-        right: 0,
-        bottom: 22,
-        left: 20,
-      };
+    const yTickFormatFunc = this.params.yMetricParams.tickFormat;
+
+    // get incidence y-scale and y-axis
+    this.init();
+    this.y = d3.scaleLinear()
+      .domain(this.yDomainDefault)
+      .nice()
+      .range([0, this.height]);
+
+    this.yAxis = d3.axisLeft()
+      .scale(this.y)
+      .tickFormat((val) => {
+        if (val === 0) {
+          return 0;
+        } else return yTickFormatFunc(val);
+      })
+      .ticks(2)
+      .tickSizeOuter(0)
+      .tickSizeInner(-this.width);
+
+    if (this.params.yMetricParams.defaultTicks) {
+      this.yAxis.tickValues(this.params.yMetricParams.defaultTicks);
     }
 
-    this.init();
-    this.params.margin.left = this.fitLeftMargin(this);
+    this.params.margin.left = this.fitLeftMargin(this.yDomainDefault, false, true);
     this.onResize(this);
     this.draw();
   }
@@ -158,42 +172,37 @@ class MiniLine extends Chart {
       .domain([100, 0])
       .range([0, chart.height])
 
-    // y axis - main chart - left
-    const getTickFormatFunction = (chart) => {
-      switch (chart.data.vals[0].metric) {
-        case 'incidence_monthly':
-          return (v) => v;
-        default:
-          return Util.percentize;
-      }
-    };
-    const yTickFormatFunc = getTickFormatFunction(chart);
-    const yAxis = d3.axisLeft()
-      .scale(y)
-      .tickFormat((val) => {
-        if (val === 0) {
-          return 0;
-        } else return yTickFormatFunc(val);
-      })
-      .ticks(2)
-      .tickSizeOuter(0)
-      .tickSizeInner(-chart.width)
+    const yAxis = chart.yAxis;
 
     const yAxisG = chart.newGroup(styles['y-axis'])
+      .classed('y-axis', true)
       .call(yAxis);
 
-    const yAxisLeftYPos = this.labelShift;
+    const yAxisLeftYPos = this.labelShift + 35;
     const yAxisLabel = chart[styles['y-axis']].append('text')
       .attr('class', styles.label)
       .attr('x', -chart.height / 2)
       .attr('y', yAxisLeftYPos)
 
-    const labelData = Util.getSvgChartLabelData(chart.data.vals[0]);
+    const labelData = Util.getWrappedText(
+      chart.params.yMetricParams.label,
+      22,
+    );
     yAxisLabel.selectAll('tspan')
     .data(labelData)
     .enter().append('tspan')
       .attr('x', -chart.height / 2)
-        .attr('dy', (d, i) => (1.2*i) + 'em')
+      .attr('dy', (d, i) => {
+          if (labelData.length === 1) {
+            return null;
+          }
+          else if (i === 0) {
+            return -1 * labelData.length + 'em';
+          }
+          else {
+            return '1em';
+          }
+        })
         .text(d => d);
 
       // Get "value" line segments -- all segments where data are available (not
@@ -255,15 +264,18 @@ class MiniLine extends Chart {
       .enter().append('path')
         .attr('class', d => styles[d[0].metric])
         .attr('d', d => line(d));
+
     // Add points to chart
-    chart.newGroup(styles.pointValue)
+    if (chart.params.yMetricParams.temporal_resolution === 'yearly') {
+      chart.newGroup(styles.pointValue)
       .selectAll('circle')
       .data(chart.data.vals)
       .enter().append('circle')
-        .attr('class', d => `${styles.miniLinePoint} ${styles[d.metric]}`)
-        .attr('cx', d => x(new Date(d.date_time.replace(/-/g, '/'))))
-        .attr('cy', d => y(d.value))
-        .attr('r', 5);
+      .attr('class', d => `${styles.miniLinePoint} ${styles[d.metric]}`)
+      .attr('cx', d => x(new Date(d.date_time.replace(/-/g, '/'))))
+      .attr('cy', d => y(d.value))
+      .attr('r', 5);
+    }
 
     // Add tooltip line
     if (chart.params.setTooltipData !== undefined) {
@@ -296,19 +308,35 @@ class MiniLine extends Chart {
           })
           .on('mousemove', function tooltipLineUpdate () {
 
-            // First, snap line to months
-            const posXCursor = d3.mouse(this)[0];
-            const xValCursor = x.invert(posXCursor);
-            const xDateCursor = new Date(xValCursor);
-            let xValLine, posXLine;
-            const nextYear = d3.timeYear(new Date(xDateCursor).setUTCFullYear(xDateCursor.getUTCFullYear() + 1));
-            const isCloserToNextYear = (xDateCursor - d3.timeYear(xDateCursor)) > (nextYear - xDateCursor);
-            if (isCloserToNextYear) {
-              xValLine = nextYear;
-            } else {
-              xValLine = d3.timeYear(xDateCursor);
+            const snapToYear = chart.params.yMetricParams.temporal_resolution === 'yearly';
+
+            let xValLine;
+            if (snapToYear) {
+              const posXCursor = d3.mouse(this)[0];
+              const xValCursor = x.invert(posXCursor);
+              const xDateCursor = new Date(xValCursor);
+              const nextYear = d3.timeYear(new Date(xDateCursor).setUTCFullYear(xDateCursor.getUTCFullYear() + 1));
+              const isCloserToNextYear = (xDateCursor - d3.timeYear(xDateCursor)) > (nextYear - xDateCursor);
+              if (isCloserToNextYear) {
+                xValLine = nextYear;
+              } else {
+                xValLine = d3.timeYear(xDateCursor);
+              }
             }
-            posXLine = x(xValLine);
+            else {
+              // First, snap line to months
+              const posXCursor = d3.mouse(this)[0];
+              const xValCursor = x.invert(posXCursor);
+              const xDateCursor = new Date(xValCursor);
+              const nextMonth = d3.timeMonth(new Date(xDateCursor).setUTCMonth(xDateCursor.getUTCMonth() + 1));
+              const isCloserToNextMonth = (xDateCursor - d3.timeMonth(xDateCursor)) > (nextMonth - xDateCursor);
+              if (isCloserToNextMonth) {
+                xValLine = nextMonth;
+              } else {
+                xValLine = d3.timeMonth(xDateCursor);
+              }
+            }
+            const posXLine = x(xValLine);
 
             // Then, get the vaccination and incidence data for this point.
             const xDateLine = new Date(xValLine);
@@ -316,9 +344,16 @@ class MiniLine extends Chart {
               year: (xDateLine.getUTCFullYear()).toString(),
               month: (xDateLine.getUTCMonth() + 1) <= 9 ?  '0' + (xDateLine.getUTCMonth() + 1).toString() : (xDateLine.getUTCMonth() + 1).toString(),
             };
-            const xDateLineStr = `${xDateLineStrComponents.year}`;
-            const item = chart.data.vals.find(d => d.date_time.startsWith(xDateLineStr));
 
+            let xDateLineStr;
+            if (snapToYear) {
+              xDateLineStr = `${xDateLineStrComponents.year}`;
+            }
+            else {
+              xDateLineStr = `${xDateLineStrComponents.year}-${xDateLineStrComponents.month}`;
+            }
+
+            const item = chart.data.vals.find(d => d.date_time.startsWith(xDateLineStr));
             const items = [];
             if (item && item.value !== null)
               items.push(
@@ -327,7 +362,7 @@ class MiniLine extends Chart {
 
             // If there were data at this position, move the tooltip line there,
             // otherwise, do not change its position.
-            if(items.length > 0) {
+            if (items.length > 0) {
               chart[styles.tooltipLine]
                 .select('line')
                   .attr('x1', posXLine)

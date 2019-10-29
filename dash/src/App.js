@@ -6,7 +6,7 @@ import classNames from 'classnames';
 import * as d3 from 'd3/dist/d3.min';
 
 // layout
-import Logo from './components/layout/logo/Logo.js'
+import Nav from './components/layout/nav/Nav.js'
 
 // map
 import Map from './components/map/Map'
@@ -15,6 +15,7 @@ import Util from './components/misc/Util.js'
 // views
 import Details from './components/views/details/Details.js'
 import Global from './components/views/global/Global.js'
+import About from './components/views/about/About.js'
 
 // styles
 import styles from './App.module.scss'
@@ -56,6 +57,14 @@ const App = () => {
     const initialState = [];
     return initialState;
   });
+
+  // set nav title
+  // const [navTitle, setNavTitle] = React.useState('');
+
+  // // function for setting nav title
+  // const changeNavTitle = React.useCallback((newNavTitle) => {
+  //   setNavTitle(newNavTitle);
+  // }, []);
 
   // Hide the "How to use this map" modal if it has already been displayed
   // once to the user.
@@ -122,6 +131,11 @@ const App = () => {
     }
   }, [])
 
+  // React.useEffect(() => {
+  //   console.log('navTitle')
+  //   console.log(navTitle)
+  // }, [navTitle])
+
   // Functions to render each page's elements.
   const renderMap = loading ? <div /> :
     <Map // map page
@@ -131,6 +145,7 @@ const App = () => {
       shownMapModal={shownMapModal} // don't show help modal more than once
       setShownMapModal={setShownMapModal} // update modal display status
       setLoadingNav={setLoadingNav}
+      // setNavTitle={changeNavTitle}
       className={'map'}
       />
 
@@ -154,6 +169,7 @@ const App = () => {
           countryJeeSurvQ: ObservationQuery(17, 'occasion', undefined, undefined, country),
           countryJeeMcmQ: ObservationQuery(18, 'occasion', undefined, undefined, country),
           countryIncidenceHistoryFull: ObservationQuery(15, 'monthly', '2019-10-01', '2010-01-01', country),
+          countryCaseloadHistoryFull: ObservationQuery(6, 'monthly', '2019-10-01', '2010-01-01', country),
           countryVaccHistory: ObservationQuery(4, 'yearly', '2018-01-01', '2010-01-01', country),
         };
 
@@ -173,35 +189,41 @@ const App = () => {
         const countryJeeSurv = results.countryJeeSurvQ[0];
         const countryJeeMcm = results.countryJeeMcmQ[0];
 
-        // Incidence history and latest observation
-        // Do not show null values in data for now
-        const foundNotNullVal = {
-          fromStart: false,
-          fromEnd: false,
+        // Clean up incidence and caseload history data
+        const cleanHistories = (dataName) => {
+          // Incidence history and latest observation
+          // Do not show null values in data for now
+          const foundNotNullVal = {
+            fromStart: false,
+            fromEnd: false,
+          };
+
+          return results[dataName]
+              .filter(d => {
+                if (foundNotNullVal.fromStart) return true;
+                else {
+                  if (d.value === null) return false;
+                  else {
+                    foundNotNullVal.fromStart = true;
+                    return true;
+                  }
+                }
+              })
+              .reverse()
+              .filter(d => {
+                if (foundNotNullVal.fromEnd) return true;
+                else {
+                  if (d.value === null) return false;
+                  else {
+                    foundNotNullVal.fromEnd = true;
+                    return true;
+                  }
+                }
+              })
+              .reverse();
         };
-        const countryIncidenceHistory = results.countryIncidenceHistoryFull
-            .filter(d => {
-              if (foundNotNullVal.fromStart) return true;
-              else {
-                if (d.value === null) return false;
-                else {
-                  foundNotNullVal.fromStart = true;
-                  return true;
-                }
-              }
-            })
-            .reverse()
-            .filter(d => {
-              if (foundNotNullVal.fromEnd) return true;
-              else {
-                if (d.value === null) return false;
-                else {
-                  foundNotNullVal.fromEnd = true;
-                  return true;
-                }
-              }
-            })
-            .reverse();
+        const countryIncidenceHistory = cleanHistories('countryIncidenceHistoryFull')
+        const countryCaseloadHistory = cleanHistories('countryCaseloadHistoryFull')
 
         // const countryIncidenceHistory = results.countryIncidenceHistoryFull
         //   .filter(d => d.value !== null);
@@ -228,6 +250,7 @@ const App = () => {
           countryJeeSurv={countryJeeSurv}
           countryJeeMcm={countryJeeMcm}
           countryIncidenceHistory={countryIncidenceHistory}
+          countryCaseloadHistory={countryCaseloadHistory}
           countryIncidenceLatest={countryIncidenceLatest}
           countryIncidenceQuantile={countryIncidenceQuantile}
           countryVaccHistory={results.countryVaccHistory}
@@ -235,9 +258,11 @@ const App = () => {
         />);
       }
       getDetailsData(id);
+
       return <div />;
     } else {
       setLoadingNav(false);
+      // window.scrollTo(0,0);
       return detailsComponent;
     }
   }
@@ -259,6 +284,12 @@ const App = () => {
               params: {
                 domain: [new Date('2016/01/01'), Util.today()],
                 className: 'MiniLine',
+                margin: {
+                  top: 35,
+                  right: 0,
+                  bottom: 22,
+                  left: 20,
+                },
               }
             },
             {
@@ -266,6 +297,12 @@ const App = () => {
               params: {
                 domain: [new Date('2016/01/01'), Util.today()],
                 className: 'MiniLine',
+                margin: {
+                  top: 35,
+                  right: 0,
+                  bottom: 22,
+                  left: 20,
+                },
               }
             },
           ],
@@ -275,6 +312,12 @@ const App = () => {
               params: {
                 className: 'Scatter',
                 domain: [new Date('2016/01/01'), Util.today()],
+                margin: {
+                  top: 68,
+                  right: 5,
+                  bottom: 80,
+                  left: 120,
+                },
               }
             },
           ],
@@ -293,20 +336,20 @@ const App = () => {
         // TODO
         const queries = {
           // TODO - make global and yearly
-          globalIncidenceHistory: ObservationQuery(
-            15,
+          miniLine1Data: ObservationQuery( // global monthly caseload
+            23,
             'monthly',
             Util.formatDatetimeApi(chartParams.MiniLine[0].params.domain[1]),
             Util.formatDatetimeApi(chartParams.MiniLine[0].params.domain[0]),
-            43, // China
+            315, // Global
+            'global',
           ),
           // TODO - make global
-          globalVaccHistory: ObservationQuery(
+          miniLine2Data: ObservationQuery(
             4,
             'yearly',
             Util.formatDatetimeApi(chartParams.MiniLine[0].params.domain[1]),
             Util.formatDatetimeApi(chartParams.MiniLine[0].params.domain[0]),
-            43, // China
           ),
           caseload: ObservationQuery(
             6,
@@ -314,9 +357,9 @@ const App = () => {
             Util.formatDatetimeApi(chartParams.Scatter[0].params.domain[1]),
             Util.formatDatetimeApi(chartParams.Scatter[0].params.domain[0]),
           ),
-          incidence_12months: ObservationQuery( // DEBUG: replace with metric 24
-            6,
-            // 24,
+          caseload_12months: ObservationQuery( // DEBUG: replace with metric 24
+            // 6,
+            7,
             'monthly',
             Util.formatDatetimeApi(Util.today()),
           ),
@@ -332,6 +375,11 @@ const App = () => {
             Util.formatDatetimeApi(chartParams.Scatter[0].params.domain[1]),
             Util.formatDatetimeApi(chartParams.Scatter[0].params.domain[0]),
           ),
+          vaccination_recent: ObservationQuery(
+            4,
+            'yearly',
+            Util.formatDatetimeApi(Util.today()),
+          ),
           population: ObservationQuery(
             3,
             'yearly',
@@ -344,32 +392,40 @@ const App = () => {
         for (let q in queries) {
           results[q] = await queries[q];
         }
-        console.log('results -- App.js')
-        console.log(results)
-        // Country basic info
-        // Global info
+        chartParams.MiniLine[0].params.data = results.miniLine1Data;
 
-        // Initialize chart data
-
-
-        // Mini line chart 1 - Global annual incidence
-        // TODO
-        // DEV: Use incidence observations for China on the first of Jan for
-        // 2016 - 2019 inclusive for now.
-        const debugMiniLine1Data = results.globalIncidenceHistory.filter(obs => {
-          const date = new Date(obs.date_time.replace(/-/g, '/'));
-
-          const isRightDate =
-            date.getUTCMonth() === 0
-            && date.getUTCDate() === 1;
-
-          return isRightDate;
+        // Get average vaccination for each year based on average of countries
+        const averageVaccDataObj = {};
+        results.miniLine2Data.forEach(d => {
+          if (averageVaccDataObj[d.date_time] === undefined) {
+            if (d.value === null) return;
+            else {
+              d.metric = 'avg_coverage_mcv1_infant';
+              averageVaccDataObj[d.date_time] = {
+                ...d,
+                tempValues: [d.value],
+              };
+            }
+          }
+          else {
+            if (d.value === null) return;
+            else {
+              averageVaccDataObj[d.date_time].tempValues.push(d.value);
+            }
+          }
         });
 
-        // TODO ensure mini lines have partial data for current year if
-        // possible.
-        chartParams.MiniLine[0].params.data = debugMiniLine1Data;
-        chartParams.MiniLine[1].params.data = results.globalVaccHistory;
+        // Take averages -- TODO in database view, not in JS.
+        const averageVaccData = [];
+        for (let key in averageVaccDataObj) {
+          const curYearDatum = averageVaccDataObj[key];
+          curYearDatum.value = d3.mean(curYearDatum.tempValues);
+          delete curYearDatum.tempValues;
+          averageVaccData.push(curYearDatum);
+        }
+        chartParams.MiniLine[1].params.data = averageVaccData;
+        // chartParams.MiniLine[1].params.data = results.miniLine2Data;
+
         chartParams.Scatter[0].params.data = {
           x: results.vaccination,
           y: results.caseload,
@@ -377,47 +433,18 @@ const App = () => {
           size: results.population,
         };
         chartParams.PagingBar[0].params.data = {
-          y: results.incidence_12months,
+          y: results.caseload_12months,
+          y2: results.vaccination_recent,
         };
-
-        // // Incidence history and latest observation
-        // // Do not show null values in data for now
-        // const foundNotNullVal = {
-        //   fromStart: false,
-        //   fromEnd: false,
-        // };
-        // const countryIncidenceHistory = results.countryIncidenceHistoryFull
-        //     .filter(d => {
-        //       if (foundNotNullVal.fromStart) return true;
-        //       else {
-        //         if (d.value === null) return false;
-        //         else {
-        //           foundNotNullVal.fromStart = true;
-        //           return true;
-        //         }
-        //       }
-        //     })
-        //     .reverse()
-        //     .filter(d => {
-        //       if (foundNotNullVal.fromEnd) return true;
-        //       else {
-        //         if (d.value === null) return false;
-        //         else {
-        //           foundNotNullVal.fromEnd = true;
-        //           return true;
-        //         }
-        //       }
-        //     })
-        //     .reverse();
 
         setGlobalComponent(<Global
           chartParams={chartParams}
-          allIncidence={results.incidence}
         />);
       }
       getGlobalData(id);
       return <div />;
     } else {
+
       setLoadingNav(false);
       return globalComponent;
     }
@@ -426,9 +453,16 @@ const App = () => {
   // JSX for main app. Switch component allows links in the header to be used to
   // determine main app content.
   return (
-    <div className={styles.app}>
+    <div className={
+      classNames(
+        styles.app,
+        {
+          [styles.windowed]: page === 'map',
+        }
+      )
+    }>
       <BrowserRouter>
-        <Logo page={page} loadingNav={loadingNav} places={places} />
+        <Nav page={page} loadingNav={loadingNav} places={places} />
         <Switch>
           <div>
             <Route exact path='/' component={ () => { setPage('map'); setLoadingNav(true); return renderMap; } } />
@@ -442,6 +476,7 @@ const App = () => {
               component={d => {
                 setPage('global');
                 setLoadingNav(true);
+                // window.scrollTo(0,0);
                 return renderGlobal()
               }}
             />
@@ -450,9 +485,16 @@ const App = () => {
               component={d => {
                 setPage('details');
                 setLoadingNav(true);
+                // window.scrollTo(0,0);
                 return renderDetails(d.match.params.id)
               }}
             />
+            <Route exact path='/about' component={ () => {
+              setPage('about');
+              setLoadingNav(false);
+              // window.scrollTo(0,0);
+              return <About />;
+            } } />
           </div>
         </Switch>
         {

@@ -12,7 +12,7 @@ import Util from './Util.js'
  * @method getObservations
  */
 
-const ObservationQuery = async function (metric_id, temporal_resolution, start_date, end_date, country) {
+const ObservationQuery = async function (metric_id, temporal_resolution, start_date, end_date, country, spatial_resolution = 'country') {
   end_date = typeof end_date !== 'undefined' ? end_date : start_date;
 
   country = typeof country !== 'undefined' ? country : 'all';
@@ -20,7 +20,7 @@ const ObservationQuery = async function (metric_id, temporal_resolution, start_d
   var params = {
     metric_id: metric_id,
     temporal_resolution: temporal_resolution,
-    spatial_resolution: 'country',
+    spatial_resolution: spatial_resolution,
   };
 
   // Send start and end dates if they are provided, otherwise do not send.

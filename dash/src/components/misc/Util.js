@@ -3,12 +3,155 @@ import * as d3 from 'd3/dist/d3.min';
 // Utility functions.
 const Util = {};
 
-Util.getScatterLabelData = (datum) => {
-  switch (datum.metric) {
+// Color series used to indicate relative vaccination coverage from least to
+// most vaccinated.
+Util.vaccinationColors = [
+  '#d6f0b2',
+  '#b9d7a8',
+  '#7fcdbb',
+  '#41b6c4',
+  '#2c7fb8',
+  '#303d91'
+];
+
+// const vaccinationColorScale = (val) => {
+//
+//   return 'blue';
+// };
+
+Util.getMetricChartParams = (metric) => {
+  switch (metric) {
+    case 'cumcaseload_totalpop':
+      return {
+        tickFormat: Util.formatSIInteger,
+        sort: 'desc',
+        metric: 'cumcaseload_totalpop',
+        label: 'New cases in past 12 months',
+        dateFmt: (allObs) => {
+          const firstObs = allObs[0];
+          const firstObsDt = new Date (
+            firstObs.date_time.replace(/-/g, '/')
+          );
+          const fakeObsDt = new Date (
+            firstObsDt
+          );
+          fakeObsDt.setUTCFullYear(fakeObsDt.getUTCFullYear() - 1);
+
+          const firstStr = fakeObsDt.toLocaleString('en-us', {
+            month: 'short',
+            year: 'numeric',
+            timeZone: 'UTC',
+          });
+          const lastStr = firstObsDt.toLocaleString('en-us', {
+            month: 'short',
+            year: 'numeric',
+            timeZone: 'UTC',
+          });
+
+          return `${firstStr} to ${lastStr}`;
+        },
+      };
     case 'caseload_totalpop':
-      return 'Measles cases reported';
+      return {
+        tickFormat: Util.comma,
+        metric: 'caseload_totalpop',
+        sort: 'desc',
+        label: 'Total cases of measles (Total cases of measles)',
+
+      };
+    case 'incidence_monthly':
+      return {
+        tickFormat: Util.formatIncidence,
+        metric: 'incidence_monthly',
+        sort: 'desc',
+        label: 'Monthly incidence of measles (cases per 1M population)',
+      };
+    case 'monthlycaseload_totalpop':
+      return {
+        tickFormat: Util.formatSIInteger,
+        metric: 'monthlycaseload_totalpop',
+        sort: 'desc',
+        temporal_resolution: 'monthly',
+        label: 'New cases reported globally',
+      };
+
+    case 'coverage_mcv1_infant': // DEBUG
+      return {
+        tickFormat: Util.percentize,
+        metric: 'coverage_mcv1_infant',
+        temporal_resolution: 'yearly',
+        sort: 'asc',
+        label: 'Vaccination coverage (% of infants)',
+        dateFmt: (allObs) => Util.getDatetimeStamp(allObs[0], 'year'),
+      };
+
+    case 'avg_coverage_mcv1_infant': // DEBUG
+      return {
+        tickFormat: Util.percentize,
+        metric: 'avg_coverage_mcv1_infant',
+        temporal_resolution: 'yearly',
+        sort: 'asc',
+        defaultTicks: [0, 50, 100],
+        label: 'Average vaccination coverage of countries',
+        dateFmt: (allObs) => Util.getDatetimeStamp(allObs[0], 'year'),
+      };
+    }
+};
+
+Util.setColorScaleProps = (metric, colorScale) => {
+  switch (metric) {
+    case 'incidence_12months':
+    case 'cumcaseload_totalpop':
+    case 'caseload_totalpop':
+    case 'incidence_monthly':
+      colorScale
+        .interpolate(d3.interpolateRgb)
+        .range(['#e6c1c6', '#9d3e4c'])
+        return;
+
+    case 'coverage_mcv1_infant': // DEBUG
+      colorScale
+        .interpolate(d3.interpolateRgbBasis)
+        .range(Util.vaccinationColors)
+        return;
+    }
+};
+
+Util.getColorScaleForMetric = (metric, domain) => {
+  switch (metric) {
+    case 'incidence_12months':
+    case 'cumcaseload_totalpop':
+    case 'caseload_totalpop':
+    case 'incidence_monthly':
+      return d3.scaleLinear()
+        .range(['#e6c1c6', '#9d3e4c'])
+        .domain(domain);
+        return;
+
+    case 'coverage_mcv1_infant': // DEBUG
+      return (val) => {
+        return d3.interpolateRgbBasis(Util.vaccinationColors)(val / 100);
+      };
+    }
+};
+
+Util.getIntArray = (min, max) => {
+  const list = [];
+  for (let i = min; i <= max; i++) {
+      list.push(i);
+  }
+  return list;
+};
+
+Util.getScatterLabelData = (datum) => {
+  switch (datum.metric || datum) {
+    case 'incidence_12months':
+    case 'caseload_totalpop':
+      return 'New measles cases reported';
     case 'incidence_monthly':
       return 'Monthly incidence of measles';
+    case 'coverage_mcv1_infant':
+      return 'Vaccination coverage';
     default:
       return '';
   }
@@ -18,7 +161,7 @@ Util.getSvgChartLabelData = (datum) => {
   switch (datum.metric) {
     case 'caseload_totalpop':
       return [
-        'Cases reported',
+        'New cases reported',
       ];
     case 'incidence_monthly': // DEBUG
       return [
@@ -44,23 +187,39 @@ Util.getTooltipItem = (datum) => {
   switch (datum.metric) {
     case 'caseload_totalpop':
       return {
-        name: 'Cases reported',
+        name: 'New cases reported',
         datum: datum,
         period: 'month',
-        value: Util.comma(datum.value),
-        label: 'cases',
+        value: datum.value === null ? null : Util.comma(datum.value),
+        label: datum.value === 1 ? 'case' : 'cases',
       };
     case 'incidence_monthly': // DEBUG
       return {
         name: 'Monthly incidence',
         datum: datum,
         period: 'month',
-        value: Util.formatIncidence(datum.value),
+        value: datum.value === null ? null : Util.formatIncidence(datum.value),
         label: 'cases per 1M population',
+      };
+    case 'monthlycaseload_totalpop': // DEBUG
+      return {
+        name: 'New cases reported',
+        datum: datum,
+        period: 'month',
+        value: Util.comma(datum.value),
+        label: 'cases',
       };
     case 'coverage_mcv1_infant': // DEBUG
       return {
         name: 'Vaccination coverage',
+        datum: datum,
+        period: 'year',
+        value: Util.percentize(datum.value),
+        label: 'of infants',
+      };
+    case 'avg_coverage_mcv1_infant': // DEBUG
+      return {
+        name: 'Average vaccination coverage of countries',
         datum: datum,
         period: 'year',
         value: Util.percentize(datum.value),
@@ -166,8 +325,8 @@ Util.getDateTimeRange = (item) => {
     year: 'numeric',
     timeZone: 'UTC',
   });
-  if (firstStr === lastStr) return `(${firstStr})`;
-  else return `(${firstStr} to ${lastStr})`;
+  if (firstStr === lastStr) return `${firstStr}`;
+  else return `${firstStr} to ${lastStr}`;
 };
 
 Util.formatDatetimeApi = (dt) => {
@@ -214,7 +373,7 @@ Util.getDatetimeStamp = (datum, type = 'year') => {
       timeZone: 'UTC',
     });
   }
-  return ` (${datetimeStamp})`;
+  return `${datetimeStamp}`;
 };
 
 Util.importAll = (r) => {
@@ -293,6 +452,12 @@ Util.money = (val) => {
   return Util.comma(val);
 }
 
+Util.formatSIInteger = (val) => {
+	if (val === 0) return '0';
+  else if (val < 10) return val;
+	else return d3.format(".2s")(val);
+};
+
 // Format using standard suffixes
 Util.formatSI = (val) => {
 
@@ -346,5 +511,37 @@ Util.formatDate = (input) => {
     }
   );
 }
+
+Util.getWrappedText = (text, thresh = 20) => {
+  // Get label text
+  // If it's more than 20 chars try to wrap it
+  const tryTextWrap = text.length > thresh;
+  let svgLabelTspans;
+  if (tryTextWrap) {
+    svgLabelTspans = [];
+
+    // Split names by word
+    const words = text.split(' ');
+
+    // Concatenate words for each tspan until over 20 chars
+    let curTspan = '';
+    for (let i = 0; i < words.length; i++) {
+      const word = words[i];
+      if ((curTspan + ' ' + word).length < thresh) {
+        curTspan += ' ' + word;
+      } else {
+        svgLabelTspans.push(curTspan);
+        curTspan = word;
+      }
+    }
+    if (curTspan !== '') svgLabelTspans.push(curTspan);
+  }
+
+  // Otherwise just use the name as-is
+  else {
+    svgLabelTspans = [text];
+  }
+  return svgLabelTspans;
+};
 
 export default Util;

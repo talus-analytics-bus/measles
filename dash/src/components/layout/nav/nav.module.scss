@@ -1,13 +1,16 @@
 @import '../../../assets/styles/colors.scss';
-$logo-height: 70px;
+$logo-height: 45%;
+$nav-height: 80px;
+// $logo-height: 50px;
 
-.logo {
+.nav {
   background-color: $dark-grey;
   z-index: 3;
   display: flex;
   justify-content: left;
   position: sticky;
   top: 0;
+  height: $nav-height;
 
   $navButtonSize: 55px;
 
@@ -26,7 +29,7 @@ $logo-height: 70px;
   // .navButtons .active {
   &.loading {
     .navButtonContainer {
-      pointer-events: none;
+      // pointer-events: none;
     }
   }
   &.loading .navButtons .active {
@@ -136,6 +139,7 @@ $logo-height: 70px;
     display: flex;
     .img {
       height: $logo-height;
+      margin: auto 25px;
     }
   }
 
@@ -144,7 +148,7 @@ $logo-height: 70px;
     flex-flow: column;
     text-align: left;
     justify-content: center;
-    margin-left: 40px;
+    // margin-left: 25px;
     line-height: 1.2;
 
     .title, .subtitle {

@@ -1,4 +1,5 @@
 import React from 'react'
+import { Redirect } from 'react-router';
 import Popup from 'reactjs-popup'
 import ReactTooltip from 'react-tooltip';
 import Tooltip from 'rc-tooltip';
@@ -21,6 +22,9 @@ const Global = (props) => {
 
   // Manage loading state (don't show if loading, etc.)
   const [loading, setLoading] = React.useState(true)
+
+  // Manage redirect path
+  const [redirectPath, setRedirectPath] = React.useState(null)
 
   // Track whether the first mini line chart has been drawn
   const [ charts, setCharts ]  = React.useState([]);
@@ -50,8 +54,17 @@ const Global = (props) => {
   // Track slider play timeouts
   const [ playTimeouts, setPlayTimeouts ] = React.useState([]);
 
-  // // Track whether to show reset view button on sliding line chart
-  // const [ showReset, setShowReset ]  = React.useState(false);
+  // Track which data series is being shown in the paging bar chart.
+  const [ sectionTitle, setSectionTitle ]  = React.useState('Measles cases reported by country'); // PLACEHOLDER
+
+  // Track which data series is being shown in the paging bar chart.
+  const [ pagingBarData, setPagingBarData ]  = React.useState('cumcaseload_totalpop'); // PLACEHOLDER
+
+  // Track how many pages there are for the bar chart
+  const [ pageCount, setPageCount ]  = React.useState(1);
+
+  // Track which page we're on for the bar chart (1-indexed)
+  const [ curPage, setCurPage ]  = React.useState(1);
 
   // Get data for current country.
   const country = props.id;
@@ -72,6 +85,15 @@ const Global = (props) => {
         chart.params.tooltipClassName = stylesTooltip.globalTooltip;
         if (chart.params.className === 'Scatter') {
           chart.params.curSliderVal = curSliderVal;
+        }
+
+        // Set state variables and setters for PagingBar
+        else if (chart.params.className === 'PagingBar') {
+          chart.params.curPage = curPage;
+          chart.params.setCurPage = setCurPage;
+          chart.params.setPageCount = setPageCount;
+          chart.params.setRedirectPath = setRedirectPath;
+          chart.params.setSectionTitle = setSectionTitle;
         }
 
         // Create chart instance
@@ -101,7 +123,15 @@ const Global = (props) => {
     const tooltipEl = document.getElementsByClassName('rc-slider-handle')[0];
     ReactTooltip.show(tooltipEl);
 
-  }, [curSliderVal])
+  }, [curSliderVal]);
+
+  React.useEffect(() => {
+    const PagingBarChart = charts.find(d => d.params.className === 'PagingBar');
+    if (PagingBarChart) PagingBarChart.update(curPage, pagingBarData);
+
+    // Rebuild tooltips after the chart is drawn
+    ReactTooltip.rebuild();
+  }, [curPage, pagingBarData])
 
   // Updates scatterplot and slider label when slider is changed.
   const handleSliderChange = (valNumeric, a, b) => {
@@ -140,12 +170,17 @@ const Global = (props) => {
 
     let prevDt = curSliderVal;
     let i = 0;
+    let utcYear = curSliderVal.getUTCFullYear();
+    let utcMonth = curSliderVal.getUTCMonth();
     const newPlayTimeouts = [];
     while (prevDt < sliderMax) {
-      const curDt = new Date(
-        prevDt
-      );
-      curDt.setUTCMonth(curDt.getUTCMonth() + 1);
+      utcMonth++;
+      if (utcMonth > 11) {
+        utcMonth = 0;
+        utcYear += 1;
+      }
+      const curDt = new Date(`${utcYear}/${utcMonth + 1}/1`);
+
       prevDt = curDt;
       const timeoutPrevDt = prevDt;
       newPlayTimeouts.push(
@@ -285,7 +320,7 @@ const Global = (props) => {
           </div>
         </div>
         <div className={styles.section}>
-          <p className={styles.sectionName}>Measles cases reported</p>
+          <p className={styles.sectionName}>New measles cases reported</p>
           <div className={styles.legendEntryGroups}>
             <div className={styles.legendEntryGroup}>
               {
@@ -331,11 +366,111 @@ const Global = (props) => {
   // Returns jsx for paging bar chart
   const getPagingBarJsx = () => {
 
-    const area = <div className={classNames(styles.Scatter, 'PagingBar-0')} />;
+    // Get data values to format datetime stamps
+    const getDataToggleValues = (chartData) => {
+      const dataToggleValues = [];
+      for (let key in chartData) {
+        if (key === 'x') continue;
+        else {
+          dataToggleValues.push(
+            {
+              seriesName: key,
+              seriesData: chartData[key],
+              ...Util.getMetricChartParams(chartData[key][0].metric),
+            }
+          );
+        }
+      }
+      return dataToggleValues;
+    };
+    const chartData = props.chartParams.PagingBar[0].params.data;
+    const dataToggleValues = getDataToggleValues(chartData);
 
+    // Radio toggle
+    const toggle = (
+      <div className={styles.dataToggles}>
+      {
+        dataToggleValues.map((entry, i) =>
+          <div className={styles.dataToggle}>
+            <label for={entry.value}>
+              <input
+                type="radio"
+                name="pagingBarData"
+                id={entry.metric}
+                value={entry.metric}
+                checked={pagingBarData === entry.metric}
+                onClick={() => {
+                  setPagingBarData(entry.metric);
+                  setCurPage(1);
+                }}
+              />
+              {entry.label}
+            </label>
+          </div>
+        )
+      }
+      </div>
+    );
+
+    // Main chart area
+    const area = <div className={classNames(styles.PagingBar, 'PagingBar-0')} />;
+
+    // Paging left and right buttons
+    const pageNav = (
+      <div className={styles.pageNavs}>
+        <button
+          onClick={() => { if (curPage < pageCount) setCurPage(curPage + 1) } }
+          className={
+            classNames(
+              styles.pageNav,
+              styles.pageNext,
+              'btn-secondary',
+              {[styles.disabled]: curPage === pageCount,},
+            )
+          }>Next</button>
+        <button
+          onClick={() => { if (curPage > 1) setCurPage(curPage - 1) } }
+          className={
+            classNames(
+              styles.pageNav,
+              styles.pagePrev,
+              'btn-secondary',
+              {[styles.disabled]: curPage === 1,},
+            )
+          }>Previous</button>
+      </div>
+    );
+
+    // Page numbers
+    const pageNumbers = (
+      <div className={styles.pageControls}>
+      {
+        pageNav
+      }
+      {
+        Util.getIntArray(1, pageCount).map(i =>
+          <div
+            className={
+              classNames(
+                styles.pageControl,
+                {
+                  [styles.active]: i === curPage,
+                }
+              )
+            }
+            onClick={ () => setCurPage(i) }
+          >
+            {i}
+          </div>
+        )
+      }
+      </div>
+    );
     return (
       <div>
+        {toggle}
         {area}
+        {pageNumbers}
       </div>
     );
   };
@@ -390,7 +525,7 @@ const Global = (props) => {
   const getPagingBarData = () => {
     return [
       {
-        'title': 'Reported cases by country',
+        'title': sectionTitle,
         'chart_jsx': getPagingBarJsx,
         'date_time_fmt': () => '',
         // 'data_source': getPagingBarDataSource,
@@ -415,15 +550,15 @@ const Global = (props) => {
     ];
     return [
       {
-        'title': 'Global yearly incidence',
+        'title': 'New cases reported globally',
         'chart_jsx': () => <div className={classNames(styles.MiniLine, 'MiniLine-0')} />,
-        'value_fmt': Util.formatIncidence,
-        'value_label': 'cases per 1M population',
-        'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'year')},
+        'value_fmt': Util.comma,
+        'value_label': 'cases',
+        'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'month')},
         ...infographicValues[0]
       },
       {
-        'title': 'Global vaccination coverage',
+        'title': 'Average vaccination coverage of countries',
         'chart_jsx': () => <div className={classNames(styles.MiniLine, 'MiniLine-1')} />,
         'value_fmt': Util.percentize,
         'value_label': 'of infants',
@@ -442,7 +577,16 @@ const Global = (props) => {
     timeZone: 'utc',
   });
 
-  return (<div className={styles.details}>
+  // If redirecting to country details page, do so
+  if (redirectPath !== null) {
+    return <Redirect push to={
+        {
+          pathname: redirectPath,
+        }
+      }
+    />
+  }
+  else return (<div className={styles.details}>
             <div className={styles.top}>
               <div className={styles.sidebar}>
                 <div className={styles.title}>
@@ -460,7 +604,7 @@ const Global = (props) => {
                     <div className={styles.itemContainer}>
                       <div className={styles.item}>
                         <span className={styles.title}>
-                          {item.title} {item.date_time_fmt(item)}
+                          {item.title}<br/>({item.date_time_fmt(item)})
                         </span>
                         <div className={styles.content}>
                           {
@@ -617,12 +761,23 @@ const Global = (props) => {
                     {
                       tooltipData.items.map(item =>
                         <div className={stylesTooltip.item}>
-                          <div className={stylesTooltip.name}>{item.name} {Util.getDatetimeStamp(item.datum, item.period)}</div>
-                          <div>
-                            <span className={stylesTooltip.value}>{item.value}</span>
-                            &nbsp;
-                            <span className={stylesTooltip.label}>{item.label}</span>
-                          </div>
+                          <div className={stylesTooltip.name}>{item.name} {item.value !== null ? `(${Util.getDatetimeStamp(item.datum, item.period)})` : ''}</div>
+                          {
+                            // Show value if reported
+                            item.value !== null &&
+                            <div>
+                              <span className={stylesTooltip.value}>{item.value}</span>
+                              &nbsp;
+                              <span className={stylesTooltip.label}>{item.label}</span>
+                            </div>
+                          }
+                          {
+                            // Write not reported otherwise
+                            item.value === null &&
+                            <div>
+                              <span className={classNames(stylesTooltip.value, 'notAvail')}>Not reported</span>
+                            </div>
+                          }
                         </div>
                       )
                     }
@@ -646,6 +801,21 @@ const Global = (props) => {
                 </div>
               }
               />
+            {
+              // Tooltip for paging bar chart
+              <ReactTooltip
+                id={'pagingBarTooltip'}
+                type='dark'
+                className={styles.sliderTooltip}
+                place="top"
+                effect="float"
+                getContent={ () =>
+                  <div>
+                    Click to view country details page
+                  </div>
+                }
+                />
+            }
           </div>
         </div>
     );

@@ -13,33 +13,120 @@ class PagingBar extends Chart {
     super(selector, params);
 
     this.params = params;
+    console.log('params - mvmfilter')
+    console.log(params)
 
-    this.data = {vals: {}};
-    this.data.vals.x = params.data.y || []; // horiz bar chart, so x = y
+    this.setData = (view) => {
+      this.data = {vals: {}};
+      this.params.view = view;
+      this.xMetricParams = Util.getMetricChartParams(view);
 
-    // TODO remove data not for the time period we need
-    // Sort data by descending value and assign page numbers
-    const pageLength = 15;
-    const sortFunc = Util.sortByField('value');
-    this.data.vals.x
-    .sort(sortFunc)
-    .forEach((v, i) => {
-      v.page = Math.floor(i / pageLength);
-    });
+      const setXData = () => {
+        // If current view is "total cases reported", show y, otherwise show y2
+        // which is vaccination coverage.
+        if (view === 'cumcaseload_totalpop') {
+          this.data.vals.x = params.data.y || [];
+        }
+        else if (view === 'coverage_mcv1_infant') { // most recent vaccinatin cov. val.
+          console.log('Doing vacc')
+          this.data.vals.x = params.data.y2 || [];
+        }
+        else {
+          console.log('[Error] Unrecognized view: ' + view + '. Using y series.')
+          this.data.vals.x = params.data.y || [];
+        }
+
+        this.data.vals.x.filter(v => v.value !== null)
+      };
+
+      const setYData = () => {
+        // y data are place names, ids, and isos for all countries in data.
+        this.data.vals.y = this.data.vals.x
+          .map(v => {
+            return {
+              place_id: v.place_id,
+              place_name: v.place_name,
+              place_iso: v.place_iso,
+            };
+          });
+      };
+
+      const setBarData = () => {
+        // Define chart bar data
+        this.data.bars = [];
+        this.data.vals.x.forEach(xDatum => {
+          const yDatum = this.data.vals.y.find(y => y.place_id === xDatum.place_id);
+          if (yDatum) {
+            this.data.bars.push(
+              {
+                ...yDatum,
+                value: xDatum.value,
+                join_id: yDatum.place_name + '-' + view,
+              }
+            );
+          }
+        });
+
+      // TODO remove data not for the time period we need
+      // Sort data by descending value and assign page numbers
+      this.params.pageLength = 15;
+      const sortFunc = Util.sortByField('value');
+      this.data.bars
+        .sort(sortFunc);
+
+      // Flip order if sort is reverse
+      if (this.xMetricParams.sort === 'asc') this.data.bars.reverse();
+
+      this.data.bars
+        .forEach((v, i) => {
+          v.page = Math.floor(i / this.params.pageLength); // 0-indexed count
+        });
+
+        // Set page count so that page buttons are rendered.
+        const pageCount = Math.floor(this.data.bars.length / this.params.pageLength) + 1;
+        this.params.setPageCount(pageCount);
+      };
+
+      // Define x, y, and bar data series.
+      setXData();
+      setYData();
+      setBarData();
+    };
+    this.setData('cumcaseload_totalpop'); // PLACEHOLDER
+
+    // Get longest bar value label with and set margin to this value, in case
+    // it is hanging off the right size of the chart.
+    const barValueLabels = this.data.bars.map(d => Util.comma(d.value));
+    const longestBarValueWidth =
+      this.getLongestLabelWidth(
+        barValueLabels, // list of labels
+        '1em', // font-size
+        true // bold
+      );
+    // this.params.margin.right = longestBarValueWidth + 5;
 
     // Default margins
-    if (!this.params.margin) {
-      this.params.margin = {
-        top: 20,
-        right: 20,
-        bottom: 20,
-        left: 20,
-      };
-    }
+    // if (!this.params.margin) {
+    console.log('Construction chart: PagingBar.js - mvmfilter')
+    this.setMargin({
+      top: 47,
+      right: longestBarValueWidth + 5,
+      bottom: 20,
+      left: 200,
+    });
+      // this.params.margin = {
+      //   top: 47,
+      //   right: longestBarValueWidth + 5,
+      //   bottom: 20,
+      //   left: 200,
+      // };
+    // }
 
-    // TODO set left margin based on the longest country name included.
 
-    this.init();
+    // this.init();
+    // set left margin based on the longest country name included.
+    const yLabels = this.data.bars.map(d => d.place_name);
+    this.params.margin.left = this.fitLeftMargin(yLabels, true) + 20;
     this.onResize(this);
     this.draw();
   }
@@ -47,558 +134,202 @@ class PagingBar extends Chart {
   draw() {
 
     const chart = this;
-    console.log('chart');
+    const yLabelShift = 20;
+    console.log('chart - redrawing everything - mvm');
     console.log(chart);
 
+    // Draw bars
+    const barGs = chart.newGroup(styles.barGs);
+
     // x scale = cases or incidence
+    // Calculate x domain max.
+    const maxX = d3.max(chart.data.bars, d => d.value);
+
     // Set domain in update function
     const x = d3.scaleLinear()
       .range([0, chart.width])
+      .domain([0, maxX])
       .nice();
 
+    // Define red color scale for bubbles
+    let xColor = Util.getColorScaleForMetric(chart.params.view, [0, maxX]);
+
     const xAxis = d3.axisTop()
-      .tickFormat(Util.comma)
-      .ticks(5);
+      .scale(x)
+      .ticks(5)
+      .tickFormat(chart.xMetricParams.tickFormat);
+
+    const xAxisG = chart.plotAxisReact(
+      styles,
+      xAxis,
+      'x',
+    );
 
     // y scale = country
     // Set domain in update function
-    const y = d3.scaleOrdinal()
-      .range([0, chart.height]);
+    const y = d3.scaleBand()
+      .range([0, chart.height])
+      .padding(0.3);
 
-    // // Create clipping path
-    // const defs = chart.svg.append('defs');
-    // // defs
-    // //   .append('clipPath')
-    // //     .attr('id', 'plotArea')
-    // //     .append('rect')
-    // //       .attr('x', 0)
-    // //       .attr('y', 0)
-    // //       .attr('width', chart.width)
-    // //       .attr('height', chart.height);
-    //
-    // // Create shadow definition
-    // const filterDef = defs.append('filter')
-    //   .attr('id','f1')
-    //   .attr('x','0')
-    //   .attr('y','0')
-    //   .attr('width','200%')
-    //   .attr('height','200%')
-    // filterDef.append('feOffset')
-    //   .attr('result','offOut')
-    //   .attr('in','SourceAlpha')
-    //   .attr('dx','2')
-    //   .attr('dy','2')
-    // filterDef.append('feGaussianBlur')
-    //   .attr('result','blurOut')
-    //   .attr('in','offOut')
-    //   .attr('stdDeviation','2')
-    // filterDef.append('feBlend')
-    //   .attr('in','SourceGraphic')
-    //   .attr('in2','blurOut')
-    //   .attr('mode','normal')
-    //
-    // if (chart.data.vals.length < 1) {
-    //   // TODO show "no data" message
-    //   return
-    // }
-    //
-    // // Define red color scale for bubbles
-    // const yColor = d3.scaleLinear()
-    //   .domain([0, 1])
-    //   .range(['#d89da5', '#9d3e4c']);
-    //
-    // // Define bubble size scale
-    // const r = d3.scaleLinear()
-    //   .domain([0, 1])
-    //   .range([5, 50]) // heuristic for max bubble size
-    //
-    // // Define bubble label size scale
-    // const labelSize = (val) => {
-    //   return (r(val) / 2) + 10;
-    // };
-    //
-    // // Define x scale - vaccination coverage
-    // const x = d3.scaleLinear()
-    //   .domain([0, 1])
-    //   .range([0, chart.width]);
-    //
-    // // Define x axis - vaccination coverage
-    // const xAxis = d3.axisBottom()
-    //   .tickSize(0)
-    //   .tickPadding(10)
-    //   .tickValues([0, 1])
-    //   .tickFormat(function (val) {
-    //     if (val === 0) {
-    //         return '';
-    //     }
-    //     if (val === 1) return '';
-    //     else this.remove();
-    //   })
-    //   .scale(x);
-    // const xAxisG = chart.newGroup(styles['x-axis'])
-    //   .call(xAxis)
-    //   .attr('transform', `translate(0, ${chart.height})`);
-    //
-    // // Define y scale - incidence
-    // const y = d3.scaleLinear()
-    //   .domain([0, 1])
-    //   .range([chart.height, 0]); // TODO check
-    //
-    // // Define y axis - incidence
-    // const yAxis = d3.axisLeft()
-    //   .tickSize(0)
-    //   .tickPadding(10)
-    //   .tickValues([0, 1])
-    //   .tickFormat(function (val) {
-    //     if (val === 0) return '';
-    //     if (val === 1) return '';
-    //     else this.remove();
-    //   })
-    //   .scale(y);
-    // const yAxisG = chart.newGroup(styles['y-axis'])
-    //   .call(yAxis);
-    //
-    //   // Update xaxis tick labels
-    //   chart[styles['x-axis']]
-    //     .selectAll('g.tick')
-    //     .each(function addXTickText (d, i) {
-    //       const tickLabel = d3.select(this).select('text');
-    //       if (i === 0) {
-    //         tickLabel
-    //           .attr('text-anchor', 'start');
-    //         tickLabel
-    //           .append('tspan')
-    //             .attr('x', 0)
-    //             .text('Lowest');
-    //         tickLabel
-    //           .append('tspan')
-    //             .attr('dy', '1.1em')
-    //             .attr('x', 0)
-    //             .text('coverage');
-    //       }
-    //       else if (i === 1) {
-    //         tickLabel
-    //           .attr('text-anchor', 'end');
-    //         tickLabel
-    //           .append('tspan')
-    //             .attr('x', 0)
-    //             .text('Highest');
-    //         tickLabel
-    //           .append('tspan')
-    //             .attr('dy', '1.1em')
-    //             .attr('x', 0)
-    //             .text('coverage');
-    //       }
-    //     });
-    //   chart[styles['y-axis']]
-    //     .selectAll('g.tick')
-    //     .each(function addYTickText (d, i) {
-    //       const tickLabel = d3.select(this).select('text');
-    //       if (i === 0) {
-    //         tickLabel
-    //           .attr('text-anchor', 'end')
-    //           .attr('y', '-2.3em')
-    //           .attr('dy', 0)
-    //         tickLabel
-    //           .append('tspan')
-    //             .attr('x', -10)
-    //             .attr('dy', '1.1em')
-    //             .text('Lowest');
-    //         tickLabel
-    //           .append('tspan')
-    //             .attr('dy', '1.1em')
-    //             .attr('x', -10)
-    //             .text('incidence');
-    //       }
-    //       else if (i === 1) {
-    //         tickLabel
-    //           .attr('text-anchor', 'end')
-    //           .attr('y', '-.35em')
-    //           .attr('dy', 0)
-    //         tickLabel
-    //           .append('tspan')
-    //             .attr('x', -10)
-    //             .attr('dy', '1.1em')
-    //             .text('Highest');
-    //         tickLabel
-    //           .append('tspan')
-    //             .attr('dy', '1.1em')
-    //             .attr('x', -10)
-    //             .text('incidence');
-    //       }
-    //     });
-    //
-    // // Add month and year label to center of plot
-    // const monthYearLabel = chart.newGroup(styles.monthYearLabel)
-    //   .append('text')
-    //     .attr('class', styles.monthYearLabel)
-    //     .attr('x', chart.width/2)
-    //     .attr('y', chart.height/2)
-    //     .text('Aug 2019');
-    //
-    // // Add bubbles group (assume one datum per country). Enter one bubble for
-    // // each that we have pop data for, in the update function.
-    // const bubblesG = chart.newGroup(styles.bubbles);
-    //
-    // // Add avg vaccination coverage line
-    // const avgXLine = chart.newGroup('avgXLine')
-    //   .append('line')
-    //     .attr('class', styles.avgXLine)
-    //     .attr('x1', x(.5))
-    //     .attr('x2', x(.5))
-    //     .attr('y1', y(0))
-    //     .attr('y2', y(1)-31);
-    //
-    // // Add label for avg vaccination coverage line
-    // const avgXLineLabel = chart['avgXLine'].append('text')
-    //   .attr('class', styles.avgXLineLabel)
-    //   .attr('x', x(.5))
-    //   .attr('y', y(1) - 56);
-    // const avgXLineLabelShift = -143/2;
-    // avgXLineLabel.append('tspan')
-    //   .attr('x', x(.5))
-    //   .attr('dx', avgXLineLabelShift)
-    //   .text('Average coverage');
-    // avgXLineLabel.append('tspan')
-    //   .attr('x', x(.5))
-    //   .attr('dx', avgXLineLabelShift)
-    //   .attr('dy', '1.2em')
-    //   .text('across all countries');
-    //
-    // // Add y-axis label
-    // const yAxisLabel = chart[styles['y-axis']].append('text')
-    //   .attr('y', -100)
-    //   .attr('class', styles.label);
-    //
-    // yAxisLabel.append('tspan')
-    // .attr('x', -chart.height / 2)
-    //   .text(Util.getScatterLabelData(chart.params.data.y[0]));
-    //
-    // yAxisLabel.append('tspan')
-    // .attr('x', -chart.height / 2)
-    //   .attr('dy', '1.2em')
-    //   .text('(relative)');
-    //
-    // // Add x-axis label
-    // const xAxisLabel = chart[styles['x-axis']].append('text')
-    //   .attr('x', chart.width / 2)
-    //   .attr('y', chart.margin.bottom - 20)
-    //   .attr('class', styles.label);
-    //
-    // xAxisLabel.append('tspan')
-    //   .attr('x', chart.width / 2)
-    //   .text('Vaccination coverage');
-    //
-    // xAxisLabel.append('tspan')
-    //   .attr('x', chart.width / 2)
-    //   .attr('dy', '1.2em')
-    //   .text('(relative)');
-    //
-    // // TODO - Exclude "global" bubble.
-    // //
-    //
-    // // TODO build rest of chart
+    const yAxis = d3.axisLeft()
+      .tickPadding(40)
+      .tickSizeInner(0)
+      .tickFormat(function (val) {
+        if (val[0] === '_') return '';
+        else {
+          this.dataset.name = val;
+          return val;
+        }
+      })
+      .scale(y);
 
-    // Update function: Update chart to show countries on the given page num.
-    chart.update = (pageNumber = 1) => {
+    const yAxisG = chart.plotAxisReact(
+      styles,
+      yAxis,
+      'y',
+    );
 
-      // Calculate x domain max.
-      const maxX = d3.max(chart.data.vals.x, d => d.value);
-      x.domain([0, maxX]);
+    // Add x-axis label
+    const xAxisLabel = chart[styles['x-axis']].append('text')
+      .attr('x', chart.width / 2)
+      .attr('y', '-2em')
+      .attr('class', styles.label);
 
-      // Set y domain based on countries in this page
+    xAxisLabel.append('tspan')
+      .attr('x', chart.width / 2);
 
+    // Add y-axis label
+    const yAxisLabel = chart[styles['y-axis']].append('text')
+      .attr('x', -chart.height / 2)
+      .attr('y', chart.labelShift - yAxis.tickPadding() + yLabelShift)
+      .attr('class', styles.label);
 
-      // const sortBySize = (a, b) => {
-      //   if (a.value_normalized.size > b.value_normalized.size) return -1;
-      //   else if (a.value_normalized.size < b.value_normalized.size) return 1;
-      //   else return 0;
-      // };
-      // // Get month and year of data to show in scatter plot
-      // const yyyymmdd = Util.formatDatetimeApi(dt);
-      // const yyyymmddArr = yyyymmdd.split('-');
-      // const monthlyStr = `${yyyymmddArr[0]}-${yyyymmddArr[1]}`;
-      // const yearlyStr = `${yyyymmddArr[0]}`;
-      //
-      // // Get this data to bind
-      // // y data
-      // const yData = chart.data.vals.y.filter(d => {
-      //   return d.date_time.startsWith(monthlyStr);
-      // });
-      // const yDataMax = d3.max(yData, d => d.value);
-      // yData.forEach(d => d.value_normalized = d.value / yDataMax );
-      //
-      // // x data - use most recent available
-      // let xDataYearlyStr = yearlyStr;
-      // let foundXData = false;
-      // let xData;
-      // while (!foundXData) {
-      //   xData = chart.data.vals.x.filter(d => {
-      //     return d.date_time.startsWith(xDataYearlyStr);
-      //   });
-      //   if (xData.length > 0) foundXData = true;
-      //   else xDataYearlyStr = ((+xDataYearlyStr)-1).toString();
-      // }
-      //
-      // const xDataMax = d3.max(xData, d => d.value);
-      // xData.forEach(d => d.value_normalized = d.value / xDataMax );
-      //
-      // // size data
-      // const sizeData = chart.data.vals.size.filter(d => {
-      //   return d.date_time.startsWith(yearlyStr);
-      // });
-      // const sizeDataMax = d3.max(sizeData, d => d.value);
-      // sizeData.forEach(d => d.value_normalized = d.value / sizeDataMax );
-      //
-      // // Collate data points
-      // const data = [];
-      // sizeData.forEach(sizeDatum => {
-      //   const placeId = sizeDatum.place_id;
-      //   const xDatum = xData.find(d => d.place_id === placeId);
-      //   const yDatum = yData.find(d => d.place_id === placeId);
-      //   if (yDatum && xDatum) {
-      //     data.push(
-      //       {
-      //         value_normalized: {
-      //           x: xDatum.value_normalized,
-      //           y: yDatum.value_normalized,
-      //           size: sizeDatum.value_normalized,
-      //         },
-      //         place_id: placeId,
-      //         place_name: xDatum.place_name,
-      //         date_time: yDatum.date_time,
-      //         xDatum: xDatum,
-      //         yDatum: yDatum,
-      //         sizeDatum: sizeDatum,
-      //       }
-      //     );
-      //   }
-      // });
-      //
-      // // Sort data by size so that largest circles are in the back.
-      // data.sort(sortBySize);
-      //
-      // // Update x-scale domain so that far left side corresponds to the
-      // // lowest normalized x value.
-      // const xMin = d3.min(data, d => d.value_normalized.x);
-      // x.domain([xMin, 1]);
-      //
-      // // Ditto for the lower limit of the y-scale
-      // const yMin = d3.min(data, d => d.value_normalized.y);
-      // y.domain([yMin, 1]);
-      //
-      // // Enter new bubbles based on place_id if needed (pos and color)
-      // // Update existing bubbles by moving to new position and colors
-      // // Move average vaccination level line to new position
-      // const avgXLineVal = d3.mean(xData, d => d.value_normalized);
-      // avgXLine
-      //   .transition()
-      //   .duration(500)
-      //     .attr('x1', x(avgXLineVal))
-      //     .attr('x2', x(avgXLineVal));
-      // avgXLineLabel.selectAll('tspan')
-      //   .transition()
-      //   .duration(500)
-      //     .attr('x', x(avgXLineVal))
-      //
-      // // Move circle off edge of chart, x-axis
-      // const getCircleXPos = (d) => {
-      //   // If x-pos is with r units of chart width, then shift it to a value
-      //   // equal to chart width minus r
-      //   const xPosDesired = x(d.value_normalized.x);
-      //   const curR = r(d.value_normalized.size);
-      //   let xPosFinal = xPosDesired;
-      //   if (chart.width - xPosDesired <= curR) {
-      //     xPosFinal = chart.width - curR;
-      //   }
-      //
-      //   // Similarly, don't let x pos hang circle off left side of plot
-      //   else if (xPosDesired - curR < 0) {
-      //     xPosFinal = curR;
-      //   }
-      //   return xPosFinal;
-      // };
-      //
-      // const getCircleYPos = (d) => {
-      //   const yPosDesired = y(d.value_normalized.y);
-      //   const curR = r(d.value_normalized.size);
-      //   let yPosFinal = yPosDesired;
-      //   if (yPosDesired + curR > chart.height) {
-      //     yPosFinal = chart.height - curR;
-      //   }
-      //
-      //   // Similarly, don't let y pos hang circle off left side of plot
-      //   else if (yPosDesired - curR < 0) {
-      //     yPosFinal = curR;
-      //   }
-      //   return yPosFinal;
-      // };
-      //
-      // const getTextAnchor = (d) => {
-      //   const xPos = getCircleXPos(d);
-      //   const nearRightEdge = chart.width - xPos <= 25;
-      //   const nearLeftEdge = xPos <= 25;
-      //   if (nearRightEdge) return 'end';
-      //   else if (nearLeftEdge) return 'start';
-      //   else return 'middle';
-      // }
-      //
-      // const getTextDx = (d) => {
-      //   const xPos = getCircleXPos(d);
-      //   const nearRightEdge = chart.width - xPos <= 25;
-      //   const nearLeftEdge = xPos <= 25;
-      //   if (nearRightEdge) return r(d.value_normalized.size);
-      //   else if (nearLeftEdge) return -1*r(d.value_normalized.size);
-      //   else return 0;
-      // }
-      //
-      // // Enter new bubbles, update old
-      // bubblesG.selectAll('g')
-      //   .attr('class', styles.bubbleG)
-      //   .data(data, d => d.place_id)
-      //   .join(
-      //     enter => {
-      //       const newCircleGs = enter.append('g')
-      //         .attr('transform',
-      //           d => `translate(${
-      //             getCircleXPos(d)
-      //           }, ${
-      //             chart.height - r(d.value_normalized.size)
-      //           })`
-      //         )
-      //         .classed(styles.active, d => chart.params.activeBubble === d.place_id)
-      //         .attr('data-tip', true)
-      //         .attr('data-for', chart.params.tooltipClassName)
-      //         .on('click', function toggleSelectBubble (d) {
-      //           const thisG = d3.select(this);
-      //           const thisBubble = thisG.select('circle');
-      //           const activateBubble = !thisG.classed(styles.active);
-      //           bubblesG.selectAll('g')
-      //             .classed(styles.active, false)
-      //             .selectAll('circle')
-      //               .attr('filter', 'none');
-      //           if (activateBubble) {
-      //             chart.params.activeBubbleId = d.place_id;
-      //             thisG.classed(styles.active, true);
-      //             thisBubble.attr('filter', 'url(#f1)');
-      //           } else {
-      //             chart.params.activeBubbleId = -9999;
-      //           }
-      //
-      //           bubblesG.selectAll('g').sort(function(a, b){
-      //             if (activateBubble && a.place_id === d.place_id) return 1;
-      //             else if (activateBubble && b.place_id === d.place_id) return -1;
-      //             else if (a.value_normalized.size > b.value_normalized.size) return -1;
-      //             else if (a.value_normalized.size <= b.value_normalized.size) return 1;
-      //           })
-      //
-      //           // Make name label visible
-      //         })
-      //         .on('mouseenter', function showBubbleTooltip (d) {
-      //           const items = [];
-      //           [
-      //             'yDatum',
-      //             'xDatum',
-      //             'sizeDatum',
-      //           ].forEach(itemName => {
-      //             items.push(
-      //               Util.getTooltipItem(d[itemName])
-      //             );
-      //           });
-      //           chart.params.setTooltipData(
-      //             {
-      //               name: d.place_name,
-      //               items: items,
-      //             }
-      //           );
-      //         })
-      //
-      //       newCircleGs
-      //         .append('circle')
-      //           .attr('class', styles.scatterCircle)
-      //           .style('opacity', 0)
-      //           .attr('fill', yColor(0))
-      //           .attr('r', d => r(0))
-      //
-      //       newCircleGs
-      //         .append('text')
-      //           .attr('class', styles.scatterCircleLabel)
-      //           .attr('dy', d => (-1 * r(d.value_normalized.size)) - 2)
-      //           .attr('dx', d => getTextDx(d))
-      //           .style('text-anchor', d => getTextAnchor(d))
-      //           .style('font-size', d => labelSize(d.value_normalized.size))
-      //           .text(d => d.place_name)
-      //
-      //       newCircleGs
-      //         .transition()
-      //         .duration(2000)
-      //           .attr('transform',
-      //             d => `translate(${
-      //               getCircleXPos(d)
-      //             }, ${
-      //               getCircleYPos(d)
-      //             })`
-      //           );
-      //
-      //       newCircleGs.selectAll('circle')
-      //         .transition()
-      //         .duration(2000)
-      //           .style('opacity', 1)
-      //           .attr('fill', d => yColor(d.value_normalized.y))
-      //           .attr('r', d => r(d.value_normalized.size));
-      //     },
-      //     update => {
-      //       update
-      //         .classed(styles.active, d => chart.params.activeBubbleId === d.place_id)
-      //         .transition()
-      //         .duration(2000)
-      //           .attr('transform',
-      //             d => `translate(${
-      //               getCircleXPos(d)
-      //             }, ${
-      //               getCircleYPos(d)
-      //             })`
-      //           );
-      //
-      //       update.selectAll('circle')
-      //         .data(data, d => d.place_id)
-      //           .transition()
-      //           .duration(2000)
-      //             .style('opacity', 1)
-      //             .attr('fill', d => yColor(d.value_normalized.y))
-      //             .attr('r', d => r(d.value_normalized.size));
-      //
-      //       update.selectAll('text')
-      //         .data(data, d => d.place_id)
-      //           .transition()
-      //           .duration(2000)
-      //             .attr('dx', d => getTextDx(d))
-      //             .style('text-anchor', d => getTextAnchor(d));
-      //     },
-      //     exit => {
-      //       exit.remove();
-      //     },
-      //   );
-      //
-      // // Keep bubbles below other chart elements, except month year label.
-      // bubblesG.lower();
-      // chart[styles.monthYearLabel].lower();
-      //
-      // // Update axis labels
-      // const monthYearLabelString = dt.toLocaleString('en-us', {
-      //   month: 'short',
-      //   year: 'numeric',
-      //   timeZone: 'utc',
-      // });
-      //
-      // monthYearLabel.text(monthYearLabelString);
-      // yAxisLabel.select('tspan:nth-child(2)')
-      //   .text(`in ${monthYearLabelString} (relative)`);
-      // xAxisLabel.select('tspan:nth-child(2)')
-      //   .text(`in ${xDataYearlyStr} (relative)`);
+    yAxisLabel.append('tspan')
+      .attr('x', -chart.height / 2)
+      .text('Country');
+
+    // Callback on click to route to country details page
+    const routeToCountryDetails = (id) => {
+      chart.params.setRedirectPath('/details/' + id);
     };
 
-    chart.update(1);
+    // Update function: Update chart to show countries on the given page num.
+    chart.update = (pageNumber, view) => {
+
+      // If view not the same as this view, set data and domains
+      if (view !== chart.params.view) {
+        chart.setData(view);
+
+        // update x scale
+        const maxX = d3.max(chart.data.bars, d => d.value);
+
+        // Set domain, update axis
+        x.domain([0, maxX])
+          .nice();
+        xAxis
+          .tickFormat(chart.xMetricParams.tickFormat)
+        chart[styles['x-axis']].call(xAxis);
+
+        // Set color scale
+        xColor = Util.getColorScaleForMetric(view, [0, maxX]);
+      }
+
+      // X-axis label and section title
+      const xAxisLabelText = `${chart.xMetricParams.label} by country (${chart.xMetricParams.dateFmt(chart.data.vals.x)})`;
+      xAxisLabel.text(`${chart.xMetricParams.label} (${chart.xMetricParams.dateFmt(chart.data.vals.x)})`);
+      chart.params.setSectionTitle(`${chart.xMetricParams.label} by country (${chart.xMetricParams.dateFmt(chart.data.vals.x)})`);
+
+      // Get data for this page
+      const data = chart.data.bars.filter(d => d.page === pageNumber-1);
+      console.log('data')
+      console.log(data)
+
+      // Append dummy bars if needed
+      let i = 0;
+      while (data.length < chart.params.pageLength) {
+        data.push(
+          {
+            placeholder: true,
+            place_id: '_' + i++,
+            place_name: '_' + i++,
+            place_iso: '',
+            value: 0,
+          }
+        );
+      }
+
+      // Set y domain based on countries in this page
+      const yTickLabels = data.map(d => d.place_name);
+      y.domain(yTickLabels);
+      chart[styles['y-axis']].call(yAxis);
+
+      // Get position of y-label given widest y-axis tick label.
+      const xAxisLabelPos = chart.getYLabelPos(
+        y,
+        true,
+        yTickLabels,
+        '1em',
+      );
+      yAxisLabel.attr('y', chart.labelShift - yAxis.tickPadding() + yLabelShift)
+
+      // Update bar values (should only need to happen once since underlying
+      // data are not updated).
+      barGs.selectAll('g')
+        .data(data, d => d.join_id)
+        .join(
+          enter => {
+            const newBarGs = enter.append('g')
+              .attr('data-tip', true)
+              .attr('data-for', 'pagingBarTooltip')
+              .attr('data-id', d => d.join_id)
+              .attr('class', styles.barG)
+              .classed(styles.placeholder, d => d.placeholder === true)
+              .on('click', (d) => routeToCountryDetails(d.place_id));
+
+            newBarGs.append('rect')
+              .attr('x', 0)
+              .attr('y', d => y(d.place_name))
+              .attr('fill', d => xColor(d.value))
+              .attr('width', d => x(d.value))
+              .attr('height', y.bandwidth())
+
+            newBarGs.append('image')
+              .attr('x', -32)
+              .attr('y', d => y(d.place_name))
+              .attr('height', y.bandwidth())
+              .attr('href', d => `/flags/${d.place_iso}.png`);
+
+
+            // Set tick mark behavior
+            chart[styles['y-axis']].selectAll('g.tick')
+              .attr('data-tip', true)
+              .attr('data-for', 'pagingBarTooltip')
+              .on('click', (placeName) => {
+                const placeDatum = chart.data.bars.find(d => d.place_name === placeName);
+                if (placeDatum) {
+                  routeToCountryDetails(placeDatum.place_id);
+                }
+              });
+
+            // Add bar value labels
+            newBarGs.append('text')
+              .attr('class', styles.valueLabel)
+              .text(d => chart.xMetricParams.tickFormat(d.value))
+              .attr('x', d => x(d.value) + 5)
+              .attr('y', d => y(d.place_name) + y.bandwidth()/2)
+              .attr('dy', '.375em');
+
+          },
+          update => {
+            // NA
+          },
+          exit => {
+            exit.remove();
+          },
+        );
+    };
+
+    chart.update(1, 'cumcaseload_totalpop');
 
     // Reduce width at the end
     chart.svg.node().parentElement.classList.add(styles.drawn);

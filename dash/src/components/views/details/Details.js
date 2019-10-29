@@ -25,6 +25,9 @@ const Details = (props) => {
   // Track whether the sliding line chart has been drawn
   const [ slidingLine, setSlidingLine ]  = React.useState(null);
 
+  // Track whether the sliding line chart has been drawn
+  const [ slidingLineMetric, setSlidingLineMetric ]  = React.useState('caseload_totalpop');
+
   // Track SlidingLine chart tooltip data
   const [ tooltipData, setTooltipData ]  = React.useState(null);
 
@@ -303,7 +306,7 @@ const Details = (props) => {
     const legendEntries = noLineData ? [] :
       [
         {
-          label: 'Monthly incidence',
+          label: slidingLineMetric === 'incidence_monthly' ? 'Monthly incidence' : 'New cases',
           class: styles.monthlyIncidence,
           shape: 'line',
         },
@@ -314,58 +317,101 @@ const Details = (props) => {
           skip: props.countryVaccHistory.length === 0,
         },
         {
-          label: 'Incidence not reported',
+          label: slidingLineMetric === 'incidence_monthly' ? 'Incidence not reported' : 'Cases not reported',
           class: styles.noIncidence,
           shape: 'rect',
         },
       ];
 
+    // Legend JSX
+    const legend = (
+      <div className={styles.slidingLineLegend}>
+        {
+          legendEntries.map(entry =>
+            (entry.skip !== true) &&
+            <div className={styles.entry}>
+              <svg width="18" height="18">
+              {
+                entry.shape === 'line' ?
+                    <line className={classNames(styles.symbol, entry.class)} x1="0" x2="18" y1="9" y2="9" />
+                    :  <rect className={classNames(styles.symbol, entry.class)} x="0" y="0" height="18" width="18" />
+              }
+              </svg>
+              <div className={styles.label}>
+                {entry.label}
+              </div>
+            </div>
+          )
+        }
+        {
+          // Add reset button, visible when chart sliding window is adjusted.
+          <button
+            onClick={
+              () => {
+                if (slidingLine && slidingLine.resetView) {
+                  slidingLine.resetView();
+                }
+              }
+            }
+            className={
+              classNames(
+                'btn-secondary btn-sm',
+              )
+            }
+            style={
+              {
+                'opacity': showReset ? 1 : 0,
+                'visibility': showReset ? 'visible' : 'hidden',
+              }
+            }
+            >
+            Reset view
+          </button>
+        }
+      </div>
+    );
+
+    // Data toggles: monthly incidence rate or case counts
+    const dataToggles = (
+      <div className={
+          styles.dataToggles
+      }>
+      <span>View caseload by</span>
+      {
+        [
+          {
+            metric: 'caseload_totalpop',
+            label: 'number of cases',
+          },
+          {
+            metric: 'incidence_monthly',
+            label: 'monthly incidence rate',
+          },
+        ].map((entry, i) =>
+          <div className={styles.dataToggle}>
+            <label for={entry.value}>
+              <input
+                type="radio"
+                name="bubbleData"
+                id={entry.metric}
+                value={entry.metric}
+                checked={slidingLineMetric === entry.metric}
+                onClick={() => {
+                  setSlidingLineMetric(entry.metric)
+                }}
+              />
+              {entry.label}
+            </label>
+          </div>
+        )
+      }
+      </div>
+    )
+
     return (
       <div className={styles.slidingLineContainer}>
-        <div className={styles.slidingLineLegend}>
-          {
-            legendEntries.map(entry =>
-              (entry.skip !== true) &&
-              <div className={styles.entry}>
-                <svg width="18" height="18">
-                {
-                  entry.shape === 'line' ?
-                      <line className={classNames(styles.symbol, entry.class)} x1="0" x2="18" y1="9" y2="9" />
-                      :  <rect className={classNames(styles.symbol, entry.class)} x="0" y="0" height="18" width="18" />
-                }
-                </svg>
-                <div className={styles.label}>
-                  {entry.label}
-                </div>
-              </div>
-            )
-          }
-          {
-            // Add reset button, visible when chart sliding window is adjusted.
-            <button
-              onClick={
-                () => {
-                  if (slidingLine && slidingLine.resetView) {
-                    slidingLine.resetView();
-                  }
-                }
-              }
-              className={
-                classNames(
-                  'btn-secondary btn-sm',
-                )
-              }
-              style={
-                {
-                  'opacity': showReset ? 1 : 0,
-                  'visibility': showReset ? 'visible' : 'hidden',
-                }
-              }
-              >
-              Reset view
-            </button>
-          }
-        </div>
+        { dataToggles }
+        { legend }
         {
           !noLineData &&
           <div className={styles.slidingLine} />
@@ -421,18 +467,22 @@ const Details = (props) => {
     const jeeBlocks = document.getElementsByClassName(styles.jeeBlock);
     for (let i = 0; i < jeeBlocks.length; i++) {
       const el = jeeBlocks[i];
-      // el.style.backgroundColor = '#cecece';
       el.style.backgroundColor = '';
     }
 
     // Setup sliding line chart params
     const chartParams = {
-      data: props.countryIncidenceHistory,
+      data: {
+        y: props.countryCaseloadHistory,
+        y2: props.countryIncidenceHistory,
+      },
       vaccData: props.countryVaccHistory,
       noResizeEvent: true,
       setTooltipData: setTooltipData,
       tooltipClassName: stylesTooltip.slidingLineTooltip,
       setShowReset: setShowReset,
+      metric: slidingLineMetric,
+      setSlidingLine: setSlidingLine,
       margin: {
         top: 20,
         right: 98,
@@ -442,23 +492,40 @@ const Details = (props) => {
     };
 
     // Sliding line chart defined in SlidingLine.js
-    if (!noLineData)
-      setSlidingLine(
-        new SlidingLine(
+    if (!noLineData) {
+      const slidingLineChart = new SlidingLine(
 
-          // Selector of DOM element in Resilience.js component where the chart
-          // should be drawn.
-          '.' + styles.slidingLine,
+        // Selector of DOM element in Resilience.js component where the chart
+        // should be drawn.
+        '.' + styles.slidingLine,
 
-          // Chart parameters consumed by Chart.js and ResilienceRadarChart.js,
-          // defined above.
-          chartParams,
-        )
+        // Chart parameters consumed by Chart.js and ResilienceRadarChart.js,
+        // defined above.
+        chartParams,
       );
+      setSlidingLine(
+        slidingLineChart
+      );
+    }
 
     // Rebuild tooltips after the chart is drawn
     ReactTooltip.rebuild();
   }, [])
+
+
+  React.useEffect(function changeSlidingLineMetric () {
+    if (slidingLine) {
+      slidingLine.params.metric = slidingLineMetric;
+
+      // Is the reset button currently showing, meaning the default window
+      // is being viewed?
+      slidingLine.params.onDefaultWindow = showReset === false;
+
+      slidingLine.update(slidingLineMetric);
+    }
+    ReactTooltip.rebuild();
+  },
+  [slidingLineMetric]);
 
 
 
@@ -516,7 +583,7 @@ const Details = (props) => {
                   <div className={styles.itemContainer}>
                     <div className={styles.item}>
                       <span className={styles.title}>
-                        {item.title} {item.date_time_fmt(item)}
+                        {item.title} {item.value !== null ? `(${item.date_time_fmt(item)})` : ''}
                       </span>
                       <div className={styles.content}>
                         {
@@ -581,7 +648,7 @@ const Details = (props) => {
                   ...(props.countryIncidenceLatest.value !== undefined ? props.countryIncidenceLatest : { value: null }),
                 },
                 {
-                  'title': 'Incidence over time',
+                  'title': slidingLineMetric === 'caseload_totalpop' ? 'New cases by month' : 'Monthly incidence',
                   'chart_jsx': getSlidingLineJsx,
                   'date_time_fmt': Util.getDateTimeRange,
                   'data_source': getSlidingLineDataSources,
@@ -591,7 +658,7 @@ const Details = (props) => {
                 <div className={styles.itemContainer}>
                   <div className={styles.item}>
                     <span className={styles.title}>
-                      {item.title} {item.date_time_fmt(item)}
+                      {item.title} {item.value !== null ? `(${item.date_time_fmt(item)})` : ''}
                     </span>
                     <div className={styles.content}>
                       {
@@ -662,7 +729,7 @@ const Details = (props) => {
                     {
                       tooltipData.items.map(item =>
                         <div className={stylesTooltip.item}>
-                          <div className={stylesTooltip.name}>{item.name} {Util.getDatetimeStamp(item.datum, item.period)}</div>
+                          <div className={stylesTooltip.name}>{item.name} ({Util.getDatetimeStamp(item.datum, item.period)})</div>
                           <div>
                             <span className={stylesTooltip.value}>{item.value}</span>
                             &nbsp;

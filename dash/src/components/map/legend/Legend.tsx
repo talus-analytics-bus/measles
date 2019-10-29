@@ -1,32 +1,25 @@
 import React from 'react'
 import classNames from 'classnames'
 import styles from './legend.module.scss'
+import Util from '../../misc/Util.js'
 
-const Legend = () => {
+const Legend = (props: any) => {
   const [open, setOpen] = React.useState(true)
 
-  // Color series used to indicate relative vaccination coverage from least to
-  // most vaccinated.
-  const vaccinationColors = [
-    '#d6f0b2',
-    '#b9d7a8',
-    '#7fcdbb',
-    '#41b6c4',
-    '#2c7fb8',
-    '#303d91'
-  ];
   const noDataColor = '#b3b3b3';
 
   const vaccinationLegendLabels = (i: any) => {
     switch (i) {
       case 0:
         return 'Low coverage';
-      case vaccinationColors.length - 1:
+      case Util.vaccinationColors.length - 1:
         return 'High coverage';
       default:
         return '';
     }
   };
+
+  const legendBubbleLabeling = props.legendBubbleLabeling;
 
   return (
     <div
@@ -51,7 +44,7 @@ const Legend = () => {
             <div className={styles.legendEntryGroups}>
               <div className={styles.legendEntryGroup}>
                 {
-                  vaccinationColors.map((d,i) =>
+                  Util.vaccinationColors.map((d,i) =>
                     <div className={styles.legendEntry}>
                       <div className={classNames(styles.legendIcon, styles.rect)} style={ {'backgroundColor': d} } />
                       <div className={styles.legendLabel}>{
@@ -77,18 +70,18 @@ const Legend = () => {
         {
           // Incidence
           <div className={styles.section}>
-            <p className={styles.sectionName}>Incidence of measles (monthly)</p>
+            <p className={styles.sectionName}>{legendBubbleLabeling.sectionName}</p>
             <div className={styles.legendEntryGroups}>
               <div className={styles.legendEntryGroup}>
                 {
                   [1,2,3].map((d,i) =>
                     <div className={classNames(styles.legendEntry, styles.circle)}>
-                      <div className={classNames(styles.legendIcon, styles.circle)} />
+                    <div className={classNames(styles.legendIcon, styles.circle)} />
                       {
-                        (i === 0) && <div className={styles.legendLabel}>Low<br/>incidence</div>
+                        (i === 0) && <div className={styles.legendLabel}>Low<br/>{legendBubbleLabeling.noun}</div>
                       }
                       {
-                        (i === 2) && <div className={styles.legendLabel}>High<br/>incidence</div>
+                        (i === 2) && <div className={styles.legendLabel}>High<br/>{legendBubbleLabeling.noun}</div>
                       }
                     </div>
                   )

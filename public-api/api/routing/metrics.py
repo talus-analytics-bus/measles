@@ -179,7 +179,6 @@ class Trend(Resource):
 
                 for o in place_list:
                     o_date = o[2]
-
                     o_dict = {
                       'data_source': o[1],
                       'no_tz': o_date.replace(tzinfo=None),
@@ -307,7 +306,7 @@ class Places(Resource):
         # attribute to the name of the region column in the places table.
         organizing_attribute = None
         if 'by_region' in params and params['by_region'] == 'true':
-            organizing_attribute = 'region_sdg'
+            organizing_attribute = 'region'
 
         # Setup filters
         filters = {
@@ -315,14 +314,14 @@ class Places(Resource):
         }
 
         # Get and return places.
+        # order = None
         order = [
-            "Sub-Saharan Africa",
-            "Northern Africa and Western Asia",
-            "Central and Southern Asia",
-            "Eastern and South-Eastern Asia",
-            "Oceania",
-            "Latin America and the Caribbean",
-            "Europe and Northern America",
-        ]
+          "Europe",
+          "Eastern Mediterranean",
+          "Africa",
+          "South-East Asia",
+          "Western Pacific",
+          "Americas"
+        ];
         res = schema.getEntityInstances(db.Place, 'place_id', organizing_attribute, order, filters, params)
         return res

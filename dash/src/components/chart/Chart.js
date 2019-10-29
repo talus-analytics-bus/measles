@@ -7,12 +7,15 @@ class Chart {
     this.selector = selector;
     document.querySelector(selector).innerHTML = '';
     this.svg = d3.select(selector).append('svg');
-    this.margin = params.margin || {
-      top: 0,
-      bottom: 0,
-      left: 0,
-      right: 0,
-    };
+
+    if (!this.margin) this.margin = params.margin;
+    // this.margin = params.margin || {
+    //   top: 0,
+    //   bottom: 0,
+    //   left: 0,
+    //   right: 0,
+    // };
+
     this.chart = this.svg
       .append('g')
       .classed('chart', true);
@@ -163,123 +166,136 @@ class Chart {
     return pattern;
   }
 
-  plotAxes(params = {}) {
-    /* Param Options:
-     *	* (x|y)Format -> format func for the x or y labels
-     *	* (x|y)Wrap: -> Maximum width of xlabe/ylabel before wrapping
-     *	* (x|y)Wrap(X|Y)Offset: -> X or Y offset for tspans
-     *  * (x|y)Align -> alignment for wrapped text, defaults to 'middle'
-     */
-    if (this.axes === undefined) {
-      this.newGroup('axes');
-
-      this.xAxisG = this.axes
-        .append('g')
-        .classed('x-axis', true);
-
-      this.yAxisG = this.axes
-        .append('g')
-        .classed('y-axis', true);
-
-      this.yAxisGrid = this.axes
-        .append('g')
-        .classed('y-grid', true)
-        .style('stroke-opacity', 0.25)
-    }
-
-    this.xAxisG.attr('transform', `translate(0, ${this.height})`);
-
-    if (params.noX !== true) {
-
-      const isTimeAxis = this.day || this.dates;
-      const ticks = isTimeAxis ? Math.min(8, (this.day || this.dates).length) : undefined;
-
-      const xAxis = d3.axisBottom(this.xScale)
-        .tickSize((params.tickSize === undefined) ? 6 : params.tickSize)
-        .tickFormat(params.xFormat);
-      if (ticks) xAxis.ticks(ticks);
-      // .ticks(Math.min(8, (this.day || this.dates).length));
-
-      if (params.tickValuesX !== undefined) {
-        xAxis.tickValues(params.tickValuesX);
-      }
-
-      this.xAxisG
-        .call(xAxis);
-    }
-
-    let yAxis = (() => {
-    });
-    if (!params.noY) {
-      const max = this.yScale.domain()[1];
-      yAxis = d3.axisLeft(this.yScale)
-        .tickSize((params.tickSize === undefined) ? 6 : params.tickSize)
-        .tickPadding(6)
-        .tickFormat(params.yFormat)
-        // .tickValues([0, 3.5, 5.5, 7.5, 10])
-        .ticks(params.numTicks || 4);
-
-      if (params.tickValuesY !== undefined) {
-        yAxis.tickValues(params.tickValuesY);
-      }
-      this.yAxisG
-      // .transition()
-      // .duration(600)
-        .call(yAxis);
-    }
-
-    if (!params.noYGrid) {
-      // const yGrid = d3.axisLeft(this.yScale)
-      // 	.tickSize(-this.width)
-      // 	.tickPadding(8)
-      // 	.tickFormat(params.yFormat)
-      // 	.ticks(params.numTicks || 4);
-      this.yAxisGrid
-      // .transition()
-      // .duration(600)
-        .call(
-          yAxis
-            .tickSize(-this.width)
-        );
-    }
-
-    this.yAxisGrid.selectAll('text').remove();
-    this.yAxisGrid.selectAll('.domain').remove();
-
-    if (!params.domainY) {
-      this.yAxisG.selectAll('.domain').remove();
-    }
-
-    // https://bl.ocks.org/mbostock/3371592
-    // this.yAxisG.select('.domain').remove();
-
-    // wrapping
-    // NOTE - assumes you've specified yFormat or xFormat
-    // otherwise will use toString()
-    ['x', 'y']
-      .filter(k => params[`${k}Wrap`] !== undefined)
-      .forEach(k => {
-        this[`${k}AxisG`].selectAll('text')
-          .style('text-anchor', (params[`${k}Align`] || 'middle'))
-          .html(d => {
-            return wordWrap(
-              (params[`${k}Format`] || ((x) => x.toString()))(d),
-              params[`${k}Wrap`],
-              (params[`${k}WrapXOffset`] || 0),
-              (params[`${k}WrapYOffset`] || 16),
-            );
-          });
-      });
-
-    // Remove y-domain line
-    if (params.removeYDomain === true) {
-      this.chart.select('path.domain').remove();
-    }
-
-    if (params.tickFontWeight !== undefined) {
-      this.chart.selectAll('g.y-axis text').style('font-weight', params.tickFontWeight);
-    }
+  /**
+   * Defines the x and y axis sections.
+   * @method plotAxes
+   */
+  plotAxisReact(styles, axis, type = 'y') {
+    const chart = this;
+    const axisG = chart.newGroup(styles[type + '-axis'])
+      .append('g')
+      .attr('class', styles[type + '-axis'])
+      .call(axis);
+    return axisG;
   }
+
+  // plotAxes(params = {}) {
+  //   /* Param Options:
+  //    *	* (x|y)Format -> format func for the x or y labels
+  //    *	* (x|y)Wrap: -> Maximum width of xlabe/ylabel before wrapping
+  //    *	* (x|y)Wrap(X|Y)Offset: -> X or Y offset for tspans
+  //    *  * (x|y)Align -> alignment for wrapped text, defaults to 'middle'
+  //    */
+  //   if (this.axes === undefined) {
+  //     this.newGroup('axes');
+  //
+  //     this.xAxisG = this.axes
+  //       .append('g')
+  //       .classed('x-axis', true);
+  //
+  //     this.yAxisG = this.axes
+  //       .append('g')
+  //       .classed('y-axis', true);
+  //
+  //     this.yAxisGrid = this.axes
+  //       .append('g')
+  //       .classed('y-grid', true)
+  //       .style('stroke-opacity', 0.25)
+  //   }
+  //
+  //   this.xAxisG.attr('transform', `translate(0, ${this.height})`);
+  //
+  //   if (params.noX !== true) {
+  //
+  //     const isTimeAxis = this.day || this.dates;
+  //     const ticks = isTimeAxis ? Math.min(8, (this.day || this.dates).length) : undefined;
+  //
+  //     const xAxis = d3.axisBottom(this.xScale)
+  //       .tickSize((params.tickSize === undefined) ? 6 : params.tickSize)
+  //       .tickFormat(params.xFormat);
+  //     if (ticks) xAxis.ticks(ticks);
+  //     // .ticks(Math.min(8, (this.day || this.dates).length));
+  //
+  //     if (params.tickValuesX !== undefined) {
+  //       xAxis.tickValues(params.tickValuesX);
+  //     }
+  //
+  //     this.xAxisG
+  //       .call(xAxis);
+  //   }
+  //
+  //   let yAxis = (() => {
+  //   });
+  //   if (!params.noY) {
+  //     const max = this.yScale.domain()[1];
+  //     yAxis = d3.axisLeft(this.yScale)
+  //       .tickSize((params.tickSize === undefined) ? 6 : params.tickSize)
+  //       .tickPadding(6)
+  //       .tickFormat(params.yFormat)
+  //       // .tickValues([0, 3.5, 5.5, 7.5, 10])
+  //       .ticks(params.numTicks || 4);
+  //
+  //     if (params.tickValuesY !== undefined) {
+  //       yAxis.tickValues(params.tickValuesY);
+  //     }
+  //     this.yAxisG
+  //     // .transition()
+  //     // .duration(600)
+  //       .call(yAxis);
+  //   }
+  //
+  //   if (!params.noYGrid) {
+  //     // const yGrid = d3.axisLeft(this.yScale)
+  //     // 	.tickSize(-this.width)
+  //     // 	.tickPadding(8)
+  //     // 	.tickFormat(params.yFormat)
+  //     // 	.ticks(params.numTicks || 4);
+  //     this.yAxisGrid
+  //     // .transition()
+  //     // .duration(600)
+  //       .call(
+  //         yAxis
+  //           .tickSize(-this.width)
+  //       );
+  //   }
+  //
+  //   this.yAxisGrid.selectAll('text').remove();
+  //   this.yAxisGrid.selectAll('.domain').remove();
+  //
+  //   if (!params.domainY) {
+  //     this.yAxisG.selectAll('.domain').remove();
+  //   }
+  //
+  //   // https://bl.ocks.org/mbostock/3371592
+  //   // this.yAxisG.select('.domain').remove();
+  //
+  //   // wrapping
+  //   // NOTE - assumes you've specified yFormat or xFormat
+  //   // otherwise will use toString()
+  //   ['x', 'y']
+  //     .filter(k => params[`${k}Wrap`] !== undefined)
+  //     .forEach(k => {
+  //       this[`${k}AxisG`].selectAll('text')
+  //         .style('text-anchor', (params[`${k}Align`] || 'middle'))
+  //         .html(d => {
+  //           return wordWrap(
+  //             (params[`${k}Format`] || ((x) => x.toString()))(d),
+  //             params[`${k}Wrap`],
+  //             (params[`${k}WrapXOffset`] || 0),
+  //             (params[`${k}WrapYOffset`] || 16),
+  //           );
+  //         });
+  //     });
+  //
+  //   // Remove y-domain line
+  //   if (params.removeYDomain === true) {
+  //     this.chart.select('path.domain').remove();
+  //   }
+  //
+  //   if (params.tickFontWeight !== undefined) {
+  //     this.chart.selectAll('g.y-axis text').style('font-weight', params.tickFontWeight);
+  //   }
+  // }
 
   ylabel(text, params = {}) {
     this.newGroup('ylabelgroup');
@@ -373,33 +389,51 @@ class Chart {
     // initialize sizing
     onResize(this);
 
-    if (this.params.noResizeEvent !== true) {
-      // event listener
-      // https://css-tricks.com/snippets/jquery/done-resizing-event/
-      let timer;
-      window.addEventListener('resize', () => {
-        clearTimeout(timer);
-        timer = window.setTimeout(() => {
-          onResize(this);
-        }, 100);
-      });
-    }
+    // if (this.params.noResizeEvent !== true) {
+    //   // event listener
+    //   // https://css-tricks.com/snippets/jquery/done-resizing-event/
+    //   let timer;
+    //   window.addEventListener('resize', () => {
+    //     clearTimeout(timer);
+    //     timer = window.setTimeout(() => {
+    //       onResize(this);
+    //     }, 100);
+    //   });
+    // }
 
   }
 
   // Add axis labels
-  getYLabelPos (y) {
+  getYLabelPos (y, ordinal = false, labels = [], fontSize = '1em', useDrawnTicks = false) {
     const chart = this;
 
     // data: all tick labels shown in chart, as formatted.
-    const data = y.tickFormat()(
-      y.domain()[0] // largest y-value
-    );
+    let data, fakeAxis;
+    if (useDrawnTicks) {
+      data = [];
+      fakeAxis = chart.svg.append('g')
+        .attr('class', 'fakeAxis')
+        .call(chart.yAxis);
+
+      fakeAxis
+        .selectAll('g.tick text').each(function(d) {
+          data.push(this.textContent);
+        })
+      fakeAxis
+        .remove();
+    }
+    else {
+      data = ordinal ? labels : [
+        y.tickFormat()(
+          y.domain()[0] // largest y-value
+        )
+      ];
+    }
 
     // Add fake tick labels
-    const fakeText = chart.svg.selectAll('.fake-text').data([data]).enter().append("text").text(d => d)
+    const fakeText = chart.svg.selectAll('.fake-text').data(data).enter().append("text").text(d => d)
       .attr('class','tick fake-text')
-      .style('font-size','15px'); // TODO same fontsize as chart
+      .style('font-size',fontSize); // TODO same fontsize as chart
 
     // Calculate position based on fake tick labels and remove them
     const maxLabelWidth = d3.max(fakeText.nodes(), d => d.getBBox().width)
@@ -422,17 +456,52 @@ class Chart {
     return marginShift;
   };
 
-  fitLeftMargin () {
-
+  // Get the width of the longest label in a set of text labels
+  getLongestLabelWidth (labels = [], fontSize = '1em', bold = false) {
     const chart = this;
 
-    // get incidence y-scale and y-axis
-    chart.y = d3.scaleLinear()
-      .domain(chart.yDomainDefault)
-      .nice()
-      .range([0, chart.height]);
+    // Add fake tick labels
+    const fakeText = chart.svg.selectAll('.fake-text').data(labels).enter().append("text").text(d => d)
+      .attr('class','tick fake-text')
+      .style('font-weight', bold ? 'bold' : 'normal')
+      .style('font-size',fontSize); // TODO same fontsize as chart
 
-    const shift = chart.getYLabelPos(chart.y);
+    // Calculate position based on fake tick labels and remove them
+    const maxLabelWidth = d3.max(fakeText.nodes(), d => d.getBBox().width)
+    fakeText.remove();
+
+    return maxLabelWidth;
+  };
+
+  setMargin(margin) {
+    const chart = this;
+    chart.margin = margin;
+    chart.params.margin = margin;
+  }
+
+  fitLeftMargin (initDomain, ordinal = false, useDrawnTicks = false) {
+
+    const chart = this;
+    const axisType = 'y';
+    const labels = ordinal ? initDomain : [];
+
+    const yParams = chart.params.yMetricParams;
+
+    if (chart[axisType] === undefined)
+      chart[axisType] = d3.scaleLinear()
+        .domain(initDomain)
+        .nice()
+        .range([0, chart.height]);
+
+    const chartScale = chart[axisType];
+
+    const shift = chart.getYLabelPos(
+      chart[axisType], // scale
+      ordinal,
+      labels,
+      '1em',
+      useDrawnTicks,
+    );
     return shift;
   }
 
@@ -458,6 +527,8 @@ function onResize(chart) {
   }
 
   // set the contents to be the dimensions minus the margin
+  console.log('chart - Chart.js')
+  console.log(chart)
   chart.width = chart.containerwidth - chart.margin.left - chart.margin.right;
   chart.height = chart.containerheight - chart.margin.top - chart.margin.bottom;
 

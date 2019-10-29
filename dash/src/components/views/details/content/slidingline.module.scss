@@ -34,6 +34,15 @@
   }
 }
 
+.fakeLabel {
+  font-family: 'open_sanssemibold', sans-serif;
+  font-weight: 600;
+  text-align: center;
+  fill: $dark-grey;
+  text-anchor: middle;
+  font-size: 10px * 1.55;
+}
+
 .x-axis, .x-axis-2, .y-axis, .y-axis-right {
   path, line {
     stroke: #b2b2b2;

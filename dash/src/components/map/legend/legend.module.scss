@@ -9,6 +9,7 @@ $spacing: 5px;
   z-index: 2;
   bottom: 0;
   right: 10px;
+  pointer-events: fill;
 
   // Scale legend size to be smaller than default size.
   transform: translateY(calc(100% - 28px));
@@ -91,6 +92,7 @@ $spacing: 5px;
       font-family: 'rawline', serif;
       font-size: 1.0605em;
       margin-bottom: 10px;
+      min-width: 244px;
     }
     .legendEntryGroups {
       display: flex;
@@ -169,15 +171,15 @@ $spacing: 5px;
             }
             &:nth-child(2) {
               .legendIcon.circle {
-                width: $circle-radius * .66;
-                height: $circle-radius * .66;
+                width: round($circle-radius * .66);
+                height: round($circle-radius * .66);
                 // margin: auto;
               }
             }
             &:nth-child(1) {
               .legendIcon.circle {
-                width: $circle-radius * .33;
-                height: $circle-radius * .33;
+                width: round($circle-radius * .33);
+                height: round($circle-radius * .33);
                 // margin: auto;
               }
             }

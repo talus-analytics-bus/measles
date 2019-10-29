@@ -25,9 +25,11 @@ class Scatter extends Chart {
         top: 68,
         right: 5,
         bottom: 80,
-        left: 120, // +40
+        left: 120,
       };
     }
+
+    console.log('Doing scatter plot chart.')
 
     this.init();
     this.onResize(this);
@@ -42,14 +44,6 @@ class Scatter extends Chart {
 
     // Create clipping path
     const defs = chart.svg.append('defs');
-    // defs
-    //   .append('clipPath')
-    //     .attr('id', 'plotArea')
-    //     .append('rect')
-    //       .attr('x', 0)
-    //       .attr('y', 0)
-    //       .attr('width', chart.width)
-    //       .attr('height', chart.height);
 
     // Create shadow definition
     const filterDef = defs.append('filter')
@@ -513,34 +507,8 @@ class Scatter extends Chart {
 
             circleLabels
               .each(function appendTSpans (d) {
-                // Get label text
-                // If it's more than 20 chars try to wrap it
-                const tryTextWrap = d.place_name.length > 20;
-                let circleLabelTspans;
-                if (tryTextWrap) {
-                  circleLabelTspans = [];
 
-                  // Split names by word
-                  const words = d.place_name.split(' ');
-
-                  // Concatenate words for each tspan until over 20 chars
-                  let curTspan = '';
-                  for (let i = 0; i < words.length; i++) {
-                    const word = words[i];
-                    if ((curTspan + ' ' + word).length < 20) {
-                      curTspan += ' ' + word;
-                    } else {
-                      circleLabelTspans.push(curTspan);
-                      curTspan = word;
-                    }
-                  }
-                  if (curTspan !== '') circleLabelTspans.push(curTspan);
-                }
-
-                // Otherwise just use the name as-is
-                else {
-                  circleLabelTspans = [d.place_name];
-                }
+                const circleLabelTspans = Util.getWrappedText(d.place_name, 20);
 
                 // Append one tspan per line
                 d3.select(this).selectAll('tspan')

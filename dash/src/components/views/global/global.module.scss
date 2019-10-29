@@ -16,6 +16,7 @@ $scatterSize: 75vh;
   margin-top: 20px;
   // width: $scatterSize + 120px;
 }
+
 .visible {
   opacity: 1;
 }
@@ -49,6 +50,16 @@ $scatterSize: 75vh;
 .details {
   display: flex;
   flex-flow: column;
+
+  .main.mainBottom {
+    margin-left: 40px;
+    .itemContainer .item {
+      max-width: unset;
+      .title {
+        font-size: 1.8em;
+      }
+    }
+  }
 
   .top {
     display: flex;
@@ -117,6 +128,9 @@ $scatterSize: 75vh;
       font-family: 'Open Sans', sans-serif;
       font-size: 1.1em;
       font-weight: bold;
+      // max-width: 80%;
+      line-height: 1.1;
+      // white-space: nowrap;
 
       .info {
         // TODO
@@ -130,7 +144,10 @@ $scatterSize: 75vh;
       display: flex;
       flex-flow: column;
       justify-content: space-between;
-
+      input {
+        margin-right: 10px;
+        vertical-align: top;
+      }
       .value {
         font-size: 2em;
       }
@@ -290,17 +307,17 @@ $scatterSize: 75vh;
     // Just use .dataSource from index.scss
   }
 
+  .main:not(.mainBottom) .itemContainer:first-child .item .title {
+    margin-bottom: 40px;
+  }
+
   $itemMaxWidth: 750px;
   .main {
     margin-right: $spacing*2;
     margin-top: 10px;
     width: 100%;
     .itemContainer {
-      &:first-child {
-        .item .title {
-          margin-bottom: 40px;
-        }
-      }
+
       &:not(:last-child) {
         // &:first-child {
         border-bottom: 1px solid #b2b2b2;
@@ -525,6 +542,65 @@ $scatterSize: 75vh;
           }
         }
       }
+    }
+  }
+}
+
+// Bar chart and page controls
+.PagingBar {
+  height: 600px;
+}
+.pageControls {
+  display: flex;
+  flex-flow: row;
+
+  font-family: 'Open Sans', sans-serif;
+
+  // margin-bottom: 40px;
+  float: right;
+
+  .pageNavs {
+    .pageNav {
+      margin: 0;
+      margin-right: 5px;
+
+      color: $dark-grey;
+      padding: 10px;
+      border: 1px solid $dark-grey;
+      font-weight: normal;
+
+      &.pageNext {}
+      &.pagePrev {}
+      &.disabled {
+        opacity: 0.5;
+        pointer-events: none;
+      }
+    }
+  }
+
+  .pageControl {
+    border: none;
+    border-radius: 4px;
+    padding: 10px;
+    margin-right: 5px;
+    line-height: 20px;
+
+    cursor: pointer;
+
+    &:last-child {
+      margin-right: 0;
+    }
+
+    &.active {
+      font-weight: bold;
+    }
+
+    &:hover {
+      background-color: $light-grey-2;
+    }
+
+    &:active {
+      background-color: $light-grey;
     }
   }
 }

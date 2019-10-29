@@ -7,6 +7,7 @@ $spacing: 20px;
 .details {
   display: flex;
   flex-flow: row;
+  height: 100%;
 
   .sidebar {
     display: flex;
@@ -265,6 +266,31 @@ $spacing: 20px;
   $slidingLineWidth: 750px;
   .slidingLineContainer {
     width: 100%;
+
+    .dataToggles {
+      display: flex;
+      flex-flow: column;
+      z-index: 2;
+      font-size: .9em;
+      font-family: 'Open Sans', sans-serif;
+      color: $dark-grey;
+
+      cursor: default;
+      // align-items: center;
+      margin-bottom: 10px;
+      span {
+        margin: 0 15px 0 0;
+      }
+      .dataToggle {
+        input {
+          vertical-align: middle;
+          margin: 0 5px 5px 5px;
+        }
+        label {
+          margin-right: 15px;
+        }
+      }
+    }
     .slidingLineLegend {
       display: flex;
       flex-flow: row;

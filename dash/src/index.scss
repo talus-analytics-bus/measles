@@ -6,6 +6,10 @@ body,
 #root {
   height: 100%;
 
+  input, label {
+    cursor: pointer;
+  }
+
   #sliderTooltip {
     visibility: visible;
     opacity: 0;
@@ -84,9 +88,9 @@ body,
   }
 
   // Controls
-  .overlays > div:first-child {
+  .overlays > div:nth-child(2) {
     bottom: unset;
-    top: 0;
+    top: 37px;
   }
   .mapboxgl-ctrl {
     background: none;

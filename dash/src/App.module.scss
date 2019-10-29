@@ -2,12 +2,10 @@
 $logo-height: 70px;
 
 .app {
-  height: 100%;
   display: grid;
   grid-template-columns: auto; // ensures header resizes correctly if window size is changed
-  // grid-template-columns: 100%;
   grid-template-rows: min-content auto;
-  // grid-template-rows: $logo-height auto;
+  &.windowed { height: 100%; }
 }
 
 .watermark {

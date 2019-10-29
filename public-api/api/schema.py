@@ -49,7 +49,12 @@ def getEntityInstances(entity_class, id_field_name, organizing_attribute, order,
     # Get the entity instances.
     allInstances = select(o for o in entity_class).order_by(entity_class.name)
 
-    # Filter them
+    # If order was specified for org. attr. values, use it, otherwise
+    # get them from the data table.
+    if order == None:
+        order = select(getattr(o, organizing_attribute) for o in entity_class)
+
+    # Filter instances
     instancesTmp = [o for o in allInstances if passes_filters(o, filters)]
 
     # If id param is not in the filters (query params), then return all
@@ -128,7 +133,6 @@ temporal_resolution_error = Exception("Requested temporal resolution is finer th
 
 def get_start(t_rs, end, lag):
     if t_rs == 'yearly':
-        print('here: ', end.year, lag)
         start = datetime(end.year - lag, end.month, end.day)
     elif t_rs == 'monthly':
         # Convert the allowed lag value (months) to years and months (usually 0 years
@@ -168,7 +172,7 @@ def manage_lag(metric, null_res, max_time, null_places, observations):
 
         lag_res_q_str = f"""SELECT v.metric_id, v.data_source, d.dt,
                             m.metric_definition, m.metric_name, v.observation_id,
-                            p.fips AS place_fips, p.place_id, p.iso AS place_iso,
+                            p.fips AS place_fips, p.place_id, p.iso2 AS place_iso,
                             p.name AS place_name, v.updated_at, v.value::FLOAT
                             FROM {metric.view_name} v
                             LEFT JOIN datetime d ON v.datetime_id = d.dt_id
@@ -181,8 +185,6 @@ def manage_lag(metric, null_res, max_time, null_places, observations):
         lag_res = db.select(lag_res_q_str)
 
     else:
-        print('null_places')
-        print(null_places)
         if len(null_places) > 1:
             lag_res = select(o for o in observations
                              if o.metric.metric_id == metric.metric_id
@@ -222,7 +224,7 @@ def manage_lag(metric, null_res, max_time, null_places, observations):
 
 # Define an observation endpoint query.
 def getObservations(filters):
-    s_rs = ['planet', 'country', 'state', 'county', 'block_group', 'tract', 'point']
+    s_rs = ['planet', 'global', 'country', 'state', 'county', 'block_group', 'tract', 'point']
     t_rs = ['yearly', 'monthly', 'weekly', 'daily', 'occasion']
 
     # Initialize response as empty
@@ -276,7 +278,7 @@ def getObservations(filters):
 
     view_q_str = f"""SELECT v.metric_id, v.data_source, d.dt,
                         m.metric_definition, m.metric_name, v.observation_id,
-                        p.fips AS place_fips, p.place_id, p.iso AS place_iso,
+                        p.fips AS place_fips, p.place_id, p.iso2 AS place_iso,
                         p.name AS place_name, v.updated_at, v.value::FLOAT
                         FROM {metric.view_name} v
                         LEFT JOIN datetime d ON v.datetime_id = d.dt_id
@@ -330,11 +332,7 @@ def getObservations(filters):
             if place_id is None:
                 null_res = []
                 null_places = []
-                print('res')
-                print(res[:])
                 for o in res:
-                    print('o')
-                    print(o)
                     if o.value is None:
                         null_res.append(o)
                         if is_view:
@@ -344,7 +342,6 @@ def getObservations(filters):
 
                 lag = manage_lag(metric, null_res, max_time, null_places, observations)
             else:
-                print('made it to this place')
                 if list(res)[0].value is None:
                     lag = manage_lag(metric, res, max_time, [place_id], observations)
 
@@ -373,13 +370,10 @@ def getTrend(filters):
 
     min_time = get_start(metric.temporal_resolution, end, metric.lag_allowed)
 
-    print('start, end, min')
-    print(start, end, min_time)
-
     if metric.is_view:
         q_str = f"""SELECT v.metric_id, v.data_source, d.dt,
                 m.metric_definition, m.metric_name, v.observation_id,
-                p.fips AS place_fips, p.place_id, p.iso AS place_iso,
+                p.fips AS place_fips, p.place_id, p.iso2 AS place_iso,
                 p.name AS place_name, v.updated_at, v.value::FLOAT
                 FROM {metric.view_name} v
                 LEFT JOIN datetime d ON v.datetime_id = d.dt_id

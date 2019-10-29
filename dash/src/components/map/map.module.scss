@@ -12,6 +12,39 @@ $icon-height: 20px;
   z-index: 2;
 }
 
+.dataToggles {
+  display: flex;
+  flex-flow: row;
+  background-color: $dark-grey-2;
+  opacity: .8;
+  z-index: 2;
+  height: 40px;
+  font-size: .9em;
+  opacity: 0;
+  transition: opacity .25s;
+
+  &.visible { opacity: 1; }
+
+  cursor: default;
+  font-family: 'Open Sans', sans-serif;
+  color: white;
+
+  align-items: center;
+
+  span {
+    margin: 0 15px 0 15px;
+  }
+  .dataToggle {
+    input {
+      vertical-align: middle;
+      margin: 0 5px 5px 5px;
+    }
+    label {
+      margin-right: 15px;
+    }
+  }
+}
+
 .legend {
   display: grid;
   grid-template-columns: auto auto;
