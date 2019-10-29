@@ -625,8 +625,8 @@ const Details = (props) => {
   [slidingLineMetric]);
 
   // If loading do not show JSX content.
-  console.log('props')
-  console.log(props)
+  // console.log('props')
+  // console.log(props)
   return (<div className={styles.details}>
             <div className={styles.sidebar}>
               <div className={styles.title}>

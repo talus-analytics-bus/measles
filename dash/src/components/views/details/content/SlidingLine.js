@@ -491,6 +491,7 @@ class SlidingLine extends Chart {
 
       // Get xpos of start year from x2 domain and return it
       const brushStartXPos = x2(startMonth + '/' + startYear);
+      // const brushStartXPos = x2(startMonth + '/' + startYear) + x2.step() / 2;
       return brushStartXPos;
     };
 
@@ -540,8 +541,12 @@ class SlidingLine extends Chart {
         .attr('y', chart.height)
         .lower();
 
+
+
     brush
-		  .on('brush start end', () => {
+		  .on('brush', () => {
+
+      if (d3.event.sourceEvent && d3.event.sourceEvent.type === "brush") return;
 
       // Get current start/end positions of brush ([1, 2])
       const s = d3.event.selection || x2.range();
@@ -555,20 +560,54 @@ class SlidingLine extends Chart {
         }
       }
 
-      if (s == null) {
-        handle.attr("display", "none");
-      } else {
-        handle.attr("display", null).attr("transform", function(d, i) { return "translate(" + [ s[i] + .5*( Math.pow(-1,(i))), chart.height - chart.slider.height*.625] + ")"; });
-      }
-
       const eachBand = x2.step();
       const indices = [];
-      const getDomainInvertVals = (val) => {
+      let snapBrush = true;
+      const getDomainInvertVals = (val, i) => {
 
-        let index = Math.ceil((val / eachBand));
-        if (index > chart.data.vals.length - 1) index = chart.data.vals.length - 1;
+        // i is 0 if left handle, 1 if right
+        // For left handle: ceil, right: floor
+
+        const roundFunc = Math.floor;
+        // const roundFunc = i === 0 ? Math.ceil
+        //   : Math.floor;
+
+        let index = roundFunc(val / eachBand);
+        const exact = Math.abs(index - (val / eachBand)) <= 1e-6;
+
+        // // LOGS
+        // console.log('val')
+        // console.log(val)
+        // console.log('eachBand')
+        // console.log(eachBand)
+        // console.log('val / eachBand')
+        // console.log(val / eachBand)
+        // console.log('index')
+        // console.log(index)
+        // console.log('exact')
+        // console.log(exact)
+        // console.log('chart.data.vals.length')
+        // console.log(chart.data.vals.length)
+
+
+
+        if (index > chart.data.vals.length - 1) {
+          index = chart.data.vals.length - 1;
+        }
+        else if (i === 0) {
+          const rightHandleIsMax = roundFunc(s[1] / eachBand) > chart.data.vals.length - 1;
+          if (rightHandleIsMax) {
+            index = index;
+          }
+        }
+        // ALMOST worked
+        // else if (exact && i === 0) index = index - 1;
+
         // TODO elegantly
-        if (isNaN(index) || index < 0 || index >= chart.data.vals.length) return [0,0];
+        if (isNaN(index) || index < 0 || index >= chart.data.vals.length) {
+          snapBrush = false;
+          return [0,0];
+        }
 
         // Push index to array for later use
         indices.push(index);
@@ -577,24 +616,12 @@ class SlidingLine extends Chart {
         );
       };
 
-
       // Update main chart x axis
-      const invertedVals = s.map(d => {
-        return getDomainInvertVals(d);
+      const invertedVals = s.map((d, i) => {
+        return getDomainInvertVals(d, i);
       });
 			x.domain(invertedVals);
 			chart[styles['x-axis']].call(xAxis);
-
-      // Reposition overlay rects (to gray out bars outside the window)
-      overlayRects
-        .attr('width', function (d, i) {
-          if (i === 0) return s[0];
-          else return chart.width - s[1];
-        })
-        .attr('x', function (d, i) {
-          if (i === 1) return s[1];
-          else return 0;
-        });
 
       // Reposition chart elements
 			chart[styles.lineValue].selectAll('path'). attr('d', d => line(d));
@@ -612,10 +639,54 @@ class SlidingLine extends Chart {
       chart.params.setCountSummary(
         d3.sum(dataForSummary, d => d.value)
       );
+
       chart.params.setCountSummaryDateRange(
-        Util.getDateTimeRange({value: dataForSummary})
+        dataForSummary.length > 1 ?
+          Util.getDateTimeRange({value: dataForSummary})
+          : Util.getDatetimeStamp(dataForSummary[0], 'month')
       );
 
+      // SNAP BRUSH POS
+      // ALMOST works...
+
+      const snapS = false ? [
+        x2(`${invertedVals[0].getUTCMonth() + 1}/${invertedVals[0].getUTCFullYear()}`),
+        x2(`${invertedVals[1].getUTCMonth() + 1}/${invertedVals[1].getUTCFullYear()}`),
+        // x2(`${invertedVals[1].getUTCMonth() + 1}/${invertedVals[1].getUTCFullYear()}`) + x2.step() * .99,
+      ] : s;
+
+      if (snapBrush) {
+        console.log('invertedVals')
+        console.log(invertedVals)
+        console.log([
+          (`${invertedVals[0].getUTCMonth() + 1}/${invertedVals[0].getUTCFullYear()}`),
+          (`${invertedVals[1].getUTCMonth() + 1}/${invertedVals[1].getUTCFullYear()}`),
+        ])
+      }
+
+      if (snapBrush)
+        gBrush
+          .call(brush.move, snapS);
+
+      // Adjust handle positions
+      if (s == null) {
+        handle.attr("display", "none");
+      } else {
+        handle.attr("display", null).attr("transform", function(d, i) {
+          return "translate(" + [ snapS[i] + .5*( Math.pow(-1,(i))), chart.height - chart.slider.height*.625] + ")";
+        });
+      }
+
+      // Reposition overlay rects (to gray out bars outside the window)
+      overlayRects
+        .attr('width', function (d, i) {
+          if (i === 0) return snapS[0];
+          else return chart.width - snapS[1];
+        })
+        .attr('x', function (d, i) {
+          if (i === 1) return snapS[1];
+          else return 0;
+        });
 		})
 
     chart.brushStartPos = getBrushStartPos();
