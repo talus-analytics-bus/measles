@@ -545,7 +545,6 @@ class SlidingLine extends Chart {
         if (index > chart.data.vals.length - 1) index = chart.data.vals.length - 1;
         // TODO elegantly
         if (isNaN(index) || index < 0 || index >= chart.data.vals.length) return [0,0];
-        console.log('index = ' + index)
         return new Date (
           chart.data.vals[index]['date_time'].replace(/-/g, '/')
         );
@@ -649,7 +648,6 @@ class SlidingLine extends Chart {
           // First, snap line to months
           const posXCursor = d3.mouse(this)[0];
           const xValCursor = x.invert(posXCursor);
-          // console.log(xValCursor);
           const xDateCursor = new Date(xValCursor);
           let xValLine, posXLine;
           const nextMonth = d3.timeMonth(new Date(xDateCursor).setMonth(xDateCursor.getMonth() + 1));

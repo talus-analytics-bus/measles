@@ -455,6 +455,27 @@ const Details = (props) => {
     return sources.join(' ');
   };
 
+  // Return data for rendering caseload and delta value sub-component of
+  // "recent cases" section.
+  const getCaseloadAndDeltaData = (obs, trend) => {
+    const data = {
+      slug: 'cases',
+      value: Util.comma(obs['value']) + ' ' + Util.getPeopleNoun(obs['value']),
+      deltaData: Util.getDeltaData(trend),
+      notAvail: obs['value'] === null,
+    };
+    return data;
+  };
+  const obs = props.countryCaseloadHistory[
+    props.countryCaseloadHistory.length - 1
+  ];
+  const trend = props.countryCaseloadTrend[
+    props.countryCaseloadTrend.length - 1
+  ]; // Should only be one
+  const caseloadAndDeltaData = getCaseloadAndDeltaData(obs, trend);
+  console.log('caseloadAndDeltaData')
+  console.log(caseloadAndDeltaData)
+
   // Is there any line data to plot?
   const noLineData =
     props.countryIncidenceHistory.length === 0
@@ -512,7 +533,6 @@ const Details = (props) => {
     ReactTooltip.rebuild();
   }, [])
 
-
   React.useEffect(function changeSlidingLineMetric () {
     if (slidingLine) {
       slidingLine.params.metric = slidingLineMetric;
@@ -526,8 +546,6 @@ const Details = (props) => {
     ReactTooltip.rebuild();
   },
   [slidingLineMetric]);
-
-
 
   // If loading do not show JSX content.
   console.log('props')

@@ -3,6 +3,47 @@ import * as d3 from 'd3/dist/d3.min';
 // Utility functions.
 const Util = {};
 
+/**
+ * Return + if delta > 0, - if less, none otherwise.
+ * @method getDeltaSign
+ * @param  {[type]}     deltaVal [description]
+ * @return {[type]}              [description]
+ */
+Util.getDeltaSign = (deltaVal) => {
+  if (deltaVal > 0) {
+    return '+';
+  } else if (deltaVal < 0) {
+    return '-';
+  } else {
+    return '';
+  }
+};
+
+Util.getDeltaWord = (deltaVal) => {
+  if (deltaVal > 0) {
+    return 'increase';
+  } else if (deltaVal < 0) {
+    return 'decrease';
+  } else {
+    return 'No change';
+  }
+};
+
+Util.getPeopleNoun = (val) => {
+  if (val === 1) return 'person';
+  else return 'people';
+};
+
+Util.getDeltaData = (datum) => {
+  if (datum && datum['percent_change'] !== null) {
+    return {
+      delta: datum['percent_change'],
+      deltaSign: Util.getDeltaSign(datum['percent_change']),
+      deltaFmt: Util.percentizeDelta(datum['percent_change']),
+    }
+  } else return {};
+};
+
 // Color series used to indicate relative vaccination coverage from least to
 // most vaccinated.
 Util.vaccinationColors = [
