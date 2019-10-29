@@ -22,10 +22,11 @@ const GeomPopup = ({ popupData }) => {
         }
         else return {
           slug: type,
-          label: 'Incidence of measles' + ` (${Util.getDatetimeStamp(obs, 'month')})`,
-          value: Util.formatIncidence(obs['value']) + ' cases per 1M population',
+          label: 'Incidence of measles',
+          dateFmt: Util.getDatetimeStamp(obs, 'month'),
+          value: Util.formatIncidence(obs['value']),
+          unit: 'cases per 1M population',
           valueNum: obs['value'],
-          // value2: Util.getIncidenceQuantile(obs, {type: 'name'}),
           notAvail: obs['value'] === null,
           dataSource: obs['data_source'],
           dataSourceLastUpdated: new Date (obs['updated_at']),
@@ -34,11 +35,14 @@ const GeomPopup = ({ popupData }) => {
         if (obs === undefined) return {
           notAvail: true,
           label: 'Measeles cases reported',
+          dateFmt: () => '',
         }
         else return {
           slug: 'cases',
-          label: 'Measles cases reported' + ` (${Util.getDatetimeStamp(obs, 'month')})`,
-          value: Util.comma(obs['value']) + ' ' + Util.getPeopleNoun(obs['value']),
+          label: 'Measles cases reported',
+          dateFmt: Util.getDatetimeStamp(obs, 'month'),
+          value: Util.comma(obs['value']),
+          unit: Util.getPeopleNoun(obs['value']),
           deltaData: Util.getDeltaData(popupData['trend']),
           notAvail: obs['value'] === null,
           dataSource: obs['data_source'],
@@ -48,11 +52,14 @@ const GeomPopup = ({ popupData }) => {
         if (obs === undefined) return {
           notAvail: true,
           label: 'Vaccination coverage',
+          dateFmt: () => '',
         }
         else return {
           slug: 'vacc-coverage',
-          label: 'Vaccination coverage' + ` (${Util.getDatetimeStamp(obs, 'year')})`,
-          value: parseFloat(obs['value']).toFixed(0)+"% of infants",
+          label: 'Vaccination coverage',
+          dateFmt: Util.getDatetimeStamp(obs, 'year'),
+          value: parseFloat(obs['value']).toFixed(0) + '%',
+          unit: "of infants",
           dataSource: obs['data_source'],
           dataSourceLastUpdated: new Date (obs['updated_at']),
           notAvail: false, // TODO dynamically
@@ -62,8 +69,6 @@ const GeomPopup = ({ popupData }) => {
         return {};
     }
   };
-
-  console.log(getTooltipMetricData(popupData, 'incidence'))
 
   return (
     <div className={styles.container}>
@@ -87,42 +92,51 @@ const GeomPopup = ({ popupData }) => {
                 styles[d.slug],
                 styles.datum
               )}>
-                <p className={classNames(styles[d.slug], styles.label)}>{d.label}</p>
+                <p className={classNames(styles[d.slug], styles.label)}>
+                  {d.label}
+                  <br/>
+                  ({d.dateFmt})
+                </p>
                 <p className={classNames(
                   styles[d.slug],
-                  styles.value,
+                  styles.content,
                   {
                     [styles['notAvail']]: d.notAvail,
-                    [styles.zero]: d.slug === 'incidence' && d.valueNum === 0,
+                    [styles.zero]: d.valueNum && d.valueNum === 0,
                   },
                 )}>
+                  <div className={styles.value}>
                   {d.notAvail ? 'Recent data not available' : d.value}
+                  </div>
+                  {
+                    d.notAvail ? '' : <div className={styles.unit}>{d.unit}</div>
+                  }
                   {
                     // If value2 exists, add that
                     (d.value2 !== undefined) && <span className={styles.value2}>{d.value2}</span>
                   }
                   {
-                    // If delta exists, add that
-                    (d.deltaData && d.deltaData.delta !== undefined) && !d.notAvail && <div className={classNames(styles.delta, {
-                      [styles['inc']]: d.deltaData.delta > 0,
-                      [styles['dec']]: d.deltaData.delta < 0,
-                      [styles['same']]: d.deltaData.delta === 0,
-                    })}>
-                      <i className={classNames('material-icons')}>play_arrow</i>
-                      <span className={styles['delta-value']}>
-                        {
-                          // Don't include sign for now since it's redundant
-                          // <span className={styles['sign']}>{d.deltaSign}</span>
-                        }
-                        <span className={styles['num']}>{d.deltaData.deltaFmt}</span>
-                      </span>
-                      <span className={styles['delta-text']}>{Util.getDeltaWord(d.deltaData.delta)} from<br/>previous month</span>
-                    </div>
-                  }
+                      // If delta exists, add that
+                      (d.deltaData && d.deltaData.delta !== undefined) && !d.notAvail && <div className={classNames(styles.delta, {
+                        [styles['inc']]: d.deltaData.delta > 0,
+                        [styles['dec']]: d.deltaData.delta < 0,
+                        [styles['same']]: d.deltaData.delta === 0,
+                      })}>
+                        <i className={classNames('material-icons')}>play_arrow</i>
+                        <span className={styles['delta-value']}>
+                          {
+                            // Don't include sign for now since it's redundant
+                            // <span className={styles['sign']}>{d.deltaSign}</span>
+                          }
+                          <span className={styles['num']}>{d.deltaData.deltaFmt}</span>
+                        </span>
+                        <span className={styles['delta-text']}>{Util.getDeltaWord(d.deltaData.delta)} from<br/>previous month</span>
+                      </div>
+                    }
                 </p>
                 {
                   (d.dataSource && !d.notAvail) &&
-                    <div className={'dataSource'}>
+                    <div className={classNames('dataSource', styles.dataSource)}>
                       Source: {d.dataSource}{ d.dataSourceLastUpdated && ( // TODO remove "false" when this field is ready
                           ' as of ' + new Date(d.dataSourceLastUpdated).toLocaleString('en-us', { // TODO correctly
                             month: 'short',

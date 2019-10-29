@@ -507,15 +507,15 @@ $scatterSize: 75vh;
             }
             &:nth-child(2) {
               .legendIcon.circle {
-                width: $circle-radius * .66;
-                height: $circle-radius * .66;
+                width: round($circle-radius * .75);
+                height: round($circle-radius * .75);
                 // margin: auto;
               }
             }
             &:nth-child(1) {
               .legendIcon.circle {
-                width: $circle-radius * .33;
-                height: $circle-radius * .33;
+                width: round($circle-radius * .5);
+                height: round($circle-radius * .5);
                 // margin: auto;
               }
             }
