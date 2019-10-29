@@ -193,7 +193,6 @@ const Nav = (props) => {
           month: 'short',
           year: 'numeric',
           day: 'numeric',
-          timeZone: 'UTC',
         });
       default:
         return ''; // TODO check this. Should we show the same for each page?
