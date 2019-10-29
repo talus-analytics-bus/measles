@@ -320,7 +320,7 @@ const Global = (props) => {
           </div>
         </div>
         <div className={styles.section}>
-          <p className={styles.sectionName}>Measles cases reported</p>
+          <p className={styles.sectionName}>New measles cases reported</p>
           <div className={styles.legendEntryGroups}>
             <div className={styles.legendEntryGroup}>
               {
@@ -550,7 +550,7 @@ const Global = (props) => {
     ];
     return [
       {
-        'title': 'Cases reported globally',
+        'title': 'New cases reported globally',
         'chart_jsx': () => <div className={classNames(styles.MiniLine, 'MiniLine-0')} />,
         'value_fmt': Util.comma,
         'value_label': 'cases',
@@ -604,7 +604,7 @@ const Global = (props) => {
                     <div className={styles.itemContainer}>
                       <div className={styles.item}>
                         <span className={styles.title}>
-                          {item.title} ({item.date_time_fmt(item)})
+                          {item.title}<br/>({item.date_time_fmt(item)})
                         </span>
                         <div className={styles.content}>
                           {
