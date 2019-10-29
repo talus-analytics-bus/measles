@@ -209,6 +209,7 @@ const Details = (props) => {
   const getWedgeChart = (val) => {
     // Get vaccination chart bins
     const binData = getWedgeChartBin();
+
     return (
       <div className={classNames(styles.chart, styles.vaccChart)}>
         {
@@ -455,26 +456,68 @@ const Details = (props) => {
     return sources.join(' ');
   };
 
+  // Get caseload and delta data
   // Return data for rendering caseload and delta value sub-component of
   // "recent cases" section.
   const getCaseloadAndDeltaData = (obs, trend) => {
     const data = {
       slug: 'cases',
-      value: Util.comma(obs['value']) + ' ' + Util.getPeopleNoun(obs['value']),
+      value: Util.comma(obs['value']),
+      label: Util.getPeopleNoun(obs['value']),
       deltaData: Util.getDeltaData(trend),
       notAvail: obs['value'] === null,
     };
     return data;
   };
-  const obs = props.countryCaseloadHistory[
-    props.countryCaseloadHistory.length - 1
-  ];
-  const trend = props.countryCaseloadTrend[
-    props.countryCaseloadTrend.length - 1
-  ]; // Should only be one
-  const caseloadAndDeltaData = getCaseloadAndDeltaData(obs, trend);
-  console.log('caseloadAndDeltaData')
-  console.log(caseloadAndDeltaData)
+
+  // Get caseload and delta JSX
+  const getCaseloadAndDeltaJsx = () => {
+    const obs = props.countryCaseloadHistory[
+      props.countryCaseloadHistory.length - 1
+    ];
+
+    const trend = props.countryCaseloadTrend[
+      props.countryCaseloadTrend.length - 1
+    ]; // Should only be one
+
+    const caseloadAndDeltaData = getCaseloadAndDeltaData(obs, trend);
+    const deltaData = caseloadAndDeltaData.deltaData;
+
+    const caseloadAndDeltaJsx = (
+      <div className={styles.value2Content}>
+      {
+        // If value2 exists, add that
+        (caseloadAndDeltaData.value !== undefined) && (
+          <span>
+            <span className={styles.value}>{caseloadAndDeltaData.value}</span>
+            &nbsp;
+            <span className={styles.label}>{caseloadAndDeltaData.label}</span>
+          </span>
+        )
+      }
+      {
+        // If delta exists, add that
+        (deltaData && deltaData.delta !== undefined) && !caseloadAndDeltaData.notAvail && <div className={classNames(styles.delta, {
+          [styles['inc']]: deltaData.delta > 0,
+          [styles['dec']]: deltaData.delta < 0,
+          [styles['same']]: deltaData.delta === 0,
+        })}>
+          <i className={classNames('material-icons')}>play_arrow</i>
+          <span className={styles['delta-value']}>
+            {
+              // Don't include sign for now since it's redundant
+              // <span className={styles['sign']}>{d.deltaSign}</span>
+            }
+            <span className={styles['num']}>{deltaData.deltaFmt}</span>
+          </span>
+          <span className={styles['delta-text']}>{Util.getDeltaWord(deltaData.delta)} from<br/>previous month</span>
+        </div>
+      }
+      </div>
+    );
+    if (caseloadAndDeltaData.value > 0) return caseloadAndDeltaJsx;
+    else return '';
+  };
 
   // Is there any line data to plot?
   const noLineData =
@@ -662,6 +705,7 @@ const Details = (props) => {
                   'chart_jsx': getWedgeChart,
                   'value_fmt': Util.formatIncidence,
                   'value_label': 'cases per 1M population',
+                  'value2_jsx': getCaseloadAndDeltaJsx,
                   'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'month')},
                   ...(props.countryIncidenceLatest.value !== undefined ? props.countryIncidenceLatest : { value: null }),
                 },
@@ -679,6 +723,7 @@ const Details = (props) => {
                       {item.title} {item.value !== null ? `(${item.date_time_fmt(item)})` : ''}
                     </span>
                     <div className={styles.content}>
+                      <div className={styles.stackedValues}>
                       {
                         // Display formatted value and label
                         ((item.value !== null && typeof item.value !== 'object') && (
@@ -702,6 +747,11 @@ const Details = (props) => {
                           </span>
                         ))
                       }
+                      {
+                        // Display secondary value content if it exists
+                        (item.value2_jsx !== undefined) && item.value2_jsx()
+                      }
+                      </div>
                       {
                         // Display chart if there is one
                         (item.chart_jsx !== undefined) &&

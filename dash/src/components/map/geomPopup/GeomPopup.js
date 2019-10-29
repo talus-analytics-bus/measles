@@ -100,7 +100,6 @@ const GeomPopup = ({ popupData }) => {
                   {
                     // If value2 exists, add that
                     (d.value2 !== undefined) && <span className={styles.value2}>{d.value2}</span>
-                    // (d.value2 !== undefined) && <div className={styles.value2}>{d.value2}</div>
                   }
                   {
                     // If delta exists, add that

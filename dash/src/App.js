@@ -238,46 +238,46 @@ const App = () => {
         // Get quartile of incidence
         const countryIncidenceQuantile = Util.getIncidenceQuantile(countryIncidenceLatest);
 
-        // Compute trend from caseload data
-        // TODO using TrendQuery API call instead when that is working
-        const lastDatum = countryCaseloadHistory[
-          countryCaseloadHistory.length - 1
-        ];
-        const secondToLastDatum = countryCaseloadHistory[
-          countryCaseloadHistory.length - 2
-        ];
-        // Calculate percent change between two values
-        const getPercentChange = (prv, cur) => {
-          const diff = cur - prv;
-          if (diff === 0) return 0;
-          else if (prv === 0) {
-            if (diff < 0) return -1000000000;
-            else return 1000000000;
-          }
-          else {
-            return (diff / prv);
-          }
-        };
-        const fakeTrendValue = [
-          {
-            "change_per_period": secondToLastDatum.value - lastDatum.value,
-            "definition": "The number of new cases per month among the total population",
-            "end_date": lastDatum.date_time,
-            "end_obs": lastDatum.value,
-            "metric": "caseload_totalpop",
-            "percent_change": getPercentChange(
-              secondToLastDatum.value,
-              lastDatum.value
-            ),
-            "place_fips": lastDatum.place_fips,
-            "place_id": lastDatum.place_id,
-            "place_iso": lastDatum.place_iso,
-            "place_name": lastDatum.place_name,
-            "stale_flag": lastDatum.stale_flag,
-            "start_date": secondToLastDatum.date_time,
-            "start_obs": secondToLastDatum.value,
-          }
-        ];
+        // // Compute trend from caseload data
+        // // TODO using TrendQuery API call instead when that is working
+        // const lastDatum = countryCaseloadHistory[
+        //   countryCaseloadHistory.length - 1
+        // ];
+        // const secondToLastDatum = countryCaseloadHistory[
+        //   countryCaseloadHistory.length - 2
+        // ];
+        // // Calculate percent change between two values
+        // const getPercentChange = (prv, cur) => {
+        //   const diff = cur - prv;
+        //   if (diff === 0) return 0;
+        //   else if (prv === 0) {
+        //     if (diff < 0) return -1000000000;
+        //     else return 1000000000;
+        //   }
+        //   else {
+        //     return (diff / prv);
+        //   }
+        // };
+        // const fakeTrendValue = [
+        //   {
+        //     "change_per_period": secondToLastDatum.value - lastDatum.value,
+        //     "definition": "The number of new cases per month among the total population",
+        //     "end_date": lastDatum.date_time,
+        //     "end_obs": lastDatum.value,
+        //     "metric": "caseload_totalpop",
+        //     "percent_change": getPercentChange(
+        //       secondToLastDatum.value,
+        //       lastDatum.value
+        //     ),
+        //     "place_fips": lastDatum.place_fips,
+        //     "place_id": lastDatum.place_id,
+        //     "place_iso": lastDatum.place_iso,
+        //     "place_name": lastDatum.place_name,
+        //     "stale_flag": lastDatum.stale_flag,
+        //     "start_date": secondToLastDatum.date_time,
+        //     "start_obs": secondToLastDatum.value,
+        //   }
+        // ];
 
         // Currently unused
         // const caseHistoryQ = await ObservationQuery(6, 'monthly', '2010-01-01', '2018-01-01', country);
@@ -293,8 +293,8 @@ const App = () => {
           countryJeeMcm={countryJeeMcm}
           countryIncidenceHistory={countryIncidenceHistory}
           countryCaseloadHistory={countryCaseloadHistory}
-          countryCaseloadTrend={fakeTrendValue}
-          // countryCaseloadTrend={results.countryCaseloadTrend}
+          // countryCaseloadTrend={fakeTrendValue}
+          countryCaseloadTrend={results.countryCaseloadTrend}
           countryIncidenceLatest={countryIncidenceLatest}
           countryIncidenceQuantile={countryIncidenceQuantile}
           countryVaccHistory={results.countryVaccHistory}
