@@ -655,15 +655,6 @@ class SlidingLine extends Chart {
         // x2(`${invertedVals[1].getUTCMonth() + 1}/${invertedVals[1].getUTCFullYear()}`) + x2.step() * .99,
       ] : s;
 
-      if (snapBrush) {
-        console.log('invertedVals')
-        console.log(invertedVals)
-        console.log([
-          (`${invertedVals[0].getUTCMonth() + 1}/${invertedVals[0].getUTCFullYear()}`),
-          (`${invertedVals[1].getUTCMonth() + 1}/${invertedVals[1].getUTCFullYear()}`),
-        ])
-      }
-
       if (snapBrush)
         gBrush
           .call(brush.move, snapS);
