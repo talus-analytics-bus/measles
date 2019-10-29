@@ -262,7 +262,7 @@ const App = () => {
       return <div />;
     } else {
       setLoadingNav(false);
-      window.scrollTo(0,0);
+      // window.scrollTo(0,0);
       return detailsComponent;
     }
   }
@@ -476,7 +476,7 @@ const App = () => {
               component={d => {
                 setPage('global');
                 setLoadingNav(true);
-                window.scrollTo(0,0);
+                // window.scrollTo(0,0);
                 return renderGlobal()
               }}
             />
@@ -485,14 +485,14 @@ const App = () => {
               component={d => {
                 setPage('details');
                 setLoadingNav(true);
-                window.scrollTo(0,0);
+                // window.scrollTo(0,0);
                 return renderDetails(d.match.params.id)
               }}
             />
             <Route exact path='/about' component={ () => {
               setPage('about');
               setLoadingNav(false);
-              window.scrollTo(0,0);
+              // window.scrollTo(0,0);
               return <About />;
             } } />
           </div>
