@@ -568,9 +568,9 @@ class SlidingLine extends Chart {
         // i is 0 if left handle, 1 if right
         // For left handle: ceil, right: floor
 
-        const roundFunc = Math.floor;
-        // const roundFunc = i === 0 ? Math.ceil
-        //   : Math.floor;
+        // const roundFunc = Math.floor;
+        const roundFunc = i === 0 ? Math.ceil
+          : Math.floor;
 
         let index = roundFunc(val / eachBand);
         const exact = Math.abs(index - (val / eachBand)) <= 1e-6;
@@ -594,11 +594,8 @@ class SlidingLine extends Chart {
         if (index > chart.data.vals.length - 1) {
           index = chart.data.vals.length - 1;
         }
-        else if (i === 0) {
-          const rightHandleIsMax = roundFunc(s[1] / eachBand) > chart.data.vals.length - 1;
-          if (rightHandleIsMax) {
-            index = index;
-          }
+        else if (exact && i === 1) {
+          index = index - 1;
         }
         // ALMOST worked
         // else if (exact && i === 0) index = index - 1;
