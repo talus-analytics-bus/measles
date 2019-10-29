@@ -356,3 +356,61 @@ $spacing: 20px;
     }
   }
 }
+
+// Delta styling, matching geomPopup.module.scss
+.delta {
+  font-size: initial;
+  display: flex;
+  flex-flow: row;
+  align-items: center;
+
+  position: relative;
+  left: -3px;
+
+  i {
+    // size?
+    font-size: 1.7em;
+  }
+  .delta-value {
+    font-family: 'rawline', serif;
+    font-weight: bold;
+    .sign {
+      font-size: 1.852em;
+    }
+    .num {
+      font-size: 1.405em;
+      line-height: 0; // Required for vertical alignment with other divs
+    }
+  }
+  .delta-text {
+    font-size: .75em;
+    color: $dark-grey;
+    font-family: 'Gotham Book', serif;
+    margin-left: 10px;
+  }
+}
+.delta {
+  &.inc {
+    i {
+      transform: rotate(-90deg);
+      transform-origin: center;
+    }
+    i, .delta-value {
+      color: $value-red;
+    }
+  }
+  &.dec {
+    i {
+      transform: rotate(90deg);
+    }
+    i, .delta-value {
+      color: $value-green;
+    }
+  }
+  &.same {
+    .delta-text { margin-left: 5px;}
+    .delta-value, i {
+      display: none;
+    }
+  }
+}

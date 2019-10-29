@@ -3,6 +3,47 @@ import * as d3 from 'd3/dist/d3.min';
 // Utility functions.
 const Util = {};
 
+/**
+ * Return + if delta > 0, - if less, none otherwise.
+ * @method getDeltaSign
+ * @param  {[type]}     deltaVal [description]
+ * @return {[type]}              [description]
+ */
+Util.getDeltaSign = (deltaVal) => {
+  if (deltaVal > 0) {
+    return '+';
+  } else if (deltaVal < 0) {
+    return '-';
+  } else {
+    return '';
+  }
+};
+
+Util.getDeltaWord = (deltaVal) => {
+  if (deltaVal > 0) {
+    return 'increase';
+  } else if (deltaVal < 0) {
+    return 'decrease';
+  } else {
+    return 'No change';
+  }
+};
+
+Util.getPeopleNoun = (val) => {
+  if (val === 1) return 'person';
+  else return 'people';
+};
+
+Util.getDeltaData = (datum) => {
+  if (datum && datum['percent_change'] !== null) {
+    return {
+      delta: datum['percent_change'],
+      deltaSign: Util.getDeltaSign(datum['percent_change']),
+      deltaFmt: Util.percentizeDelta(datum['percent_change']),
+    }
+  } else return {};
+};
+
 // Color series used to indicate relative vaccination coverage from least to
 // most vaccinated.
 Util.vaccinationColors = [
@@ -36,6 +77,7 @@ Util.getMetricChartParams = (metric) => {
             firstObsDt
           );
           fakeObsDt.setUTCFullYear(fakeObsDt.getUTCFullYear() - 1);
+          fakeObsDt.setUTCMonth(fakeObsDt.getUTCMonth() + 1);
 
           const firstStr = fakeObsDt.toLocaleString('en-us', {
             month: 'short',
@@ -55,8 +97,10 @@ Util.getMetricChartParams = (metric) => {
       return {
         tickFormat: Util.comma,
         metric: 'caseload_totalpop',
+        units: 'people',
+        getUnits: (val) => val === 1 ? 'case' : 'cases',
         sort: 'desc',
-        label: 'Total cases of measles (Total cases of measles)',
+        label: 'Total cases of measles',
 
       };
     case 'incidence_monthly':
@@ -64,6 +108,8 @@ Util.getMetricChartParams = (metric) => {
         tickFormat: Util.formatIncidence,
         metric: 'incidence_monthly',
         sort: 'desc',
+        units: 'cases per 1M population',
+        getUnits: (val) => val === 1 ? 'case per 1M population' : 'cases per 1M population',
         label: 'Monthly incidence of measles (cases per 1M population)',
       };
     case 'monthlycaseload_totalpop':

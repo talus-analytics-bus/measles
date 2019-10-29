@@ -9,47 +9,6 @@ import styles from './geomPopup.module.scss'
 const GeomPopup = ({ popupData }) => {
   console.log(popupData)
 
-  /**
-   * Return + if delta > 0, - if less, none otherwise.
-   * @method getDeltaSign
-   * @param  {[type]}     deltaVal [description]
-   * @return {[type]}              [description]
-   */
-  const getDeltaSign = (deltaVal) => {
-    if (deltaVal > 0) {
-      return '+';
-    } else if (deltaVal < 0) {
-      return '-';
-    } else {
-      return '';
-    }
-  };
-
-  const getDeltaWord = (deltaVal) => {
-    if (deltaVal > 0) {
-      return 'increase';
-    } else if (deltaVal < 0) {
-      return 'decrease';
-    } else {
-      return 'No change';
-    }
-  };
-
-  const getPeopleNoun = (val) => {
-    if (val === 1) return 'person';
-    else return 'people';
-  };
-
-  const getDeltaData = (datum) => {
-    if (datum && datum['percent_change'] !== null) {
-      return {
-        delta: datum['percent_change'],
-        deltaSign: getDeltaSign(datum['percent_change']),
-        deltaFmt: Util.percentizeDelta(datum['percent_change']),
-      }
-    } else return {};
-  };
-
   const detailsPath = '/details/' + popupData['place_id'];
   const flag = `/flags/${popupData['place_iso']}.png`;
 
@@ -79,8 +38,8 @@ const GeomPopup = ({ popupData }) => {
         else return {
           slug: 'cases',
           label: 'Measles cases reported' + ` (${Util.getDatetimeStamp(obs, 'month')})`,
-          value: Util.comma(obs['value']) + ' ' + getPeopleNoun(obs['value']),
-          deltaData: getDeltaData(popupData['trend']),
+          value: Util.comma(obs['value']) + ' ' + Util.getPeopleNoun(obs['value']),
+          deltaData: Util.getDeltaData(popupData['trend']),
           notAvail: obs['value'] === null,
           dataSource: obs['data_source'],
           dataSourceLastUpdated: new Date (obs['updated_at']),
@@ -141,7 +100,6 @@ const GeomPopup = ({ popupData }) => {
                   {
                     // If value2 exists, add that
                     (d.value2 !== undefined) && <span className={styles.value2}>{d.value2}</span>
-                    // (d.value2 !== undefined) && <div className={styles.value2}>{d.value2}</div>
                   }
                   {
                     // If delta exists, add that
@@ -158,7 +116,7 @@ const GeomPopup = ({ popupData }) => {
                         }
                         <span className={styles['num']}>{d.deltaData.deltaFmt}</span>
                       </span>
-                      <span className={styles['delta-text']}>{getDeltaWord(d.deltaData.delta)} from<br/>previous month</span>
+                      <span className={styles['delta-text']}>{Util.getDeltaWord(d.deltaData.delta)} from<br/>previous month</span>
                     </div>
                   }
                 </p>

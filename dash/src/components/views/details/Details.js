@@ -31,6 +31,10 @@ const Details = (props) => {
   // Track SlidingLine chart tooltip data
   const [ tooltipData, setTooltipData ]  = React.useState(null);
 
+  // Track county summary for sliding line window view
+  const [ countSummary, setCountSummary ]  = React.useState(null);
+  const [ countSummaryDateRange, setCountSummaryDateRange ]  = React.useState(null);
+
   // Track whether to show reset view button on sliding line chart
   const [ showReset, setShowReset ]  = React.useState(false);
 
@@ -209,6 +213,7 @@ const Details = (props) => {
   const getWedgeChart = (val) => {
     // Get vaccination chart bins
     const binData = getWedgeChartBin();
+
     return (
       <div className={classNames(styles.chart, styles.vaccChart)}>
         {
@@ -408,10 +413,35 @@ const Details = (props) => {
       </div>
     )
 
+
+    // Get count summary labeling
+    const metricParams = Util.getMetricChartParams(slidingLineMetric);
+
+    const countSummaryJsx = (
+      (countSummary !== null) && <div className={styles.countSummary}>
+        <span className={styles.value}>
+        {
+            metricParams.tickFormat(countSummary)
+        }
+        </span>
+        <span className={styles.label}>&nbsp;
+        {
+            metricParams.getUnits(countSummary)
+        }
+        </span>
+        <span> during time period shown (
+          {
+            countSummaryDateRange
+          }
+        )</span>
+      </div>
+    );
+
     return (
       <div className={styles.slidingLineContainer}>
         { dataToggles }
         { legend }
+        { countSummaryJsx }
         {
           !noLineData &&
           <div className={styles.slidingLine} />
@@ -455,6 +485,68 @@ const Details = (props) => {
     return sources.join(' ');
   };
 
+  // Get caseload and delta data
+  // Return data for rendering caseload and delta value sub-component of
+  // "recent cases" section.
+  const getCaseloadAndDeltaData = (obs, trend) => {
+    const data = {
+      slug: 'cases',
+      value: obs.value > 0 ? Util.comma(obs['value']) : null,
+      label: Util.getPeopleNoun(obs['value']),
+      deltaData: Util.getDeltaData(trend),
+      notAvail: obs['value'] === null,
+    };
+    return data;
+  };
+
+  // Get caseload and delta JSX
+  const getCaseloadAndDeltaJsx = () => {
+    const obs = props.countryCaseloadHistory[
+      props.countryCaseloadHistory.length - 1
+    ];
+
+    const trend = props.countryCaseloadTrend[
+      props.countryCaseloadTrend.length - 1
+    ]; // Should only be one
+
+    const caseloadAndDeltaData = getCaseloadAndDeltaData(obs, trend);
+    const deltaData = caseloadAndDeltaData.deltaData;
+
+    const caseloadAndDeltaJsx = (
+      <div className={styles.value2Content}>
+      {
+        // If value2 exists, add that
+        (caseloadAndDeltaData.value !== undefined) && (
+          <span>
+            <span className={styles.value}>{caseloadAndDeltaData.value}</span>
+            &nbsp;
+            <span className={styles.label}>{caseloadAndDeltaData.label}</span>
+          </span>
+        )
+      }
+      {
+        // If delta exists, add that
+        (deltaData && deltaData.delta !== undefined) && !caseloadAndDeltaData.notAvail && <div className={classNames(styles.delta, {
+          [styles['inc']]: deltaData.delta > 0,
+          [styles['dec']]: deltaData.delta < 0,
+          [styles['same']]: deltaData.delta === 0,
+        })}>
+          <i className={classNames('material-icons')}>play_arrow</i>
+          <span className={styles['delta-value']}>
+            {
+              // Don't include sign for now since it's redundant
+              // <span className={styles['sign']}>{d.deltaSign}</span>
+            }
+            <span className={styles['num']}>{deltaData.deltaFmt}</span>
+          </span>
+          <span className={styles['delta-text']}>{Util.getDeltaWord(deltaData.delta)} from<br/>previous month</span>
+        </div>
+      }
+      </div>
+    );
+    return caseloadAndDeltaJsx;
+  };
+
   // Is there any line data to plot?
   const noLineData =
     props.countryIncidenceHistory.length === 0
@@ -483,6 +575,8 @@ const Details = (props) => {
       setShowReset: setShowReset,
       metric: slidingLineMetric,
       setSlidingLine: setSlidingLine,
+      setCountSummary: setCountSummary,
+      setCountSummaryDateRange: setCountSummaryDateRange,
       margin: {
         top: 20,
         right: 98,
@@ -512,9 +606,12 @@ const Details = (props) => {
     ReactTooltip.rebuild();
   }, [])
 
-
   React.useEffect(function changeSlidingLineMetric () {
     if (slidingLine) {
+      // Remove countSummary for the moment
+      setCountSummary(null);
+
+      // Update selected metric.
       slidingLine.params.metric = slidingLineMetric;
 
       // Is the reset button currently showing, meaning the default window
@@ -526,8 +623,6 @@ const Details = (props) => {
     ReactTooltip.rebuild();
   },
   [slidingLineMetric]);
-
-
 
   // If loading do not show JSX content.
   console.log('props')
@@ -644,6 +739,7 @@ const Details = (props) => {
                   'chart_jsx': getWedgeChart,
                   'value_fmt': Util.formatIncidence,
                   'value_label': 'cases per 1M population',
+                  'value2_jsx': getCaseloadAndDeltaJsx,
                   'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'month')},
                   ...(props.countryIncidenceLatest.value !== undefined ? props.countryIncidenceLatest : { value: null }),
                 },
@@ -661,6 +757,7 @@ const Details = (props) => {
                       {item.title} {item.value !== null ? `(${item.date_time_fmt(item)})` : ''}
                     </span>
                     <div className={styles.content}>
+                      <div className={styles.stackedValues}>
                       {
                         // Display formatted value and label
                         ((item.value !== null && typeof item.value !== 'object') && (
@@ -684,6 +781,11 @@ const Details = (props) => {
                           </span>
                         ))
                       }
+                      {
+                        // Display secondary value content if it exists
+                        (item.value2_jsx !== undefined) && item.value2_jsx()
+                      }
+                      </div>
                       {
                         // Display chart if there is one
                         (item.chart_jsx !== undefined) &&

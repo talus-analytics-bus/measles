@@ -13,8 +13,6 @@ class PagingBar extends Chart {
     super(selector, params);
 
     this.params = params;
-    console.log('params - mvmfilter')
-    console.log(params)
 
     this.setData = (view) => {
       this.data = {vals: {}};
