@@ -77,6 +77,7 @@ Util.getMetricChartParams = (metric) => {
             firstObsDt
           );
           fakeObsDt.setUTCFullYear(fakeObsDt.getUTCFullYear() - 1);
+          fakeObsDt.setUTCMonth(fakeObsDt.getUTCMonth() + 1);
 
           const firstStr = fakeObsDt.toLocaleString('en-us', {
             month: 'short',

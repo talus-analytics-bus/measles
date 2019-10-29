@@ -472,20 +472,43 @@ class SlidingLine extends Chart {
   		.extent([[0, chart.height], [chart.width, chart.height + chart.slider.height]])
       .handleSize(12);
 
+    // Set brush starting position to more recent datum and back 11 months,
+    // inclusive.
     const getBrushStartPos = () => {
+
       // Get latest year of data from x2 domain
-      const newYear = +(x2.domain()[x2.domain().length - 1].split('/')[1])
+      const oldestYear = +(x2.domain()[x2.domain().length - 1].split('/')[1]);
+      const oldestMonth = +(x2.domain()[x2.domain().length - 1].split('/')[0]);
 
-      // Get oldest year of data from x2 domain
-      const oldYear = +(x2.domain()[0].split('/')[1])
+      // Subtract back 11 months, adjusting year as needed;
+      let startYear = oldestYear;
+      let startMonth = oldestMonth - 11;
 
-      // Start year = latest year minus 3 or the oldest year if that's sooner
-      const startYear = newYear - oldYear < 3 ? oldYear : newYear - 3;
+      if (startMonth <= 0) {
+        startMonth += 12;
+        startYear -= 1;
+      }
 
       // Get xpos of start year from x2 domain and return it
-      const startYearXPos = x2('1/' + startYear);
-      return startYearXPos;
+      const brushStartXPos = x2(startMonth + '/' + startYear);
+      return brushStartXPos;
     };
+
+    // Present day to Jan of 3 years ago
+    // const getBrushStartPos = () => {
+    //   // Get latest year of data from x2 domain
+    //   const newYear = +(x2.domain()[x2.domain().length - 1].split('/')[1])
+    //
+    //   // Get oldest year of data from x2 domain
+    //   const oldYear = +(x2.domain()[0].split('/')[1])
+    //
+    //   // Start year = latest year minus 3 or the oldest year if that's sooner
+    //   const startYear = newYear - oldYear < 3 ? oldYear : newYear - 3;
+    //
+    //   // Get xpos of start year from x2 domain and return it
+    //   const startYearXPos = x2('1/' + startYear);
+    //   return startYearXPos;
+    // };
 
     const gBrush = chart[styles.slider].append('g')
   		.attr('class', 'brush')
