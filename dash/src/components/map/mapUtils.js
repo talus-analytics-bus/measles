@@ -44,15 +44,20 @@ const initMap = (map, fillObservations, bubbleObservations, incidenceObservation
       'source-layer': 'countries_id_rpr',
       paint: {
         'fill-color': [
-          'step',
-          ["feature-state", "value"],
-              '#b3b3b3',
-              0, '#d6f0b2',
-              stepFrac*1, '#b9d7a8',
-              stepFrac*2, '#7fcdbb',
-              stepFrac*3, '#41b6c4',
-              stepFrac*4, '#2c7fb8',
-              stepFrac*5, '#303d91'
+          'case',
+            ['==', ['feature-state', 'value'], null],
+            'rgb(179, 179, 179)',
+            [
+              'step',
+                ["feature-state", "value"],
+                  '#b3b3b3',
+                  0, '#d6f0b2',
+                  stepFrac*1, '#b9d7a8',
+                  stepFrac*2, '#7fcdbb',
+                  stepFrac*3, '#41b6c4',
+                  stepFrac*4, '#2c7fb8',
+                  stepFrac*5, '#303d91',
+            ]
         ],
         'fill-opacity': 1,
       }
