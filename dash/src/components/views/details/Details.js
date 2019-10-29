@@ -491,7 +491,7 @@ const Details = (props) => {
   const getCaseloadAndDeltaData = (obs, trend) => {
     const data = {
       slug: 'cases',
-      value: Util.comma(obs['value']),
+      value: obs.value > 0 ? Util.comma(obs['value']) : null,
       label: Util.getPeopleNoun(obs['value']),
       deltaData: Util.getDeltaData(trend),
       notAvail: obs['value'] === null,
@@ -544,8 +544,7 @@ const Details = (props) => {
       }
       </div>
     );
-    if (caseloadAndDeltaData.value > 0) return caseloadAndDeltaJsx;
-    else return '';
+    return caseloadAndDeltaJsx;
   };
 
   // Is there any line data to plot?
