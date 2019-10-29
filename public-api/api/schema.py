@@ -275,7 +275,6 @@ def getObservations(filters):
 
     # If the metric is a view, then the pool of observations comes from that
     # view. Otherwise, it is simply the "Observations" entity.
-
     view_q_str = f"""SELECT v.metric_id, v.data_source, d.dt,
                         m.metric_definition, m.metric_name, v.observation_id,
                         p.fips AS place_fips, p.place_id, p.iso2 AS place_iso,
@@ -305,6 +304,8 @@ def getObservations(filters):
                 res = db.select(view_q_str)
             else:
                 res = db.select(view_q_str)
+
+            print(view_q_str)
 
         else:
             if 'place_id' in filters:
@@ -342,7 +343,9 @@ def getObservations(filters):
 
                 lag = manage_lag(metric, null_res, max_time, null_places, observations)
             else:
-                if list(res)[0].value is None:
+                res_list = list(res)
+
+                if len(res_list) == 0 or res_list[0].value is None:
                     lag = manage_lag(metric, res, max_time, [place_id], observations)
 
         else:
