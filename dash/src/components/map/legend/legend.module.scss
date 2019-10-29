@@ -146,7 +146,7 @@ $spacing: 5px;
               margin: auto 25px;
               background-color: #b02c3a;
               opacity: 0.85;
-              border: 1px solid white;
+              border: 1px solid #b02c3a;
               // box-shadow: 5px 5px 10px 0px #0000008c;
               // -webkit-box-shadow: 5px 5px 10px 0px #0000008c;
             }
@@ -171,15 +171,15 @@ $spacing: 5px;
             }
             &:nth-child(2) {
               .legendIcon.circle {
-                width: round($circle-radius * .66);
-                height: round($circle-radius * .66);
+                width: round($circle-radius * .75);
+                height: round($circle-radius * .75);
                 // margin: auto;
               }
             }
             &:nth-child(1) {
               .legendIcon.circle {
-                width: round($circle-radius * .33);
-                height: round($circle-radius * .33);
+                width: round($circle-radius * .5);
+                height: round($circle-radius * .5);
                 // margin: auto;
               }
             }
