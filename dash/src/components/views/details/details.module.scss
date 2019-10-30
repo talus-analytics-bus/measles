@@ -9,6 +9,22 @@ $spacing: 20px;
   flex-flow: row;
   height: 100%;
 
+  .wedgeLabels {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    margin-top: 5px;
+    color: $dark-grey;
+
+    flex-flow: row;
+    font-weight: normal;
+    font-size: .65em;
+    line-height: 1.2;
+  }
+  .labelRight {
+    text-align: right;
+  }
+
   .sidebars {
     display: flex;
     flex-flow: column;
@@ -82,25 +98,6 @@ $spacing: 20px;
         flex-flow: row;
         align-items: baseline;
         justify-content: flex-end;
-      }
-      .wedgeLabels {
-        position: relative;
-        display: flex;
-        justify-content: space-between;
-        margin-top: 5px;
-        color: $dark-grey;
-
-        flex-flow: row;
-        font-weight: normal;
-        font-size: .65em;
-      }
-      .labelRight {
-        text-align: right;
-        // float: right;
-      }
-      .labelLeft {
-        // clear: left;
-        // width: min-content;
       }
     }
   }
@@ -217,24 +214,31 @@ $spacing: 20px;
         display: flex;
         flex-flow: row;
         position: relative;
-        margin-bottom: 50px;
+
+        &.shapes {
+          flex-flow: column;
+          justify-content: center;
+          font-size: 24.6px;
+        }
 
         // Trapezoid sizing for normal wedge chart
-        $wedge-size: .78px;
-        $wedge-height: 10px;
-        $wedge-slope: $wedge-size*10;
+        $wedge-width: 80px;
+        $wedge-height: 8px;
 
-        @for $i from 1 through 5 {
-          .trapezoid-#{$i} {
+        $wedge-height-btm: $wedge-height;
+        $wedge-height-top: $wedge-height;
+
+        @for $i from 0 through 4 {
+          .trapezoid-#{$i+1} {
             .bottom {
-              height: $wedge-height*$i*.8;
+              height: $wedge-height-top*$i;
             }
           }
         }
         .trapezoid {
           .top {
-            height:0;
-            border-width:0 0 $wedge-slope $wedge-size*100;
+            height: 0;
+            border-width:0 0 $wedge-height-btm $wedge-width;
             border-style:solid;
             border-color:transparent $light-grey-2 $light-grey-2 transparent;
           }
@@ -265,11 +269,16 @@ $spacing: 20px;
           }
         }
 
-        .trapezoidContainer {
+        .trapezoidContainers {
           display: flex;
+          transform: scaleX(-1);
+          .trapezoidContainer {
+            display: flex;
+            // margin-top: auto;
 
-          .labelLeft, .labelRight {
-            bottom: calc(-2em - 10px);
+            .labelLeft, .labelRight {
+              bottom: calc(-2em - 10px);
+            }
           }
         }
         .trapezoid {
@@ -277,7 +286,7 @@ $spacing: 20px;
           font-family: 'rawline', serif;
           font-weight: 600;
           font-size: 1.4em;
-          margin-right: 2px;
+          // margin-right: 2px;
           margin-top: auto;
           text-align: center;
           padding-bottom: 2px;
@@ -289,27 +298,27 @@ $spacing: 20px;
 
           &.active {
             .bottom {
-              box-shadow: 3px 3px 2.5px 0 rgba(0, 0, 0, 0.3);
+              // box-shadow: 3px 3px 2.5px 0 rgba(0, 0, 0, 0.3);
               background-color: $value-red;
             }
             .top {
-              box-shadow: 3px 3px 2.5px 0 rgba(0, 0, 0, 0.3);
+              // box-shadow: 3px 3px 2.5px 0 rgba(0, 0, 0, 0.3);
               border-color:transparent $value-red $value-red transparent;
             }
           }
         }
 
-        .labelLeft, .labelRight {
-          position: absolute;
-          white-space: nowrap;
-          line-height: 1;
-          margin-top: 10px;
-        }
-        .labelLeft {}
-        .labelRight {
-          right: 0;
-          text-align: right;
-        }
+        // .labelLeft, .labelRight {
+        //   position: absolute;
+        //   white-space: nowrap;
+        //   line-height: 1;
+        //   margin-top: 10px;
+        // }
+        // .labelLeft {}
+        // .labelRight {
+        //   right: 0;
+        //   text-align: right;
+        // }
       }
     }
   }
@@ -580,6 +589,9 @@ $spacing: 20px;
           height: $wedge-height-top*$i;
         }
       }
+    }
+    .trapezoidContainer {
+      margin-top: auto;
     }
     .legend.trapezoid {
       .top {

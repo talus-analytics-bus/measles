@@ -210,49 +210,54 @@ const Details = (props) => {
     }
   };
 
+  // Color scale for measles reds to use in wedge.
+  const wedgeColorScale = d3.scaleLinear()
+    .domain([0, 1])
+    .range(['#e6c1c6', '#9d3e4c']);
+
   const getWedgeChart = (val) => {
     // Get vaccination chart bins
     const binData = getWedgeChartBin();
 
+    const wedgeColor = wedgeColorScale(binData.i / 4);
+
     return (
-      <div className={classNames(styles.chart, styles.vaccChart)}>
-        {
-          [0,1,2,3,4].map(bin =>
-            <div className={styles.trapezoidContainer}>
-              <div
-              className={classNames(
-                styles.trapezoid,
-                styles.shape,
-                styles['trapezoid-' + (bin + 1)],
-                {
-                  [styles.active]: bin === binData.i,
-                }
-              )}
-              style={{
-                'color': binData.i > 3 ? 'white' : '',
-              }}
-              >
+      <div className={classNames(styles.chart, styles.vaccChart, styles.shapes)}>
+        <div className={classNames(styles.trapezoidContainers)}>
+          {
+            [0,1,2,3,4].map(bin =>
+              <div className={styles.trapezoidContainer}>
                 <div
-                  className={styles.top}
-                />
-                <div
-                  className={styles.bottom}
-                />
+                className={classNames(
+                  styles.trapezoid,
+                  styles.shape,
+                  styles['trapezoid-' + (bin + 1)],
+                  {
+                    [styles.active]: bin <= binData.i,
+                  }
+                )}
+                >
+                  <div
+                    className={styles.top}
+                    style={{
+                      'borderColor': bin <= binData.i ? `transparent ${wedgeColor} ${wedgeColor} transparent` : '',
+                    }}
+                  />
+                  <div
+                    className={styles.bottom}
+                    style={{
+                      'backgroundColor': bin <= binData.i ? wedgeColor : '',
+                    }}
+                  />
+                </div>
               </div>
-              {
-                // Label if first
-                (bin === 0) && <div className={styles.labelLeft}>Low relative<br/>incidence</div>
-              }
-              {
-                // Label if last
-                (bin === 3) && <div className={styles.labelRight}>High relative<br/>incidence</div>
-              }
-              {
-                // (binData.i === bin) && <span>{Util.percentize(val)}</span>
-              }
-            </div>
-          )
-        }
+            )
+          }
+          </div>
+          <div className={styles.wedgeLabels}>
+            <div className={styles.labelLeft}>High relative<br/>incidence</div>
+            <div className={styles.labelRight}>Low relative<br/>incidence</div>
+          </div>
       </div>
     )
   };
