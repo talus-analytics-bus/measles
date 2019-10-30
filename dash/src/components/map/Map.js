@@ -240,7 +240,6 @@ const Map = ({ fillObservations, bubbleObservations, incidenceObservations, mapp
    * @param  {obj}    e Click event.
    */
   const handleClick = e => {
-
     const movedOnMap = e.target.classList.contains('overlays');
     if (!movedOnMap) {
       return;
@@ -296,7 +295,7 @@ const Map = ({ fillObservations, bubbleObservations, incidenceObservations, mapp
     }
 
     const clickedOnGeom = e.features.find(f => f.layer.id === 'geom-fills');
-    const clickedOnBubble = e.features.find(f => f.layer.id === 'metric-bubbles');
+    const clickedOnBubble = e.features.find(f => f.layer.id.startsWith('metric-bubbles'));
 
     if (clickedOnGeom === undefined && clickedOnBubble === undefined) return;
 
