@@ -762,22 +762,23 @@ const Global = (props) => {
                       tooltipData.items.map(item =>
                         <div className={stylesTooltip.item}>
                           <div className={stylesTooltip.name}>{item.name} {item.value !== null ? `(${Util.getDatetimeStamp(item.datum, item.period)})` : ''}</div>
+                          <div className={stylesTooltip.content}>
                           {
                             // Show value if reported
                             item.value !== null &&
                             <div>
                               <span className={stylesTooltip.value}>{item.value}</span>
-                              &nbsp;
-                              <span className={stylesTooltip.label}>{item.label}</span>
+                              <span className={stylesTooltip.unit}>{item.unit}</span>
                             </div>
                           }
                           {
                             // Write not reported otherwise
                             item.value === null &&
                             <div>
-                              <span className={classNames(stylesTooltip.value, 'notAvail')}>Not reported</span>
+                              <span className={classNames(stylesTooltip.value, stylesTooltip.notAvail)}>Not reported</span>
                             </div>
                           }
+                          </div>
                         </div>
                       )
                     }

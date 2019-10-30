@@ -1,37 +1,170 @@
 @import '../../../assets/styles/colors.scss';
 
 #globalTooltip {
+  opacity: .95;
+  min-width: 200px;
+  max-width: 300px;
   .tooltipContainer {
-    max-width: 200px;
-    display: flex;
-    flex-flow: column;
-    background-color: white;
-    padding: 5px;
-    border: 1px solid $grey;
     .tooltipContent {
-      .tooltipName {
-        font-size: 1.5em;
-        font-weight: bold;
-      }
       display: flex;
       flex-flow: column;
       background-color: white;
+      .tooltipName {
+        font-size: 1.8em;
+        font-family: 'Gotham Bold', serif;
+        // font-weight: bold;
+      }
       .item {
         &:not(:last-child) {
-          margin-bottom: 5px;
+          // margin-bottom: 5px;
         }
-        .name {
-          font-family: 'open_sanssemibold', sans-serif;
-        }
+        // .name {
+        //   font-family: 'open_sanssemibold', sans-serif;
+        // }
       }
     }
     box-shadow: 3px 3px 2.5px 0 rgba(0, 0, 0, 0.3);
     -webkit-box-shadow: 3px 3px 2.5px 0 rgba(0, 0, 0, 0.3);
   }
-}
 
-#sliderTooltip {
-  visibility: visible !important;
-  opacity: 1 !important;
-  background-color: green;
+
+  $spacing: 5px;
+  .tooltipContainer {
+    display: flex;
+    flex-flow: column;
+
+    padding: $spacing;
+
+    background-color: white;
+    border-radius: $border-radius;
+    border: 1px solid $light-grey;
+
+    .item {
+      display: flex;
+      flex-flow: column;
+      font-size: 1em;
+      padding: 10px 0;
+
+      border-bottom: 1px solid #b2b2b2;
+      &:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+      }
+      &:first-child {
+        padding-top: 0;
+      }
+
+      &:first-child {
+        margin-top: 0;
+      }
+      .name {
+        font-family: 'Gotham Bold', serif;
+        font-size: 1.1em;
+        line-height: 1.1;
+        margin-bottom: 7px;
+      }
+      .content {
+        display: flex;
+        flex-flow: row;
+        align-items: center;
+
+        &.incidence .value {
+          // &.incidence .value, &.cases .value {
+          color: $value-red;
+          &.zero {
+            color: black;
+          }
+        }
+
+        .unit {
+          margin-left: 5px;
+          max-width: 50%;
+        }
+
+        .value {
+          font-size: 1.67em;
+          color: black;
+          font-family: 'Gotham Bold';
+
+          &.notAvail {
+            color: $grey;
+            font-style: italic;
+            font-family: 'Gotham Book', serif;
+            font-size: 1.4em;
+          }
+
+          .value2 {
+            font-size: .65em;
+            text-transform: uppercase;
+            font-weight: normal;
+            font-family: 'Open Sans';
+            text-align: right;
+            float: right;
+            line-height: 2;
+            // color: black;
+          }
+        }
+      }
+      .delta {
+        font-size: initial;
+        display: flex;
+        flex-flow: row;
+        align-items: center;
+
+        position: relative;
+        left: -3px;
+        margin-left: 30px;
+
+        i {
+          // size?
+          font-size: 1.7em;
+        }
+        .delta-value {
+          font-family: 'rawline', serif;
+          font-weight: bold;
+          .sign {
+            font-size: 1.852em;
+          }
+          .num {
+            font-size: 1.405em;
+            line-height: 0; // Required for vertical alignment with other divs
+          }
+        }
+        .delta-text {
+          font-size: .75em;
+          color: $dark-grey;
+          font-family: 'Gotham Book', serif;
+          margin-left: 5px;
+        }
+      }
+      .delta {
+        &.inc {
+          i {
+            transform: rotate(-90deg);
+            transform-origin: center;
+          }
+          i, .delta-value {
+            color: $value-red;
+          }
+        }
+        &.dec {
+          i {
+            transform: rotate(90deg);
+          }
+          i, .delta-value {
+            color: $value-green;
+          }
+        }
+        &.same {
+          .delta-text { margin-left: 5px;}
+          .delta-value, i {
+            display: none;
+          }
+        }
+      }
+      .dataSource {
+        margin-top: 10px;
+      }
+    }
+  }
 }

@@ -1154,11 +1154,10 @@ const Details = (props) => {
                     {
                       tooltipData.items.map(item =>
                         <div className={stylesTooltip.item}>
-                          <div className={stylesTooltip.name}>{item.name} ({Util.getDatetimeStamp(item.datum, item.period)})</div>
-                          <div>
+                          <div className={stylesTooltip.name}>{item.name}<br/>({Util.getDatetimeStamp(item.datum, item.period)})</div>
+                          <div className={stylesTooltip.content}>
                             <span className={stylesTooltip.value}>{item.value}</span>
-                            &nbsp;
-                            <span className={stylesTooltip.label}>{item.label}</span>
+                            <span className={stylesTooltip.unit}>{item.label}</span>
                           </div>
                         </div>
                       )
