@@ -222,11 +222,10 @@ body,
 .dataSource {
   color: hsla(0, 0%, 60%, 1);
   font-size: .75em;
-  // font-size: .9em;
   font-style: italic;
-  // text-align: right;
   margin-top: 5px;
   clear: right;
+  max-width: 575px;
 }
 
 body {

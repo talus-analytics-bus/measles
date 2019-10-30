@@ -237,15 +237,19 @@ $spacing: 20px;
       }
     }
   }
-  .source {
-    // Just use .dataSource from index.scss
-  }
 
   $itemMaxWidth: 750px;
   .main {
     margin-right: $spacing*2;
     margin-top: 10px;
+    margin-bottom: 40px;
     width: 100%;
+
+    .source {
+      text-align: right;
+      margin-left: auto;
+    }
+
     .itemContainer {
       &:not(:last-child) {
         // &:first-child {

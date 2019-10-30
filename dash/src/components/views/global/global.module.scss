@@ -53,6 +53,7 @@ $scatterSize: 75vh;
 
   .main.mainBottom {
     margin-left: 40px;
+    margin-bottom: 40px;
     .itemContainer .item {
       max-width: unset;
       .title {
@@ -303,12 +304,15 @@ $scatterSize: 75vh;
       }
     }
   }
-  .source {
-    // Just use .dataSource from index.scss
-  }
 
-  .main:not(.mainBottom) .itemContainer:first-child .item .title {
-    margin-bottom: 40px;
+  .main:not(.mainBottom) {
+    .source {
+      text-align: right;
+      margin-left: auto;
+    }
+    .itemContainer:first-child .item .title {
+      margin-bottom: 40px;
+    }
   }
 
   $itemMaxWidth: 750px;

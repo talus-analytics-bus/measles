@@ -528,7 +528,7 @@ const Global = (props) => {
         'title': sectionTitle,
         'chart_jsx': getPagingBarJsx,
         'date_time_fmt': () => '',
-        // 'data_source': getPagingBarDataSource,
+        'data_source': getScatterDataSources,
       },
     ]
   };
@@ -638,7 +638,7 @@ const Global = (props) => {
                         {
                           // Display data source text if available.
                           (item.data_source && item.value !== null && !item.notAvail && !item.hideSource) &&
-                            <div className={'dataSource'}>
+                            <div className={classNames('dataSource', styles.source)}>
                               Source: {item.data_source}{ item.updated_at && (
                                   ' as of ' + new Date(item.updated_at).toLocaleString('en-us', {
                                     month: 'short',
@@ -673,7 +673,7 @@ const Global = (props) => {
                       {
                         // Display data source text if available.
                         (typeof item.data_source !== 'function' && item.data_source && !item.notAvail) &&
-                          <div className={'dataSource'}>
+                          <div className={classNames('dataSource', styles.source)}>
                             Source: {item.data_source}{ item.updated_at && (
                                 ' as of ' + new Date(item.updated_at).toLocaleString('en-us', {
                                   month: 'short',
@@ -685,7 +685,7 @@ const Global = (props) => {
                       }
                       {
                         (typeof item.data_source === 'function') &&
-                          <div className={'dataSource'}>
+                          <div className={classNames('dataSource', styles.source)}>
                           {
                             item.data_source()
                           }
@@ -718,7 +718,7 @@ const Global = (props) => {
                     {
                       // Display data source text if available.
                       (typeof item.data_source !== 'function' && item.data_source && !item.notAvail) &&
-                        <div className={'dataSource'}>
+                        <div className={classNames('dataSource', styles.source)}>
                           Source: {item.data_source}{ item.updated_at && (
                               ' as of ' + new Date(item.updated_at).toLocaleString('en-us', {
                                 month: 'short',
@@ -730,7 +730,7 @@ const Global = (props) => {
                     }
                     {
                       (typeof item.data_source === 'function') &&
-                        <div className={'dataSource'}>
+                        <div className={classNames('dataSource', styles.source)}>
                         {
                           item.data_source()
                         }

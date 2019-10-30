@@ -716,7 +716,7 @@ const Details = (props) => {
                       {
                         // Display data source text if available.
                         (item.data_source && item.value !== null && !item.notAvail && !item.hideSource) &&
-                          <div className={'dataSource'}>
+                          <div className={classNames('dataSource', styles.source)}>
                             Source: {item.data_source}{ item.updated_at && (
                                 ' as of ' + new Date(item.updated_at).toLocaleString('en-us', {
                                   month: 'short',
@@ -803,7 +803,7 @@ const Details = (props) => {
                     {
                       // Display data source text if available.
                       (typeof item.data_source !== 'function' && item.data_source && !item.notAvail) &&
-                        <div className={'dataSource'}>
+                        <div className={classNames('dataSource', styles.source)}>
                           Source: {item.data_source}{ item.updated_at && (
                               ' as of ' + new Date(item.updated_at).toLocaleString('en-us', {
                                 month: 'short',
@@ -815,7 +815,7 @@ const Details = (props) => {
                     }
                     {
                       (typeof item.data_source === 'function') &&
-                        <div className={'dataSource'}>
+                        <div className={classNames('dataSource', styles.source)}>
                         {
                           item.data_source()
                         }
