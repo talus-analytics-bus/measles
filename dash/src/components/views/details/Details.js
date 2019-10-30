@@ -257,6 +257,109 @@ const Details = (props) => {
     )
   };
 
+  // Return a wedge chart for the JEE scores
+  const getJeeChart = (score) => {
+    if (score === 'legend') {
+
+      return (
+        <div className={
+          classNames(
+            styles.jeeChart,
+          )
+        }>
+          <div className={styles.value}>
+            <div className={classNames(styles.chart, styles.vaccChart)}>
+              {
+                [0,1,2,3,4].map(bin =>
+                  <div className={styles.trapezoidContainer}>
+                    <div
+                    className={classNames(
+                      styles.trapezoid,
+                      styles.shape,
+                      styles.active,
+                      styles.legend,
+                      styles['trapezoid-' + (bin+1)],
+                    )}
+                    >
+                      <div
+                        className={styles.top}
+                      />
+                      <div
+                        className={styles.bottom}
+                      />
+                    </div>
+                  </div>
+                )
+              }
+            </div>
+            <div className={styles.wedgeLabels}>
+              <div className={styles.labelLeft}>No<br/>capacity</div>
+              <div className={styles.labelRight}>Sustainable<br/>capacity</div>
+            </div>
+          </div>
+        </div>
+      )
+    }
+    else {
+      const scoreLabeling = getScoreLabeling(score);
+      return (
+        <div className={
+          classNames(
+            styles.jeeChart,
+            styles[scoreLabeling.color],
+          )
+        }>
+          <div className={styles.jeeLabel}>
+          {
+            scoreLabeling.label
+          }
+          </div>
+          <div className={styles.value}>
+            <div className={classNames(styles.chart, styles.vaccChart)}>
+              {
+                [0,1,2,3,4].map(bin =>
+                  <div className={styles.trapezoidContainer}>
+                    <div
+                    className={classNames(
+                      styles.trapezoid,
+                      styles.shape,
+                      styles['trapezoid-' + (bin+1)],
+                      {
+                        [styles.active]: bin <= scoreLabeling.i,
+                      }
+                    )}
+                    style={{
+                      'color': scoreLabeling.i > 3 ? 'white' : '',
+                    }}
+                    >
+                      <div
+                        className={styles.top}
+                      />
+                      <div
+                        className={styles.bottom}
+                      />
+                    </div>
+                    {
+                      // Label if first
+                      // (bin === 0) && <div className={styles.labelLeft}>Low relative<br/>incidence</div>
+                    }
+                    {
+                      // Label if last
+                      // (bin === 3) && <div className={styles.labelRight}>High relative<br/>incidence</div>
+                    }
+                    {
+                      // (binData.i === bin) && <span>{Util.percentize(val)}</span>
+                    }
+                  </div>
+                )
+              }
+            </div>
+          </div>
+        </div>
+      )
+    }
+  };
+
   /**
    * Get vaccination chart JSX.
    * @method getVaccChart
@@ -636,102 +739,284 @@ const Details = (props) => {
   console.log('props')
   console.log(props)
   return (<div className={styles.details}>
-            <div className={styles.sidebar}>
-              <div className={styles.title}>
-                {props.countryIso2 && <img src={`/flags/${props.countryIso2}.png`} className={styles.flag} />}
-                {props.countryName}
-              </div>
-              <div className={styles.map}>
+            <div className={styles.sidebars}>
+              <div className={styles.sidebar}>
+                <div className={styles.title}>
+                  {props.countryIso2 && <img src={`/flags/${props.countryIso2}.png`} className={styles.flag} />}
+                  {props.countryName}
+                </div>
+                <div className={styles.map}>
+                  {
+                    <MiniMap countryIso2={props.countryIso2}/>
+                  }
+                </div>
                 {
-                  <MiniMap countryIso2={props.countryIso2}/>
-                }
-              </div>
-              {
-                [
-                  {
-                    'title': 'Population',
-                    'value_fmt': Util.formatSI,
-                    'value_label': 'people',
-                    'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'year')}, // TODO
-                    ...(props.countryPop ? props.countryPop : {value: null}),
-                  },
-                  {
-                    'title': 'Gross domestic product per capita',
-                    'value_fmt': Util.formatSI,
-                    // 'value_fmt': Util.money,
-                    'value_label': 'USD',
-                    'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'year')}, // TODO
-                    ...(props.countryGDP ? props.countryGDP : {value: null}),
-                  },
-                  {
-                    'title': 'Immunization capacity',
-                    'value_fmt': getScoreJsx,
-                    'hideSource': true,
-                    'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'year')}, // TODO
-                    ...(props.countryJeeImmun ? props.countryJeeImmun : {value: null}),
-                  },
-                  {
-                    'title': 'Real-time surveillance capacity',
-                    'value_fmt': getScoreJsx,
-                    'hideSource': true,
-                    'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'year')}, // TODO
-                    ...(props.countryJeeSurv ? props.countryJeeSurv : {value: null}),
-                  },
-                  {
-                    'title': 'Medical countermeasures capacity',
-                    'value_fmt': getScoreJsx,
-                    'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'year')}, // TODO
-                    ...(props.countryJeeMcm ? props.countryJeeMcm : {value: null}),
-                  },
-                ].map(item =>
-                  <div className={styles.itemContainer}>
-                    <div className={styles.item}>
-                      <span className={styles.title}>
-                        {item.title}
-                      </span>
-                      <div className={styles.content}>
-                        {
-                          // Display formatted value and label
-                          (item.value !== null && (
-                            <span>
-                              <span className={styles.value}>
-                                {item.value_fmt(item.value)}
-                              </span>
-                              {
-                                item.value_label && <span className={styles.label}>
-                                  &nbsp;{item.value_label}
+                  [
+                    {
+                      'title': 'Population',
+                      'value_fmt': Util.formatSI,
+                      'value_label': 'people',
+                      'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'year')}, // TODO
+                      ...(props.countryPop ? props.countryPop : {value: null}),
+                    },
+                    {
+                      'title': 'Gross domestic product per capita',
+                      'value_fmt': Util.formatSI,
+                      // 'value_fmt': Util.money,
+                      'value_label': 'USD',
+                      'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'year')}, // TODO
+                      ...(props.countryGDP ? props.countryGDP : {value: null}),
+                    },
+                  ].map(item =>
+                    <div className={styles.itemContainer}>
+                    {
+                      // For normal non-JEE items:
+                      (item.type === undefined || item.type !== 'jee') &&
+                        <div className={styles.item}>
+                          <span className={styles.title}>
+                            {item.title}
+                          </span>
+                          <div className={styles.content}>
+                            {
+                              // Display formatted value and label
+                              (item.value !== null && (
+                                <span>
+                                  <span className={styles.value}>
+                                    {item.value_fmt(item.value)}
+                                  </span>
+                                  {
+                                    item.value_label && <span className={styles.label}>
+                                      &nbsp;{item.value_label}
+                                    </span>
+                                  }
                                 </span>
-                              }
-                            </span>
-                          ))
-                        }
-                        {
-                          // Data not available message, if applicable.
-                          (item.value === null && (
-                            <span className={'notAvail'}>
-                              Data not available
-                            </span>
-                          ))
-                        }
-                      </div>
-                      {
-                        // Display data source text if available.
-                        (item.data_source && item.value !== null && !item.notAvail && !item.hideSource) &&
-                          <div className={classNames('dataSource', styles.source)}>
-                            Data for {item.value !== null ? `${item.date_time_fmt(item)}` : ''}.
-                            Source: {item.data_source}{ item.updated_at && (
-                                ' as of ' + new Date(item.updated_at).toLocaleString('en-us', {
-                                  month: 'short',
-                                  year: 'numeric',
-                                })
-                              )
+                              ))
+                            }
+                            {
+                              // Data not available message, if applicable.
+                              (item.value === null && (
+                                <span className={'notAvail'}>
+                                  Data not available
+                                </span>
+                              ))
                             }
                           </div>
-                      }
+                          {
+                            // Display data source text if available.
+                            (item.data_source && item.value !== null && !item.notAvail && !item.hideSource) &&
+                              <div className={classNames('dataSource', styles.source)}>
+                                Data for {item.value !== null ? `${item.date_time_fmt(item)}` : ''}.
+                                Source: {item.data_source}{ item.updated_at && (
+                                    ' as of ' + new Date(item.updated_at).toLocaleString('en-us', {
+                                      month: 'short',
+                                      year: 'numeric',
+                                    })
+                                  )
+                                }
+                              </div>
+                          }
+                        </div>
+                    }
+                    {
+                      // For JEE items:
+                      (item.type === 'jee') &&
+                        <div className={classNames(
+                          styles.item,
+                          styles.jee,
+                        )}>
+                          <span className={styles.title}>
+                            <span className={styles.text}>
+                              {item.title}
+                            </span>
+                            {item.legend_jsx && item.legend_jsx()}
+                          </span>
+                          <div className={classNames(styles.content, styles.jee)}>
+                          {
+                            item.values.map(jeeItem =>
+                              <div className={styles.jeeItem}>
+                              {
+                                // Display title
+                                <div className={styles.title}>{jeeItem.title}</div>
+                              }
+                              {
+                                // Display formatted value and label
+                                (jeeItem.value !== null && (
+                                  jeeItem.value_fmt(jeeItem.value)
+                                ))
+                              }
+                              {
+                                // Data not available message, if applicable.
+                                (jeeItem.value === null && (
+                                  <span className={'notAvail'}>
+                                    Data not available
+                                  </span>
+                                ))
+                              }
+                              </div>
+                            )
+                          }
+                          </div>
+                          {
+                            // Display data source text if available.
+                            (item.data_source && item.value !== null && !item.notAvail && !item.hideSource) &&
+                              <div className={classNames('dataSource', styles.source)}>
+                                Data for {item.value !== null ? `${item.date_time_fmt(item)}` : ''}.
+                                Source: {item.data_source}{ item.updated_at && (
+                                    ' as of ' + new Date(item.updated_at).toLocaleString('en-us', {
+                                      month: 'short',
+                                      year: 'numeric',
+                                    })
+                                  )
+                                }
+                              </div>
+                          }
+                        </div>
+                    }
                     </div>
-                  </div>
-                )
-              }
+                  )
+                }
+              </div>
+              <div className={styles.sidebar}>
+                {
+                  [
+                    {
+                      'title': 'JEE country capacity',
+                      'type': 'jee',
+                      'legend_jsx': () => getJeeChart('legend'),
+                      'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'year')}, // TODO
+                      'values': [
+                        {
+                          'title': 'Immunization capacity',
+                          'value_fmt': getJeeChart,
+                          'score_labeling': (score) => getScoreLabeling(score),
+                          'hideSource': true,
+                          ...(props.countryJeeImmun ? props.countryJeeImmun : {value: null}),
+                        },
+                        {
+                          'title': 'Real-time surveillance capacity',
+                          'value_fmt': getJeeChart,
+                          'score_labeling': (score) => getScoreLabeling(score),
+                          'hideSource': true,
+                          ...(props.countryJeeSurv ? props.countryJeeSurv : {value: null}),
+                        },
+                        {
+                          'title': 'Medical countermeasures capacity',
+                          'score_labeling': (score) => getScoreLabeling(score),
+                          'value_fmt': getJeeChart,
+                          ...(props.countryJeeMcm ? props.countryJeeMcm : {value: null}),
+                        },
+                      ],
+                      ...(props.countryJeeImmun ? props.countryJeeImmun : {value: null}),
+                    },
+                  ].map(item =>
+                    <div className={styles.itemContainer}>
+                    {
+                      // For normal non-JEE items:
+                      (item.type === undefined || item.type !== 'jee') &&
+                        <div className={styles.item}>
+                          <span className={styles.title}>
+                            {item.title}
+                          </span>
+                          <div className={styles.content}>
+                            {
+                              // Display formatted value and label
+                              (item.value !== null && (
+                                <span>
+                                  <span className={styles.value}>
+                                    {item.value_fmt(item.value)}
+                                  </span>
+                                  {
+                                    item.value_label && <span className={styles.label}>
+                                      &nbsp;{item.value_label}
+                                    </span>
+                                  }
+                                </span>
+                              ))
+                            }
+                            {
+                              // Data not available message, if applicable.
+                              (item.value === null && (
+                                <span className={'notAvail'}>
+                                  Data not available
+                                </span>
+                              ))
+                            }
+                          </div>
+                          {
+                            // Display data source text if available.
+                            (item.data_source && item.value !== null && !item.notAvail && !item.hideSource) &&
+                              <div className={classNames('dataSource', styles.source)}>
+                                Data for {item.value !== null ? `${item.date_time_fmt(item)}` : ''}.
+                                Source: {item.data_source}{ item.updated_at && (
+                                    ' as of ' + new Date(item.updated_at).toLocaleString('en-us', {
+                                      month: 'short',
+                                      year: 'numeric',
+                                    })
+                                  )
+                                }
+                              </div>
+                          }
+                        </div>
+                    }
+                    {
+                      // For JEE items:
+                      (item.type === 'jee') &&
+                        <div className={classNames(
+                          styles.item,
+                          styles.jee,
+                        )}>
+                          <span className={styles.title}>
+                            <span className={styles.text}>
+                              {item.title}
+                            </span>
+                            {item.legend_jsx && item.legend_jsx()}
+                          </span>
+                          <div className={classNames(styles.content, styles.jee)}>
+                          {
+                            item.values.map(jeeItem =>
+                              <div className={styles.jeeItem}>
+                              {
+                                // Display title
+                                <div className={styles.title}>{jeeItem.title}</div>
+                              }
+                              {
+                                // Display formatted value and label
+                                (jeeItem.value !== null && (
+                                  jeeItem.value_fmt(jeeItem.value)
+                                ))
+                              }
+                              {
+                                // Data not available message, if applicable.
+                                (jeeItem.value === null && (
+                                  <span className={'notAvail'}>
+                                    Data not available
+                                  </span>
+                                ))
+                              }
+                              </div>
+                            )
+                          }
+                          </div>
+                          {
+                            // Display data source text if available.
+                            (item.data_source && item.value !== null && !item.notAvail && !item.hideSource) &&
+                              <div className={classNames('dataSource', styles.source)}>
+                                Data for {item.value !== null ? `${item.date_time_fmt(item)}` : ''}.
+                                Source: {item.data_source}{ item.updated_at && (
+                                    ' as of ' + new Date(item.updated_at).toLocaleString('en-us', {
+                                      month: 'short',
+                                      year: 'numeric',
+                                    })
+                                  )
+                                }
+                              </div>
+                          }
+                        </div>
+                    }
+                    </div>
+                  )
+                }
+              </div>
             </div>
             <div className={styles.main}>
             {

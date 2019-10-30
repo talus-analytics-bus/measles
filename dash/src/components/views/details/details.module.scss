@@ -9,6 +9,19 @@ $spacing: 20px;
   flex-flow: row;
   height: 100%;
 
+  .sidebars {
+    display: flex;
+    flex-flow: column;
+    max-width: 30%;
+    min-width: 500px;
+
+    .sidebar {
+      &:not(:first-child) {
+        margin-top: 5px;
+      }
+    }
+  }
+
   .sidebar {
     display: flex;
     flex-flow: column;
@@ -16,8 +29,7 @@ $spacing: 20px;
     padding: $spacing;
     margin-left: $spacing*2;
     margin-right: $spacing*2;
-    max-width: 30%;
-    min-width: 390px;
+    // min-width: 390px;
   }
   .title {
     // Name of country or "Global caseload"
@@ -27,7 +39,6 @@ $spacing: 20px;
 
     font-family: 'Raleway', serif;
     font-weight: bold;
-    font-size: 1.8em;
     line-height: 1;
     // font-size: 2.2em;
     color: black;
@@ -57,16 +68,55 @@ $spacing: 20px;
 
   }
 
+  .jee.item {
+    .title {
+      display: flex;
+      justify-content: space-between;
+      position: relative;
+      .text {
+        max-width: 50%;
+      }
+
+      .chart {
+        display: flex;
+        flex-flow: row;
+        align-items: baseline;
+        justify-content: flex-end;
+      }
+      .wedgeLabels {
+        position: relative;
+        display: flex;
+        justify-content: space-between;
+        margin-top: 5px;
+        color: $dark-grey;
+
+        flex-flow: row;
+        font-weight: normal;
+        font-size: .65em;
+      }
+      .labelRight {
+        text-align: right;
+        // float: right;
+      }
+      .labelLeft {
+        // clear: left;
+        // width: min-content;
+      }
+    }
+  }
+
+  .itemContainer:not(:first-child) {
+    margin-top: $spacing;
+  }
+
   .item {
     display: flex;
     flex-flow: column;
-    margin-top: $spacing;
 
     .title {
       color: $dark-grey;
       font-family: 'Open Sans', sans-serif;
-      font-size: 1.1em;
-      // font-size: 1.46em;
+      font-size: 1.298em;
       font-weight: bold;
 
       .info {
@@ -81,6 +131,44 @@ $spacing: 20px;
       display: flex;
       flex-flow: row;
       justify-content: space-between;
+
+      &.jee {
+        flex-flow: column;
+
+        .jeeItem {
+          display: flex;
+          flex-flow: row;
+          justify-content: space-between;
+          align-items: flex-start;
+          background-color: white;
+          padding: 10px;
+          margin: 5px 0;
+
+          &:first-child {
+            margin-top: 20px;
+          }
+
+          .title {
+            font-size: 1.1em;
+            max-width: 50%;
+          }
+          .jeeChart {
+            display: flex;
+            flex-flow: column;
+            align-items: flex-end;
+
+            .jeeLabel {
+              font-family: 'Raleway', serif;
+              font-weight: bold;
+              text-transform: uppercase;
+              text-align: right;
+              margin-left: auto;
+              font-size: 1.2em;
+              margin-bottom: 10px;
+            }
+          }
+        }
+      }
 
       .value {
         font-size: 2em;
@@ -99,12 +187,6 @@ $spacing: 20px;
           margin-top: 5px;
           line-height: 2.5;
           font-size: .8em;
-          // &.green { border-color: $jee-green; }
-          // &.lightgreen { border-color: $jee-green-light; }
-          // &.yellow { border-color: $jee-yellow; }
-          // &.lightyellow { border-color: $jee-yellow-light; }
-          // &.red { border-color: $jee-red; }
-          // &.gray { border-color: $jee-gray; }
 
           display: flex;
 
@@ -112,16 +194,10 @@ $spacing: 20px;
           .jeeBlocks {
             margin-right: 5px;
             .jeeBlock {
-              &.green { transition: background-color 1s; background-color: $jee-green; }
-              &.lightgreen { background-color: $jee-green-light; }
-              &.yellow { background-color: $jee-yellow; }
-              &.lightyellow { background-color: $jee-yellow-light; }
-              &.red { background-color: $jee-red; }
-              &.gray { background-color: $jee-gray; }
+
               // position: absolute;
               height: $jeeBlockSize;
               width: $jeeBlockSize;
-              background-color: #cecece;
               margin-bottom: 1px;
               transition: background-color 1s;
               &:last-child {
@@ -136,11 +212,37 @@ $spacing: 20px;
         color: $dark-grey;
         font-family: 'Open Sans', sans-serif;
       }
+
       .chart {
         display: flex;
         flex-flow: row;
         position: relative;
         margin-bottom: 50px;
+
+        // Trapezoid sizing for normal wedge chart
+        $wedge-size: .78px;
+        $wedge-height: 10px;
+        $wedge-slope: $wedge-size*10;
+
+        @for $i from 1 through 5 {
+          .trapezoid-#{$i} {
+            .bottom {
+              height: $wedge-height*$i*.8;
+            }
+          }
+        }
+        .trapezoid {
+          .top {
+            height:0;
+            border-width:0 0 $wedge-slope $wedge-size*100;
+            border-style:solid;
+            border-color:transparent $light-grey-2 $light-grey-2 transparent;
+          }
+
+          .bottom {
+            background-color: $light-grey-2;
+          }
+        }
 
         $rect-height: 30px;
         .rect {
@@ -160,21 +262,6 @@ $spacing: 20px;
           &.active {
             box-shadow: 3px 3px 2.5px 0 rgba(0, 0, 0, 0.3);
             -webkit-box-shadow: 3px 3px 2.5px 0 rgba(0, 0, 0, 0.3);
-          }
-        }
-
-        $sep: -10px;
-        $wedge-size: .78px;
-        // $wedge-size: .9825px;
-        $wedge-height: 10px;
-        $wedge-slope: $wedge-size*10;
-
-        @for $i from 1 through 5 {
-          .trapezoid-#{$i} {
-            .bottom {
-              height: $wedge-height*$i*.8;
-              // height: $wedge-height*$i;
-            }
           }
         }
 
@@ -198,17 +285,6 @@ $spacing: 20px;
 
           .shape {
             margin:0 auto;
-          }
-
-          .top {
-            height:0;
-            border-width:0 0 $wedge-slope $wedge-size*100;
-            border-style:solid;
-            border-color:transparent $light-grey-2 $light-grey-2 transparent;
-          }
-
-          .bottom {
-            background-color: $light-grey-2;
           }
 
           &.active {
@@ -260,7 +336,8 @@ $spacing: 20px;
         max-width: $itemMaxWidth;
         .title {
           font-family: 'Raleway', sans-serif;
-          font-size: 1.1em * 1.18;
+          font-size: 1.298em;
+          // font-size: 1.1em * 1.18;
           margin-bottom: 10px;
         }
       }
@@ -417,4 +494,99 @@ $spacing: 20px;
       display: none;
     }
   }
+}
+
+// JEE block/trapezoid colors
+.jeeBlock {
+  background-color: #cecece;
+  &.green { transition: background-color 1s; background-color: $jee-green; }
+  &.lightgreen { background-color: $jee-green-light; }
+  &.yellow { background-color: $jee-yellow; }
+  &.lightyellow { background-color: $jee-yellow-light; }
+  &.red { background-color: $jee-red; }
+  &.gray { background-color: $jee-gray; }
+}
+.details .item.jee .jeeChart {
+
+  $colors: $jee-green, $jee-green-light, $jee-yellow, $jee-yellow-light, $jee-red, $jee-gray;
+  $colorNames: 'green', 'lightgreen', 'yellow', 'lightyellow', 'red', 'gray';
+
+  @for $i from 1 through length($colors) {
+    $color: nth($colors, $i);
+    $selector: '&.' + nth($colorNames, $i);
+    #{$selector} {
+      color: $color;
+      .chart .trapezoid.active {
+        .bottom { background-color: $color; }
+        .top { border-color: transparent $color $color transparent; }
+      }
+    }
+    .chart .legend.trapezoid-#{length($colors)-$i} {
+      .bottom { background-color: $color; }
+      .top { border-color: transparent $color $color transparent; }
+    }
+  }
+
+  // JEE chart specific trap sizing and styling
+  .chart .trapezoid {
+    &.active {
+      .top, .bottom {
+        box-shadow: none;
+        -webkit-box-shadow: none;
+      }
+    }
+
+    margin-right: 0;
+  }
+
+  .chart {
+    margin-bottom: 0;
+
+    $wedge-width: 30px;
+    $wedge-height: 8px;
+
+    $wedge-height-btm: $wedge-height;
+    $wedge-height-top: $wedge-height;
+
+    @for $i from 0 through 4 {
+      .trapezoid-#{$i+1} {
+        .bottom {
+          height: $wedge-height-top*$i;
+        }
+      }
+    }
+    .trapezoid {
+      .top {
+        height: 0;
+        border-width:0 0 $wedge-height-btm $wedge-width;
+        border-style:solid;
+        border-color:transparent $light-grey-2 $light-grey-2 transparent;
+      }
+
+      .bottom {
+        background-color: $light-grey-2;
+      }
+    }
+
+    $wedge-width: 30px;
+    $wedge-height: 5px;
+
+    $wedge-height-btm: $wedge-height;
+    $wedge-height-top: $wedge-height;
+
+    @for $i from 0 through 4 {
+      .legend.trapezoid-#{$i+1} {
+        .bottom {
+          height: $wedge-height-top*$i;
+        }
+      }
+    }
+    .legend.trapezoid {
+      .top {
+        height: 0;
+        border-width:0 0 $wedge-height-btm $wedge-width;
+      }
+    }
+  }
+
 }
