@@ -255,8 +255,8 @@ const Details = (props) => {
           }
           </div>
           <div className={styles.wedgeLabels}>
-            <div className={styles.labelLeft}>High relative<br/>incidence</div>
-            <div className={styles.labelRight}>Low relative<br/>incidence</div>
+            <div className={styles.labelLeft}>Low relative<br/>incidence</div>
+            <div className={styles.labelRight}>High relative<br/>incidence</div>
           </div>
       </div>
     )
@@ -273,7 +273,7 @@ const Details = (props) => {
           )
         }>
           <div className={styles.value}>
-            <div className={classNames(styles.chart, styles.vaccChart)}>
+            <div className={classNames(styles.chart)}>
               {
                 [0,1,2,3,4].map(bin =>
                   <div className={styles.trapezoidContainer}>
@@ -320,7 +320,7 @@ const Details = (props) => {
           }
           </div>
           <div className={styles.value}>
-            <div className={classNames(styles.chart, styles.vaccChart)}>
+            <div className={classNames(styles.chart)}>
               {
                 [0,1,2,3,4].map(bin =>
                   <div className={styles.trapezoidContainer}>
@@ -403,14 +403,15 @@ const Details = (props) => {
                 style={{
                   // 'borderColor': bin === binData.i ? 'gray' : '',
                   'backgroundColor': bin === 1 ? binData.color : '',
-                  'color': val >= tooSmall ? 'white' : '',
+                  'color': (val >= tooSmall && binData.i > 3) ? 'white' : '',
                   'width': bin === 1 ? getVaccActiveWedgeWidth(val) : '',
                 }}
                 >
                   <div
                     style = {{
                       'position': 'absolute',
-                      'right': bin === 1 && val < tooSmall ? null : 0,
+                      'top': bin === 1 ? 2 : null,
+                      'right': bin === 1 && val < tooSmall ? null : 5,
                       'left': bin === 1 && val < tooSmall ? getVaccActiveWedgeWidth(val) + 5 : null,
                     }}
                   >

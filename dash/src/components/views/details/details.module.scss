@@ -255,12 +255,12 @@ $spacing: 20px;
           font-size: 1em;
           background-color: $light-grey-2;
           width: $rect-height*2.06;
-          height: $rect-height - 2px;
+          height: $rect-height + 3px;
           text-align: center;
           padding-bottom: 2px;
           line-height: $rect-height - 2px;
 
-          border: 2.5px solid transparent;
+          // border: 2.5px solid transparent;
 
           // &.active {
           //   box-shadow: 3px 3px 2.5px 0 rgba(0, 0, 0, 0.3);
@@ -278,9 +278,9 @@ $spacing: 20px;
           }
         }
 
-        &.measlesWedgeChart .trapezoidContainers {
-          transform: scaleX(-1);
-        }
+        // &.measlesWedgeChart .trapezoidContainers {
+        //   transform: scaleX(-1);
+        // }
 
         .trapezoidContainers {
           display: flex;
