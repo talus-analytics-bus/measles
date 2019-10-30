@@ -252,26 +252,38 @@ $spacing: 20px;
         .rect {
           font-family: 'rawline', serif;
           font-weight: 600;
-          font-size: 1.4em;
+          font-size: 1em;
           background-color: $light-grey-2;
-          width: $rect-height*2;
+          width: $rect-height*2.06;
           height: $rect-height - 2px;
-          margin-right: 2px;
           text-align: center;
           padding-bottom: 2px;
           line-height: $rect-height - 2px;
 
           border: 2.5px solid transparent;
 
-          &.active {
-            box-shadow: 3px 3px 2.5px 0 rgba(0, 0, 0, 0.3);
-            -webkit-box-shadow: 3px 3px 2.5px 0 rgba(0, 0, 0, 0.3);
+          // &.active {
+          //   box-shadow: 3px 3px 2.5px 0 rgba(0, 0, 0, 0.3);
+          //   -webkit-box-shadow: 3px 3px 2.5px 0 rgba(0, 0, 0, 0.3);
+          // }
+        }
+
+        &.vaccChart {
+          .gutter {
+            width: 400px;
           }
+          .active {
+            position: absolute;
+            left: 0;
+          }
+        }
+
+        &.measlesWedgeChart .trapezoidContainers {
+          transform: scaleX(-1);
         }
 
         .trapezoidContainers {
           display: flex;
-          transform: scaleX(-1);
           .trapezoidContainer {
             display: flex;
             // margin-top: auto;

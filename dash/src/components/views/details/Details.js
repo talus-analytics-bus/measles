@@ -222,7 +222,7 @@ const Details = (props) => {
     const wedgeColor = wedgeColorScale(binData.i / 4);
 
     return (
-      <div className={classNames(styles.chart, styles.vaccChart, styles.shapes)}>
+      <div className={classNames(styles.chart, styles.measlesWedgeChart, styles.shapes)}>
         <div className={classNames(styles.trapezoidContainers)}>
           {
             [0,1,2,3,4].map(bin =>
@@ -365,6 +365,19 @@ const Details = (props) => {
     }
   };
 
+  // Returns sensible position for vaccination bullet chart wedge.
+  const getVaccActiveWedgePos = (val) => {
+    val = 5;
+    const thresh = 66.8; // width of active wedgeColor
+    const targetPos = ((val/100) * 400) - thresh;
+    const finalPos = targetPos >= thresh ? targetPos
+      : 0;
+    return finalPos;
+  };
+  const getVaccActiveWedgeWidth = (val) => {
+    return (val/100) * 400;
+  };
+
   /**
    * Get vaccination chart JSX.
    * @method getVaccChart
@@ -372,39 +385,48 @@ const Details = (props) => {
   const getVaccChart = (val) => {
     // Get vaccination chart bins
     const binData = getVaccinationChartBin(val);
+    const tooSmall = 15;
     return (
-      <div className={classNames(styles.chart, styles.vaccChart)}>
-        {
-          [0,1,2,3,4,5].map(bin =>
-            <div className={styles.rectContainer}>
-              <div
-              className={classNames(
-                styles.rect,
-                {
-                  [styles.active]: bin === binData.i,
-                }
-              )}
-              style={{
-                // 'borderColor': bin === binData.i ? 'gray' : '',
-                'backgroundColor': bin === binData.i ? binData.color : '',
-                'color': binData.i > 3 ? 'white' : '',
-              }}
-              >
-                {
-                  binData.i === bin ? Util.percentize(val) : ''
-                }
+      <div className={classNames(styles.chart, styles.vaccChart, styles.shapes)}>
+        <div className={classNames(styles.trapezoidContainers)}>
+          {
+            [0, 1].map(bin =>
+              <div className={styles.rectContainer}>
+                <div
+                className={classNames(
+                  styles.rect,
+                  {
+                    [styles.active]: bin === 1 && binData.i > 0,
+                    [styles.gutter]: bin === 0,
+                  }
+                )}
+                style={{
+                  // 'borderColor': bin === binData.i ? 'gray' : '',
+                  'backgroundColor': bin === 1 ? binData.color : '',
+                  'color': val >= tooSmall ? 'white' : '',
+                  'width': bin === 1 ? getVaccActiveWedgeWidth(val) : '',
+                }}
+                >
+                  <div
+                    style = {{
+                      'position': 'absolute',
+                      'right': bin === 1 && val < tooSmall ? null : 0,
+                      'left': bin === 1 && val < tooSmall ? getVaccActiveWedgeWidth(val) + 5 : null,
+                    }}
+                  >
+                  {
+                    (bin === 1 && binData.i > 0) ? Util.percentize(val) : ''
+                  }
+                  </div>
+                </div>
               </div>
-              {
-                // Label if first
-                (bin === 0) && <div className={styles.labelLeft}>Low<br/>coverage</div>
-              }
-              {
-                // Label if last
-                (bin === 5) && <div className={styles.labelRight}>High<br/>coverage</div>
-              }
-            </div>
-          )
-        }
+            )
+          }
+        </div>
+        <div className={styles.wedgeLabels}>
+          <div className={styles.labelLeft}>Low<br/>coverage</div>
+          <div className={styles.labelRight}>High<br/>coverage</div>
+        </div>
       </div>
     )
   };
