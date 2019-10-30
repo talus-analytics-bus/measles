@@ -657,7 +657,8 @@ const Details = (props) => {
                   },
                   {
                     'title': 'Gross domestic product per capita',
-                    'value_fmt': Util.money,
+                    'value_fmt': Util.formatSI,
+                    // 'value_fmt': Util.money,
                     'value_label': 'USD',
                     'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'year')}, // TODO
                     ...(props.countryGDP ? props.countryGDP : {value: null}),
@@ -686,7 +687,7 @@ const Details = (props) => {
                   <div className={styles.itemContainer}>
                     <div className={styles.item}>
                       <span className={styles.title}>
-                        {item.title} {item.value !== null ? `(${item.date_time_fmt(item)})` : ''}
+                        {item.title}
                       </span>
                       <div className={styles.content}>
                         {
@@ -717,6 +718,7 @@ const Details = (props) => {
                         // Display data source text if available.
                         (item.data_source && item.value !== null && !item.notAvail && !item.hideSource) &&
                           <div className={classNames('dataSource', styles.source)}>
+                            Data for {item.value !== null ? `${item.date_time_fmt(item)}` : ''}.
                             Source: {item.data_source}{ item.updated_at && (
                                 ' as of ' + new Date(item.updated_at).toLocaleString('en-us', {
                                   month: 'short',
