@@ -56,7 +56,7 @@ $spacing: 20px;
     font-family: 'Raleway', serif;
     font-weight: bold;
     line-height: 1;
-    // font-size: 2.2em;
+    font-size: 1.75em;
     color: black;
 
     .flag {
@@ -222,7 +222,7 @@ $spacing: 20px;
         }
 
         // Trapezoid sizing for normal wedge chart
-        $wedge-width: 80px;
+        $wedge-width: 78.5px;
         $wedge-height: 8px;
 
         $wedge-height-btm: $wedge-height;
@@ -236,6 +236,7 @@ $spacing: 20px;
           }
         }
         .trapezoid {
+          margin-right: 1px;
           .top {
             height: 0;
             border-width:0 0 $wedge-height-btm $wedge-width;
@@ -577,6 +578,7 @@ $spacing: 20px;
       }
     }
     .trapezoid {
+      margin-right: 1px;
       .top {
         height: 0;
         border-width:0 0 $wedge-height-btm $wedge-width;
@@ -606,6 +608,7 @@ $spacing: 20px;
       margin-top: auto;
     }
     .legend.trapezoid {
+      margin-right: 0;
       .top {
         height: 0;
         border-width:0 0 $wedge-height-btm $wedge-width;
