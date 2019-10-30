@@ -2,21 +2,34 @@
 
 #globalTooltip {
   opacity: .95;
-  min-width: 200px;
-  max-width: 300px;
+  min-width: 300px;
+  max-width: 400px;
+  font-size: 24px; // TODO elegantly
+
   .tooltipContainer {
+    border: 1px solid $light-grey;
+    border-radius: $border-radius;
+
+    .tooltipHeader {
+      background-color: $light-grey-2;
+      padding: 10px;
+      border-radius: $border-radius $border-radius 0 0;
+    }
     .tooltipContent {
       display: flex;
       flex-flow: column;
       background-color: white;
+      border-radius: $border-radius;
+
       .tooltipName {
-        font-size: 1.8em;
+        font-size: 1em;
         font-family: 'Gotham Bold', serif;
-        // font-weight: bold;
+        color: $dark-grey;
+        // background-color: gray;
       }
       .item {
-        &:not(:last-child) {
-          // margin-bottom: 5px;
+        &:first-child {
+          padding: 10px;
         }
         // .name {
         //   font-family: 'open_sanssemibold', sans-serif;
@@ -33,17 +46,15 @@
     display: flex;
     flex-flow: column;
 
-    padding: $spacing;
+    // padding: $spacing;
 
     background-color: white;
-    border-radius: $border-radius;
-    border: 1px solid $light-grey;
 
     .item {
       display: flex;
       flex-flow: column;
       font-size: 1em;
-      padding: 10px 0;
+      padding: 10px;
 
       border-bottom: 1px solid #b2b2b2;
       &:last-child {
@@ -59,8 +70,8 @@
       }
       .name {
         font-family: 'Gotham Bold', serif;
-        font-size: 1.1em;
-        line-height: 1.1;
+        font-size: .73em;
+        line-height: 1;
         margin-bottom: 7px;
       }
       .content {
@@ -77,12 +88,14 @@
         }
 
         .unit {
+          font-family: 'Gotham Book', serif;
           margin-left: 5px;
           max-width: 50%;
+          font-size: .66em;
         }
 
         .value {
-          font-size: 1.67em;
+          font-size: 1.11em;
           color: black;
           font-family: 'Gotham Bold';
 
@@ -90,7 +103,8 @@
             color: $grey;
             font-style: italic;
             font-family: 'Gotham Book', serif;
-            font-size: 1.4em;
+            font-size: .66em;
+            margin: 0;
           }
 
           .value2 {

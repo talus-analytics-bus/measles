@@ -277,11 +277,25 @@ class Scatter extends Chart {
     // Called: Every time the month/year slider is changed.
     chart.update = (dt) => {
       const sortBySize = (a, b) => {
-        if (a.value_normalized.y === null) return -1;
-        if (b.value_normalized.y === null) return 1;
-        if (a.value_normalized.size > b.value_normalized.size) return -1;
-        else if (a.value_normalized.size < b.value_normalized.size) return 1;
-        else return 0;
+
+        // A: If this bubble is NOT null
+        if (a.value_normalized.y !== null) {
+
+          // And the other one is, then send the other to the back
+          if (b.value_normalized.y === null) return 1;
+        }
+
+        // B: If this bubble is NOT null
+        else if (b.value_normalized.y !== null) {
+
+          // And the other one is, then send the other to the back
+          if (a.value_normalized.y === null) return -1;
+        }
+
+        // If this bubble is has more pop
+        else if (a.value_normalized.size > b.value_normalized.size) {
+          return -1;
+        } else return 1;
       };
       // Get month and year of data to show in scatter plot
       const yyyymmdd = Util.formatDatetimeApi(dt);
@@ -462,11 +476,31 @@ class Scatter extends Chart {
                   chart.params.activeBubbleId = -9999;
                 }
 
-                bubblesG.selectAll('g').sort(function(a, b){
+                bubblesG.selectAll('g')
+                .sort(function bubbleSort (a, b) {
+
+                  // If this is the active bubble, bring it to the front.
                   if (activateBubble && a.place_id === d.place_id) return 1;
                   else if (activateBubble && b.place_id === d.place_id) return -1;
-                  else if (a.value_normalized.size > b.value_normalized.size) return -1;
-                  else if (a.value_normalized.size <= b.value_normalized.size) return 1;
+
+                  // A: If this bubble is NOT null
+                  else if (a.value_normalized.y !== null) {
+
+                    // And the other one is, then send the other to the back
+                    if (b.value_normalized.y === null) return 1;
+                  }
+
+                  // B: If this bubble is NOT null
+                  else if (b.value_normalized.y !== null) {
+
+                    // And the other one is, then send the other to the back
+                    if (a.value_normalized.y === null) return -1;
+                  }
+
+                  // If this bubble is has more pop
+                  else if (a.value_normalized.size > b.value_normalized.size) {
+                    return -1;
+                  } else return 1;
                 })
 
                 // Make name label visible

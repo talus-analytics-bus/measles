@@ -747,6 +747,7 @@ const Global = (props) => {
               className='globalTooltip'
               place="right"
               effect="float"
+              clickable={true}
               getContent={ () =>
                 tooltipData &&
                   <div className={stylesTooltip.tooltipContainer}>
@@ -754,29 +755,29 @@ const Global = (props) => {
                     {
                       // If name, show
                       (tooltipData.name !== undefined) &&
-                      <div className={stylesTooltip.tooltipName}>
-                        {tooltipData.name}
+                      <div className={stylesTooltip.tooltipHeader}>
+                        <div className={stylesTooltip.tooltipName}>
+                          {tooltipData.name}
+                        </div>
                       </div>
                     }
                     {
                       tooltipData.items.map(item =>
                         <div className={stylesTooltip.item}>
-                          <div className={stylesTooltip.name}>{item.name} {item.value !== null ? `(${Util.getDatetimeStamp(item.datum, item.period)})` : ''}</div>
+                          <div className={stylesTooltip.name}>{item.name}<br/>{item.value !== null ? `(${Util.getDatetimeStamp(item.datum, item.period)})` : ''}</div>
                           <div className={stylesTooltip.content}>
                           {
                             // Show value if reported
                             item.value !== null &&
                             <div>
                               <span className={stylesTooltip.value}>{item.value}</span>
-                              <span className={stylesTooltip.unit}>{item.unit}</span>
+                              <span className={stylesTooltip.unit}>{item.label}</span>
                             </div>
                           }
                           {
                             // Write not reported otherwise
                             item.value === null &&
-                            <div>
-                              <span className={classNames(stylesTooltip.value, stylesTooltip.notAvail)}>Not reported</span>
-                            </div>
+                            <span className={classNames(stylesTooltip.value, stylesTooltip.notAvail)}>Not reported</span>
                           }
                           </div>
                         </div>
