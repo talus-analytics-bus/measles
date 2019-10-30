@@ -413,7 +413,6 @@ const Details = (props) => {
       </div>
     )
 
-
     // Get count summary labeling
     const metricParams = Util.getMetricChartParams(slidingLineMetric);
 
@@ -488,7 +487,16 @@ const Details = (props) => {
   // Get caseload and delta data
   // Return data for rendering caseload and delta value sub-component of
   // "recent cases" section.
-  const getCaseloadAndDeltaData = (obs, trend) => {
+  const getCaseloadAndDeltaData = (obsTmp, trend) => {
+
+    // If observation unavailable, use placeholder null data.
+    const obs = obsTmp === undefined ? {
+      value: null,
+      deltaData: {},
+    }
+    : obsTmp;
+
+    // Get and return data for cases and delta values.
     const data = {
       slug: 'cases',
       value: obs.value > 0 ? Util.comma(obs['value']) : null,
@@ -516,7 +524,7 @@ const Details = (props) => {
       <div className={styles.value2Content}>
       {
         // If value2 exists, add that
-        (caseloadAndDeltaData.value !== undefined) && (
+        (caseloadAndDeltaData.value !== undefined && caseloadAndDeltaData.value !== null) && (
           <span>
             <span className={styles.value}>{caseloadAndDeltaData.value}</span>
             &nbsp;
@@ -788,7 +796,7 @@ const Details = (props) => {
                       </div>
                       {
                         // Display chart if there is one
-                        (item.chart_jsx !== undefined) &&
+                        (item.value !== null  && item.chart_jsx !== undefined) &&
                           item.chart_jsx(item.value)
                       }
                     </div>
