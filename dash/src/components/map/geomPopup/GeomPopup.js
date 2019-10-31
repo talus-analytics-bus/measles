@@ -6,7 +6,7 @@ import Util from '../../misc/Util.js'
 import styles from './geomPopup.module.scss'
 
 // : React.FC
-const GeomPopup = ({ popupData }) => {
+const GeomPopup = ({ popupData, bubbleMetric }) => {
   console.log(popupData)
 
 
@@ -31,7 +31,8 @@ const GeomPopup = ({ popupData }) => {
           label: 'Incidence of measles',
           dateFmt: Util.getDatetimeStamp(obs, 'month'),
           value: Util.formatIncidence(obs['value']),
-          unit: 'cases per 1M population',
+          unit: ['cases per', '1M population'],
+          deltaData: Util.getDeltaData(popupData['trend']),
           valueNum: obs['value'],
           notAvail: obs['value'] === null,
           dataSource: obs['data_source'],
@@ -48,6 +49,7 @@ const GeomPopup = ({ popupData }) => {
           label: 'Measles cases reported',
           dateFmt: Util.getDatetimeStamp(obs, 'month'),
           value: Util.comma(obs['value']),
+          valueNum: obs['value'],
           unit: Util.getPeopleNoun(obs['value']),
           deltaData: Util.getDeltaData(popupData['trend']),
           notAvail: obs['value'] === null,
@@ -76,13 +78,35 @@ const GeomPopup = ({ popupData }) => {
     }
   };
 
-  // // Hide image if not found
-  // const hideImage = (e) => {
-  //   e.target.src = null;
-  // };
+  const renderUnit = (unitData) => {
+    if (typeof(unitData) === 'object') {
+      return (
+        unitData.map(d =>
+          <div>
+          {d}
+          <br/>
+          </div>
+        )
+      );
+    }
+    else return (<div>{unitData}</div>);
+  };
+
+  const tooltipItems = bubbleMetric === 'incidence_monthly' ?
+      [
+        getTooltipMetricData(popupData, 'incidence'),
+        getTooltipMetricData(popupData, 'fill'),
+        // getTooltipMetricData(popupData, 'bubble'),
+      ]
+    :
+      [
+        getTooltipMetricData(popupData, 'bubble'),
+        getTooltipMetricData(popupData, 'fill'),
+        // getTooltipMetricData(popupData, 'incidence'),
+      ];
 
   return (
-    <div className={styles.container}>
+    <div className={classNames(styles.container, styles[bubbleMetric])}>
       <div className={styles.header}>
         <div className={styles.titleContainer}>
           <p className={styles.stateName}>
@@ -94,11 +118,7 @@ const GeomPopup = ({ popupData }) => {
       <div>
         <div className={styles.data}>
           {
-            [
-              getTooltipMetricData(popupData, 'incidence'),
-              getTooltipMetricData(popupData, 'bubble'),
-              getTooltipMetricData(popupData, 'fill'),
-            ].map(d =>
+            tooltipItems.map(d =>
               <div className={classNames(
                 styles[d.slug],
                 styles.datum
@@ -112,14 +132,14 @@ const GeomPopup = ({ popupData }) => {
                   styles.content,
                   {
                     [styles['notAvail']]: d.notAvail,
-                    [styles.zero]: d.valueNum && d.valueNum === 0,
+                    [styles.zero]: d.valueNum !== undefined && d.valueNum === 0,
                   },
                 )}>
                   <div className={styles.value}>
                   {d.notAvail ? 'Recent data not available' : d.value}
                   </div>
                   {
-                    d.notAvail ? '' : <div className={styles.unit}>{d.unit}</div>
+                    d.notAvail ? '' : <div className={styles.unit}>{renderUnit(d.unit)}</div>
                   }
                   {
                     // If value2 exists, add that

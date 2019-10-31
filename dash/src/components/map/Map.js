@@ -571,6 +571,7 @@ const Map = ({ fillObservations, bubbleObservations, incidenceObservations, mapp
         >
           <GeomPopup
             popupData={popupData}
+            bubbleMetric={bubbleMetric}
           />
         </Popup>
       )}

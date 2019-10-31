@@ -3,9 +3,16 @@
 $spacing: 10px;
 
 .container {
-  width: 350px;
+  // min-width: 350px;
+  // max-width: 400px;
   font-family: 'Gotham Book';
   font-weight: normal;
+  &.incidence_monthly {
+    min-width: 400px;
+  }
+  &.caseload_totalpop {
+    min-width: 350px;
+  }
 }
 
 .header {
@@ -102,22 +109,32 @@ button {
       line-height: 1;
       margin-bottom: 7px;
     }
+
+    &:first-child .content:not(.zero) {
+      &.incidence .value {
+        color: $value-red;
+      }
+      &.cases .value {
+        color: $value-red;
+      }
+    }
+
     .content {
       display: flex;
       flex-flow: row;
       align-items: center;
 
-      &.incidence .value {
-      // &.incidence .value, &.cases .value {
-        color: $value-red;
-        &.zero {
-          color: black;
-        }
+      &.zero .value {
+        color: black;
       }
 
       .unit {
         margin-left: 5px;
-        max-width: 50%;
+        max-width: 120px;
+        div {
+          white-space: nowrap;
+        }
+        // max-width: 50%;
       }
 
       &.notAvail .value {
@@ -174,6 +191,7 @@ button {
         color: $dark-grey;
         font-family: 'Gotham Book', serif;
         margin-left: 5px;
+        white-space: nowrap;
       }
     }
     .delta {
@@ -203,6 +221,7 @@ button {
     }
     .dataSource {
       margin-top: 10px;
+      max-width: 350px;
     }
   }
 }
