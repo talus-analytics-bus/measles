@@ -601,7 +601,7 @@ class Scatter extends Chart {
                 .attr('dy', d => (-1 * r(d.value_normalized.size)) - 2)
                 .attr('dx', d => getTextDx(d))
                 .style('text-anchor', d => getTextAnchor(d))
-                // .style('font-size', d => labelSize(d.value_normalized.size))
+                .style('font-size', '1em')
 
             circleLabels
               .each(function appendTSpans (d) {
@@ -675,7 +675,7 @@ class Scatter extends Chart {
                 // .duration(2000)
                   .attr('dy', (-1 * r(d.value_normalized.size)) - 2)
                   .attr('dx', getTextDx(d))
-                  .style('font-size', labelSize(d.value_normalized.size))
+                  // .style('font-size', labelSize(d.value_normalized.size))
                   .style('text-anchor', getTextAnchor(d));
               });
 
