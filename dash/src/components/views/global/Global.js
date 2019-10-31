@@ -299,10 +299,12 @@ const Global = (props) => {
     const scatterJsx = scatterArea;
 
     // Scatter plot legend
+    const bubbleMetricData = Util.getMetricChartParams(props.chartParams.Scatter[0].params.data.size[0].metric);
+    const colorMetricData = Util.getMetricChartParams(props.chartParams.Scatter[0].params.data.y[0].metric);
     const scatterLegend = (
       <div className={styles.scatterLegend}>
         <div className={styles.section}>
-          <p className={styles.sectionName}>Population of country</p>
+          <p className={styles.sectionName}>{bubbleMetricData.label}</p>
           <div className={styles.legendEntryGroups}>
             <div className={styles.legendEntryGroup}>
               {
@@ -310,10 +312,10 @@ const Global = (props) => {
                   <div className={classNames(styles.legendEntry, styles.circle)}>
                     <div className={classNames(styles.legendIcon, styles.circle)} />
                     {
-                      (i === 0) && <div className={styles.legendLabel}>Lower<br/>pop.</div>
+                      (i === 0) && <div className={styles.legendLabel}>Fewer<br/>cases</div>
                     }
                     {
-                      (i === 2) && <div className={styles.legendLabel}>Higher<br/>pop.</div>
+                      (i === 2) && <div className={styles.legendLabel}>More<br/>cases</div>
                     }
                   </div>
                 )
@@ -322,7 +324,7 @@ const Global = (props) => {
           </div>
         </div>
         <div className={styles.section}>
-          <p className={styles.sectionName}>New measles cases reported</p>
+          <p className={styles.sectionName}>{colorMetricData.label}</p>
           <div className={styles.legendEntryGroups}>
             <div className={styles.legendEntryGroup}>
               {
@@ -330,10 +332,10 @@ const Global = (props) => {
                   <div className={classNames(styles.legendEntry, styles.rect, styles.rectGradient)}>
                     <div className={classNames(styles.legendIcon, styles.rect, styles.rectGradient)} />
                     {
-                      (i === 0) && <div className={styles.legendLabel}>Fewer<br/>cases</div>
+                      (i === 0) && <div className={styles.legendLabel}>Lower<br/>incidence</div>
                     }
                     {
-                      (i === 2) && <div className={styles.legendLabel}>More<br/>cases</div>
+                      (i === 2) && <div className={styles.legendLabel}>Higher<br/>incidence</div>
                     }
                   </div>
                 )

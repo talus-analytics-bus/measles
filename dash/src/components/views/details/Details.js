@@ -416,7 +416,7 @@ const Details = (props) => {
                     }}
                   >
                   {
-                    (bin === 1 && binData.i > 0) ? Util.percentize(val) : ''
+                    (bin === 1 && binData.i > 0) ? <span><span>{Util.percentize(val)}</span><span className={styles.barValUnit}></span></span>: ''
                   }
                   </div>
                 </div>
@@ -535,7 +535,7 @@ const Details = (props) => {
             metricParams.getUnits(countSummary)
         }
         </span>
-        <span> (
+        <span> in selected window (
           {
             countSummaryDateRange
           }
@@ -1056,7 +1056,14 @@ const Details = (props) => {
             {
               [
                 {
-                  'title': 'Vaccination coverage',
+                  'title': slidingLineMetric === 'caseload_totalpop' ? 'Measles cases and vaccination over time' : 'Monthly incidence rate and vaccination over time',
+                  'chart_jsx': getSlidingLineJsx,
+                  'date_time_fmt': Util.getDateTimeRange,
+                  'data_source': getSlidingLineDataSources,
+                  ...(props.countryIncidenceHistory.length > 0 ? { value: props.countryIncidenceHistory } : { value: null }),
+                },
+                {
+                  'title': 'Vaccination coverage (% of infants)',
                   'chart_jsx': getVaccChart,
                   'value_fmt': Util.percentize,
                   'value_label': 'of infants',
@@ -1064,20 +1071,14 @@ const Details = (props) => {
                   ...(props.countryVaccLatest.value !== undefined ? props.countryVaccLatest : { value: null }),
                 },
                 {
-                  'title': 'Recent monthly incidence of measles',
+                  'title': 'Current outbreak severity',
+                  // 'title': 'Recent monthly incidence of measles',
                   'chart_jsx': getWedgeChart,
                   'value_fmt': Util.formatIncidence,
                   'value_label': 'cases per 1M population',
                   'value2_jsx': getCaseloadAndDeltaJsx,
                   'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'month')},
                   ...(props.countryIncidenceLatest.value !== undefined ? props.countryIncidenceLatest : { value: null }),
-                },
-                {
-                  'title': slidingLineMetric === 'caseload_totalpop' ? 'New cases by month' : 'Monthly incidence rate',
-                  'chart_jsx': getSlidingLineJsx,
-                  'date_time_fmt': Util.getDateTimeRange,
-                  'data_source': getSlidingLineDataSources,
-                  ...(props.countryIncidenceHistory.length > 0 ? { value: props.countryIncidenceHistory } : { value: null }),
                 },
               ].map(item =>
                 <div className={styles.itemContainer}>

@@ -441,12 +441,16 @@ $scatterSize: 75vh;
         flow-flow: row;
 
         $rect-height: 25px;
-        $rect-width: 55px * .8;
+        $rect-width: 55px * 1.5;
         $circle-radius: $rect-height;
         $rect-border-width: 1px;
 
         .legendEntry {
           width: $rect-width;
+
+          &:last-child {
+            text-align: right;
+          }
 
           &.rect {
             width: 0;

@@ -31,7 +31,7 @@ Util.getDeltaWord = (deltaVal) => {
 
 Util.getPeopleNoun = (val) => {
   if (val === 1) return 'person';
-  else return 'people';
+  else return 'cases';
 };
 
 Util.getDeltaData = (datum) => {
@@ -95,9 +95,9 @@ Util.getMetricChartParams = (metric) => {
       };
     case 'caseload_totalpop':
       return {
-        tickFormat: Util.comma,
+        tickFormat: Util.formatSIInteger,
         metric: 'caseload_totalpop',
-        units: 'people',
+        units: 'cases',
         getUnits: (val) => val === 1 ? 'case' : 'cases',
         sort: 'desc',
         label: 'Total cases of measles',
@@ -279,7 +279,7 @@ Util.getTooltipItem = (datum) => {
         datum: datum,
         period: 'year',
         value: Util.formatSI(datum.value),
-        label: 'people',
+        label: 'cases',
       };
   }
 };

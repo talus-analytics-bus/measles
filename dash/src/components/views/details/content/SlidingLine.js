@@ -71,8 +71,12 @@ class SlidingLine extends Chart {
       this.params.margin.right = 0;
     }
 
-    // Adjust left margin to fit available space
+    // Set tick format
+    if (this.params.yMetricParams && this.params.yMetricParams.tickFormat) {
+      this.yTickFormat = this.params.yMetricParams.tickFormat;
+    }
 
+    // Adjust left margin to fit available space
     this.init();
     this.params.margin.left = this.fitLeftMargin(this.yDomainDefault);
     this.onResize(this);
@@ -208,11 +212,7 @@ class SlidingLine extends Chart {
     // y axis - main chart - left
     const yAxis = d3.axisLeft()
       .scale(y)
-      .tickFormat((val) => {
-        if (val === 0) {
-          return 0;
-        } else return y.tickFormat()(val);
-      })
+      .tickFormat(chart.yTickFormat)
       .ticks(5)
       .tickSizeOuter(0)
 

@@ -480,10 +480,16 @@ const App = () => {
 
         chartParams.Scatter[0].params.data = {
           x: results.vaccination,
-          y: results.caseload,
-          y2: results.incidence,
-          size: results.population,
+          y: results.incidence,
+          // y2: results.caseload,
+          size: results.caseload,
         };
+        // chartParams.Scatter[0].params.data = {
+        //   x: results.vaccination,
+        //   y: results.caseload,
+        //   y2: results.incidence,
+        //   size: results.population,
+        // };
         chartParams.PagingBar[0].params.data = {
           y: results.caseload_12months,
           y2: results.vaccination_recent,

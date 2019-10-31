@@ -142,6 +142,10 @@ $spacing: 20px;
       flex-flow: row;
       justify-content: space-between;
 
+      .stackedValues {
+        display: none;
+      }
+
       .value2Content {
         display: flex;
         flex-flow: column;
@@ -298,6 +302,11 @@ $spacing: 20px;
             position: absolute;
             left: 0;
           }
+          .barValUnit {
+            font-size: .7em;
+            font-weight: normal;
+            font-family: 'Gotham Book', sans-serif;
+          }
         }
 
         // &.measlesWedgeChart .trapezoidContainers {
@@ -375,12 +384,15 @@ $spacing: 20px;
         border-bottom: 1px solid #b2b2b2;
         padding-bottom: 10px;
       }
+      &:first-child {
+        margin-top: 18px;
+      }
       .item {
         max-width: $itemMaxWidth;
         .title {
           font-family: 'rawline', sans-serif;
           font-size: 1.298em;
-          margin-bottom: 10px;
+          margin-bottom: 20px;
         }
       }
     }
@@ -391,12 +403,15 @@ $spacing: 20px;
     width: 100%;
 
     .dataToggles {
-      display: flex;
+      display: none; // do not show them for now
+      // display: flex;
       flex-flow: column;
       float: right;
       position: absolute;
-      top: 0;
+      top: 30px;
       right: 0;
+      // bottom: 0;
+
 
       z-index: 2;
       font-size: .9em;

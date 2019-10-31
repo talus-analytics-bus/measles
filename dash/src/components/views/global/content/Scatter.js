@@ -19,6 +19,9 @@ class Scatter extends Chart {
     this.data.vals.y = params.data.y || [];
     this.data.vals.size = params.data.size || [];
 
+    // Get grand total cases
+    this.grandMaxSize = d3.max(this.data.vals.size, d => d.value);
+
     // Default margins
     if (!this.params.margin) {
       this.params.margin = {
@@ -84,11 +87,12 @@ class Scatter extends Chart {
     // Define bubble size scale
     const r = d3.scaleLinear()
       .domain([0, 1])
-      .range([5, 50]) // heuristic for max bubble size
+      .range([10, 50]) // heuristic for max bubble size
 
     // Define bubble label size scale
     const labelSize = (val) => {
-      return (r(val) / 2) + 10;
+      return r(val);
+      // return (r(val) / 2) + 10;
     };
 
     // Define x scale - vaccination coverage
@@ -177,12 +181,12 @@ class Scatter extends Chart {
               .append('tspan')
                 .attr('x', -10)
                 .attr('dy', '1.1em')
-                .text('Fewest');
+                .text('Lowest');
             tickLabel
               .append('tspan')
                 .attr('dy', '1.1em')
                 .attr('x', -10)
-                .text('cases');
+                .text('incidence');
           }
           else if (i === 1) {
             tickLabel
@@ -193,12 +197,12 @@ class Scatter extends Chart {
               .append('tspan')
                 .attr('x', -10)
                 .attr('dy', '1.1em')
-                .text('Most');
+                .text('Highest');
             tickLabel
               .append('tspan')
                 .attr('dy', '1.1em')
                 .attr('x', -10)
-                .text('cases');
+                .text('incidence');
           }
         });
 
@@ -297,6 +301,7 @@ class Scatter extends Chart {
           return -1;
         } else return 1;
       };
+
       // Get month and year of data to show in scatter plot
       const yyyymmdd = Util.formatDatetimeApi(dt);
       const yyyymmddArr = yyyymmdd.split('-');
@@ -331,20 +336,21 @@ class Scatter extends Chart {
       const xDataMax = d3.max(xData, d => d.value);
       xData.forEach(d => d.value_normalized = d.value / xDataMax );
 
-      // size data
+      // size data - case count
       const sizeData = chart.data.vals.size.filter(d => {
-        return d.date_time.startsWith(yearlyStr);
+        return d.date_time.startsWith(monthlyStr); // TODO elegantly
       });
       const sizeDataMax = d3.max(sizeData, d => d.value);
-      sizeData.forEach(d => d.value_normalized = d.value / sizeDataMax );
+      sizeData.forEach(d => d.value_normalized = d.value / chart.grandMaxSize );
 
       // Collate data points
       const data = [];
-      sizeData.forEach(sizeDatum => {
-        const placeId = sizeDatum.place_id;
-        const xDatum = xData.find(d => d.place_id === placeId);
+      xData.forEach(xDatum => {
+        const placeId = xDatum.place_id;
+        // const xDatum = xData.find(d => d.place_id === placeId);
+        const sizeDatum = sizeData.find(d => d.place_id === placeId);
         const yDatum = yData.find(d => d.place_id === placeId);
-        if (yDatum && xDatum) {
+        if (yDatum && sizeDatum) {
           data.push(
             {
               value_normalized: {
@@ -596,6 +602,19 @@ class Scatter extends Chart {
                   })`
                 );
 
+            const updatedBubbleGs = update
+            // .data(data, d => d.place_id)
+              .each(function(d) { console.log(d);
+                console.log(d3.select(this).select('text').node())
+              const updatedText = d3.select(this).select('text')
+                .transition()
+                .duration(2000)
+                  .attr('dy', (-1 * r(d.value_normalized.size)) - 2)
+                  .attr('dx', getTextDx(d))
+                  .style('font-size', labelSize(d.value_normalized.size))
+                  .style('text-anchor', getTextAnchor(d));
+              });
+
             update.selectAll('circle')
               .data(data, d => d.place_id)
                 .transition()
@@ -604,12 +623,14 @@ class Scatter extends Chart {
                   .attr('fill', d => yColor(d.value_normalized.y))
                   .attr('r', d => r(d.value_normalized.size));
 
-            update.selectAll('text')
-              .data(data, d => d.place_id)
-                .transition()
-                .duration(2000)
-                  .attr('dx', d => getTextDx(d))
-                  .style('text-anchor', d => getTextAnchor(d));
+            // update.selectAll('text')
+            //   .data(data, d => d.place_id)
+            //     .transition()
+            //     .duration(2000)
+            //       .attr('dy', d => (-1 * r(d.value_normalized.size)) - 2)
+            //       .attr('dx', d => getTextDx(d))
+            //       .style('font-size', d => labelSize(d.value_normalized.size))
+            //       .style('text-anchor', d => getTextAnchor(d));
           },
           exit => {
             exit.remove();

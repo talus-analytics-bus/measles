@@ -423,11 +423,17 @@ class Chart {
         .remove();
     }
     else {
-      data = ordinal ? labels : [
-        y.tickFormat()(
-          y.domain()[0] // largest y-value
-        )
-      ];
+      if (ordinal) {
+        data = labels;
+      }
+      else {
+        const tickFormat = chart.yTickFormat ? chart.yTickFormat : y.tickFormat();
+        data = [
+          tickFormat(
+            y.domain()[0] // largest y-value
+          )
+        ];
+      }
     }
 
     // Add fake tick labels
@@ -487,11 +493,17 @@ class Chart {
 
     const yParams = chart.params.yMetricParams;
 
-    if (chart[axisType] === undefined)
+    if (chart[axisType] === undefined) {
       chart[axisType] = d3.scaleLinear()
         .domain(initDomain)
         .nice()
         .range([0, chart.height]);
+      if (chart.yTickFormat) {
+        console.log('chart.yTickFormat - mvm found')
+        console.log(chart.yTickFormat)
+        chart[axisType].tickFormat(chart.yTickFormat);
+      }
+    }
 
     const chartScale = chart[axisType];
 
