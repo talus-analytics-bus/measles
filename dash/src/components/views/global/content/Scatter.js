@@ -37,8 +37,6 @@ class Scatter extends Chart {
       };
     }
 
-    console.log('Doing scatter plot chart.')
-
     this.init();
     this.onResize(this);
     this.draw();
@@ -88,12 +86,6 @@ class Scatter extends Chart {
         ]
       )
       .range(['#e6c1c6', '#9d3e4c']);
-
-    console.log('SIZE DOMAIN')
-    console.log([
-      Math.log10(chart.grandMinSize),
-      Math.log10(chart.grandMaxSize),
-    ])
 
     const yColor = (val) => {
       if (val === null) return '#b3b3b3'; // no data color
@@ -436,19 +428,6 @@ class Scatter extends Chart {
       );
       // y.domain([0, 1]);
       // y.domain([yMin, 1]);
-      console.log('Y DOMAIN')
-      console.log([
-        Math.log10(chart.grandMinY),
-        Math.log10(chart.grandMaxY)
-      ])
-      console.log('X DOMAIN')
-      console.log([
-        (chart.grandMinX),
-        (chart.grandMaxX)
-      ])
-
-      console.log('r - radius scale')
-      console.log(r)
 
       // Enter new bubbles based on place_id if needed (pos and color)
       // Update existing bubbles by moving to new position and colors
@@ -519,8 +498,6 @@ class Scatter extends Chart {
       }
 
       // Enter new bubbles, update old
-      console.log('data')
-      console.log(data)
       bubblesG.selectAll('g')
         .attr('class', styles.bubbleG)
         .data(data, d => d.place_id)
@@ -560,24 +537,34 @@ class Scatter extends Chart {
                   if (activateBubble && a.place_id === d.place_id) return 1;
                   else if (activateBubble && b.place_id === d.place_id) return -1;
 
-                  // A: If this bubble is NOT null
-                  else if (a.value_normalized.y !== null) {
-
-                    // And the other one is, then send the other to the back
-                    if (b.value_normalized.y === null) return 1;
-                  }
-
-                  // B: If this bubble is NOT null
-                  else if (b.value_normalized.y !== null) {
-
-                    // And the other one is, then send the other to the back
-                    if (a.value_normalized.y === null) return -1;
-                  }
-
-                  // If this bubble is has more pop
                   else if (a.value_normalized.size > b.value_normalized.size) {
                     return -1;
-                  } else return 1;
+                  }
+                  else if (a.value_normalized.size < b.value_normalized.size) {
+                    return 1;
+                  } else return 0;
+                  // // If this is the active bubble, bring it to the front.
+                  // if (activateBubble && a.place_id === d.place_id) return 1;
+                  // else if (activateBubble && b.place_id === d.place_id) return -1;
+                  //
+                  // // A: If this bubble is NOT null
+                  // else if (a.value_normalized.y !== null) {
+                  //
+                  //   // And the other one is, then send the other to the back
+                  //   if (b.value_normalized.y === null) return 1;
+                  // }
+                  //
+                  // // B: If this bubble is NOT null
+                  // else if (b.value_normalized.y !== null) {
+                  //
+                  //   // And the other one is, then send the other to the back
+                  //   if (a.value_normalized.y === null) return -1;
+                  // }
+                  //
+                  // // If this bubble is has more pop
+                  // else if (a.value_normalized.size > b.value_normalized.size) {
+                  //   return -1;
+                  // } else return 1;
                 })
 
                 // Make name label visible
@@ -614,7 +601,7 @@ class Scatter extends Chart {
                 .attr('dy', d => (-1 * r(d.value_normalized.size)) - 2)
                 .attr('dx', d => getTextDx(d))
                 .style('text-anchor', d => getTextAnchor(d))
-                .style('font-size', d => labelSize(d.value_normalized.size))
+                // .style('font-size', d => labelSize(d.value_normalized.size))
 
             circleLabels
               .each(function appendTSpans (d) {
@@ -673,18 +660,24 @@ class Scatter extends Chart {
                   })`
                 );
 
-            // const updatedBubbleGs = update
-            // // .data(data, d => d.place_id)
-            //   .each(function(d) {
-            //
-            //   const updatedText = d3.select(this).select('text')
-            //     .transition()
-            //     .duration(2000)
-            //       .attr('dy', (-1 * r(d.value_normalized.size)) - 2)
-            //       .attr('dx', getTextDx(d))
-            //       .style('font-size', labelSize(d.value_normalized.size))
-            //       .style('text-anchor', getTextAnchor(d));
-            //   });
+            const updatedBubbleGs = update
+            // .data(data, d => d.place_id)
+              .each(function(d) {
+
+                console.log('\nNow updating: ' + d.place_name);
+                console.log('Size value: ' + d.value_normalized.size);
+                console.log('Font size value: ' + labelSize(d.value_normalized.size));
+                console.log('Element:')
+                console.log(d3.select(this).select('text'))
+
+              const updatedText = d3.select(this).select('text')
+                // .transition()
+                // .duration(2000)
+                  .attr('dy', (-1 * r(d.value_normalized.size)) - 2)
+                  .attr('dx', getTextDx(d))
+                  .style('font-size', labelSize(d.value_normalized.size))
+                  .style('text-anchor', getTextAnchor(d));
+              });
 
             update.selectAll('circle')
               .data(data, d => d.place_id)
@@ -710,6 +703,40 @@ class Scatter extends Chart {
             exit.remove();
           },
         );
+
+      // Sort bubbles
+      bubblesG.selectAll('g').sort(function bubbleSort (a, b) {
+
+        const aActive = chart.params.activeBubbleId === a.place_id;
+        const bActive = chart.params.activeBubbleId === b.place_id;
+
+        if (aActive) return 1;
+        else if (bActive) return -1;
+        else if (a.value_normalized.size > b.value_normalized.size) {
+          return -1;
+        }
+        else if (a.value_normalized.size < b.value_normalized.size) {
+          return 1;
+        } else return 0;
+        // // A: If this bubble is NOT null
+        // if (a.value_normalized.y !== null) {
+        //
+        //   // And the other one is, then send the other to the back
+        //   if (b.value_normalized.y === null) return 1;
+        // }
+        //
+        // // B: If this bubble is NOT null
+        // else if (b.value_normalized.y !== null) {
+        //
+        //   // And the other one is, then send the other to the back
+        //   if (a.value_normalized.y === null) return -1;
+        // }
+        //
+        // // If this bubble is has more pop
+        // else if (a.value_normalized.size > b.value_normalized.size) {
+        //   return -1;
+        // } else return 1;
+      })
 
       // Keep bubbles below other chart elements, except month year label.
       bubblesG.lower();
