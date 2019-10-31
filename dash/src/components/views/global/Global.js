@@ -192,7 +192,7 @@ const Global = (props) => {
           }
           scatterChart.update(curDt);
           setCurSliderVal(curDt);
-        }, 2000*i)
+        }, 1320*i)
       );
       i = i + 1;
     }

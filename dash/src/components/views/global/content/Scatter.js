@@ -655,7 +655,7 @@ class Scatter extends Chart {
 
             newCircleGs
               .transition()
-              .duration(2000)
+              .duration(1320)
                 .attr('transform',
                   d => `translate(${
                     getCircleXPos(d)
@@ -666,7 +666,7 @@ class Scatter extends Chart {
 
             newCircleGs.selectAll('circle')
               .transition()
-              .duration(2000)
+              .duration(1320)
                 .style('opacity', 1)
                 .attr('fill', d => yColor(d.value_normalized.y))
                 .attr('r', d => r(d.value_normalized.size));
@@ -675,7 +675,7 @@ class Scatter extends Chart {
             update
               .classed(styles.active, d => chart.params.activeBubbleId === d.place_id)
               .transition()
-              .duration(2000)
+              .duration(1320)
                 .attr('transform',
                   d => `translate(${
                     getCircleXPos(d)
@@ -696,7 +696,7 @@ class Scatter extends Chart {
             //
             //   const updatedText = d3.select(this).select('text')
             //     // .transition()
-            //     // .duration(2000)
+            //     // .duration(1320)
             //       .attr('dy', (-1 * r(d.value_normalized.size)) - 2)
             //       .attr('dx', getTextDx(d))
             //       // .style('font-size', labelSize(d.value_normalized.size))
@@ -706,7 +706,7 @@ class Scatter extends Chart {
             update.selectAll('text')
               .data(data, d => d.place_id)
                 .transition()
-                .duration(2000)
+                .duration(1320)
                   .attr('dy', d => (-1 * r(d.value_normalized.size)) - 2)
                   .attr('dx', d => getTextDx(d))
                   // .style('font-size', labelSize(d.value_normalized.size))
@@ -716,7 +716,7 @@ class Scatter extends Chart {
             update.selectAll('circle')
               .data(data, d => d.place_id)
                 .transition()
-                .duration(2000)
+                .duration(1320)
                   .style('opacity', 1)
                   .attr('fill', d => {
                     return yColor(d.value_normalized.y)
@@ -727,7 +727,7 @@ class Scatter extends Chart {
             // update.selectAll('text')
             //   .data(data, d => d.place_id)
             //     .transition()
-            //     .duration(2000)
+            //     .duration(1320)
             //       .attr('dy', d => (-1 * r(d.value_normalized.size)) - 2)
             //       .attr('dx', d => getTextDx(d))
             //       .style('font-size', d => labelSize(d.value_normalized.size))
