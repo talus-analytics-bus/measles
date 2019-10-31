@@ -206,7 +206,7 @@ class Scatter extends Chart {
           if (i === 0) {
             tickLabel
               .attr('text-anchor', 'end')
-              .attr('y', '-2.3em')
+              .attr('y', '-3.4em')
               .attr('dy', 0)
             tickLabel
               .append('tspan')
@@ -258,7 +258,8 @@ class Scatter extends Chart {
       .append('text')
         .attr('class', styles.monthYearLabel)
         .attr('x', chart.width/2)
-        .attr('y', chart.height/2)
+        .attr('y', '1em')
+        // .attr('y', chart.height/2)
         .text('Aug 2019');
 
     // Add avg vaccination coverage line
