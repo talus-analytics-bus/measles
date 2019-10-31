@@ -402,8 +402,8 @@ Util.formatDatetimeApi = (dt) => {
 
 Util.today = () => {
   const today = new Date();
-  today.setDate(30);
-  today.setMonth(9);
+  // today.setDate(30);
+  // today.setMonth(9);
   return today; // TODO put time traveling here if needed
 };
 
