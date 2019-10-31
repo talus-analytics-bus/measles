@@ -21,6 +21,11 @@ class Scatter extends Chart {
 
     // Get grand total cases
     this.grandMaxSize = d3.max(this.data.vals.size, d => d.value);
+    this.grandMaxX = d3.max(this.data.vals.x, d => d.value);
+    this.grandMaxY = d3.max(this.data.vals.y.filter(d => d.value && d.value !== 0), d => d.value);
+    this.grandMinSize = d3.min(this.data.vals.size, d => d.value);
+    this.grandMinX = d3.min(this.data.vals.x, d => d.value);
+    this.grandMinY = d3.min(this.data.vals.y.filter(d => d.value && d.value !== 0), d => d.value);
 
     // Default margins
     if (!this.params.margin) {
@@ -76,8 +81,16 @@ class Scatter extends Chart {
 
     // Define red color scale for bubbles
     const yColorScale = d3.scaleLinear()
-      .domain([0, 1])
+      .domain(
+        [
+          Math.log10(chart.grandMinY),
+          Math.log10(chart.grandMaxY)
+        ]
+      )
       .range(['#e6c1c6', '#9d3e4c']);
+
+    console.log('SIZE DOMAIN')
+    console.log([chart.grandMinSize, chart.grandMaxSize])
 
     const yColor = (val) => {
       if (val === null) return '#b3b3b3'; // no data color
@@ -85,14 +98,14 @@ class Scatter extends Chart {
     };
 
     // Define bubble size scale
-    const r = d3.scaleLinear()
+    const rTmp = d3.scaleLinear()
       .domain([0, 1])
       .range([5, 50])
 
     // const minR = 5;
-    // const r = (val) => {
-    //   return rTmp(val);
-    // };
+    const r = (val) => {
+      return 5;
+    };
 
     // Define bubble label size scale
     const labelSize = (val) => {
@@ -321,8 +334,13 @@ class Scatter extends Chart {
       const yDataMax = d3.max(yData, d => d.value);
       yData.forEach(d => {
         if (d.value === null) d.value_normalized = null;
+        else if (d.value === 0) {
+          d.value_normalized = Math.log10(chart.grandMinY);
+        }
         else {
-          d.value_normalized = d.value / yDataMax
+          d.value_normalized = Math.log10(d.value)
+          // d.value_normalized = d.value / chart.grandMaxY
+          // d.value_normalized = d.value / yDataMax
         }
       });
 
@@ -339,21 +357,23 @@ class Scatter extends Chart {
       }
 
       const xDataMax = d3.max(xData, d => d.value);
-      xData.forEach(d => d.value_normalized = d.value / xDataMax );
+      // xData.forEach(d => d.value_normalized = Math.log10(d.value));
+      xData.forEach(d => d.value_normalized = d.value );
+      // xData.forEach(d => d.value_normalized = d.value / xDataMax );
 
       // size data - case count
       const sizeData = chart.data.vals.size.filter(d => {
         return d.date_time.startsWith(monthlyStr); // TODO elegantly
       });
       const sizeDataMax = d3.max(sizeData, d => d.value);
-      sizeData.forEach(d => d.value_normalized = d.value / sizeDataMax );
+      sizeData.forEach(d => d.value_normalized = Math.log10(d.value));
       // sizeData.forEach(d => d.value_normalized = d.value / chart.grandMaxSize );
+      // sizeData.forEach(d => d.value_normalized = d.value / sizeDataMax );
 
       // Collate data points
       const data = [];
       xData.forEach(xDatum => {
         const placeId = xDatum.place_id;
-        // const xDatum = xData.find(d => d.place_id === placeId);
         const sizeDatum = sizeData.find(d => d.place_id === placeId);
         const yDatum = yData.find(d => d.place_id === placeId);
         if (yDatum && sizeDatum) {
@@ -382,11 +402,29 @@ class Scatter extends Chart {
       // Update x-scale domain so that far left side corresponds to the
       // lowest normalized x value.
       const xMin = d3.min(data, d => d.value_normalized.x);
-      x.domain([xMin, 1]);
+      x.domain([chart.grandMinX, chart.grandMaxX]);
+      // x.domain([xMin, 1]);
 
       // Ditto for the lower limit of the y-scale
       const yMin = d3.min(data, d => d.value_normalized.y);
-      y.domain([yMin, 1]);
+      y.domain(
+        [
+          Math.log10(chart.grandMinY),
+          Math.log10(chart.grandMaxY)
+        ]
+      );
+      // y.domain([0, 1]);
+      // y.domain([yMin, 1]);
+      console.log('Y DOMAIN')
+      console.log([
+        Math.log10(chart.grandMinY),
+        Math.log10(chart.grandMaxY)
+      ])
+      console.log('X DOMAIN')
+      console.log([
+        (chart.grandMinX),
+        (chart.grandMaxX)
+      ])
 
       console.log('r - radius scale')
       console.log(r)
@@ -424,7 +462,10 @@ class Scatter extends Chart {
       };
 
       const getCircleYPos = (d) => {
-        const yPosDesired = y(d.value_normalized.y);
+        const yPosDesired = d.value_normalized.y !== null ?
+          y(d.value_normalized.y)
+            : y(Math.log10(chart.grandMinY));
+
         const curR = r(d.value_normalized.size);
         let yPosFinal = yPosDesired;
         if (yPosDesired + curR > chart.height) {
@@ -611,26 +652,33 @@ class Scatter extends Chart {
                   })`
                 );
 
-            const updatedBubbleGs = update
-            // .data(data, d => d.place_id)
-              .each(function(d) {
-
-              const updatedText = d3.select(this).select('text')
-                .transition()
-                .duration(2000)
-                  .attr('dy', (-1 * r(d.value_normalized.size)) - 2)
-                  .attr('dx', getTextDx(d))
-                  .style('font-size', labelSize(d.value_normalized.size))
-                  .style('text-anchor', getTextAnchor(d));
-              });
+            // const updatedBubbleGs = update
+            // // .data(data, d => d.place_id)
+            //   .each(function(d) {
+            //
+            //   const updatedText = d3.select(this).select('text')
+            //     .transition()
+            //     .duration(2000)
+            //       .attr('dy', (-1 * r(d.value_normalized.size)) - 2)
+            //       .attr('dx', getTextDx(d))
+            //       .style('font-size', labelSize(d.value_normalized.size))
+            //       .style('text-anchor', getTextAnchor(d));
+            //   });
 
             update.selectAll('circle')
               .data(data, d => d.place_id)
                 .transition()
                 .duration(2000)
                   .style('opacity', 1)
-                  .attr('fill', d => yColor(d.value_normalized.y))
+                  .attr('fill', d => {
+                    console.log('d.value_normalized.y')
+                    console.log(d.value_normalized.y)
+                    return yColor(d.value_normalized.y)
+                  })
+                  // .attr('fill', d => yColor(d.value_normalized.y))
                   .attr('r', d => r(d.value_normalized.size));
+                  console.log('yColorScale')
+                  console.log(yColorScale)
 
             // update.selectAll('text')
             //   .data(data, d => d.place_id)

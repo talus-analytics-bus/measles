@@ -105,7 +105,6 @@ class PagingBar extends Chart {
 
     // Default margins
     // if (!this.params.margin) {
-    console.log('Construction chart: PagingBar.js - mvmfilter')
     this.setMargin({
       top: 47,
       right: longestBarValueWidth + 5,
@@ -133,8 +132,6 @@ class PagingBar extends Chart {
 
     const chart = this;
     const yLabelShift = 20;
-    console.log('chart - redrawing everything - mvm');
-    console.log(chart);
 
     // Draw bars
     const barGs = chart.newGroup(styles.barGs);
