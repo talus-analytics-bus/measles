@@ -15,7 +15,7 @@ import classNames from 'classnames'
 
 const TOKEN = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN
 
-const Map = ({ fillObservations, bubbleObservations, incidenceObservations, mappedFacilityTypes, setMappedFacilityTypes, setLoadingNav, ...props}) => {
+const Map = ({ fillObservations, bubbleObservations, trendObservations, incidenceObservations, mappedFacilityTypes, setMappedFacilityTypes, setLoadingNav, ...props}) => {
 
   const defaultViewport = {
     width: '100%',
@@ -31,12 +31,6 @@ const Map = ({ fillObservations, bubbleObservations, incidenceObservations, mapp
   const [popupData, setPopupData] = React.useState({})
   const [markersLoaded, setMarkersLoaded] = React.useState(false)
 
-  // Track state for the trend observations
-  const [trendObservations, setTrendObservations] = React.useState(() => {
-    const initialState = [];
-    return initialState;
-  });
-
   // Whether the reset button is shown or not. Controlled by the viewport
   // setting being other than the default.
   const [showReset, setShowReset] = React.useState(false);
@@ -46,18 +40,12 @@ const Map = ({ fillObservations, bubbleObservations, incidenceObservations, mapp
 
   const [showDataToggles, setShowDataToggles] = React.useState(false);
 
-
   // Track current bubble metric:
   // caseload_totalpop
   // incidence_monthly
   const [bubbleMetric, setBubbleMetric]  = React.useState('caseload_totalpop');
 
   let mapRef = React.createRef()
-
-  async function getTrendObservations() {
-    // get the bubble data
-    setTrendObservations(await TrendQuery(6, Util.formatDatetimeApi(Util.today())));
-  }
 
   // Given incidence value, return scaled linear radius of marker.
   const markerSizeScale = d3.scaleLinear()
@@ -95,8 +83,6 @@ const Map = ({ fillObservations, bubbleObservations, incidenceObservations, mapp
 
           // Get size (height and width) of marker according to the linear scale
           const markerStyle = getMarkerStyle(featureState.value);
-          console.log('markerStyle')
-          console.log(markerStyle)
           newMarkerComponents.push(
             <Marker latitude={featureState.lat} longitude={featureState.lon}>
             <div style={markerStyle} className={'general-marker'}></div>
@@ -116,7 +102,6 @@ const Map = ({ fillObservations, bubbleObservations, incidenceObservations, mapp
       map.setLayoutProperty('metric-bubbles-' + bubbleMetric, 'visibility', 'visible');
       if (!showDataToggles) setShowDataToggles(true);
     });
-    getTrendObservations();
     console.log('updated loadingNav -- Map')
     setLoadingNav(false);
   }, [])
@@ -435,10 +420,6 @@ const Map = ({ fillObservations, bubbleObservations, incidenceObservations, mapp
   };
 
   const renderMarkerComponents = (incidenceObservations, mapRef) => {
-    // console.log('mapRef')
-    // console.log(mapRef)
-    console.log('markerComponents')
-    console.log(markerComponents)
 
     // if (incidenceObservations.length === 0) return;
     // // setMarkersLoaded(true)

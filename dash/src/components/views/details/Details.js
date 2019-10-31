@@ -216,6 +216,12 @@ const Details = (props) => {
     .range(['#e6c1c6', '#9d3e4c']);
 
   const getWedgeChart = (val) => {
+    if (val === 0) return (
+        <div className={styles.noCases}>
+        No cases
+        </div>
+    );
+
     // Get vaccination chart bins
     const binData = getWedgeChartBin();
 

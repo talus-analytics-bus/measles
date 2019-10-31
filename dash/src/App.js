@@ -44,6 +44,11 @@ const App = () => {
     return initialState;
   });
 
+  const [trendObservations, setTrendObservations] = React.useState(() => {
+    const initialState = [];
+    return initialState;
+  });
+
   const [incidenceObservations, setIncidenceObservations] = React.useState(() => {
     const initialState = [];
     return initialState;
@@ -96,6 +101,7 @@ const App = () => {
       caseload: ObservationQuery(6, 'monthly', Util.formatDatetimeApi(Util.today())),
       incidence: ObservationQuery(15, 'monthly', Util.formatDatetimeApi(Util.today())),
       vaccination: ObservationQuery(4, 'yearly', '2018-01-01'),
+      trend: TrendQuery(6, Util.formatDatetimeApi(Util.today())),
       places: PlaceQuery(placesParams.place_id, placesParams.by_region),
     };
 
@@ -105,6 +111,9 @@ const App = () => {
     }
     // get the bubble data
     setBubbleObservations(results['caseload']);
+
+    // get the trend data
+    setTrendObservations(results['trend']);
 
     // get the incidence data
     setIncidenceObservations(results['incidence']);
@@ -142,6 +151,7 @@ const App = () => {
     <Map // map page
       fillObservations={fillObservations} // observation data for map
       bubbleObservations={bubbleObservations} // observation data for map
+      trendObservations={trendObservations} // observation data for map
       incidenceObservations={incidenceObservations} // observation data for map
       shownMapModal={shownMapModal} // don't show help modal more than once
       setShownMapModal={setShownMapModal} // update modal display status
@@ -171,7 +181,7 @@ const App = () => {
           countryJeeMcmQ: ObservationQuery(18, 'occasion', undefined, undefined, country),
           countryIncidenceHistoryFull: ObservationQuery(15, 'monthly', '2019-10-01', '2010-01-01', country),
           countryCaseloadHistoryFull: ObservationQuery(6, 'monthly', '2019-10-01', '2010-01-01', country),
-          countryCaseloadTrend: await TrendQuery(6, Util.formatDatetimeApi(Util.today()), 6, country),
+          countryCaseloadTrend: TrendQuery(6, Util.formatDatetimeApi(Util.today()), 6, country),
           countryVaccHistory: ObservationQuery(4, 'yearly', '2018-01-01', '2010-01-01', country),
           caseload_12months: ObservationQuery(
             7,

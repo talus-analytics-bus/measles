@@ -7,6 +7,8 @@ $spacing: 10px;
   // max-width: 400px;
   font-family: 'Gotham Book';
   font-weight: normal;
+  // max-width: 450px;
+
   &.incidence_monthly {
     min-width: 400px;
   }
@@ -31,6 +33,7 @@ $spacing: 10px;
     display: flex;
     flex-flow: row;
     align-items: center;
+    max-width: 350px;
 
     img {
       height: 60px;

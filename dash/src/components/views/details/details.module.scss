@@ -89,6 +89,7 @@ $spacing: 20px;
   }
 
   .jee.item {
+
     .title {
       display: flex;
       justify-content: space-between;
@@ -166,6 +167,8 @@ $spacing: 20px;
           padding: 10px;
           margin: 5px 0;
 
+          min-height: 51px;
+
           &:first-child {
             margin-top: 20px;
           }
@@ -234,7 +237,10 @@ $spacing: 20px;
         color: $dark-grey;
         font-family: 'Open Sans', sans-serif;
       }
-
+      .noCases {
+        font-style: italic;
+        color: $dark-grey;
+      }
       .chart {
         display: flex;
         flex-flow: row;
