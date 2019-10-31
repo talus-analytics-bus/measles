@@ -174,6 +174,11 @@ class Scatter extends Chart {
                 .attr('dy', '1.1em')
                 .attr('x', 0)
                 .text('coverage');
+            tickLabel
+              .append('tspan')
+                .attr('dy', '1.1em')
+                .attr('x', 0)
+                .text('(2016-2019)');
           }
           else if (i === 1) {
             tickLabel
@@ -187,6 +192,11 @@ class Scatter extends Chart {
                 .attr('dy', '1.1em')
                 .attr('x', 0)
                 .text('coverage');
+            tickLabel
+              .append('tspan')
+                .attr('dy', '1.1em')
+                .attr('x', 0)
+                .text('(2016-2019)');
           }
         });
       chart[styles['y-axis']]
@@ -208,6 +218,11 @@ class Scatter extends Chart {
                 .attr('dy', '1.1em')
                 .attr('x', -10)
                 .text('incidence');
+            tickLabel
+              .append('tspan')
+                .attr('dy', '1.1em')
+                .attr('x', -10)
+                .text('(2016-2019)');
           }
           else if (i === 1) {
             tickLabel
@@ -224,20 +239,27 @@ class Scatter extends Chart {
                 .attr('dy', '1.1em')
                 .attr('x', -10)
                 .text('incidence');
+            tickLabel
+              .append('tspan')
+                .attr('dy', '1.1em')
+                .attr('x', -10)
+                .text('(2016-2019)');
           }
         });
 
+
+
+    // Add bubbles group (assume one datum per country). Enter one bubble for
+    // each that we have pop data for, in the update function.
+    const bubblesG = chart.newGroup(styles.bubbles);
+
     // Add month and year label to center of plot
-    const monthYearLabel = chart.newGroup(styles.monthYearLabel)
+    const monthYearLabel = chart.newGroup(styles.monthYearLabel, chart[styles.bubbles])
       .append('text')
         .attr('class', styles.monthYearLabel)
         .attr('x', chart.width/2)
         .attr('y', chart.height/2)
         .text('Aug 2019');
-
-    // Add bubbles group (assume one datum per country). Enter one bubble for
-    // each that we have pop data for, in the update function.
-    const bubblesG = chart.newGroup(styles.bubbles);
 
     // Add avg vaccination coverage line
     const avgXLine = chart.newGroup('avgXLine')
@@ -276,7 +298,7 @@ class Scatter extends Chart {
     yAxisLabel.append('tspan')
     .attr('x', -chart.height / 2)
       .attr('dy', '1.2em')
-      .text('(relative)');
+      .text('(log scale)');
 
     // Add x-axis label
     const xAxisLabel = chart[styles['x-axis']].append('text')
@@ -498,7 +520,7 @@ class Scatter extends Chart {
       }
 
       // Enter new bubbles, update old
-      bubblesG.selectAll('g')
+      bubblesG.selectAll(`g:not(.${styles.monthYearLabel})`)
         .attr('class', styles.bubbleG)
         .data(data, d => d.place_id)
         .join(
@@ -534,9 +556,10 @@ class Scatter extends Chart {
                 .sort(function bubbleSort (a, b) {
 
                   // If this is the active bubble, bring it to the front.
-                  if (activateBubble && a.place_id === d.place_id) return 1;
-                  else if (activateBubble && b.place_id === d.place_id) return -1;
-
+                  if (a && activateBubble && a.place_id === d.place_id) return 1;
+                  else if (b && activateBubble && b.place_id === d.place_id) return -1;
+                  else if (!a) return 1;
+                  else if (!b) return -1;
                   else if (a.value_normalized.size > b.value_normalized.size) {
                     return -1;
                   }
@@ -717,11 +740,13 @@ class Scatter extends Chart {
       // Sort bubbles
       bubblesG.selectAll('g').sort(function bubbleSort (a, b) {
 
-        const aActive = chart.params.activeBubbleId === a.place_id;
-        const bActive = chart.params.activeBubbleId === b.place_id;
+        const aActive = a ? chart.params.activeBubbleId === a.place_id : false;
+        const bActive = b ? chart.params.activeBubbleId === b.place_id : false;
 
         if (aActive) return 1;
         else if (bActive) return -1;
+        else if (!a) return 1;
+        else if (!b) return -1;
         else if (a.value_normalized.size > b.value_normalized.size) {
           return -1;
         }
@@ -751,7 +776,7 @@ class Scatter extends Chart {
       // Keep bubbles below other chart elements, except month year label.
       bubblesG.lower();
       chart['avgXLine'].lower();
-      chart[styles.monthYearLabel].lower();
+      // chart[styles.monthYearLabel].lower();
 
       // Update axis labels
       const monthYearLabelString = dt.toLocaleString('en-us', {
@@ -762,9 +787,9 @@ class Scatter extends Chart {
 
       monthYearLabel.text(monthYearLabelString);
       yAxisLabel.select('tspan:nth-child(2)')
-        .text(`in ${monthYearLabelString} (relative)`);
+        .text(`in ${monthYearLabelString} (log scale)`);
       xAxisLabel.select('tspan:nth-child(2)')
-        .text(`in ${xDataYearlyStr} (relative)`);
+        .text(`in ${xDataYearlyStr}`);
     };
 
     // Call update function, using most recent dt of data as the initial

@@ -100,8 +100,10 @@ text.monthYearLabel {
   text-anchor: middle;
   font-weight: bold;
   font-size: 4em;
-  fill: $light-grey-2;
+  fill: $light-grey;
   font-family: 'Gotham Book', sans-serif;
+  opacity: .75;
+  pointer-events: none;
 }
 
 text.scatterCircleLabel {
