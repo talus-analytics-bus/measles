@@ -324,7 +324,7 @@ const Global = (props) => {
           </div>
         </div>
         <div className={styles.section}>
-          <p className={styles.sectionName}>{colorMetricData.label}</p>
+          <p className={styles.sectionName}>{colorMetricData.name}</p>
           <div className={styles.legendEntryGroups}>
             <div className={styles.legendEntryGroup}>
               {
