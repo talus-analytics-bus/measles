@@ -45,7 +45,11 @@ $spacing: 20px;
     padding: $spacing;
     margin-left: $spacing*2;
     margin-right: $spacing*2;
-    // min-width: 390px;
+
+    > .title {
+      flex-flow: row;
+      align-items: center;
+    }
   }
   .title {
     // Name of country or "Global caseload"
@@ -89,6 +93,8 @@ $spacing: 20px;
       display: flex;
       justify-content: space-between;
       position: relative;
+      flex-flow: row;
+
       .text {
         max-width: 50%;
       }
@@ -110,6 +116,12 @@ $spacing: 20px;
     display: flex;
     flex-flow: column;
 
+    .name {
+      display: flex;
+      flex-flow: column;
+      
+    }
+
     .title {
       color: $dark-grey;
       font-family: 'Open Sans', sans-serif;
@@ -128,6 +140,14 @@ $spacing: 20px;
       display: flex;
       flex-flow: row;
       justify-content: space-between;
+
+      .value2Content {
+        display: flex;
+        flex-flow: column;
+        justify-content: space-between;
+        margin-top: 10px;
+        font-size: .8em;
+      }
 
       &.jee {
         flex-flow: column;
@@ -469,6 +489,8 @@ $spacing: 20px;
 
   position: relative;
   left: -3px;
+
+  // margin-top: 10px;
 
   i {
     // size?

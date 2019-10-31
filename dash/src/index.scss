@@ -27,6 +27,13 @@ body,
     position: absolute; // not fixed
   }
 
+  .dateTimeStamp {
+    font-size: .9em;
+    font-weight: normal;
+    font-family: 'Gotham Book', serif;
+    margin-top: 5px;
+  }
+
   // Slider
   .rc-slider-mark-text {
     color: #666;

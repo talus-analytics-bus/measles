@@ -90,6 +90,10 @@ button {
       margin-top: 0;
     }
     .label {
+      display: flex;
+      flex-flow: column;
+      align-items: flex-start;
+      
       font-family: 'Gotham Bold', serif;
       font-size: 1.1em;
       line-height: 1;

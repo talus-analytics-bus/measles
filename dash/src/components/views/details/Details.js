@@ -1078,7 +1078,7 @@ const Details = (props) => {
                   <div className={styles.item}>
                     <span className={styles.title}>
                       <span>{item.title}</span>
-                      {item.value !== null ? <span className={'dateTimeStamp'}>({item.date_time_fmt(item)})</span> : ''}
+                      {item.value !== null ? <span className={'dateTimeStamp'}>{item.date_time_fmt(item)}</span> : ''}
                     </span>
                     <div className={styles.content}>
                       <div className={styles.stackedValues}>
@@ -1155,7 +1155,14 @@ const Details = (props) => {
                     {
                       tooltipData.items.map(item =>
                         <div className={stylesTooltip.item}>
-                          <div className={stylesTooltip.name}>{item.name}<br/>({Util.getDatetimeStamp(item.datum, item.period)})</div>
+                          <div className={stylesTooltip.name}>
+                            <span>
+                              {item.name}
+                            </span>
+                            <span className={'dateTimeStamp'}>
+                              {Util.getDatetimeStamp(item.datum, item.period)}
+                            </span>
+                          </div>
                           <div className={stylesTooltip.content}>
                             <span className={stylesTooltip.value}>{item.value}</span>
                             <span className={stylesTooltip.unit}>{item.label}</span>

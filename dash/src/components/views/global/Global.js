@@ -607,7 +607,7 @@ const Global = (props) => {
                       <div className={styles.item}>
                         <span className={styles.title}>
                           <span>{item.title}</span>
-                          <span className={'dateTimeStamp'}>({item.date_time_fmt(item)})</span>
+                          <span className={'dateTimeStamp'}>{item.date_time_fmt(item)}</span>
                         </span>
                         <div className={styles.content}>
                           {
@@ -709,7 +709,7 @@ const Global = (props) => {
                 <div className={styles.itemContainer}>
                   <div className={styles.item}>
                     <span className={styles.title}>
-                      {item.title}<br/><div className={'dateTimeStamp'}>({item.date_time_fmt(item)})</div>
+                      {item.title}<br/><div className={'dateTimeStamp'}>{item.date_time_fmt(item)}</div>
                     </span>
                     <div className={styles.content}>
                       {
@@ -767,7 +767,18 @@ const Global = (props) => {
                     {
                       tooltipData.items.map(item =>
                         <div className={stylesTooltip.item}>
-                          <div className={stylesTooltip.name}>{item.name}<br/>{item.value !== null ? `(${Util.getDatetimeStamp(item.datum, item.period)})` : ''}</div>
+                          <div className={stylesTooltip.name}>
+                            <span>
+                            {
+                              item.name
+                            }
+                            </span>
+                            <span className={'dateTimeStamp'}>
+                            {
+                              item.value !== null ? `${Util.getDatetimeStamp(item.datum, item.period)}` : ''
+                            }
+                            </span>
+                          </div>
                           <div className={stylesTooltip.content}>
                           {
                             // Show value if reported
