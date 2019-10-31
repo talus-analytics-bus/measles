@@ -91,6 +91,7 @@ g.bubbles {
     & + text.scatterCircleLabel {
       opacity: 1;
       fill: $dark-grey !important;
+      font-weight: bold;
     }
   }
 }

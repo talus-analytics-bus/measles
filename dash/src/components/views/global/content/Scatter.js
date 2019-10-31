@@ -660,24 +660,34 @@ class Scatter extends Chart {
                   })`
                 );
 
-            const updatedBubbleGs = update
-            // .data(data, d => d.place_id)
-              .each(function(d) {
-
-                console.log('\nNow updating: ' + d.place_name);
-                console.log('Size value: ' + d.value_normalized.size);
-                console.log('Font size value: ' + labelSize(d.value_normalized.size));
-                console.log('Element:')
-                console.log(d3.select(this).select('text'))
-
-              const updatedText = d3.select(this).select('text')
-                // .transition()
-                // .duration(2000)
-                  .attr('dy', (-1 * r(d.value_normalized.size)) - 2)
-                  .attr('dx', getTextDx(d))
+            // const updatedBubbleGs = update
+            // // .data(data, d => d.place_id)
+            //   .each(function(d) {
+            //
+            //     console.log('\nNow updating: ' + d.place_name);
+            //     console.log('Size value: ' + d.value_normalized.size);
+            //     console.log('Font size value: ' + labelSize(d.value_normalized.size));
+            //     console.log('Element:')
+            //     console.log(d3.select(this).select('text'))
+            //
+            //   const updatedText = d3.select(this).select('text')
+            //     // .transition()
+            //     // .duration(2000)
+            //       .attr('dy', (-1 * r(d.value_normalized.size)) - 2)
+            //       .attr('dx', getTextDx(d))
+            //       // .style('font-size', labelSize(d.value_normalized.size))
+            //       .style('text-anchor', getTextAnchor(d));
+            //   });
+            //
+            update.selectAll('text')
+              .data(data, d => d.place_id)
+                .transition()
+                .duration(2000)
+                  .attr('dy', d => (-1 * r(d.value_normalized.size)) - 2)
+                  .attr('dx', d => getTextDx(d))
                   // .style('font-size', labelSize(d.value_normalized.size))
-                  .style('text-anchor', getTextAnchor(d));
-              });
+                  .style('text-anchor', d => getTextAnchor(d));
+
 
             update.selectAll('circle')
               .data(data, d => d.place_id)
