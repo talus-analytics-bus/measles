@@ -91,9 +91,12 @@ button {
     }
     .label {
       display: flex;
-      flex-flow: column;
       align-items: flex-start;
-      
+      flex-flow: column;
+      // align-items: center;
+      // flex-flow: row;
+      // justify-content: space-between;
+
       font-family: 'Gotham Bold', serif;
       font-size: 1.1em;
       line-height: 1;

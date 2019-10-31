@@ -432,6 +432,9 @@ const Details = (props) => {
     )
   };
 
+  // Get count summary labeling
+  const metricParams = Util.getMetricChartParams(slidingLineMetric);
+
   /**
    * Render sliding line chart containers and legend.
    * @method getSlidingLineJsx
@@ -519,8 +522,6 @@ const Details = (props) => {
       </div>
     )
 
-    // Get count summary labeling
-    const metricParams = Util.getMetricChartParams(slidingLineMetric);
 
     const countSummaryJsx = (
       (countSummary !== null) && <div className={styles.countSummary}>
@@ -601,7 +602,7 @@ const Details = (props) => {
         year: 'numeric',
         timeZone: 'UTC',
       });
-      incidenceSource = `Source for incidence: ${incidenceDatum.data_source} as of ${incidenceUpdated}.`;
+      incidenceSource = `Source for ${metricParams.name.toLowerCase()}: ${incidenceDatum.data_source} as of ${incidenceUpdated}.`;
     }
 
     const vaccineDatum = props.countryVaccHistory[0];

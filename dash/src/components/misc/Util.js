@@ -101,6 +101,7 @@ Util.getMetricChartParams = (metric) => {
         getUnits: (val) => val === 1 ? 'case' : 'cases',
         sort: 'desc',
         label: 'Total cases of measles',
+        name: 'Total cases of measles',
 
       };
     case 'incidence_monthly':
@@ -111,6 +112,7 @@ Util.getMetricChartParams = (metric) => {
         units: 'cases per 1M population',
         getUnits: (val) => val === 1 ? 'case per 1M population' : 'cases per 1M population',
         label: 'Monthly incidence of measles (cases per 1M population)',
+        name: 'Monthly incidence rate',
       };
     case 'monthlycaseload_totalpop':
       return {
