@@ -305,12 +305,17 @@ $scatterSize: 75vh;
     }
   }
 
+  .instructions {
+    font-style: italic;
+    max-width: 540px;
+    color: $dark-grey;
+  }
   .main:not(.mainBottom) {
     .source {
       text-align: right;
       margin-left: auto;
     }
-    .itemContainer:first-child .item .title {
+    .itemContainer:first-child .item .instructions {
       margin-bottom: 40px;
     }
   }

@@ -519,6 +519,7 @@ const Global = (props) => {
     return [
       {
         'title': 'Total measles cases, incidence, and vaccination coverage by country',
+        'instructions': 'Drag slider to view data for different months. Hover on bubble to view data. Click bubble to pin country name.',
         // 'title': 'Vaccination coverage and caseload by country',
         'chart_jsx': getScatterJsx,
         'date_time_fmt': () => '',
@@ -668,6 +669,11 @@ const Global = (props) => {
                     <div className={styles.item}>
                       <span className={styles.title}>
                         {item.title}<br/>{item.date_time_fmt(item)}
+                      </span>
+                      <span className={styles.instructions}>
+                        {
+                          item.instructions
+                        }
                       </span>
                       <div className={styles.content}>
                         {
