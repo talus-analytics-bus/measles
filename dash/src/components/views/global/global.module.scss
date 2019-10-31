@@ -4,6 +4,7 @@ $drawer-width: 360px;
 $header-height: 100px;
 $button-width: 200px;
 $spacing: 20px;
+
 .MiniLine {
   height: 200px;
   width: auto;
@@ -82,16 +83,14 @@ $scatterSize: 75vh;
     min-width: 390px;
   }
   .title {
-    // Name of country or "Global caseload"
     display: flex;
-    flex-flow: row;
-    align-items: center;
+    flex-flow: column;
+    align-items: flex-start;
 
     font-family: 'Raleway', serif;
     font-weight: bold;
     font-size: 1.8em;
     line-height: 1;
-    // font-size: 2.2em;
     color: black;
 
     .flag {
@@ -330,6 +329,9 @@ $scatterSize: 75vh;
       .item {
         max-width: $itemMaxWidth;
         .title {
+          display: flex;
+          flex-flow: column;
+          align-items: flex-start;
           font-family: 'rawline', sans-serif;
           font-size: 1.1em * 1.18;
           margin-bottom: 10px;

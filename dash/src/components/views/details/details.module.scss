@@ -50,8 +50,8 @@ $spacing: 20px;
   .title {
     // Name of country or "Global caseload"
     display: flex;
-    flex-flow: row;
-    align-items: center;
+    flex-flow: column;
+    align-items: flex-start;
 
     font-family: 'Raleway', serif;
     font-weight: bold;

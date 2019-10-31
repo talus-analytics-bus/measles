@@ -442,7 +442,7 @@ const Details = (props) => {
     const legendEntries = noLineData ? [] :
       [
         {
-          label: slidingLineMetric === 'incidence_monthly' ? 'Monthly incidence' : 'New cases',
+          label: slidingLineMetric === 'incidence_monthly' ? 'Monthly incidence rate' : 'New cases',
           class: styles.monthlyIncidence,
           shape: 'line',
         },
@@ -1067,7 +1067,7 @@ const Details = (props) => {
                   ...(props.countryIncidenceLatest.value !== undefined ? props.countryIncidenceLatest : { value: null }),
                 },
                 {
-                  'title': slidingLineMetric === 'caseload_totalpop' ? 'New cases by month' : 'Monthly incidence',
+                  'title': slidingLineMetric === 'caseload_totalpop' ? 'New cases by month' : 'Monthly incidence rate',
                   'chart_jsx': getSlidingLineJsx,
                   'date_time_fmt': Util.getDateTimeRange,
                   'data_source': getSlidingLineDataSources,
@@ -1077,7 +1077,8 @@ const Details = (props) => {
                 <div className={styles.itemContainer}>
                   <div className={styles.item}>
                     <span className={styles.title}>
-                      {item.title} {item.value !== null ? `(${item.date_time_fmt(item)})` : ''}
+                      <span>{item.title}</span>
+                      {item.value !== null ? <span className={'dateTimeStamp'}>({item.date_time_fmt(item)})</span> : ''}
                     </span>
                     <div className={styles.content}>
                       <div className={styles.stackedValues}>

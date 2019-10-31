@@ -56,6 +56,7 @@ const Global = (props) => {
 
   // Track which data series is being shown in the paging bar chart.
   const [ sectionTitle, setSectionTitle ]  = React.useState('Measles cases reported by country'); // PLACEHOLDER
+  const [ sectionDatetime, setSectionDatetime ]  = React.useState(''); // PLACEHOLDER
 
   // Track which data series is being shown in the paging bar chart.
   const [ pagingBarData, setPagingBarData ]  = React.useState('cumcaseload_totalpop'); // PLACEHOLDER
@@ -94,6 +95,7 @@ const Global = (props) => {
           chart.params.setPageCount = setPageCount;
           chart.params.setRedirectPath = setRedirectPath;
           chart.params.setSectionTitle = setSectionTitle;
+          chart.params.setSectionDatetime = setSectionDatetime;
         }
 
         // Create chart instance
@@ -527,7 +529,7 @@ const Global = (props) => {
       {
         'title': sectionTitle,
         'chart_jsx': getPagingBarJsx,
-        'date_time_fmt': () => '',
+        'date_time_fmt': () => sectionDatetime,
         'data_source': getScatterDataSources,
       },
     ]
@@ -604,7 +606,8 @@ const Global = (props) => {
                     <div className={styles.itemContainer}>
                       <div className={styles.item}>
                         <span className={styles.title}>
-                          {item.title}<br/>({item.date_time_fmt(item)})
+                          <span>{item.title}</span>
+                          <span className={'dateTimeStamp'}>({item.date_time_fmt(item)})</span>
                         </span>
                         <div className={styles.content}>
                           {
@@ -661,7 +664,7 @@ const Global = (props) => {
                   <div className={styles.itemContainer}>
                     <div className={styles.item}>
                       <span className={styles.title}>
-                        {item.title} {item.date_time_fmt(item)}
+                        {item.title}<br/>{item.date_time_fmt(item)}
                       </span>
                       <div className={styles.content}>
                         {
@@ -706,7 +709,7 @@ const Global = (props) => {
                 <div className={styles.itemContainer}>
                   <div className={styles.item}>
                     <span className={styles.title}>
-                      {item.title} {item.date_time_fmt(item)}
+                      {item.title}<br/><div className={'dateTimeStamp'}>({item.date_time_fmt(item)})</div>
                     </span>
                     <div className={styles.content}>
                       {
