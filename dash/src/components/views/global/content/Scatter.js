@@ -20,10 +20,10 @@ class Scatter extends Chart {
     this.data.vals.size = params.data.size || [];
 
     // Get grand total cases
-    this.grandMaxSize = d3.max(this.data.vals.size, d => d.value);
+    this.grandMaxSize = d3.max(this.data.vals.size.filter(d => d.value && d.value !== 0), d => d.value);
     this.grandMaxX = d3.max(this.data.vals.x, d => d.value);
     this.grandMaxY = d3.max(this.data.vals.y.filter(d => d.value && d.value !== 0), d => d.value);
-    this.grandMinSize = d3.min(this.data.vals.size, d => d.value);
+    this.grandMinSize = d3.min(this.data.vals.size.filter(d => d.value && d.value !== 0), d => d.value);
     this.grandMinX = d3.min(this.data.vals.x, d => d.value);
     this.grandMinY = d3.min(this.data.vals.y.filter(d => d.value && d.value !== 0), d => d.value);
 
@@ -90,7 +90,10 @@ class Scatter extends Chart {
       .range(['#e6c1c6', '#9d3e4c']);
 
     console.log('SIZE DOMAIN')
-    console.log([chart.grandMinSize, chart.grandMaxSize])
+    console.log([
+      Math.log10(chart.grandMinSize),
+      Math.log10(chart.grandMaxSize),
+    ])
 
     const yColor = (val) => {
       if (val === null) return '#b3b3b3'; // no data color
@@ -99,12 +102,20 @@ class Scatter extends Chart {
 
     // Define bubble size scale
     const rTmp = d3.scaleLinear()
-      .domain([0, 1])
-      .range([5, 50])
+      .domain(
+        [
+          Math.log10(chart.grandMinSize),
+          Math.log10(chart.grandMaxSize),
+        ]
+      )
+      .range([5, 40])
 
     // const minR = 5;
     const r = (val) => {
-      return 5;
+      if (val === 0 || val === null) return 5;
+      else return rTmp(
+          val
+      );
     };
 
     // Define bubble label size scale
@@ -358,7 +369,7 @@ class Scatter extends Chart {
 
       const xDataMax = d3.max(xData, d => d.value);
       // xData.forEach(d => d.value_normalized = Math.log10(d.value));
-      xData.forEach(d => d.value_normalized = d.value );
+      xData.forEach(d => d.value_normalized = d.value);
       // xData.forEach(d => d.value_normalized = d.value / xDataMax );
 
       // size data - case count
@@ -366,7 +377,17 @@ class Scatter extends Chart {
         return d.date_time.startsWith(monthlyStr); // TODO elegantly
       });
       const sizeDataMax = d3.max(sizeData, d => d.value);
-      sizeData.forEach(d => d.value_normalized = Math.log10(d.value));
+      sizeData.forEach(d => {
+        if (d.value === null) d.value_normalized = null;
+        else if (d.value === 0) {
+          d.value_normalized = Math.log10(chart.grandMinSize);
+        }
+        else {
+          d.value_normalized = Math.log10(d.value)
+          // d.value_normalized = d.value / chart.grandMaxY
+          // d.value_normalized = d.value / yDataMax
+        }
+      });
       // sizeData.forEach(d => d.value_normalized = d.value / chart.grandMaxSize );
       // sizeData.forEach(d => d.value_normalized = d.value / sizeDataMax );
 
@@ -671,14 +692,10 @@ class Scatter extends Chart {
                 .duration(2000)
                   .style('opacity', 1)
                   .attr('fill', d => {
-                    console.log('d.value_normalized.y')
-                    console.log(d.value_normalized.y)
                     return yColor(d.value_normalized.y)
                   })
                   // .attr('fill', d => yColor(d.value_normalized.y))
                   .attr('r', d => r(d.value_normalized.size));
-                  console.log('yColorScale')
-                  console.log(yColorScale)
 
             // update.selectAll('text')
             //   .data(data, d => d.place_id)
