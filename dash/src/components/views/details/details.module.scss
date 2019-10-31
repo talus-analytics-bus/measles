@@ -115,11 +115,12 @@ $spacing: 20px;
   .item {
     display: flex;
     flex-flow: column;
+    position: relative;
 
     .name {
       display: flex;
       flex-flow: column;
-      
+
     }
 
     .title {
@@ -379,7 +380,6 @@ $spacing: 20px;
         .title {
           font-family: 'rawline', sans-serif;
           font-size: 1.298em;
-          // font-size: 1.1em * 1.18;
           margin-bottom: 10px;
         }
       }
@@ -393,30 +393,38 @@ $spacing: 20px;
     .dataToggles {
       display: flex;
       flex-flow: column;
+      float: right;
+      position: absolute;
+      top: 0;
+      right: 0;
+
       z-index: 2;
       font-size: .9em;
       font-family: 'Open Sans', sans-serif;
       color: $dark-grey;
 
       cursor: default;
-      // align-items: center;
       margin-bottom: 10px;
-      span {
-        margin: 0 15px 0 0;
-      }
+      // span {
+      //   margin: 0 15px 0 0;
+      // }
+
       .dataToggle {
         input {
           vertical-align: middle;
           margin: 0 5px 5px 5px;
         }
-        label {
-          margin-right: 15px;
-        }
+        // label {
+        //   margin-right: 15px;
+        // }
       }
     }
     .slidingLineLegend {
       display: flex;
       flex-flow: row;
+      margin-top: 10px;
+      // font-weight: bold;
+      font-size: 15.5px;
       .entry {
         display: flex;
         flex-flow: row;
@@ -445,7 +453,7 @@ $spacing: 20px;
           }
         }
         .label {
-          font-size: .9em;
+          font-size: 1em;
           margin-left: 5px;
         }
       }
@@ -466,6 +474,16 @@ $spacing: 20px;
       }
       // Other styles for this chart are in slidingline.module.scss
     }
+  }
+
+  .slidingLineChartWrapper {
+    position: relative;
+  }
+  // Reset button
+  button {
+    position: absolute;
+    right: 0;
+    bottom: 0;
   }
 }
 

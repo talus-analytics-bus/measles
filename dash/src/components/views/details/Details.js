@@ -479,31 +479,6 @@ const Details = (props) => {
             </div>
           )
         }
-        {
-          // Add reset button, visible when chart sliding window is adjusted.
-          <button
-            onClick={
-              () => {
-                if (slidingLine && slidingLine.resetView) {
-                  slidingLine.resetView();
-                }
-              }
-            }
-            className={
-              classNames(
-                'btn-secondary btn-sm',
-              )
-            }
-            style={
-              {
-                'opacity': showReset ? 1 : 0,
-                'visibility': showReset ? 'visible' : 'hidden',
-              }
-            }
-            >
-            Reset view
-          </button>
-        }
       </div>
     );
 
@@ -559,7 +534,7 @@ const Details = (props) => {
             metricParams.getUnits(countSummary)
         }
         </span>
-        <span> during time period shown (
+        <span> (
           {
             countSummaryDateRange
           }
@@ -567,14 +542,44 @@ const Details = (props) => {
       </div>
     );
 
+    // Add reset button, visible when chart sliding window is adjusted.
+    const resetButton = (
+      <button
+        onClick={
+          () => {
+            if (slidingLine && slidingLine.resetView) {
+              slidingLine.resetView();
+            }
+          }
+        }
+        className={
+          classNames(
+            'btn-secondary btn-sm',
+          )
+        }
+        style={
+          {
+            'opacity': showReset ? 1 : 0,
+            'visibility': showReset ? 'visible' : 'hidden',
+          }
+        }
+        >
+        Reset view
+      </button>
+    );
+
     return (
       <div className={styles.slidingLineContainer}>
         { dataToggles }
-        { legend }
         { countSummaryJsx }
+        { legend }
         {
           !noLineData &&
-          <div className={styles.slidingLine} />
+          <div className={styles.slidingLineChartWrapper}>
+            <div className={styles.slidingLine}>
+            </div>
+            { resetButton }
+          </div>
         }
       </div>
     );
