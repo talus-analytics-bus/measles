@@ -87,7 +87,12 @@ class Scatter extends Chart {
     // Define bubble size scale
     const r = d3.scaleLinear()
       .domain([0, 1])
-      .range([10, 50]) // heuristic for max bubble size
+      .range([5, 50])
+
+    // const minR = 5;
+    // const r = (val) => {
+    //   return rTmp(val);
+    // };
 
     // Define bubble label size scale
     const labelSize = (val) => {
@@ -341,7 +346,8 @@ class Scatter extends Chart {
         return d.date_time.startsWith(monthlyStr); // TODO elegantly
       });
       const sizeDataMax = d3.max(sizeData, d => d.value);
-      sizeData.forEach(d => d.value_normalized = d.value / chart.grandMaxSize );
+      sizeData.forEach(d => d.value_normalized = d.value / sizeDataMax );
+      // sizeData.forEach(d => d.value_normalized = d.value / chart.grandMaxSize );
 
       // Collate data points
       const data = [];
@@ -381,6 +387,9 @@ class Scatter extends Chart {
       // Ditto for the lower limit of the y-scale
       const yMin = d3.min(data, d => d.value_normalized.y);
       y.domain([yMin, 1]);
+
+      console.log('r - radius scale')
+      console.log(r)
 
       // Enter new bubbles based on place_id if needed (pos and color)
       // Update existing bubbles by moving to new position and colors
@@ -604,8 +613,8 @@ class Scatter extends Chart {
 
             const updatedBubbleGs = update
             // .data(data, d => d.place_id)
-              .each(function(d) { console.log(d);
-                console.log(d3.select(this).select('text').node())
+              .each(function(d) {
+
               const updatedText = d3.select(this).select('text')
                 .transition()
                 .duration(2000)

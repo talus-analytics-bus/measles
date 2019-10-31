@@ -121,7 +121,7 @@ $scatterSize: 75vh;
   .item {
     display: flex;
     flex-flow: column;
-    margin-top: $spacing;
+    margin-top: 20px;
 
     .title {
       color: $dark-grey;
@@ -129,7 +129,8 @@ $scatterSize: 75vh;
       font-size: 1.1em;
       font-weight: bold;
       // max-width: 80%;
-      line-height: 1.1;
+      line-height: 1;
+      margin-top: 20px;
       // white-space: nowrap;
 
       .info {
@@ -317,7 +318,6 @@ $scatterSize: 75vh;
   $itemMaxWidth: 750px;
   .main {
     margin-right: $spacing*2;
-    margin-top: 10px;
     width: 100%;
     .itemContainer {
 
@@ -333,7 +333,8 @@ $scatterSize: 75vh;
           flex-flow: column;
           align-items: flex-start;
           font-family: 'rawline', sans-serif;
-          font-size: 1.1em * 1.18;
+          font-size: 1.8em;
+          // font-size: 1.1em * 1.18;
           margin-bottom: 10px;
         }
       }

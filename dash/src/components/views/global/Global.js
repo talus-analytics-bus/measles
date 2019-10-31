@@ -518,7 +518,8 @@ const Global = (props) => {
   const getScatterData = () => {
     return [
       {
-        'title': 'Vaccination coverage and caseload by country',
+        'title': 'Total measles cases, incidence, and vaccination coverage by country',
+        // 'title': 'Vaccination coverage and caseload by country',
         'chart_jsx': getScatterJsx,
         'date_time_fmt': () => '',
         'data_source': getScatterDataSources,
