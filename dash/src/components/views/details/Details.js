@@ -229,26 +229,16 @@ const Details = (props) => {
               <div className={styles.trapezoidContainer}>
                 <div
                 className={classNames(
-                  styles.trapezoid,
                   styles.shape,
-                  styles['trapezoid-' + (bin + 1)],
+                  styles.rect,
                   {
-                    [styles.active]: bin <= binData.i,
+                    [styles.active]: bin === binData.i,
                   }
                 )}
+                style={{
+                  'backgroundColor': bin === binData.i ? wedgeColor : '',
+                }}
                 >
-                  <div
-                    className={styles.top}
-                    style={{
-                      'borderColor': bin <= binData.i ? `transparent ${wedgeColor} ${wedgeColor} transparent` : '',
-                    }}
-                  />
-                  <div
-                    className={styles.bottom}
-                    style={{
-                      'backgroundColor': bin <= binData.i ? wedgeColor : '',
-                    }}
-                  />
                 </div>
               </div>
             )
@@ -366,16 +356,17 @@ const Details = (props) => {
   };
 
   // Returns sensible position for vaccination bullet chart wedge.
+  const gutterWidth = 608;
   const getVaccActiveWedgePos = (val) => {
     val = 5;
     const thresh = 66.8; // width of active wedgeColor
-    const targetPos = ((val/100) * 400) - thresh;
+    const targetPos = ((val/100) * gutterWidth) - thresh;
     const finalPos = targetPos >= thresh ? targetPos
       : 0;
     return finalPos;
   };
   const getVaccActiveWedgeWidth = (val) => {
-    return (val/100) * 400;
+    return (val/100) * gutterWidth;
   };
 
   /**

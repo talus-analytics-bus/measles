@@ -296,7 +296,7 @@ $spacing: 20px;
 
         &.vaccChart {
           .gutter {
-            width: 400px;
+            width: 608px;
           }
           .active {
             position: absolute;
@@ -309,9 +309,21 @@ $spacing: 20px;
           }
         }
 
-        // &.measlesWedgeChart .trapezoidContainers {
-        //   transform: scaleX(-1);
-        // }
+        &.measlesWedgeChart {
+          .trapezoidContainer {
+            &:not(:first-child) {
+              margin-left: 2px;
+            }
+            .rect {
+              width: 120px;
+              &.active {
+                // background-color: $value-red;
+                box-shadow: 3px 3px 2.5px 0 rgba(0, 0, 0, 0.3);
+                -webkit-box-shadow: 3px 3px 2.5px 0 rgba(0, 0, 0, 0.3);
+              }
+            }
+          }
+        }
 
         .trapezoidContainers {
           display: flex;
