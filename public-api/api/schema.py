@@ -5,9 +5,10 @@
 # Standard libraries
 import functools
 from datetime import datetime, timedelta
+from dateutil.relativedelta import relativedelta
 
 # Third party libraries
-from pony.orm import select, max
+from pony.orm import select
 
 # Local libraries
 from .models import db
@@ -51,7 +52,7 @@ def getEntityInstances(entity_class, id_field_name, organizing_attribute, order,
 
     # If order was specified for org. attr. values, use it, otherwise
     # get them from the data table.
-    if order == None:
+    if order is None:
         order = select(getattr(o, organizing_attribute) for o in entity_class)
 
     # Filter instances
@@ -133,22 +134,9 @@ temporal_resolution_error = Exception("Requested temporal resolution is finer th
 
 def get_start(t_rs, end, lag):
     if t_rs == 'yearly':
-        start = datetime(end.year - lag, end.month, end.day)
+        start = end - relativedelta(years=lag)
     elif t_rs == 'monthly':
-        # Convert the allowed lag value (months) to years and months (usually 0 years
-        # and some months).
-        years, months = divmod(lag, 12)
-
-        if years == 0:
-            if months >= end.month:
-                start = datetime(end.year - 1, end.month + 12 - months, end.day)
-            else:
-                start = datetime(end.year, end.month - months, end.day)
-        else:
-            if months >= end.month:
-                start = datetime(end.year - (years + 1), end.month + 12 - months, end.day)
-            else:
-                start = datetime(end.year - (years), end.month - months, end.day)
+        start = end - relativedelta(months=lag)
     elif t_rs == 'weekly':
         start = end - timedelta(weeks=lag)
     elif t_rs == 'daily':
