@@ -101,6 +101,7 @@ Util.getMetricChartParams = (metric) => {
         getUnits: (val) => val === 1 ? 'case' : 'cases',
         sort: 'desc',
         label: 'Total cases of measles',
+        name: 'Total cases of measles',
 
       };
     case 'incidence_monthly':
@@ -111,6 +112,7 @@ Util.getMetricChartParams = (metric) => {
         units: 'cases per 1M population',
         getUnits: (val) => val === 1 ? 'case per 1M population' : 'cases per 1M population',
         label: 'Monthly incidence of measles (cases per 1M population)',
+        name: 'Monthly incidence rate',
       };
     case 'monthlycaseload_totalpop':
       return {
@@ -241,7 +243,7 @@ Util.getTooltipItem = (datum) => {
       };
     case 'incidence_monthly': // DEBUG
       return {
-        name: 'Monthly incidence',
+        name: 'Monthly incidence rate',
         datum: datum,
         period: 'month',
         value: datum.value === null ? null : Util.formatIncidence(datum.value),
@@ -399,7 +401,10 @@ Util.formatDatetimeApi = (dt) => {
 };
 
 Util.today = () => {
-  return new Date(); // TODO put time traveling here if needed
+  const today = new Date();
+  today.setDate(30);
+  today.setMonth(9);
+  return today; // TODO put time traveling here if needed
 };
 
 Util.getDatetimeStamp = (datum, type = 'year') => {

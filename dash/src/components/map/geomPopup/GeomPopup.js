@@ -104,9 +104,8 @@ const GeomPopup = ({ popupData }) => {
                 styles.datum
               )}>
                 <p className={classNames(styles[d.slug], styles.label)}>
-                  {d.label}
-                  <br/>
-                  {d.dateFmt && `(${d.dateFmt})`}
+                  <span>{d.label}</span>
+                  <span className={'dateTimeStamp'}>{d.dateFmt && `${d.dateFmt}`}</span>
                 </p>
                 <p className={classNames(
                   styles[d.slug],

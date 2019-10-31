@@ -4,6 +4,7 @@ $drawer-width: 360px;
 $header-height: 100px;
 $button-width: 200px;
 $spacing: 20px;
+
 .MiniLine {
   height: 200px;
   width: auto;
@@ -53,6 +54,7 @@ $scatterSize: 75vh;
 
   .main.mainBottom {
     margin-left: 40px;
+    margin-bottom: 40px;
     .itemContainer .item {
       max-width: unset;
       .title {
@@ -81,16 +83,14 @@ $scatterSize: 75vh;
     min-width: 390px;
   }
   .title {
-    // Name of country or "Global caseload"
     display: flex;
-    flex-flow: row;
-    align-items: center;
+    flex-flow: column;
+    align-items: flex-start;
 
     font-family: 'Raleway', serif;
     font-weight: bold;
     font-size: 1.8em;
     line-height: 1;
-    // font-size: 2.2em;
     color: black;
 
     .flag {
@@ -303,12 +303,15 @@ $scatterSize: 75vh;
       }
     }
   }
-  .source {
-    // Just use .dataSource from index.scss
-  }
 
-  .main:not(.mainBottom) .itemContainer:first-child .item .title {
-    margin-bottom: 40px;
+  .main:not(.mainBottom) {
+    .source {
+      text-align: right;
+      margin-left: auto;
+    }
+    .itemContainer:first-child .item .title {
+      margin-bottom: 40px;
+    }
   }
 
   $itemMaxWidth: 750px;
@@ -326,7 +329,10 @@ $scatterSize: 75vh;
       .item {
         max-width: $itemMaxWidth;
         .title {
-          font-family: 'Raleway', sans-serif;
+          display: flex;
+          flex-flow: column;
+          align-items: flex-start;
+          font-family: 'rawline', sans-serif;
           font-size: 1.1em * 1.18;
           margin-bottom: 10px;
         }
@@ -507,15 +513,15 @@ $scatterSize: 75vh;
             }
             &:nth-child(2) {
               .legendIcon.circle {
-                width: round($circle-radius * .75);
-                height: round($circle-radius * .75);
+                width: ($circle-radius * .75);
+                height: ($circle-radius * .75);
                 // margin: auto;
               }
             }
             &:nth-child(1) {
               .legendIcon.circle {
-                width: round($circle-radius * .5);
-                height: round($circle-radius * .5);
+                width: ($circle-radius * .5);
+                height: ($circle-radius * .5);
                 // margin: auto;
               }
             }

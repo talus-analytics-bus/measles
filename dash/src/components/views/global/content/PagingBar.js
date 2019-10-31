@@ -233,9 +233,9 @@ class PagingBar extends Chart {
       }
 
       // X-axis label and section title
-      const xAxisLabelText = `${chart.xMetricParams.label} by country (${chart.xMetricParams.dateFmt(chart.data.vals.x)})`;
       xAxisLabel.text(`${chart.xMetricParams.label} (${chart.xMetricParams.dateFmt(chart.data.vals.x)})`);
-      chart.params.setSectionTitle(`${chart.xMetricParams.label} by country (${chart.xMetricParams.dateFmt(chart.data.vals.x)})`);
+      chart.params.setSectionTitle(`${chart.xMetricParams.label} by country`);
+      chart.params.setSectionDatetime(chart.xMetricParams.dateFmt(chart.data.vals.x));
 
       // Get data for this page
       const data = chart.data.bars.filter(d => d.page === pageNumber-1);

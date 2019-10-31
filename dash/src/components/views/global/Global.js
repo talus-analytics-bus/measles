@@ -56,6 +56,7 @@ const Global = (props) => {
 
   // Track which data series is being shown in the paging bar chart.
   const [ sectionTitle, setSectionTitle ]  = React.useState('Measles cases reported by country'); // PLACEHOLDER
+  const [ sectionDatetime, setSectionDatetime ]  = React.useState(''); // PLACEHOLDER
 
   // Track which data series is being shown in the paging bar chart.
   const [ pagingBarData, setPagingBarData ]  = React.useState('cumcaseload_totalpop'); // PLACEHOLDER
@@ -94,6 +95,7 @@ const Global = (props) => {
           chart.params.setPageCount = setPageCount;
           chart.params.setRedirectPath = setRedirectPath;
           chart.params.setSectionTitle = setSectionTitle;
+          chart.params.setSectionDatetime = setSectionDatetime;
         }
 
         // Create chart instance
@@ -527,8 +529,8 @@ const Global = (props) => {
       {
         'title': sectionTitle,
         'chart_jsx': getPagingBarJsx,
-        'date_time_fmt': () => '',
-        // 'data_source': getPagingBarDataSource,
+        'date_time_fmt': () => sectionDatetime,
+        'data_source': getScatterDataSources,
       },
     ]
   };
@@ -604,7 +606,8 @@ const Global = (props) => {
                     <div className={styles.itemContainer}>
                       <div className={styles.item}>
                         <span className={styles.title}>
-                          {item.title}<br/>({item.date_time_fmt(item)})
+                          <span>{item.title}</span>
+                          <span className={'dateTimeStamp'}>{item.date_time_fmt(item)}</span>
                         </span>
                         <div className={styles.content}>
                           {
@@ -638,7 +641,7 @@ const Global = (props) => {
                         {
                           // Display data source text if available.
                           (item.data_source && item.value !== null && !item.notAvail && !item.hideSource) &&
-                            <div className={'dataSource'}>
+                            <div className={classNames('dataSource', styles.source)}>
                               Source: {item.data_source}{ item.updated_at && (
                                   ' as of ' + new Date(item.updated_at).toLocaleString('en-us', {
                                     month: 'short',
@@ -661,7 +664,7 @@ const Global = (props) => {
                   <div className={styles.itemContainer}>
                     <div className={styles.item}>
                       <span className={styles.title}>
-                        {item.title} {item.date_time_fmt(item)}
+                        {item.title}<br/>{item.date_time_fmt(item)}
                       </span>
                       <div className={styles.content}>
                         {
@@ -673,7 +676,7 @@ const Global = (props) => {
                       {
                         // Display data source text if available.
                         (typeof item.data_source !== 'function' && item.data_source && !item.notAvail) &&
-                          <div className={'dataSource'}>
+                          <div className={classNames('dataSource', styles.source)}>
                             Source: {item.data_source}{ item.updated_at && (
                                 ' as of ' + new Date(item.updated_at).toLocaleString('en-us', {
                                   month: 'short',
@@ -685,7 +688,7 @@ const Global = (props) => {
                       }
                       {
                         (typeof item.data_source === 'function') &&
-                          <div className={'dataSource'}>
+                          <div className={classNames('dataSource', styles.source)}>
                           {
                             item.data_source()
                           }
@@ -706,7 +709,7 @@ const Global = (props) => {
                 <div className={styles.itemContainer}>
                   <div className={styles.item}>
                     <span className={styles.title}>
-                      {item.title} {item.date_time_fmt(item)}
+                      {item.title}<br/><div className={'dateTimeStamp'}>{item.date_time_fmt(item)}</div>
                     </span>
                     <div className={styles.content}>
                       {
@@ -718,7 +721,7 @@ const Global = (props) => {
                     {
                       // Display data source text if available.
                       (typeof item.data_source !== 'function' && item.data_source && !item.notAvail) &&
-                        <div className={'dataSource'}>
+                        <div className={classNames('dataSource', styles.source)}>
                           Source: {item.data_source}{ item.updated_at && (
                               ' as of ' + new Date(item.updated_at).toLocaleString('en-us', {
                                 month: 'short',
@@ -730,7 +733,7 @@ const Global = (props) => {
                     }
                     {
                       (typeof item.data_source === 'function') &&
-                        <div className={'dataSource'}>
+                        <div className={classNames('dataSource', styles.source)}>
                         {
                           item.data_source()
                         }
@@ -747,6 +750,7 @@ const Global = (props) => {
               className='globalTooltip'
               place="right"
               effect="float"
+              clickable={true}
               getContent={ () =>
                 tooltipData &&
                   <div className={stylesTooltip.tooltipContainer}>
@@ -754,30 +758,42 @@ const Global = (props) => {
                     {
                       // If name, show
                       (tooltipData.name !== undefined) &&
-                      <div className={stylesTooltip.tooltipName}>
-                        {tooltipData.name}
+                      <div className={stylesTooltip.tooltipHeader}>
+                        <div className={stylesTooltip.tooltipName}>
+                          {tooltipData.name}
+                        </div>
                       </div>
                     }
                     {
                       tooltipData.items.map(item =>
                         <div className={stylesTooltip.item}>
-                          <div className={stylesTooltip.name}>{item.name} {item.value !== null ? `(${Util.getDatetimeStamp(item.datum, item.period)})` : ''}</div>
+                          <div className={stylesTooltip.name}>
+                            <span>
+                            {
+                              item.name
+                            }
+                            </span>
+                            <span className={'dateTimeStamp'}>
+                            {
+                              item.value !== null ? `${Util.getDatetimeStamp(item.datum, item.period)}` : ''
+                            }
+                            </span>
+                          </div>
+                          <div className={stylesTooltip.content}>
                           {
                             // Show value if reported
                             item.value !== null &&
                             <div>
                               <span className={stylesTooltip.value}>{item.value}</span>
-                              &nbsp;
-                              <span className={stylesTooltip.label}>{item.label}</span>
+                              <span className={stylesTooltip.unit}>{item.label}</span>
                             </div>
                           }
                           {
                             // Write not reported otherwise
                             item.value === null &&
-                            <div>
-                              <span className={classNames(stylesTooltip.value, 'notAvail')}>Not reported</span>
-                            </div>
+                            <span className={classNames(stylesTooltip.value, stylesTooltip.notAvail)}>Not reported</span>
                           }
+                          </div>
                         </div>
                       )
                     }

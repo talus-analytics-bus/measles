@@ -210,51 +210,172 @@ const Details = (props) => {
     }
   };
 
+  // Color scale for measles reds to use in wedge.
+  const wedgeColorScale = d3.scaleLinear()
+    .domain([0, 1])
+    .range(['#e6c1c6', '#9d3e4c']);
+
   const getWedgeChart = (val) => {
     // Get vaccination chart bins
     const binData = getWedgeChartBin();
 
+    const wedgeColor = wedgeColorScale(binData.i / 4);
+
     return (
-      <div className={classNames(styles.chart, styles.vaccChart)}>
-        {
-          [0,1,2,3,4].map(bin =>
-            <div className={styles.trapezoidContainer}>
-              <div
-              className={classNames(
-                styles.trapezoid,
-                styles.shape,
-                styles['trapezoid-' + (bin + 1)],
-                {
-                  [styles.active]: bin === binData.i,
-                }
-              )}
-              style={{
-                'color': binData.i > 3 ? 'white' : '',
-              }}
-              >
+      <div className={classNames(styles.chart, styles.measlesWedgeChart, styles.shapes)}>
+        <div className={classNames(styles.trapezoidContainers)}>
+          {
+            [0,1,2,3,4].map(bin =>
+              <div className={styles.trapezoidContainer}>
                 <div
-                  className={styles.top}
-                />
-                <div
-                  className={styles.bottom}
-                />
+                className={classNames(
+                  styles.trapezoid,
+                  styles.shape,
+                  styles['trapezoid-' + (bin + 1)],
+                  {
+                    [styles.active]: bin <= binData.i,
+                  }
+                )}
+                >
+                  <div
+                    className={styles.top}
+                    style={{
+                      'borderColor': bin <= binData.i ? `transparent ${wedgeColor} ${wedgeColor} transparent` : '',
+                    }}
+                  />
+                  <div
+                    className={styles.bottom}
+                    style={{
+                      'backgroundColor': bin <= binData.i ? wedgeColor : '',
+                    }}
+                  />
+                </div>
               </div>
-              {
-                // Label if first
-                (bin === 0) && <div className={styles.labelLeft}>Low relative<br/>incidence</div>
-              }
-              {
-                // Label if last
-                (bin === 3) && <div className={styles.labelRight}>High relative<br/>incidence</div>
-              }
-              {
-                // (binData.i === bin) && <span>{Util.percentize(val)}</span>
-              }
-            </div>
-          )
-        }
+            )
+          }
+          </div>
+          <div className={styles.wedgeLabels}>
+            <div className={styles.labelLeft}>Low relative<br/>incidence</div>
+            <div className={styles.labelRight}>High relative<br/>incidence</div>
+          </div>
       </div>
     )
+  };
+
+  // Return a wedge chart for the JEE scores
+  const getJeeChart = (score) => {
+    if (score === 'legend') {
+
+      return (
+        <div className={
+          classNames(
+            styles.jeeChart,
+          )
+        }>
+          <div className={styles.value}>
+            <div className={classNames(styles.chart)}>
+              {
+                [0,1,2,3,4].map(bin =>
+                  <div className={styles.trapezoidContainer}>
+                    <div
+                    className={classNames(
+                      styles.trapezoid,
+                      styles.shape,
+                      styles.active,
+                      styles.legend,
+                      styles['trapezoid-' + (bin+1)],
+                    )}
+                    >
+                      <div
+                        className={styles.top}
+                      />
+                      <div
+                        className={styles.bottom}
+                      />
+                    </div>
+                  </div>
+                )
+              }
+            </div>
+            <div className={styles.wedgeLabels}>
+              <div className={styles.labelLeft}>No<br/>capacity</div>
+              <div className={styles.labelRight}>Sustainable<br/>capacity</div>
+            </div>
+          </div>
+        </div>
+      )
+    }
+    else {
+      const scoreLabeling = getScoreLabeling(score);
+      return (
+        <div className={
+          classNames(
+            styles.jeeChart,
+            styles[scoreLabeling.color],
+          )
+        }>
+          <div className={styles.jeeLabel}>
+          {
+            scoreLabeling.label
+          }
+          </div>
+          <div className={styles.value}>
+            <div className={classNames(styles.chart)}>
+              {
+                [0,1,2,3,4].map(bin =>
+                  <div className={styles.trapezoidContainer}>
+                    <div
+                    className={classNames(
+                      styles.trapezoid,
+                      styles.shape,
+                      styles['trapezoid-' + (bin+1)],
+                      {
+                        [styles.active]: bin <= scoreLabeling.i,
+                      }
+                    )}
+                    style={{
+                      'color': scoreLabeling.i > 3 ? 'white' : '',
+                    }}
+                    >
+                      <div
+                        className={styles.top}
+                      />
+                      <div
+                        className={styles.bottom}
+                      />
+                    </div>
+                    {
+                      // Label if first
+                      // (bin === 0) && <div className={styles.labelLeft}>Low relative<br/>incidence</div>
+                    }
+                    {
+                      // Label if last
+                      // (bin === 3) && <div className={styles.labelRight}>High relative<br/>incidence</div>
+                    }
+                    {
+                      // (binData.i === bin) && <span>{Util.percentize(val)}</span>
+                    }
+                  </div>
+                )
+              }
+            </div>
+          </div>
+        </div>
+      )
+    }
+  };
+
+  // Returns sensible position for vaccination bullet chart wedge.
+  const getVaccActiveWedgePos = (val) => {
+    val = 5;
+    const thresh = 66.8; // width of active wedgeColor
+    const targetPos = ((val/100) * 400) - thresh;
+    const finalPos = targetPos >= thresh ? targetPos
+      : 0;
+    return finalPos;
+  };
+  const getVaccActiveWedgeWidth = (val) => {
+    return (val/100) * 400;
   };
 
   /**
@@ -264,42 +385,55 @@ const Details = (props) => {
   const getVaccChart = (val) => {
     // Get vaccination chart bins
     const binData = getVaccinationChartBin(val);
+    const tooSmall = 15;
     return (
-      <div className={classNames(styles.chart, styles.vaccChart)}>
-        {
-          [0,1,2,3,4,5].map(bin =>
-            <div className={styles.rectContainer}>
-              <div
-              className={classNames(
-                styles.rect,
-                {
-                  [styles.active]: bin === binData.i,
-                }
-              )}
-              style={{
-                // 'borderColor': bin === binData.i ? 'gray' : '',
-                'backgroundColor': bin === binData.i ? binData.color : '',
-                'color': binData.i > 3 ? 'white' : '',
-              }}
-              >
-                {
-                  binData.i === bin ? Util.percentize(val) : ''
-                }
+      <div className={classNames(styles.chart, styles.vaccChart, styles.shapes)}>
+        <div className={classNames(styles.trapezoidContainers)}>
+          {
+            [0, 1].map(bin =>
+              <div className={styles.rectContainer}>
+                <div
+                className={classNames(
+                  styles.rect,
+                  {
+                    [styles.active]: bin === 1 && binData.i > 0,
+                    [styles.gutter]: bin === 0,
+                  }
+                )}
+                style={{
+                  // 'borderColor': bin === binData.i ? 'gray' : '',
+                  'backgroundColor': bin === 1 ? binData.color : '',
+                  'color': (val >= tooSmall && binData.i > 3) ? 'white' : '',
+                  'width': bin === 1 ? getVaccActiveWedgeWidth(val) : '',
+                }}
+                >
+                  <div
+                    style = {{
+                      'position': 'absolute',
+                      'top': bin === 1 ? 2 : null,
+                      'right': bin === 1 && val < tooSmall ? null : 5,
+                      'left': bin === 1 && val < tooSmall ? getVaccActiveWedgeWidth(val) + 5 : null,
+                    }}
+                  >
+                  {
+                    (bin === 1 && binData.i > 0) ? Util.percentize(val) : ''
+                  }
+                  </div>
+                </div>
               </div>
-              {
-                // Label if first
-                (bin === 0) && <div className={styles.labelLeft}>Low<br/>coverage</div>
-              }
-              {
-                // Label if last
-                (bin === 5) && <div className={styles.labelRight}>High<br/>coverage</div>
-              }
-            </div>
-          )
-        }
+            )
+          }
+        </div>
+        <div className={styles.wedgeLabels}>
+          <div className={styles.labelLeft}>Low<br/>coverage</div>
+          <div className={styles.labelRight}>High<br/>coverage</div>
+        </div>
       </div>
     )
   };
+
+  // Get count summary labeling
+  const metricParams = Util.getMetricChartParams(slidingLineMetric);
 
   /**
    * Render sliding line chart containers and legend.
@@ -311,7 +445,7 @@ const Details = (props) => {
     const legendEntries = noLineData ? [] :
       [
         {
-          label: slidingLineMetric === 'incidence_monthly' ? 'Monthly incidence' : 'New cases',
+          label: slidingLineMetric === 'incidence_monthly' ? 'Monthly incidence rate' : 'New cases',
           class: styles.monthlyIncidence,
           shape: 'line',
         },
@@ -347,31 +481,6 @@ const Details = (props) => {
               </div>
             </div>
           )
-        }
-        {
-          // Add reset button, visible when chart sliding window is adjusted.
-          <button
-            onClick={
-              () => {
-                if (slidingLine && slidingLine.resetView) {
-                  slidingLine.resetView();
-                }
-              }
-            }
-            className={
-              classNames(
-                'btn-secondary btn-sm',
-              )
-            }
-            style={
-              {
-                'opacity': showReset ? 1 : 0,
-                'visibility': showReset ? 'visible' : 'hidden',
-              }
-            }
-            >
-            Reset view
-          </button>
         }
       </div>
     );
@@ -414,9 +523,6 @@ const Details = (props) => {
     )
 
 
-    // Get count summary labeling
-    const metricParams = Util.getMetricChartParams(slidingLineMetric);
-
     const countSummaryJsx = (
       (countSummary !== null) && <div className={styles.countSummary}>
         <span className={styles.value}>
@@ -429,7 +535,7 @@ const Details = (props) => {
             metricParams.getUnits(countSummary)
         }
         </span>
-        <span> during time period shown (
+        <span> (
           {
             countSummaryDateRange
           }
@@ -437,14 +543,44 @@ const Details = (props) => {
       </div>
     );
 
+    // Add reset button, visible when chart sliding window is adjusted.
+    const resetButton = (
+      <button
+        onClick={
+          () => {
+            if (slidingLine && slidingLine.resetView) {
+              slidingLine.resetView();
+            }
+          }
+        }
+        className={
+          classNames(
+            'btn-secondary btn-sm',
+          )
+        }
+        style={
+          {
+            'opacity': showReset ? 1 : 0,
+            'visibility': showReset ? 'visible' : 'hidden',
+          }
+        }
+        >
+        Reset view
+      </button>
+    );
+
     return (
       <div className={styles.slidingLineContainer}>
         { dataToggles }
-        { legend }
         { countSummaryJsx }
+        { legend }
         {
           !noLineData &&
-          <div className={styles.slidingLine} />
+          <div className={styles.slidingLineChartWrapper}>
+            <div className={styles.slidingLine}>
+            </div>
+            { resetButton }
+          </div>
         }
       </div>
     );
@@ -466,7 +602,7 @@ const Details = (props) => {
         year: 'numeric',
         timeZone: 'UTC',
       });
-      incidenceSource = `Source for incidence: ${incidenceDatum.data_source} as of ${incidenceUpdated}.`;
+      incidenceSource = `Source for ${metricParams.name.toLowerCase()}: ${incidenceDatum.data_source} as of ${incidenceUpdated}.`;
     }
 
     const vaccineDatum = props.countryVaccHistory[0];
@@ -488,7 +624,16 @@ const Details = (props) => {
   // Get caseload and delta data
   // Return data for rendering caseload and delta value sub-component of
   // "recent cases" section.
-  const getCaseloadAndDeltaData = (obs, trend) => {
+  const getCaseloadAndDeltaData = (obsTmp, trend) => {
+
+    // If observation unavailable, use placeholder null data.
+    const obs = obsTmp === undefined ? {
+      value: null,
+      deltaData: {},
+    }
+    : obsTmp;
+
+    // Get and return data for cases and delta values.
     const data = {
       slug: 'cases',
       value: obs.value > 0 ? Util.comma(obs['value']) : null,
@@ -516,7 +661,7 @@ const Details = (props) => {
       <div className={styles.value2Content}>
       {
         // If value2 exists, add that
-        (caseloadAndDeltaData.value !== undefined) && (
+        (caseloadAndDeltaData.value !== undefined && caseloadAndDeltaData.value !== null) && (
           <span>
             <span className={styles.value}>{caseloadAndDeltaData.value}</span>
             &nbsp;
@@ -625,103 +770,287 @@ const Details = (props) => {
   [slidingLineMetric]);
 
   // If loading do not show JSX content.
-  // console.log('props')
-  // console.log(props)
+  console.log('props')
+  console.log(props)
   return (<div className={styles.details}>
-            <div className={styles.sidebar}>
-              <div className={styles.title}>
-                {props.countryIso2 && <img src={`/flags/${props.countryIso2}.png`} className={styles.flag} />}
-                {props.countryName}
-              </div>
-              <div className={styles.map}>
+            <div className={styles.sidebars}>
+              <div className={styles.sidebar}>
+                <div className={styles.title}>
+                  {props.countryIso2 && <img src={`/flags/${props.countryIso2}.png`} className={styles.flag} />}
+                  {props.countryName}
+                </div>
+                <div className={styles.map}>
+                  {
+                    <MiniMap countryIso2={props.countryIso2}/>
+                  }
+                </div>
                 {
-                  <MiniMap countryIso2={props.countryIso2}/>
-                }
-              </div>
-              {
-                [
-                  {
-                    'title': 'Population',
-                    'value_fmt': Util.formatSI,
-                    'value_label': 'people',
-                    'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'year')}, // TODO
-                    ...(props.countryPop ? props.countryPop : {value: null}),
-                  },
-                  {
-                    'title': 'Gross domestic product per capita',
-                    'value_fmt': Util.money,
-                    'value_label': 'USD',
-                    'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'year')}, // TODO
-                    ...(props.countryGDP ? props.countryGDP : {value: null}),
-                  },
-                  {
-                    'title': 'Immunization capacity',
-                    'value_fmt': getScoreJsx,
-                    'hideSource': true,
-                    'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'year')}, // TODO
-                    ...(props.countryJeeImmun ? props.countryJeeImmun : {value: null}),
-                  },
-                  {
-                    'title': 'Real-time surveillance capacity',
-                    'value_fmt': getScoreJsx,
-                    'hideSource': true,
-                    'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'year')}, // TODO
-                    ...(props.countryJeeSurv ? props.countryJeeSurv : {value: null}),
-                  },
-                  {
-                    'title': 'Medical countermeasures capacity',
-                    'value_fmt': getScoreJsx,
-                    'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'year')}, // TODO
-                    ...(props.countryJeeMcm ? props.countryJeeMcm : {value: null}),
-                  },
-                ].map(item =>
-                  <div className={styles.itemContainer}>
-                    <div className={styles.item}>
-                      <span className={styles.title}>
-                        {item.title} {item.value !== null ? `(${item.date_time_fmt(item)})` : ''}
-                      </span>
-                      <div className={styles.content}>
-                        {
-                          // Display formatted value and label
-                          (item.value !== null && (
-                            <span>
-                              <span className={styles.value}>
-                                {item.value_fmt(item.value)}
-                              </span>
-                              {
-                                item.value_label && <span className={styles.label}>
-                                  &nbsp;{item.value_label}
+                  [
+                    {
+                      'title': 'Population',
+                      'value_fmt': Util.formatSI,
+                      'value_label': 'people',
+                      'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'year')}, // TODO
+                      ...(props.countryPop ? props.countryPop : {value: null}),
+                    },
+                    {
+                      'title': 'Gross domestic product per capita',
+                      'value_fmt': Util.formatSI,
+                      // 'value_fmt': Util.money,
+                      'value_label': 'USD',
+                      'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'year')}, // TODO
+                      ...(props.countryGDP ? props.countryGDP : {value: null}),
+                    },
+                  ].map(item =>
+                    <div className={styles.itemContainer}>
+                    {
+                      // For normal non-JEE items:
+                      (item.type === undefined || item.type !== 'jee') &&
+                        <div className={styles.item}>
+                          <span className={styles.title}>
+                            {item.title}
+                          </span>
+                          <div className={styles.content}>
+                            {
+                              // Display formatted value and label
+                              (item.value !== null && (
+                                <span>
+                                  <span className={styles.value}>
+                                    {item.value_fmt(item.value)}
+                                  </span>
+                                  {
+                                    item.value_label && <span className={styles.label}>
+                                      &nbsp;{item.value_label}
+                                    </span>
+                                  }
                                 </span>
-                              }
-                            </span>
-                          ))
-                        }
-                        {
-                          // Data not available message, if applicable.
-                          (item.value === null && (
-                            <span className={'notAvail'}>
-                              Data not available
-                            </span>
-                          ))
-                        }
-                      </div>
-                      {
-                        // Display data source text if available.
-                        (item.data_source && item.value !== null && !item.notAvail && !item.hideSource) &&
-                          <div className={'dataSource'}>
-                            Source: {item.data_source}{ item.updated_at && (
-                                ' as of ' + new Date(item.updated_at).toLocaleString('en-us', {
-                                  month: 'short',
-                                  year: 'numeric',
-                                })
-                              )
+                              ))
+                            }
+                            {
+                              // Data not available message, if applicable.
+                              (item.value === null && (
+                                <span className={'notAvail'}>
+                                  Data not available
+                                </span>
+                              ))
                             }
                           </div>
-                      }
+                          {
+                            // Display data source text if available.
+                            (item.data_source && item.value !== null && !item.notAvail && !item.hideSource) &&
+                              <div className={classNames('dataSource', styles.source)}>
+                                Data for {item.value !== null ? `${item.date_time_fmt(item)}` : ''}.
+                                Source: {item.data_source}{ item.updated_at && (
+                                    ' as of ' + new Date(item.updated_at).toLocaleString('en-us', {
+                                      month: 'short',
+                                      year: 'numeric',
+                                    })
+                                  )
+                                }
+                              </div>
+                          }
+                        </div>
+                    }
+                    {
+                      // For JEE items:
+                      (item.type === 'jee') &&
+                        <div className={classNames(
+                          styles.item,
+                          styles.jee,
+                        )}>
+                          <span className={styles.title}>
+                            <span className={styles.text}>
+                              {item.title}
+                            </span>
+                            {item.legend_jsx && item.legend_jsx()}
+                          </span>
+                          <div className={classNames(styles.content, styles.jee)}>
+                          {
+                            item.values.map(jeeItem =>
+                              <div className={styles.jeeItem}>
+                              {
+                                // Display title
+                                <div className={styles.title}>{jeeItem.title}</div>
+                              }
+                              {
+                                // Display formatted value and label
+                                (jeeItem.value !== null && (
+                                  jeeItem.value_fmt(jeeItem.value)
+                                ))
+                              }
+                              {
+                                // Data not available message, if applicable.
+                                (jeeItem.value === null && (
+                                  <span className={'notAvail'}>
+                                    Data not available
+                                  </span>
+                                ))
+                              }
+                              </div>
+                            )
+                          }
+                          </div>
+                          {
+                            // Display data source text if available.
+                            (item.data_source && item.value !== null && !item.notAvail && !item.hideSource) &&
+                              <div className={classNames('dataSource', styles.source)}>
+                                Data for {item.value !== null ? `${item.date_time_fmt(item)}` : ''}.
+                                Source: {item.data_source}{ item.updated_at && (
+                                    ' as of ' + new Date(item.updated_at).toLocaleString('en-us', {
+                                      month: 'short',
+                                      year: 'numeric',
+                                    })
+                                  )
+                                }
+                              </div>
+                          }
+                        </div>
+                    }
                     </div>
-                  </div>
-                )
-              }
+                  )
+                }
+              </div>
+              <div className={styles.sidebar}>
+                {
+                  [
+                    {
+                      'title': 'JEE country capacity',
+                      'type': 'jee',
+                      'legend_jsx': () => getJeeChart('legend'),
+                      'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'year')}, // TODO
+                      'values': [
+                        {
+                          'title': 'Immunization capacity',
+                          'value_fmt': getJeeChart,
+                          'score_labeling': (score) => getScoreLabeling(score),
+                          'hideSource': true,
+                          ...(props.countryJeeImmun ? props.countryJeeImmun : {value: null}),
+                        },
+                        {
+                          'title': 'Real-time surveillance capacity',
+                          'value_fmt': getJeeChart,
+                          'score_labeling': (score) => getScoreLabeling(score),
+                          'hideSource': true,
+                          ...(props.countryJeeSurv ? props.countryJeeSurv : {value: null}),
+                        },
+                        {
+                          'title': 'Medical countermeasures capacity',
+                          'score_labeling': (score) => getScoreLabeling(score),
+                          'value_fmt': getJeeChart,
+                          ...(props.countryJeeMcm ? props.countryJeeMcm : {value: null}),
+                        },
+                      ],
+                      ...(props.countryJeeImmun ? props.countryJeeImmun : {value: null}),
+                    },
+                  ].map(item =>
+                    <div className={styles.itemContainer}>
+                    {
+                      // For normal non-JEE items:
+                      (item.type === undefined || item.type !== 'jee') &&
+                        <div className={styles.item}>
+                          <span className={styles.title}>
+                            {item.title}
+                          </span>
+                          <div className={styles.content}>
+                            {
+                              // Display formatted value and label
+                              (item.value !== null && (
+                                <span>
+                                  <span className={styles.value}>
+                                    {item.value_fmt(item.value)}
+                                  </span>
+                                  {
+                                    item.value_label && <span className={styles.label}>
+                                      &nbsp;{item.value_label}
+                                    </span>
+                                  }
+                                </span>
+                              ))
+                            }
+                            {
+                              // Data not available message, if applicable.
+                              (item.value === null && (
+                                <span className={'notAvail'}>
+                                  Data not available
+                                </span>
+                              ))
+                            }
+                          </div>
+                          {
+                            // Display data source text if available.
+                            (item.data_source && item.value !== null && !item.notAvail && !item.hideSource) &&
+                              <div className={classNames('dataSource', styles.source)}>
+                                Data for {item.value !== null ? `${item.date_time_fmt(item)}` : ''}.
+                                Source: {item.data_source}{ item.updated_at && (
+                                    ' as of ' + new Date(item.updated_at).toLocaleString('en-us', {
+                                      month: 'short',
+                                      year: 'numeric',
+                                    })
+                                  )
+                                }
+                              </div>
+                          }
+                        </div>
+                    }
+                    {
+                      // For JEE items:
+                      (item.type === 'jee') &&
+                        <div className={classNames(
+                          styles.item,
+                          styles.jee,
+                        )}>
+                          <span className={styles.title}>
+                            <span className={styles.text}>
+                              {item.title}
+                            </span>
+                            {item.legend_jsx && item.legend_jsx()}
+                          </span>
+                          <div className={classNames(styles.content, styles.jee)}>
+                          {
+                            item.values.map(jeeItem =>
+                              <div className={styles.jeeItem}>
+                              {
+                                // Display title
+                                <div className={styles.title}>{jeeItem.title}</div>
+                              }
+                              {
+                                // Display formatted value and label
+                                (jeeItem.value !== null && (
+                                  jeeItem.value_fmt(jeeItem.value)
+                                ))
+                              }
+                              {
+                                // Data not available message, if applicable.
+                                (jeeItem.value === null && (
+                                  <span className={'notAvail'}>
+                                    Data not available
+                                  </span>
+                                ))
+                              }
+                              </div>
+                            )
+                          }
+                          </div>
+                          {
+                            // Display data source text if available.
+                            (item.data_source && item.value !== null && !item.notAvail && !item.hideSource) &&
+                              <div className={classNames('dataSource', styles.source)}>
+                                Data for {item.value !== null ? `${item.date_time_fmt(item)}` : ''}.
+                                Source: {item.data_source}{ item.updated_at && (
+                                    ' as of ' + new Date(item.updated_at).toLocaleString('en-us', {
+                                      month: 'short',
+                                      year: 'numeric',
+                                    })
+                                  )
+                                }
+                              </div>
+                          }
+                        </div>
+                    }
+                    </div>
+                  )
+                }
+              </div>
             </div>
             <div className={styles.main}>
             {
@@ -744,7 +1073,7 @@ const Details = (props) => {
                   ...(props.countryIncidenceLatest.value !== undefined ? props.countryIncidenceLatest : { value: null }),
                 },
                 {
-                  'title': slidingLineMetric === 'caseload_totalpop' ? 'New cases by month' : 'Monthly incidence',
+                  'title': slidingLineMetric === 'caseload_totalpop' ? 'New cases by month' : 'Monthly incidence rate',
                   'chart_jsx': getSlidingLineJsx,
                   'date_time_fmt': Util.getDateTimeRange,
                   'data_source': getSlidingLineDataSources,
@@ -754,7 +1083,8 @@ const Details = (props) => {
                 <div className={styles.itemContainer}>
                   <div className={styles.item}>
                     <span className={styles.title}>
-                      {item.title} {item.value !== null ? `(${item.date_time_fmt(item)})` : ''}
+                      <span>{item.title}</span>
+                      {item.value !== null ? <span className={'dateTimeStamp'}>{item.date_time_fmt(item)}</span> : ''}
                     </span>
                     <div className={styles.content}>
                       <div className={styles.stackedValues}>
@@ -788,14 +1118,14 @@ const Details = (props) => {
                       </div>
                       {
                         // Display chart if there is one
-                        (item.chart_jsx !== undefined) &&
+                        (item.value !== null  && item.chart_jsx !== undefined) &&
                           item.chart_jsx(item.value)
                       }
                     </div>
                     {
                       // Display data source text if available.
                       (typeof item.data_source !== 'function' && item.data_source && !item.notAvail) &&
-                        <div className={'dataSource'}>
+                        <div className={classNames('dataSource', styles.source)}>
                           Source: {item.data_source}{ item.updated_at && (
                               ' as of ' + new Date(item.updated_at).toLocaleString('en-us', {
                                 month: 'short',
@@ -807,7 +1137,7 @@ const Details = (props) => {
                     }
                     {
                       (typeof item.data_source === 'function') &&
-                        <div className={'dataSource'}>
+                        <div className={classNames('dataSource', styles.source)}>
                         {
                           item.data_source()
                         }
@@ -831,11 +1161,17 @@ const Details = (props) => {
                     {
                       tooltipData.items.map(item =>
                         <div className={stylesTooltip.item}>
-                          <div className={stylesTooltip.name}>{item.name} ({Util.getDatetimeStamp(item.datum, item.period)})</div>
-                          <div>
+                          <div className={stylesTooltip.name}>
+                            <span>
+                              {item.name}
+                            </span>
+                            <span className={'dateTimeStamp'}>
+                              {Util.getDatetimeStamp(item.datum, item.period)}
+                            </span>
+                          </div>
+                          <div className={stylesTooltip.content}>
                             <span className={stylesTooltip.value}>{item.value}</span>
-                            &nbsp;
-                            <span className={stylesTooltip.label}>{item.label}</span>
+                            <span className={stylesTooltip.unit}>{item.label}</span>
                           </div>
                         </div>
                       )
