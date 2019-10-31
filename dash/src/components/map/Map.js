@@ -303,12 +303,13 @@ const Map = ({ fillObservations, bubbleObservations, incidenceObservations, mapp
     let id, iso, name;
     if (clickedOnBubble) {
       id = clickedOnBubble.id;
-      iso = clickedOnBubble.properties.ISO_A2;
+      iso = clickedOnBubble.properties.ISO_A2 !== '-99' ? clickedOnBubble.properties.ISO_A2 : clickedOnBubble.properties.WB_A2;
       name = clickedOnBubble.properties.NAME;
+
 
     } else if (clickedOnGeom) {
       id = clickedOnGeom.id;
-      iso = clickedOnGeom.properties.ISO_A2;
+      iso = clickedOnGeom.properties.ISO_A2 !== '-99' ? clickedOnGeom.properties.ISO_A2 : clickedOnGeom.properties.WB_A2;
       name = clickedOnGeom.properties.NAME;
     }
 
