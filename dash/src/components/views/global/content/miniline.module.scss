@@ -70,6 +70,7 @@ circle.miniLinePoint {
   &.incidence_monthly {
     fill: $value-red;
   }
+  &:last-child { r: 7; }
 }
 
 .y-axis-right .label {
