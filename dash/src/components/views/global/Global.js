@@ -521,7 +521,6 @@ const Global = (props) => {
       {
         'title': 'Total measles cases, incidence, and vaccination coverage by country',
         'instructions': 'Drag slider to view data for different months. Hover on bubble to view data. Click bubble to pin country name. Double click to go to country page.',
-        // 'title': 'Vaccination coverage and caseload by country',
         'chart_jsx': getScatterJsx,
         'date_time_fmt': () => '',
         'data_source': getScatterDataSources,
@@ -818,7 +817,7 @@ const Global = (props) => {
               place="top"
               effect="solid"
               event="mousemove"
-              offset={{top: -8,}}
+              offset={{top: -window.pageYOffset,}}
               getContent={ () =>
                 <div>
                 {
