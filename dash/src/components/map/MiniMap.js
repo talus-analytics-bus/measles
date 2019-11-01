@@ -79,6 +79,7 @@ const MiniMap = (props) => {
       minZoom={0}
       maxZoom={0}
       wrapAroundWorld={false}
+      dragPan={false}
     >
       {
         <Marker latitude={markerCoords.latitude} longitude={markerCoords.longitude}>
