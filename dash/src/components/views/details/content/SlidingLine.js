@@ -54,6 +54,8 @@ class SlidingLine extends Chart {
       const maxTime = new Date(
         minMaxData[minMaxData.length - 1]['date_time'].replace(/-/g, '/')
       );
+      console.log('maxTime')
+      console.log(maxTime)
       this.xDomainDefault = [minTime, maxTime];
     }
 
@@ -126,7 +128,7 @@ class SlidingLine extends Chart {
     // TODO deal with time zone effects elegantly.
     const x2Domain = d3.timeMonths(
       new Date(chart.xDomainDefault[0]).setSeconds(1),
-      new Date(chart.xDomainDefault[1]).setMonth(chart.xDomainDefault[1].getMonth() + 1)
+      new Date(chart.xDomainDefault[1]).setUTCMonth(chart.xDomainDefault[1].getUTCMonth() + 1)
     )
     .map(d => {
       return d.toLocaleString("en-US", {
@@ -480,6 +482,8 @@ class SlidingLine extends Chart {
       const oldestYear = +(x2.domain()[x2.domain().length - 1].split('/')[1]);
       const oldestMonth = +(x2.domain()[x2.domain().length - 1].split('/')[0]);
 
+      console.log('x2.domain()')
+      console.log(x2.domain())
       // Subtract back 11 months, adjusting year as needed;
       let startYear = oldestYear;
       let startMonth = oldestMonth - 11;

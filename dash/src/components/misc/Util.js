@@ -3,6 +3,104 @@ import * as d3 from 'd3/dist/d3.min';
 // Utility functions.
 const Util = {};
 
+// Calc the cumulative caseload for X months from the most recent data point.
+Util.getCumulativeCount = (data, nMonth = 12, lagMonths = 0) => {
+  data.reverse();
+
+  if (data.length === 0) {
+    return { value: null };
+  }
+
+  let cumulativeCount = 0;
+  let nCounted = 0;
+  let nNull = 0;
+  let cumulativeNull = true;
+
+  const first = data[0];
+  const firstDt = new Date (
+    first.date_time.replace(/-/g, '/')
+  );
+
+  // cycle thru lag
+  const startDt = new Date (
+    firstDt
+  );
+  startDt.setUTCMonth(
+    startDt.getUTCMonth() - lagMonths
+  );
+
+  // count from startDt
+  let end, start;
+  for (let i = 0; i < data.length; i++) {
+    const datum = data[i];
+    const thisDt = new Date (
+      datum.date_time.replace(/-/g, '/')
+    );
+    if (thisDt > startDt) continue;
+    else if (start === undefined) start = datum;
+    if (nCounted + nNull === nMonth) break;
+    end = datum;
+    if (datum.value !== null) {
+      cumulativeNull = false;
+      nCounted++;
+      cumulativeCount += datum.value;
+    } else {
+      nNull++;
+    }
+  }
+  // return a datum
+  data.reverse();
+
+  return {
+    "data_source": start.data_source,
+    "date_time": start.date_time,
+    "end": start.date_time,
+    "start": end.date_time,
+    "definition": "Sum of total cases in past " + nMonth + " months",
+    "metric": "calc_cumcaseload_" + nMonth + "month",
+    "observation_id": 0,
+    "place_fips": start.place_fips,
+    "place_id": start.place_id,
+    "place_iso": start.place_iso,
+    "place_name": start.place_name,
+    "stale_flag": start.stale_flag,
+    "updated_at": start.updated_at,
+    "value": cumulativeCount,
+    "n_null": nNull,
+  };
+
+};
+
+Util.getCumulativeTrend = (data, end, lagMonths = 12) => {
+
+  const start = Util.getCumulativeCount(
+    data,
+    lagMonths, // n months
+    lagMonths, // lag months
+  );
+
+  // data.reverse();
+  const pctChange = (end.value - start.value) / start.value;
+  return {
+    "change_per_period": end.value - start.value,
+    "definition": "Change in cumulative case count for " + lagMonths + "-month period",
+    "end_date": end.date_time,
+    "end_obs": end.observation_id,
+    "metric": "caseload_totalpop",
+    "percent_change": !isNaN(pctChange) ? pctChange : null,
+    "place_fips": start.place_fips,
+    "place_id": start.place_id,
+    "place_iso": start.place_iso,
+    "place_name": start.place_name,
+    "stale_flag": start.stale_flag,
+    "updated_at": start.updated_at,
+    "start_date": start.date_time,
+    "start_obs": start.observation_id,
+    "startDatum": start,
+    "endDatum": end,
+  };
+};
+
 /**
  * Return + if delta > 0, - if less, none otherwise.
  * @method getDeltaSign
@@ -505,7 +603,7 @@ Util.money = (val) => {
 
 Util.formatSIInteger = (val) => {
 	if (val === 0) return '0';
-  else if (val < 10) return val;
+  else if (val <= 999) return val;
 	else return d3.format(".2s")(val);
 };
 

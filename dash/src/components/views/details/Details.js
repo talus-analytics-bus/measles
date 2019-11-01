@@ -532,7 +532,7 @@ const Details = (props) => {
             metricParams.getUnits(countSummary)
         }
         </span>
-        <span> in selected window (
+        <span> during selected window (
           {
             countSummaryDateRange
           }
@@ -581,6 +581,26 @@ const Details = (props) => {
         }
       </div>
     );
+  };
+
+  // Get delta JSX from a datum's delta data if applicable.
+  const getDeltaJsx = (datum, period = '') => {
+    const deltaData = datum.deltaData;
+    return (deltaData && deltaData.delta !== undefined) && !datum.notAvail && <div className={classNames(styles.delta, {
+        [styles['inc']]: deltaData.delta > 0,
+        [styles['dec']]: deltaData.delta < 0,
+        [styles['same']]: deltaData.delta === 0,
+      })}>
+        <i className={classNames('material-icons')}>play_arrow</i>
+        <span className={styles['delta-value']}>
+          {
+            // Don't include sign for now since it's redundant
+            // <span className={styles['sign']}>{d.deltaSign}</span>
+          }
+          <span className={styles['num']}>{deltaData.deltaFmt}</span>
+        </span>
+        <span className={styles['delta-text']}>{Util.getDeltaWord(deltaData.delta)} from<br/>previous {period}</span>
+      </div>
   };
 
   /**
@@ -784,20 +804,65 @@ const Details = (props) => {
                 {
                   [
                     {
-                      'title': 'Population',
-                      'value_fmt': Util.formatSI,
-                      'value_label': 'people',
-                      'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'year')}, // TODO
-                      ...(props.countryPop ? props.countryPop : {value: null}),
+                      'title': 'Last reported caseload',
+                      'value_fmt': Util.formatSIInteger,
+                      'value_label': 'cases',
+                      'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'month')},
+                      'deltaData': props.countryCaseloadTrend ? Util.getDeltaData(
+                        props.countryCaseloadTrend[0]
+                      ) : undefined,
+                      'period': 'month',
+                      'hideSource': true,
+                      ...(props.countryCaseloadHistory ? props.countryCaseloadHistory[props.countryCaseloadHistory.length - 1] : {value: null}),
                     },
                     {
-                      'title': 'Gross domestic product per capita',
-                      'value_fmt': Util.formatSI,
-                      // 'value_fmt': Util.money,
-                      'value_label': 'USD',
-                      'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'year')}, // TODO
-                      ...(props.countryGDP ? props.countryGDP : {value: null}),
+                      'title': '6-month cumulative total',
+                      'value_fmt': Util.formatSIInteger,
+                      'value_label': 'cases',
+                      'date_time_fmt': (date_time) => {return Util.getDateTimeRange({value: date_time})},
+                      'deltaData': props.countryTrendCaseload6Months ? Util.getDeltaData(
+                        props.countryTrendCaseload6Months
+                      ) : undefined,
+                      'hideSource': true,
+                      'period': '6 months',
+                      dateTimeObs: [
+                        {date_time: props.countryCaseload6MonthsCalc.start},
+                        {date_time: props.countryCaseload6MonthsCalc.end},
+                      ],
+                      ...(props.countryCaseload6MonthsCalc ? props.countryCaseload6MonthsCalc : {value: null}),
                     },
+                    {
+                      'title': '12-month cumulative total',
+                      'value_fmt': Util.formatSIInteger,
+                      'value_label': 'cases',
+                      'date_time_fmt': (date_time) => {return Util.getDateTimeRange({value: date_time})},
+                      'deltaData': props.countryTrendCaseload6Months ? Util.getDeltaData(
+                        props.countryTrendCaseload12Months
+                      ) : undefined,
+                      'hideSource': false,
+                      'period': '12 months',
+                      dateTimeObs: [
+                        {date_time: props.countryCaseload12MonthsCalc.start},
+                        {date_time: props.countryCaseload12MonthsCalc.end},
+                      ],
+                      ...(props.countryCaseload12MonthsCalc ? props.countryCaseload12MonthsCalc : {value: null}),
+                    },
+
+                    // {
+                    //   'title': 'Population',
+                    //   'value_fmt': Util.formatSI,
+                    //   'value_label': 'people',
+                    //   'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'year')}, // TODO
+                    //   ...(props.countryPop ? props.countryPop : {value: null}),
+                    // },
+                    // {
+                    //   'title': 'Gross domestic product per capita',
+                    //   'value_fmt': Util.formatSI,
+                    //   // 'value_fmt': Util.money,
+                    //   'value_label': 'USD',
+                    //   'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'year')}, // TODO
+                    //   ...(props.countryGDP ? props.countryGDP : {value: null}),
+                    // },
                   ].map(item =>
                     <div className={styles.itemContainer}>
                     {
@@ -805,7 +870,18 @@ const Details = (props) => {
                       (item.type === undefined || item.type !== 'jee') &&
                         <div className={styles.item}>
                           <span className={styles.title}>
-                            {item.title}
+                            <span>
+                            {
+                              item.title
+                            }
+                            </span>
+                            <span className={'dateTimeStamp'}>
+                            {
+                              item.value !== null ? `${item.date_time_fmt(
+                                (item.dateTimeObs || item)
+                              )}` : ''
+                            }
+                            </span>
                           </span>
                           <div className={styles.content}>
                             {
@@ -823,6 +899,7 @@ const Details = (props) => {
                                 </span>
                               ))
                             }
+                            { getDeltaJsx(item, item.period) }
                             {
                               // Data not available message, if applicable.
                               (item.value === null && (
@@ -836,7 +913,6 @@ const Details = (props) => {
                             // Display data source text if available.
                             (item.data_source && item.value !== null && !item.notAvail && !item.hideSource) &&
                               <div className={classNames('dataSource', styles.source)}>
-                                Data for {item.value !== null ? `${item.date_time_fmt(item)}` : ''}.
                                 Source: {item.data_source}{ item.updated_at && (
                                     ' as of ' + new Date(item.updated_at).toLocaleString('en-us', {
                                       month: 'short',

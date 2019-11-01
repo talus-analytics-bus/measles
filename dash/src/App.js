@@ -244,6 +244,30 @@ const App = () => {
         const countryIncidenceHistory = cleanHistories('countryIncidenceHistoryFull')
         const countryCaseloadHistory = cleanHistories('countryCaseloadHistoryFull')
 
+        // Calculate 12-month and 6-month case totals
+        const countryCaseload12MonthsCalc = Util.getCumulativeCount(
+          countryCaseloadHistory,
+          12,
+          0,
+        );
+        const countryCaseload6MonthsCalc = Util.getCumulativeCount(
+          countryCaseloadHistory,
+          6,
+          0,
+        );
+
+        const countryTrendCaseload12Months = Util.getCumulativeTrend(
+          countryCaseloadHistory,
+          countryCaseload12MonthsCalc,
+          12,
+        );
+
+        const countryTrendCaseload6Months = Util.getCumulativeTrend(
+          countryCaseloadHistory,
+          countryCaseload6MonthsCalc,
+          6,
+        );
+
         // const countryIncidenceHistory = results.countryIncidenceHistoryFull
         //   .filter(d => d.value !== null);
 
@@ -311,7 +335,10 @@ const App = () => {
           countryIncidenceHistory={countryIncidenceHistory}
           countryCaseloadHistory={countryCaseloadHistory}
           countryCaseload12Months={results.caseload_12months}
-          // countryCaseloadTrend={fakeTrendValue}
+          countryCaseload12MonthsCalc={countryCaseload12MonthsCalc}
+          countryTrendCaseload12Months={countryTrendCaseload12Months}
+          countryTrendCaseload6Months={countryTrendCaseload6Months}
+          countryCaseload6MonthsCalc={countryCaseload6MonthsCalc}
           countryCaseloadTrend={results.countryCaseloadTrend}
           countryIncidenceLatest={countryIncidenceLatest}
           countryIncidenceQuantile={countryIncidenceQuantile}
