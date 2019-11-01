@@ -610,16 +610,19 @@ const Details = (props) => {
    */
   const getSlidingLineDataSources = () => {
 
-    let incidenceSource, vaccineSource;
-    const incidenceDatum = props.countryIncidenceHistory[0];
-    if (incidenceDatum === undefined) incidenceSource = null;
+    if (slidingLine === null) return;
+
+    let ySource, vaccineSource;
+
+    const yDatum = slidingLine.data.vals[0];
+    if (yDatum === undefined) ySource = null;
     else {
-      const incidenceUpdated = new Date(incidenceDatum.updated_at).toLocaleString('en-us', {
+      const yUpdated = new Date(yDatum.updated_at).toLocaleString('en-us', {
         month: 'short',
         year: 'numeric',
         timeZone: 'UTC',
       });
-      incidenceSource = `Source for ${metricParams.name.toLowerCase()}: ${incidenceDatum.data_source} as of ${incidenceUpdated}.`;
+      ySource = `Source for ${metricParams.name.toLowerCase()}: ${yDatum.data_source} as of ${yUpdated}.`;
     }
 
     const vaccineDatum = props.countryVaccHistory[0];
@@ -633,7 +636,7 @@ const Details = (props) => {
       vaccineSource = `Source for vaccination coverage: ${vaccineDatum.data_source} as of ${vaccineUpdated}.`;
     }
     const sources = [];
-    if (incidenceDatum) sources.push(incidenceSource);
+    if (yDatum) sources.push(ySource);
     if (vaccineSource) sources.push(vaccineSource);
     return sources.join(' ');
   };
