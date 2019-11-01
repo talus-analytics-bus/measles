@@ -16,8 +16,14 @@ const Nav = (props) => {
   // Track whether the country picker menu is being shown.
   const [showLocationPicker, setShowLocationPicker] = React.useState(false);
 
-  function countryOnClick (e) {
-    setShowLocationPicker(false);
+  // Track picked country (triggers refresh of tooltips)
+  const [locationPicked, setLocationPicked] = React.useState(null);
+  const [regionPicked, setRegionPicked] = React.useState(null);
+
+  function countryOnClick (e, c) {
+    console.log('c')
+    console.log(c)
+    setLocationPicked(c[0]);
     ReactTooltip.rebuild();
   }
 
@@ -34,16 +40,27 @@ const Nav = (props) => {
     return ({left: 'unset', top: top})
   }
 
+
   const renderCountryPicker = (regionName) => {
 
+    setRegionPicked(regionName);
+
+    // // Scroll tooltip up
+    // if (document.getElementById('regionTooltip') !== null) {
+    //   console.log('SCROLLING UP')
+    //   document.getElementById('regionTooltip').scrollTop = 0
+    // }
+
     if (regionName === null) return;
-    if (showLocationPicker) document.getElementById('regionTooltip').scrollTop = 0;
+    // if (showLocationPicker) {
+    //   document.getElementById('regionTooltip').scrollTop = 0;
+    // }
     let curCountry = -9999;
     if (window.location.pathname.startsWith('/details'))
       curCountry = +window.location.pathname.split('/')[2];
     return (
       props.places.find(p => p.name === regionName).data.map((c) =>
-        <Link onClick={countryOnClick} className={classNames(styles.country, {[styles.active]: c[0] === curCountry})} to={`/details/${c[0]}`}>
+        <Link onClick={(e) => countryOnClick(e, c)} className={classNames(styles.country, {[styles.active]: c[0] === curCountry})} to={`/details/${c[0]}`}>
             {c[1]}
         </Link>
       )
@@ -51,13 +68,28 @@ const Nav = (props) => {
   };
 
   React.useEffect(() => {
+    // Location picked was changed
+    setShowLocationPicker(false);
+    if (showLocationPicker) {
+      setTimeout(
+        () => document.getElementById('regionTooltip').scrollTop = 0,
+        500,
+      )
+    }
+
     ReactTooltip.hide();
-  })
+  }, [locationPicked]);
+
+  React.useEffect(() => {
+    if (document.getElementById('regionTooltip') !== null)
+    document.getElementById('regionTooltip').scrollTop = 0;
+  }, [regionPicked]);
 
   /**
    * Callback for when a region is clicked in the menu.
    */
   function regionOnClick (e) {
+
     // get region el
     let el;
     if (e.target === undefined) return;
@@ -87,6 +119,7 @@ const Nav = (props) => {
 
       // Add active class to current region
       el.classList.add(styles.activeRegion);
+
       return
     }
   };
@@ -131,6 +164,7 @@ const Nav = (props) => {
               scrollHide={false}
               resizeHide={false}
               afterHide={afterTooltipHide}
+              afterShow={() => document.getElementById('regionTooltip').scrollTop = 0}
               overridePosition={getCountryMenuPosition}
               getContent={ renderCountryPicker }
             />
