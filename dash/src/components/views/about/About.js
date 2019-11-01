@@ -113,7 +113,7 @@ const About = () => {
             <p>UN World Population Prospects</p>
           </td>
           <td width="192">
-            <p>Data report de facto population estimates and projections for all countries in the world.</p>
+            <p>Data report <i>de facto</i> population estimates and projections for all countries in the world.</p>
           </td>
           <td width="77">
             <p>yearly</p>

@@ -37,9 +37,11 @@
     display: flex;
     flex-flow: column;
     font-size: .9em;
-    a {
-      pointer-events: none;
-      color: black;
+    .footnote {
+      a {
+        pointer-events: none;
+        color: black;
+      }
     }
     p {
       display: flex;
