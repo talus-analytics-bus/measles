@@ -130,6 +130,10 @@ $spacing: 20px;
       font-size: 1.298em;
       font-weight: bold;
 
+      > span {
+        display: flex;
+      }
+
       .info {
         // TODO
         img {

@@ -476,14 +476,15 @@ const Map = ({ fillObservations, bubbleObservations, trendObservations, incidenc
     if (bubbleMetric === 'incidence_monthly') {
       return {
         navName: 'incidence of measles',
-        sectionName: 'Incidence of measles (monthly)',
+        sectionName: 'Last reported monthly incidence',
+        // sectionName: 'Incidence of measles (monthly)',
         noun: 'incidence',
       };
     }
     else if (bubbleMetric === 'caseload_totalpop') {
       return {
         navName: 'new cases of measles',
-        sectionName: 'New cases of measles last reported',
+        sectionName: 'Last reported caseload',
         noun: 'cases',
       };
     }

@@ -4,6 +4,7 @@ import axios from 'axios'
 import Modal from 'reactjs-popup'
 import classNames from 'classnames';
 import * as d3 from 'd3/dist/d3.min';
+import ReactTooltip from 'react-tooltip';
 
 // layout
 import Nav from './components/layout/nav/Nav.js'
@@ -20,6 +21,7 @@ import About from './components/views/about/About.js'
 
 // styles
 import styles from './App.module.scss'
+import infoTooltipStyles from './components/misc/infotooltip.module.scss';
 import 'material-design-icons/iconfont/material-icons.css'
 
 // queries
@@ -630,6 +632,19 @@ const App = () => {
               }
             </Modal>
           )
+        }
+        {
+          // Tooltip for info tooltip icons.
+          <ReactTooltip
+            id={'infoTooltip'}
+            type='dark'
+            className={infoTooltipStyles.infoTooltipContainer}
+            place="top"
+            effect="float"
+            getContent={ (tooltipData) =>
+              tooltipData
+            }
+            />
         }
       </BrowserRouter>
     </div>

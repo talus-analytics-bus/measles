@@ -4,7 +4,8 @@ import axios from 'axios'
 import { Link } from 'react-router-dom'
 import Chart from '../../chart/Chart.js'
 import SlidingLine from './content/SlidingLine.js'
-import ReactTooltip from 'react-tooltip'; // for sliding line
+import ReactTooltip from 'react-tooltip';
+import InfoTooltip from '../../../components/misc/InfoTooltip.js';
 
 import MiniMap from '../../../components/map/MiniMap.js'
 
@@ -796,6 +797,12 @@ const Details = (props) => {
   },
   [slidingLineMetric]);
 
+  // Get severity tooltip text, which is dynamic.
+  const getSeverityTooltip = (item) => {
+    console.log(item);
+    return `Five caseload severity levels were determined based on the quintiles of monthly incidence values for all countries from Jan 2011 through Aug 2019. In this way, the severity of a caseload in a given country is assessed relative to historical, global trends in measles incidence over time.`;
+  };
+
   // If loading do not show JSX content.
   console.log('props')
   console.log(props)
@@ -1158,6 +1165,7 @@ const Details = (props) => {
                   'chart_jsx': getWedgeChart,
                   'value_fmt': Util.formatIncidence,
                   'value_label': 'cases per 1M population',
+                  'infoTooltipText': (item) => getSeverityTooltip(item),
                   // 'value2_jsx': getCaseloadAndDeltaJsx,
                   'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'month')},
                   ...(props.countryIncidenceLatest.value !== undefined ? props.countryIncidenceLatest : { value: null }),
@@ -1166,7 +1174,13 @@ const Details = (props) => {
                 <div className={styles.itemContainer}>
                   <div className={styles.item}>
                     <span className={styles.title}>
-                      <span>{item.title}</span>
+                      <span>
+                        {item.title}
+                        {
+                          // If info tooltip text, render one
+                          (item.infoTooltipText) && <InfoTooltip text={item.infoTooltipText(item)} />
+                        }
+                      </span>
                       {item.value !== null ? <span className={'dateTimeStamp'}>{item.date_time_fmt(item)}</span> : ''}
                     </span>
                     <div className={styles.content}>

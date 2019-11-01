@@ -260,6 +260,8 @@ class Trend(Resource):
                     trend['percent_change'] = 1e10  # TODO make infinity
                 elif start_value == 0 and end_value < 0:
                     trend['percent_change'] = -1e10  # TODO make neg infinity
+                elif start_value == 0 and end_value == 0:
+                    trend['percent_change'] = 0
                 else:
                     trend['percent_change'] = None
 
