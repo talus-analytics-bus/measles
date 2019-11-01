@@ -11,6 +11,7 @@
     border-radius: $border-radius;
 
     .tooltipHeader {
+
       background-color: $light-grey-2;
       padding: 10px;
       border-radius: $border-radius $border-radius 0 0;
@@ -22,18 +23,27 @@
       border-radius: $border-radius;
 
       .tooltipName {
+        display: flex;
+        flex-flow: row;
+        align-items: center;
+
         font-size: 1em;
         font-family: 'Gotham Bold', serif;
         color: $dark-grey;
-        // background-color: gray;
+
+        img {
+          height: 60px;
+          margin-right: 5px;
+        }
+
       }
       .item {
         &:first-child {
           padding: 10px;
         }
-        // .name {
-        //   font-family: 'open_sanssemibold', sans-serif;
-        // }
+        &:last-child:not(:first-child) {
+          padding-bottom: 10px;
+        }
       }
     }
     box-shadow: 3px 3px 2.5px 0 rgba(0, 0, 0, 0.3);

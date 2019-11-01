@@ -421,6 +421,7 @@ class Scatter extends Chart {
                 size: sizeDatum.value_normalized,
               },
               place_id: placeId,
+              place_iso: xDatum.place_iso,
               place_name: xDatum.place_name,
               date_time: yDatum.date_time,
               xDatum: xDatum,
@@ -598,20 +599,25 @@ class Scatter extends Chart {
               .on('mouseenter', function showBubbleTooltip (d) {
                 const items = [];
                 [
+                  'sizeDatum',
                   'yDatum',
                   'xDatum',
-                  'sizeDatum',
                 ].forEach(itemName => {
                   items.push(
                     Util.getTooltipItem(d[itemName])
                   );
                 });
+                console.log(d)
                 chart.params.setTooltipData(
                   {
                     name: d.place_name,
+                    flagPath: `/flags/${d['place_iso']}.png`,
                     items: items,
                   }
                 );
+              })
+              .on('dblclick', function bubbleDoubleClick (d) {
+                chart.params.setRedirectPath('/details/' + d.place_id);
               })
 
             newCircleGs

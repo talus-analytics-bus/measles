@@ -86,6 +86,7 @@ const Global = (props) => {
         chart.params.tooltipClassName = stylesTooltip.globalTooltip;
         if (chart.params.className === 'Scatter') {
           chart.params.curSliderVal = curSliderVal;
+          chart.params.setRedirectPath = setRedirectPath;
         }
 
         // Set state variables and setters for PagingBar
@@ -519,7 +520,7 @@ const Global = (props) => {
     return [
       {
         'title': 'Total measles cases, incidence, and vaccination coverage by country',
-        'instructions': 'Drag slider to view data for different months. Hover on bubble to view data. Click bubble to pin country name.',
+        'instructions': 'Drag slider to view data for different months. Hover on bubble to view data. Click bubble to pin country name. Double click to go to country page.',
         // 'title': 'Vaccination coverage and caseload by country',
         'chart_jsx': getScatterJsx,
         'date_time_fmt': () => '',
@@ -759,7 +760,6 @@ const Global = (props) => {
               className='globalTooltip'
               place="right"
               effect="float"
-              clickable={true}
               getContent={ () =>
                 tooltipData &&
                   <div className={stylesTooltip.tooltipContainer}>
@@ -769,6 +769,7 @@ const Global = (props) => {
                       (tooltipData.name !== undefined) &&
                       <div className={stylesTooltip.tooltipHeader}>
                         <div className={stylesTooltip.tooltipName}>
+                          <img src={tooltipData.flagPath} />
                           {tooltipData.name}
                         </div>
                       </div>
