@@ -670,9 +670,11 @@ const Details = (props) => {
       props.countryCaseloadHistory.length - 1
     ];
 
-    const trend = props.countryCaseloadTrend[
-      props.countryCaseloadTrend.length - 1
-    ]; // Should only be one
+    const trend = props.countryTrendCaseload1Months;
+
+    // const trend = props.countryCaseloadTrend[
+    //   props.countryCaseloadTrend.length - 1
+    // ]; // Should only be one
 
     const caseloadAndDeltaData = getCaseloadAndDeltaData(obs, trend);
     const deltaData = caseloadAndDeltaData.deltaData;
@@ -811,8 +813,8 @@ const Details = (props) => {
                       'value_fmt': Util.formatSIInteger,
                       'value_label': 'cases',
                       'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'month')},
-                      'deltaData': props.countryCaseloadTrend ? Util.getDeltaData(
-                        props.countryCaseloadTrend[0]
+                      'deltaData': props.countryTrendCaseload1Months ? Util.getDeltaData(
+                        props.countryTrendCaseload1Months
                       ) : undefined,
                       'period': 'month',
                       'hideSource': true,
@@ -905,7 +907,7 @@ const Details = (props) => {
                             { getDeltaJsx(item, item.period) }
                             {
                               // Data not available message, if applicable.
-                              (item.value === null && (
+                              ((item.value === null || item.notAvail === true) && (
                                 <span className={'notAvail'}>
                                   Data not available
                                 </span>
@@ -1147,11 +1149,11 @@ const Details = (props) => {
                   ...(props.countryVaccLatest.value !== undefined ? props.countryVaccLatest : { value: null }),
                 },
                 {
-                  'title': 'Recent outbreak severity',
+                  'title': 'Recent caseload severity',
                   'chart_jsx': getWedgeChart,
                   'value_fmt': Util.formatIncidence,
                   'value_label': 'cases per 1M population',
-                  'value2_jsx': getCaseloadAndDeltaJsx,
+                  // 'value2_jsx': getCaseloadAndDeltaJsx,
                   'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'month')},
                   ...(props.countryIncidenceLatest.value !== undefined ? props.countryIncidenceLatest : { value: null }),
                 },
@@ -1165,25 +1167,25 @@ const Details = (props) => {
                     <div className={styles.content}>
                       <div className={styles.stackedValues}>
                       {
-                        // Display formatted value and label
-                        ((item.value !== null && typeof item.value !== 'object') && (
-                          <span>
-                            <span className={styles.value}>
-                              {item.value_fmt(item.value)}
-                            </span>
-                            {
-                              item.value_label && <span className={styles.label}>
-                                &nbsp;{item.value_label}
-                              </span>
-                            }
-                          </span>
-                        ))
+                        // // Display formatted value and label
+                        // ((item.value !== null && typeof item.value !== 'object') && (
+                        //   <span>
+                        //     <span className={styles.value}>
+                        //       {item.value_fmt(item.value)}
+                        //     </span>
+                        //     {
+                        //       item.value_label && <span className={styles.label}>
+                        //         &nbsp;{item.value_label}
+                        //       </span>
+                        //     }
+                        //   </span>
+                        // ))
                       }
                       {
                         // Data not available message, if applicable.
-                        (item.value === null && (
+                        ((item.value === null || item.notAvail === true) && (
                           <span className={'notAvail'}>
-                            Data not available
+                            Recent data not available
                           </span>
                         ))
                       }

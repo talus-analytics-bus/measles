@@ -255,6 +255,11 @@ const App = () => {
           6,
           0,
         );
+        const countryCaseload1MonthsCalc = Util.getCumulativeCount(
+          countryCaseloadHistory,
+          1,
+          0,
+        );
 
         const countryTrendCaseload12Months = Util.getCumulativeTrend(
           countryCaseloadHistory,
@@ -267,11 +272,24 @@ const App = () => {
           countryCaseload6MonthsCalc,
           6,
         );
+        const countryTrendCaseload1Months = Util.getCumulativeTrend(
+          countryCaseloadHistory,
+          countryCaseload1MonthsCalc,
+          1,
+        );
 
         // const countryIncidenceHistory = results.countryIncidenceHistoryFull
         //   .filter(d => d.value !== null);
 
-        const countryIncidenceLatest = countryIncidenceHistory.length > 0 ? countryIncidenceHistory[countryIncidenceHistory.length - 1] : {};
+        let countryIncidenceLatest = countryIncidenceHistory.length > 0 ? countryIncidenceHistory[countryIncidenceHistory.length - 1] : {};
+        // Don't use it if more than 3 months old.
+        const age = Util.getMonthsDiff(
+          Util.formatDatetimeApi(Util.today()),
+          countryIncidenceLatest.date_time,
+        );
+        console.log('age = ' + age)
+        if (age > 3) countryIncidenceLatest = { value: null };
+
 
         // Vacc. coverage history and latest observation
         const countryVaccLatest = results.countryVaccHistory.length > 0 ? results.countryVaccHistory[results.countryVaccHistory.length - 1] : {};
@@ -287,18 +305,7 @@ const App = () => {
         // const secondToLastDatum = countryCaseloadHistory[
         //   countryCaseloadHistory.length - 2
         // ];
-        // // Calculate percent change between two values
-        // const getPercentChange = (prv, cur) => {
-        //   const diff = cur - prv;
-        //   if (diff === 0) return 0;
-        //   else if (prv === 0) {
-        //     if (diff < 0) return -1000000000;
-        //     else return 1000000000;
-        //   }
-        //   else {
-        //     return (diff / prv);
-        //   }
-        // };
+
         // const fakeTrendValue = [
         //   {
         //     "change_per_period": secondToLastDatum.value - lastDatum.value,
@@ -339,7 +346,8 @@ const App = () => {
           countryTrendCaseload12Months={countryTrendCaseload12Months}
           countryTrendCaseload6Months={countryTrendCaseload6Months}
           countryCaseload6MonthsCalc={countryCaseload6MonthsCalc}
-          countryCaseloadTrend={results.countryCaseloadTrend}
+          countryTrendCaseload1Months={countryTrendCaseload1Months}
+          // countryCaseloadTrend={results.countryCaseloadTrend}
           countryIncidenceLatest={countryIncidenceLatest}
           countryIncidenceQuantile={countryIncidenceQuantile}
           countryVaccHistory={results.countryVaccHistory}

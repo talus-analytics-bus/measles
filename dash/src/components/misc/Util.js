@@ -3,6 +3,41 @@ import * as d3 from 'd3/dist/d3.min';
 // Utility functions.
 const Util = {};
 
+// Calculate age difference in months from text datetime strings.
+// Assumes a is more recent than b
+Util.getMonthsDiff = (aStr, bStr) => {
+  const aDt = new Date (
+    aStr.replace(/-/g, '/')
+  );
+  const bDt = new Date (
+    bStr.replace(/-/g, '/')
+  );
+
+  console.log('aDt')
+  console.log(aDt)
+
+  console.log('bDt')
+  console.log(bDt)
+
+  // count months
+  let monthsDiff = 0;
+  let stop = false;
+  while (!stop) {
+    // get years
+    const aYear = aDt.getUTCFullYear();
+    const bYear = bDt.getUTCFullYear();
+    const aMonth = aDt.getUTCMonth();
+    const bMonth = bDt.getUTCMonth();
+
+    if (aYear === bYear && aMonth === bMonth) stop = true;
+    else {
+      aDt.setUTCMonth(aDt.getUTCMonth() - 1);
+      monthsDiff++;
+    }
+  }
+  return monthsDiff;
+};
+
 // Calc the cumulative caseload for X months from the most recent data point.
 Util.getCumulativeCount = (data, nMonth = 12, lagMonths = 0) => {
   data.reverse();
@@ -79,15 +114,27 @@ Util.getCumulativeTrend = (data, end, lagMonths = 12) => {
     lagMonths, // lag months
   );
 
-  // data.reverse();
-  const pctChange = (end.value - start.value) / start.value;
+  // Calculate percent change between two values
+  const getPercentChange = (prv, cur) => {
+    const diff = cur - prv;
+    if (diff === 0) return 0;
+    else if (prv === 0) {
+      if (diff < 0) return -1000000000;
+      else return 1000000000;
+    }
+    else {
+      return (diff / prv);
+    }
+  };
+  const percentChange = getPercentChange(start.value, end.value);
+
   return {
     "change_per_period": end.value - start.value,
     "definition": "Change in cumulative case count for " + lagMonths + "-month period",
     "end_date": end.date_time,
     "end_obs": end.observation_id,
     "metric": "caseload_totalpop",
-    "percent_change": !isNaN(pctChange) ? pctChange : null,
+    "percent_change": !isNaN(percentChange) ? percentChange : null,
     "place_fips": start.place_fips,
     "place_id": start.place_id,
     "place_iso": start.place_iso,
