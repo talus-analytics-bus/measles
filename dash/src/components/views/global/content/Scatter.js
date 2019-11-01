@@ -523,6 +523,12 @@ class Scatter extends Chart {
         else return 0;
       }
 
+      function getTspanDy (d, nTspan) {
+        const baseEm = ((-1 * r(d.value_normalized.size)) - 5)/16;
+        const plusEm = nTspan - 1;
+        return (baseEm - plusEm).toString() + 'em';
+      }
+
       // Enter new bubbles, update old
       bubblesG.selectAll(`g:not(.${styles.monthYearLabel})`)
         .attr('class', styles.bubbleG)
@@ -641,23 +647,36 @@ class Scatter extends Chart {
                 const circleLabelTspans = Util.getWrappedText(d.place_name, 20);
 
                 // Append one tspan per line
+                const nTspan = circleLabelTspans.length;
                 d3.select(this).selectAll('tspan')
                   .data(circleLabelTspans)
                   .enter().append('tspan')
                     .attr('x', 0)
-                    .attr('dy', (d, i) => {
+                    .attr('dy', (dd, i) => {
                       if (circleLabelTspans.length === 1) {
                         return null;
                       }
                       else if (i === 0) {
-                        return (-1 * circleLabelTspans.length - (0.25*(circleLabelTspans.length-1))) + 'em';
+                        return getTspanDy(d, nTspan);
                       }
                       else {
                         return '1em';
                       }
 
                     })
-                    .text(d => d);
+                    // .attr('dy', (d, i) => {
+                    //   if (circleLabelTspans.length === 1) {
+                    //     return null;
+                    //   }
+                    //   else if (i === 0) {
+                    //     return (-1 * circleLabelTspans.length - (0.25*(circleLabelTspans.length-1))) + 'em';
+                    //   }
+                    //   else {
+                    //     return '1em';
+                    //   }
+                    //
+                    // })
+                    .text(dd => dd);
               });
 
 
@@ -718,9 +737,8 @@ class Scatter extends Chart {
                 .transition('textShift2')
                 .duration(1320)
                   .attr('dy', function (d) {
-                    const baseEm = ((-1 * r(d.value_normalized.size)) - 5)/16;
-                    const plusEm = d3.select(this.parentElement).selectAll('tspan').nodes().length - 1;
-                    return (baseEm - plusEm).toString() + 'em';
+                    const nTspan = d3.select(this.parentElement).selectAll('tspan').nodes().length
+                    return getTspanDy(d, nTspan);
                   });
 
             update.selectAll('text')
