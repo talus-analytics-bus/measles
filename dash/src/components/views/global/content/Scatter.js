@@ -711,13 +711,24 @@ class Scatter extends Chart {
             //       .style('text-anchor', getTextAnchor(d));
             //   });
             //
+
+            update.selectAll('text')
+              .data(data, d => d.place_id)
+                .select('tspan')
+                .transition('textShift2')
+                .duration(1320)
+                  .attr('dy', function (d) {
+                    const baseEm = ((-1 * r(d.value_normalized.size)) - 5)/16;
+                    const plusEm = d3.select(this.parentElement).selectAll('tspan').nodes().length - 1;
+                    return (baseEm - plusEm).toString() + 'em';
+                  });
+
             update.selectAll('text')
               .data(data, d => d.place_id)
                 .transition('textShift')
                 .duration(1320)
                   .attr('dy', d => (-1 * r(d.value_normalized.size)) - 2)
                   .attr('dx', d => getTextDx(d))
-                  // .style('font-size', labelSize(d.value_normalized.size))
                   .style('text-anchor', d => getTextAnchor(d));
 
 
