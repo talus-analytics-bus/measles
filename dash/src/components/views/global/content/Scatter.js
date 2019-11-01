@@ -504,8 +504,9 @@ class Scatter extends Chart {
 
       const getTextAnchor = (d) => {
         const xPos = getCircleXPos(d);
-        const nearRightEdge = chart.width - xPos <= 25;
-        const nearLeftEdge = xPos <= 25;
+        const curR = r(d.value_normalized.size);
+        const nearRightEdge = chart.width - xPos - curR <= 25;
+        const nearLeftEdge = xPos - curR <= 25;
         if (nearRightEdge) return 'end';
         else if (nearLeftEdge) return 'start';
         else return 'middle';
@@ -513,8 +514,9 @@ class Scatter extends Chart {
 
       const getTextDx = (d) => {
         const xPos = getCircleXPos(d);
-        const nearRightEdge = chart.width - xPos <= 25;
-        const nearLeftEdge = xPos <= 25;
+        const curR = r(d.value_normalized.size);
+        const nearRightEdge = chart.width - xPos - curR <= 25;
+        const nearLeftEdge = xPos - curR <= 25;
         if (nearRightEdge) return r(d.value_normalized.size);
         else if (nearLeftEdge) return -1*r(d.value_normalized.size);
         else return 0;
@@ -705,7 +707,7 @@ class Scatter extends Chart {
             //
             update.selectAll('text')
               .data(data, d => d.place_id)
-                .transition()
+                .transition('textShift')
                 .duration(1320)
                   .attr('dy', d => (-1 * r(d.value_normalized.size)) - 2)
                   .attr('dx', d => getTextDx(d))
@@ -715,7 +717,7 @@ class Scatter extends Chart {
 
             update.selectAll('circle')
               .data(data, d => d.place_id)
-                .transition()
+                .transition('circleStyle')
                 .duration(1320)
                   .style('opacity', 1)
                   .attr('fill', d => {
