@@ -644,7 +644,7 @@ class Scatter extends Chart {
                         return null;
                       }
                       else if (i === 0) {
-                        return -1 * circleLabelTspans.length + 'em';
+                        return (-1 * circleLabelTspans.length - (0.25*(circleLabelTspans.length-1))) + 'em';
                       }
                       else {
                         return '1em';
