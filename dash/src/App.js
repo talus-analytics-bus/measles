@@ -403,7 +403,7 @@ const App = () => {
                 domain: [new Date('2016/01/01'), Util.today()],
                 margin: {
                   top: 68,
-                  right: 5,
+                  right: 20,
                   bottom: 80,
                   left: 120,
                 },
