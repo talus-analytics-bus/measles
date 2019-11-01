@@ -59,6 +59,7 @@ class PagingBar extends Chart {
               {
                 ...yDatum,
                 value: xDatum.value,
+                metric: xDatum.metric,
                 join_id: yDatum.place_name + '-' + view,
               }
             );

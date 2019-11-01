@@ -4,7 +4,8 @@ $logo-height: 70px;
 .app {
   display: grid;
   grid-template-columns: auto; // ensures header resizes correctly if window size is changed
-  grid-template-rows: min-content auto;
+  // Subtract header and foot from main content
+  grid-template-rows: 80px minmax(calc(100vh - 80px - 95px), auto);
   &.windowed { height: 100%; }
 }
 

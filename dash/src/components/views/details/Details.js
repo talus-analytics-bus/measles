@@ -375,6 +375,9 @@ const Details = (props) => {
     return (val/100) * gutterWidth;
   };
 
+  // Get continuous vacc color scale
+  const vaccColor = Util.getColorScaleForMetric('coverage_mcv1_infant', [0, 100]);
+
   /**
    * Get vaccination chart JSX.
    * @method getVaccChart
@@ -382,6 +385,8 @@ const Details = (props) => {
   const getVaccChart = (val) => {
     // Get vaccination chart bins
     const binData = getVaccinationChartBin(val);
+
+    // Get continuous scale color.
     const tooSmall = 15;
     return (
       <div className={classNames(styles.chart, styles.vaccChart, styles.shapes)}>
@@ -399,7 +404,7 @@ const Details = (props) => {
                 )}
                 style={{
                   // 'borderColor': bin === binData.i ? 'gray' : '',
-                  'backgroundColor': bin === 1 ? binData.color : '',
+                  'backgroundColor': bin === 1 ? vaccColor(val) : '',
                   'color': (val >= tooSmall && binData.i > 3) ? 'white' : '',
                   'width': bin === 1 ? getVaccActiveWedgeWidth(val) : '',
                 }}

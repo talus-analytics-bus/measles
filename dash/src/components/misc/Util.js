@@ -508,9 +508,14 @@ Util.getDateTimeRange = (item) => {
   if (data === null) return '';
   const first = data[0]['date_time'];
   const last = data[data.length - 1]['date_time'];
+
   const firstStr = new Date(first.replace(/-/g, '/')).toLocaleString('en-us', {
     month: 'short',
     year: 'numeric',
+    timeZone: 'UTC',
+  });
+  const firstStrNoYear = new Date(first.replace(/-/g, '/')).toLocaleString('en-us', {
+    month: 'short',
     timeZone: 'UTC',
   });
   const lastStr = new Date(last.replace(/-/g, '/')).toLocaleString('en-us', {
@@ -518,7 +523,10 @@ Util.getDateTimeRange = (item) => {
     year: 'numeric',
     timeZone: 'UTC',
   });
+  const sameYear = first.slice(0, 4) === last.slice(0, 4);
+
   if (firstStr === lastStr) return `${firstStr}`;
+  else if (sameYear) return `${firstStrNoYear} to ${lastStr}`
   else return `${firstStr} to ${lastStr}`;
 };
 

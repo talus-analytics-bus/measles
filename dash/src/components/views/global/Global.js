@@ -516,6 +516,37 @@ const Global = (props) => {
     return sources.join(' ');
   };
 
+  /**
+   * Return correct data source text for pagingbar chart (vaccination and
+   * 12 month cases).
+   * @method getScatterDataSources
+   */
+  const getPagingBarDataSources = () => {
+
+    let ySource, yDatum;
+    if (pagingBarData === 'cumcaseload_totalpop') {
+      yDatum = props.chartParams.PagingBar[0].params.data.y[0];
+    }
+    else {
+      yDatum = props.chartParams.PagingBar[0].params.data.y2[0];
+    }
+    if (yDatum === undefined) yDatum = null;
+    else {
+      // const metricChartParams = Util.getMetricChartParams(yDatum.metric);
+      const yUpdated = new Date(yDatum.updated_at).toLocaleString('en-us', {
+        month: 'short',
+        year: 'numeric',
+        timeZone: 'UTC',
+      });
+      // const yMetricName = metricChartParams.label.toLowerCase();
+      ySource = `Source: ${yDatum.data_source} as of ${yUpdated}.`;
+    }
+
+    const sources = [];
+    if (yDatum) sources.push(ySource);
+    return sources.join(' ');
+  };
+
   const getScatterData = () => {
     return [
       {
@@ -534,7 +565,7 @@ const Global = (props) => {
         'title': sectionTitle,
         'chart_jsx': getPagingBarJsx,
         'date_time_fmt': () => sectionDatetime,
-        'data_source': getScatterDataSources,
+        'data_source': getPagingBarDataSources,
       },
     ]
   };

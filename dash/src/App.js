@@ -7,6 +7,7 @@ import * as d3 from 'd3/dist/d3.min';
 
 // layout
 import Nav from './components/layout/nav/Nav.js'
+import Footer from './components/layout/footer/Footer.js'
 
 // map
 import Map from './components/map/Map'
@@ -600,6 +601,9 @@ const App = () => {
             } } />
           </div>
         </Switch>
+        {
+          (page !== 'map') && <Footer />
+        }
         {
           showWelcomeModal && (
             <Modal
