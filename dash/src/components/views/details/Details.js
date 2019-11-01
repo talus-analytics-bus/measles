@@ -1147,8 +1147,7 @@ const Details = (props) => {
                   ...(props.countryVaccLatest.value !== undefined ? props.countryVaccLatest : { value: null }),
                 },
                 {
-                  'title': 'Current outbreak severity',
-                  // 'title': 'Recent monthly incidence of measles',
+                  'title': 'Recent outbreak severity',
                   'chart_jsx': getWedgeChart,
                   'value_fmt': Util.formatIncidence,
                   'value_label': 'cases per 1M population',
