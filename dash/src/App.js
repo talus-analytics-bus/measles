@@ -144,11 +144,6 @@ const App = () => {
     }
   }, [])
 
-  // React.useEffect(() => {
-  //   console.log('navTitle')
-  //   console.log(navTitle)
-  // }, [navTitle])
-
   // Functions to render each page's elements.
   const renderMap = loading ? <div /> :
     <Map // map page
@@ -290,7 +285,6 @@ const App = () => {
           Util.formatDatetimeApi(Util.today()),
           countryIncidenceLatest.date_time,
         );
-        console.log('age = ' + age)
         if (age > 3) countryIncidenceLatest = { value: null };
 
 
@@ -369,9 +363,11 @@ const App = () => {
 
   const renderGlobal = id => {
     if (loading) {
+      // Does NOT result in double load
       return <div />
     }
     else if (globalComponent === null) {
+      // ALWAYS results in double load
 
       // Function to make API calls to get data for the state variables above.
       const getGlobalData = async () => {
@@ -550,7 +546,7 @@ const App = () => {
       getGlobalData(id);
       return <div />;
     } else {
-
+      // Does NOT result in double load
       setLoadingNav(false);
       return globalComponent;
     }
@@ -579,7 +575,7 @@ const App = () => {
             }
             <Route
               path='/global'
-              component={d => {
+              render={d => {
                 setPage('global');
                 setLoadingNav(true);
                 // window.scrollTo(0,0);
@@ -588,7 +584,7 @@ const App = () => {
             />
             <Route
               path='/details/:id'
-              component={d => {
+              render={d => {
                 setPage('details');
                 setLoadingNav(true);
                 // window.scrollTo(0,0);
