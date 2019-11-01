@@ -1,6 +1,6 @@
 @import '../../../assets/styles/colors.scss';
-$logo-height: 45%;
 $nav-height: 80px;
+$logo-height: $nav-height/2;
 // $logo-height: 50px;
 
 .nav {

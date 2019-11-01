@@ -54,8 +54,6 @@ class SlidingLine extends Chart {
       const maxTime = new Date(
         minMaxData[minMaxData.length - 1]['date_time'].replace(/-/g, '/')
       );
-      console.log('maxTime')
-      console.log(maxTime)
       this.xDomainDefault = [minTime, maxTime];
     }
 
@@ -148,7 +146,9 @@ class SlidingLine extends Chart {
         return self.indexOf(value) === index;
     }
     const tickValues = chart.data.vals
-      .map(d => '1/' + new Date(d.date_time).getUTCFullYear()).filter(onlyUnique);
+      .map(d => '1/' + new Date(
+        d.date_time.replace(/-/g, '/')
+      ).getUTCFullYear()).filter(onlyUnique);
     const xAxis2 = d3.axisBottom()
       .tickSize(0)
       .tickValues(tickValues)
@@ -482,8 +482,6 @@ class SlidingLine extends Chart {
       const oldestYear = +(x2.domain()[x2.domain().length - 1].split('/')[1]);
       const oldestMonth = +(x2.domain()[x2.domain().length - 1].split('/')[0]);
 
-      console.log('x2.domain()')
-      console.log(x2.domain())
       // Subtract back 11 months, adjusting year as needed;
       let startYear = oldestYear;
       let startMonth = oldestMonth - 11;

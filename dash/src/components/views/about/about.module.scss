@@ -33,9 +33,10 @@
 
   // Space references
   .referencesDivider {
-    margin-top: 60px;
+    margin-top: 30px;
     display: flex;
     flex-flow: column;
+    font-size: .9em;
     a {
       pointer-events: none;
       color: black;
