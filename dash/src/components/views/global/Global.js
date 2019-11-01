@@ -73,6 +73,9 @@ const Global = (props) => {
   // Effect hook to load API data.
   React.useEffect(() => {
 
+    // Scroll to top of window afer loading.
+    window.scrollTo(0,0);
+
     // Update chart variables
     const chartsToSet = [];
     for (let chartTypeName in props.chartParams) {

@@ -4,6 +4,9 @@ import styles from './about.module.scss'
 // JSX for about page.
 const About = () => {
 
+  // Scroll to top of window afer loading.
+  React.useEffect(() => window.scrollTo(0,0), []);
+
   return (
     <div className={styles.about}>
     <h1>Overview</h1>

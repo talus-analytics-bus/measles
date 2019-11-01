@@ -728,6 +728,9 @@ const Details = (props) => {
   // Effect hook to load API data.
   React.useEffect(() => {
 
+    // Scroll to top of window afer loading.
+    window.scrollTo(0,0);
+
     // Animate JEE block colors
     const jeeBlocks = document.getElementsByClassName(styles.jeeBlock);
     for (let i = 0; i < jeeBlocks.length; i++) {
