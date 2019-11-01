@@ -428,8 +428,8 @@ const Details = (props) => {
           }
         </div>
         <div className={styles.wedgeLabels}>
-          <div className={styles.labelLeft}>Low<br/>coverage</div>
-          <div className={styles.labelRight}>High<br/>coverage</div>
+          <div className={styles.labelLeft}>No<br/>coverage</div>
+          <div className={styles.labelRight}>Full<br/>coverage</div>
         </div>
       </div>
     )
