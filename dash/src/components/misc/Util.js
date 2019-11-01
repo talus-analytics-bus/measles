@@ -175,7 +175,7 @@ Util.getDeltaWord = (deltaVal) => {
 };
 
 Util.getPeopleNoun = (val) => {
-  if (val === 1) return 'person';
+  if (val === 1) return 'case';
   else return 'cases';
 };
 
