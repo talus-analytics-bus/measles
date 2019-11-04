@@ -954,6 +954,10 @@ const Details = (props) => {
                           <span className={styles.title}>
                             <span className={styles.text}>
                               {item.title}
+                              {
+                                // If info tooltip text, render one
+                                (item.infoTooltipText) && <InfoTooltip text={item.infoTooltipText(item)} />
+                              }
                             </span>
                             {item.legend_jsx && item.legend_jsx()}
                           </span>
@@ -1008,6 +1012,7 @@ const Details = (props) => {
                   [
                     {
                       'title': 'JEE country capacity',
+                      'infoTooltipText': () => 'The Joint External Evaluation tool (JEE) measures country-specific progress in developing the capacities needed to prevent, detect, and respond to public health threats.',
                       'type': 'jee',
                       'legend_jsx': () => getJeeChart('legend'),
                       'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'year')}, // TODO
@@ -1043,6 +1048,10 @@ const Details = (props) => {
                         <div className={styles.item}>
                           <span className={styles.title}>
                             {item.title}
+                            {
+                              // If info tooltip text, render one
+                              (item.infoTooltipText) && <InfoTooltip text={item.infoTooltipText(item)} />
+                            }
                           </span>
                           <div className={styles.content}>
                             {
@@ -1095,6 +1104,10 @@ const Details = (props) => {
                           <span className={styles.title}>
                             <span className={styles.text}>
                               {item.title}
+                              {
+                                // If info tooltip text, render one
+                                (item.infoTooltipText) && <InfoTooltip text={item.infoTooltipText(item)} />
+                              }
                             </span>
                             {item.legend_jsx && item.legend_jsx()}
                           </span>
