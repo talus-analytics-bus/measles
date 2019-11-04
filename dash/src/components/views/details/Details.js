@@ -47,28 +47,28 @@ const Details = (props) => {
    * @method getScoreName
    */
   const getScoreLabeling = (score) => {
-  	if (score < 1.5) {
+  	if (score < 2) {
       return {
         label: 'None',
         color: 'red',
         value: score,
         i: 0,
       };
-  	} else if (score < 2.5) {
+  	} else if (score < 3) {
       return {
         label: 'Limited',
         color: 'lightyellow',
         value: score,
         i: 1,
       };
-  	} else if (score < 3.5) {
+  	} else if (score < 4) {
       return {
         label: 'Developed',
         color: 'yellow',
         value: score,
         i: 2,
       };
-  	} else if (score < 4.5) {
+  	} else if (score < 5) {
       return {
         label: 'Demonstrated',
         color: 'lightgreen',
