@@ -58,7 +58,7 @@ body,
     height: $marker-size;
     width: $marker-size;
     border-radius: 9999px;
-    background-color: #3d5b78;
+    background-color: $value-red;
     opacity: 1;
     border: 1px solid white;
     transform: translate(-50%, -50%);
