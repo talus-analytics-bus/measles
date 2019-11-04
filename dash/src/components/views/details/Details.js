@@ -211,10 +211,10 @@ const Details = (props) => {
     }
   };
 
-  // Color scale for measles reds to use in wedge.
-  const wedgeColorScale = d3.scaleLinear()
-    .domain([0, 1])
-    .range(['#e6c1c6', '#9d3e4c']);
+  // // Color scale for measles reds to use in wedge.
+  // const wedgeColorScale = d3.scaleLinear()
+  //   .domain([0, 1])
+  //   .range(['#e6c1c6', '#9d3e4c']);
 
   const getWedgeChart = (val) => {
     if (val === 0) return (
@@ -226,7 +226,8 @@ const Details = (props) => {
     // Get vaccination chart bins
     const binData = getWedgeChartBin();
 
-    const wedgeColor = wedgeColorScale(binData.i / 4);
+    const wedgeColor = '#9d3e4c';
+    // const wedgeColor = wedgeColorScale(binData.i / 4);
 
     return (
       <div className={classNames(styles.chart, styles.measlesWedgeChart, styles.shapes)}>
@@ -307,6 +308,16 @@ const Details = (props) => {
     }
     else {
       const scoreLabeling = getScoreLabeling(score);
+      // OLD: JSX for jee score appearing below the label. Currently it appears
+      // below the bin of the wedge it applies to.
+      // <br/>
+      // <span className={styles.jeeScoreValue}>(
+      //   {
+      //     // Add score (e.g., 4.6)
+      //     Util.decimalizeOne(score)
+      //   }
+      // )
+      // </span>
       return (
         <div className={
           classNames(
@@ -319,14 +330,6 @@ const Details = (props) => {
             // Add label (e.g., Demonstrated)
             scoreLabeling.label
           }
-          <br/>
-          <span className={styles.jeeScoreValue}>(
-            {
-              // Add score (e.g., 4.6)
-              Util.decimalizeOne(score)
-            }
-          )
-          </span>
           </div>
           <div className={styles.value}>
             <div className={classNames(styles.chart)}>
@@ -362,7 +365,13 @@ const Details = (props) => {
                       // (bin === 3) && <div className={styles.labelRight}>High relative<br/>incidence</div>
                     }
                     {
-                      // (binData.i === bin) && <span>{Util.percentize(val)}</span>
+                      (scoreLabeling.i === bin) &&
+                      <span className={styles.jeeScoreValue}>
+                        {
+                          // Add score (e.g., 4.6)
+                          Util.decimalizeOne(score)
+                        }
+                      </span>
                     }
                   </div>
                 )
