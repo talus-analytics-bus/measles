@@ -28,8 +28,10 @@ $spacing: 20px;
   .sidebars {
     display: flex;
     flex-flow: column;
-    max-width: 30%;
-    min-width: 500px;
+    // width: auto;
+    // min-width: 508px;
+    // max-width: 30%;
+    // min-width: 500px;
 
     .sidebar {
       &:not(:first-child) {
@@ -81,9 +83,10 @@ $spacing: 20px;
 
     // TODO confirm cross-browser compat.
     transform: scale(.75);
-    transform-origin: top left;
-    margin-bottom: -90px;
+    transform-origin: top center;
+    // margin-bottom: -90px;
     // margin-right: -125px;
+    margin: 0 -62.5px -90px -52.5px;
 
     &, & * { cursor: default };
 
@@ -149,6 +152,9 @@ $spacing: 20px;
     }
   }
 
+  .itemContainer {
+    min-width: 410px;
+  }
   .itemContainer:not(:first-child) {
     margin-top: $spacing;
   }
@@ -186,6 +192,7 @@ $spacing: 20px;
       display: flex;
       flex-flow: row;
       position: relative;
+      width: 100%;
       // justify-content: space-between;
 
       > span {
@@ -440,12 +447,14 @@ $spacing: 20px;
     }
   }
 
-  $itemMaxWidth: 750px;
+  // $itemMaxWidth: 1140px;
   .main {
     margin-right: $spacing*2;
     margin-top: 10px;
     margin-bottom: 40px;
     width: 100%;
+    // width: calc(67% - 0px);
+    // width: 100%;
 
     .source {
       text-align: right;
@@ -462,7 +471,7 @@ $spacing: 20px;
         margin-top: 18px;
       }
       .item {
-        max-width: $itemMaxWidth;
+        // max-width: $itemMaxWidth;
         .title {
           font-family: 'rawline', sans-serif;
           font-size: 1.298em;
@@ -472,9 +481,16 @@ $spacing: 20px;
     }
   }
 
-  $slidingLineWidth: 750px;
+  $slidingLineWidth: auto;
+  $slidingLineHeight: 50vh;
+  // $slidingLineWidth: 750px;
   .slidingLineContainer {
-    width: 100%;
+    width: 60vw;
+    // width: 50vw;
+    // min-width: 300px;
+    // max-width: 100%;
+    // width: $slidingLineWidth;
+    // width: 100%;
 
     .dataToggles {
       display: none; // do not show them for now
@@ -555,7 +571,8 @@ $spacing: 20px;
       margin-left: auto;
     }
     .slidingLine {
-      height: $slidingLineWidth/2.2;
+      height: $slidingLineHeight;
+      // height: $slidingLineWidth/2.2;
       width: $slidingLineWidth;
       // margin-left: 20px;
       svg {
