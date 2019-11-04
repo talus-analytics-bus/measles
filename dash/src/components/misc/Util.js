@@ -645,6 +645,9 @@ Util.formatIncidence = (inc) => {
   else return Util.formatSI(inc);
 };
 
+// Decimalize-ize numbers to one place
+Util.decimalizeOne = d3.format('.1f');
+
 // Comma-ize numbers
 Util.comma = function(num) {
 	const resultTmp = d3.format(',.0f')(num);

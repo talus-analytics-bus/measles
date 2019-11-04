@@ -261,6 +261,9 @@ const Details = (props) => {
 
   // Return a wedge chart for the JEE scores
   const getJeeChart = (score) => {
+
+    // Return legend graphic if score is 'legend', otherwise return the
+    // corresponding score graphic.
     if (score === 'legend') {
 
       return (
@@ -313,8 +316,17 @@ const Details = (props) => {
         }>
           <div className={styles.jeeLabel}>
           {
+            // Add label (e.g., Demonstrated)
             scoreLabeling.label
           }
+          <br/>
+          <span className={styles.jeeScoreValue}>(
+            {
+              // Add score (e.g., 4.6)
+              Util.decimalizeOne(score)
+            }
+          )
+          </span>
           </div>
           <div className={styles.value}>
             <div className={classNames(styles.chart)}>
