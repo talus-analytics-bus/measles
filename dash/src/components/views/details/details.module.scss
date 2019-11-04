@@ -630,6 +630,7 @@ $spacing: 20px;
       .chart .trapezoid.active {
         .bottom { background-color: $color; }
         .top { border-color: transparent $color $color transparent; }
+        + .jeeScoreValue { color: $color; }
       }
     }
     .chart .legend.trapezoid-#{length($colors)-$i} {
@@ -695,6 +696,15 @@ $spacing: 20px;
     }
     .trapezoidContainer {
       margin-top: auto;
+      margin-bottom: 10px;
+      .jeeScoreValue {
+        font-size: .4em;
+        position: absolute;
+        text-align: center;
+        height: 0;
+        width: $wedge-width;
+        margin: auto;
+      }
     }
     .legend.trapezoid {
       margin-right: 0;
