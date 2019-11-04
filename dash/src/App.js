@@ -21,6 +21,7 @@ import About from './components/views/about/About.js'
 
 // styles
 import styles from './App.module.scss'
+import './components/views/details/details.module.scss'
 import infoTooltipStyles from './components/misc/infotooltip.module.scss';
 import 'material-design-icons/iconfont/material-icons.css'
 
@@ -628,19 +629,6 @@ const App = () => {
               }
             </Modal>
           )
-        }
-        {
-          // Tooltip for info tooltip icons.
-          <ReactTooltip
-            id={'infoTooltip'}
-            type='dark'
-            className={infoTooltipStyles.infoTooltipContainer}
-            place="top"
-            effect="float"
-            getContent={ (tooltipData) =>
-              tooltipData
-            }
-            />
         }
       </BrowserRouter>
     </div>

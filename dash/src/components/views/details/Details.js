@@ -6,6 +6,7 @@ import Chart from '../../chart/Chart.js'
 import SlidingLine from './content/SlidingLine.js'
 import ReactTooltip from 'react-tooltip';
 import InfoTooltip from '../../../components/misc/InfoTooltip.js';
+import infoTooltipStyles from '../../../components/misc/infotooltip.module.scss';
 
 import MiniMap from '../../../components/map/MiniMap.js'
 
@@ -42,46 +43,52 @@ const Details = (props) => {
   // Get data for current country.
   const country = props.id;
 
+  const jeeLabels = [
+  {
+    label: 'None',
+    color: 'red',
+    i: 0,
+  },
+  {
+    label: 'Limited',
+    color: 'lightyellow',
+    i: 1,
+  },
+  {
+    label: 'Developed',
+    color: 'yellow',
+    i: 2,
+  },
+  {
+    label: 'Demonstrated',
+    color: 'lightgreen',
+    i: 3,
+  },
+  {
+    label: 'Sustainable',
+    color: 'green',
+    i: 4,
+  },
+];
+
   /**
    * Returns JEE score colors and labels
    * @method getScoreName
    */
   const getScoreLabeling = (score) => {
   	if (score < 2) {
-      return {
-        label: 'None',
-        color: 'red',
-        value: score,
-        i: 0,
-      };
+      return jeeLabels[0];
+
   	} else if (score < 3) {
-      return {
-        label: 'Limited',
-        color: 'lightyellow',
-        value: score,
-        i: 1,
-      };
+      return jeeLabels[1];
+
   	} else if (score < 4) {
-      return {
-        label: 'Developed',
-        color: 'yellow',
-        value: score,
-        i: 2,
-      };
+      return jeeLabels[2];
+
   	} else if (score < 5) {
-      return {
-        label: 'Demonstrated',
-        color: 'lightgreen',
-        value: score,
-        i: 3,
-      };
+      return jeeLabels[3];
     }
-    return {
-      label: 'Sustainable',
-      color: 'green',
-      value: score,
-      i: 4,
-    };
+    return jeeLabels[4];
   };
 
   /**
@@ -271,6 +278,7 @@ const Details = (props) => {
         <div className={
           classNames(
             styles.jeeChart,
+            styles.legend,
           )
         }>
           <div className={styles.value}>
@@ -282,25 +290,31 @@ const Details = (props) => {
                     className={classNames(
                       styles.trapezoid,
                       styles.shape,
-                      styles.active,
+                      styles.jeeCircle,
                       styles.legend,
                       styles['trapezoid-' + (bin+1)],
                     )}
                     >
-                      <div
-                        className={styles.top}
-                      />
-                      <div
-                        className={styles.bottom}
-                      />
+                      <div className={styles.jeeScoreValue}>
+                        {
+                          (bin+1)
+                        }
+                      </div>
+                    </div>
+                    <div className={classNames(
+                      styles.jeeCircleLegendLabel,
+                      {
+                        [styles.labelBottom]: bin % 2 === 0,
+                        [styles.labelTop]: bin % 2 === 1,
+                      },
+                    )}>
+                      {
+                        (jeeLabels[bin].label)
+                      }
                     </div>
                   </div>
                 )
               }
-            </div>
-            <div className={styles.wedgeLabels}>
-              <div className={styles.labelLeft}>No<br/>capacity</div>
-              <div className={styles.labelRight}>Sustainable<br/>capacity</div>
             </div>
           </div>
         </div>
@@ -340,39 +354,30 @@ const Details = (props) => {
                     className={classNames(
                       styles.trapezoid,
                       styles.shape,
-                      styles['trapezoid-' + (bin+1)],
+                      styles.jeeCircle,
                       {
-                        [styles.active]: bin <= scoreLabeling.i,
-                      }
+                        [styles.active]: scoreLabeling.i === bin,
+                      },
                     )}
-                    style={{
-                      'color': scoreLabeling.i > 3 ? 'white' : '',
-                    }}
                     >
-                      <div
-                        className={styles.top}
-                      />
-                      <div
-                        className={styles.bottom}
-                      />
+                      {
+                        (scoreLabeling.i === bin) &&
+                        <div className={styles.jeeScoreValue}>
+                          {
+                            // Add score (e.g., 4)
+                            Math.floor(score)
+                          }
+                        </div>
+
+                        // // Old trapezoid code below.
+                        // <div
+                        //   className={styles.top}
+                        // />
+                        // <div
+                        //   className={styles.bottom}
+                        // />
+                      }
                     </div>
-                    {
-                      // Label if first
-                      // (bin === 0) && <div className={styles.labelLeft}>Low relative<br/>incidence</div>
-                    }
-                    {
-                      // Label if last
-                      // (bin === 3) && <div className={styles.labelRight}>High relative<br/>incidence</div>
-                    }
-                    {
-                      (scoreLabeling.i === bin) &&
-                      <span className={styles.jeeScoreValue}>
-                        {
-                          // Add score (e.g., 4.6)
-                          Util.decimalizeOne(score)
-                        }
-                      </span>
-                    }
                   </div>
                 )
               }
@@ -977,7 +982,7 @@ const Details = (props) => {
                               {item.title}
                               {
                                 // If info tooltip text, render one
-                                (item.infoTooltipText) && <InfoTooltip text={item.infoTooltipText(item)} />
+                                (item.infoTooltipText) && <InfoTooltip text={item.infoTooltipText} />
                               }
                             </span>
                             {item.legend_jsx && item.legend_jsx()}
@@ -1033,9 +1038,9 @@ const Details = (props) => {
                   [
                     {
                       'title': 'JEE country capacity',
-                      'infoTooltipText': () => 'The Joint External Evaluation tool (JEE) measures country-specific progress in developing the capacities needed to prevent, detect, and respond to public health threats.',
+                      'infoTooltipText': () => <span className={classNames(styles.item, styles.jee)}><span>The Joint External Evaluation tool (JEE) measures country-specific progress in developing the capacities needed to prevent, detect, and respond to public health threats. <span className={styles.title}>{ getJeeChart('legend') }</span></span></span>,
                       'type': 'jee',
-                      'legend_jsx': () => getJeeChart('legend'),
+                      // 'legend_jsx': () => getJeeChart('legend'),
                       'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'year')}, // TODO
                       'values': [
                         {
@@ -1071,7 +1076,7 @@ const Details = (props) => {
                             {item.title}
                             {
                               // If info tooltip text, render one
-                              (item.infoTooltipText) && <InfoTooltip text={item.infoTooltipText(item)} />
+                              (item.infoTooltipText) && <InfoTooltip text={item.infoTooltipText} />
                             }
                           </span>
                           <div className={styles.content}>
@@ -1314,6 +1319,20 @@ const Details = (props) => {
                   </div>
               }
               />
+            {
+              // Tooltip for info tooltip icons.
+              <ReactTooltip
+                id={'infoTooltip'}
+                type='light'
+                className={infoTooltipStyles.infoTooltipContainer}
+                place="top"
+                effect="float"
+                html={true}
+                getContent={ (tooltipData) =>
+                  tooltipData
+                }
+                />
+            }
           </div>
     );
 };

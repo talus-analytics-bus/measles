@@ -1,9 +1,37 @@
+@import '../../assets/styles/colors.scss';
+@import '../views/details/details.module.scss';
+
 .infoTooltipContainer {
   max-width: 400px;
   font-size: 16.5px;
   opacity: 1 !important;
-}
+  display: flex;
+  flex-flow: column;
 
+  box-shadow: 5px 5px 10px 0 rgba(0, 0, 0, 0.29);
+  -webkit-box-shadow: 5px 5px 10px 0 rgba(0, 0, 0, 0.29);
+
+  > span {
+    flex-flow: column !important;
+    > span {
+      flex-flow: column !important;
+
+      > span {
+        margin-top: 30px;
+
+        > div {
+          margin: 0 auto;
+        }
+        // justify-content: center;
+        // align-items: center;
+        // display: flex;
+        // flex-flow: row;
+        // margin: 30px auto 0 auto;
+      }
+    }
+  }
+
+}
 .infoTooltip {
   display: inline-flex;
   margin: 5px;
