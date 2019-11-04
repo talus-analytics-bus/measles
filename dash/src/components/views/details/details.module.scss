@@ -35,6 +35,11 @@ $spacing: 20px;
       &:not(:first-child) {
         margin-top: 5px;
       }
+      &:first-child {
+        .item .content .subsection .title {
+          max-width: unset;
+        }
+      }
     }
   }
 
@@ -89,7 +94,6 @@ $spacing: 20px;
   }
 
   .jee.item {
-
     .title {
       display: flex;
       justify-content: space-between;
@@ -202,7 +206,7 @@ $spacing: 20px;
       &.jee {
         flex-flow: column;
 
-        .jeeItem {
+        .subsection {
           display: flex;
           flex-flow: row;
           justify-content: space-between;
@@ -213,14 +217,6 @@ $spacing: 20px;
 
           min-height: 51px;
 
-          &:first-child {
-            margin-top: 20px;
-          }
-
-          .title {
-            font-size: 1.1em;
-            max-width: 50%;
-          }
           .jeeChart {
             display: flex;
             flex-flow: column;
@@ -240,6 +236,16 @@ $spacing: 20px;
                 font-size: .8em;
               }
             }
+          }
+        }
+        .subsection {
+          &:first-child {
+            margin-top: 20px;
+          }
+
+          .title {
+            font-size: 1.1em;
+            max-width: 50%;
           }
         }
       }
@@ -581,6 +587,12 @@ $spacing: 20px;
   }
 }
 
+
+.right {
+  display: flex;
+  flex-flow: column;
+}
+
 // Delta styling, matching geomPopup.module.scss
 .delta {
   font-size: initial;
@@ -591,10 +603,24 @@ $spacing: 20px;
   top: 5px;
   position: relative;
 
-  // position: absolute;
-  // right: 0;
+  .deltaBadge {
+    display: flex;
+    flex-flow: row;
+    align-items: center;
+    justify-content: flex-start;
 
-  // margin-top: 10px;
+    background-color: $light-grey-2;
+    border-radius: $border-radius;
+    padding: 5px;
+
+    font-size: 15px;
+    .delta-value, i {
+      color: white;
+    }
+    .delta-value {
+      font-weight: 500;
+    }
+  }
 
   i {
     // size?
@@ -618,29 +644,49 @@ $spacing: 20px;
     margin-left: 5px;
   }
 }
-.delta {
+// .delta {
+//   &.inc {
+//     i {
+//       transform: rotate(-90deg);
+//       transform-origin: center;
+//     }
+//     i, .delta-value {
+//       color: $value-red;
+//     }
+//   }
+//   &.dec {
+//     i {
+//       transform: rotate(90deg);
+//     }
+//     i, .delta-value {
+//       color: $value-green;
+//     }
+//   }
+//   &.same {
+//     .delta-text { margin-left: 5px;}
+//     .delta-value, i {
+//       display: none;
+//     }
+//   }
+// }
+.deltaBadge {
+  // margin-right: auto;
   &.inc {
     i {
       transform: rotate(-90deg);
       transform-origin: center;
     }
-    i, .delta-value {
-      color: $value-red;
-    }
+    background-color: $value-red;
   }
   &.dec {
     i {
       transform: rotate(90deg);
     }
-    i, .delta-value {
-      color: $value-green;
-    }
+    background-color: $value-green;
   }
   &.same {
     .delta-text { margin-left: 5px;}
-    .delta-value, i {
-      display: none;
-    }
+    display: none;
   }
 }
 

@@ -623,14 +623,24 @@ const Details = (props) => {
         [styles['dec']]: deltaData.delta < 0,
         [styles['same']]: deltaData.delta === 0,
       })}>
-        <i className={classNames('material-icons')}>play_arrow</i>
-        <span className={styles['delta-value']}>
+        <div className={classNames(
+          styles.deltaBadge,
           {
-            // Don't include sign for now since it's redundant
-            // <span className={styles['sign']}>{d.deltaSign}</span>
-          }
-          <span className={styles['num']}>{deltaData.deltaFmt}</span>
-        </span>
+            [styles['inc']]: deltaData.delta > 0,
+            [styles['dec']]: deltaData.delta < 0,
+            [styles['same']]: deltaData.delta === 0,
+          },
+        )
+          }>
+          <i className={classNames('material-icons')}>play_arrow</i>
+          <span className={styles['delta-value']}>
+            {
+              // Don't include sign for now since it's redundant
+              // <span className={styles['sign']}>{d.deltaSign}</span>
+            }
+            <span className={styles['num']}>{deltaData.deltaFmt}</span>
+          </span>
+        </div>
         <span className={styles['delta-text']}>{Util.getDeltaWord(deltaData.delta)} from<br/>previous {period}</span>
       </div>
   };
@@ -832,6 +842,67 @@ const Details = (props) => {
     return `Five caseload severity levels were determined based on the quintiles of monthly incidence values for all countries from Jan 2011 through Aug 2019. In this way, the severity of a caseload in a given country is assessed relative to historical, global trends in measles incidence over time.`;
   };
 
+  // Get data for measles caseload items
+  const getMeaslesCaseloadItems = () => {
+
+    const items = {
+      'title': 'Measles caseload',
+      'type': ['multi'],
+      'values': [
+        {
+          'title': 'Last reported',
+          'value_fmt': Util.formatSIInteger,
+          'value_label': 'cases',
+          'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'month')},
+          'deltaData': props.countryTrendCaseload1Months ? Util.getDeltaData(
+            props.countryTrendCaseload1Months
+          ) : undefined,
+          'period': 'month',
+          'hideSource': true,
+          ...(props.countryCaseloadHistory ? props.countryCaseloadHistory[props.countryCaseloadHistory.length - 1] : {value: null}),
+        },
+        {
+          'title': '6-month cumulative',
+          'value_fmt': Util.formatSIInteger,
+          'value_label': 'cases',
+          'date_time_fmt': (date_time) => {return Util.getDateTimeRange({value: date_time})},
+          'deltaData': props.countryTrendCaseload6Months ? Util.getDeltaData(
+            props.countryTrendCaseload6Months
+          ) : undefined,
+          'hideSource': true,
+          'period': '6 months',
+          dateTimeObs: [
+            {date_time: props.countryCaseload6MonthsCalc.start},
+            {date_time: props.countryCaseload6MonthsCalc.end},
+          ],
+          ...(props.countryCaseload6MonthsCalc ? props.countryCaseload6MonthsCalc : {value: null}),
+        },
+        {
+          'title': '12-month cumulative',
+          'value_fmt': Util.formatSIInteger,
+          'value_label': 'cases',
+          'date_time_fmt': (date_time) => {return Util.getDateTimeRange({value: date_time})},
+          'deltaData': props.countryTrendCaseload6Months ? Util.getDeltaData(
+            props.countryTrendCaseload12Months
+          ) : undefined,
+          'hideSource': false,
+          'period': '12 months',
+          dateTimeObs: [
+            {date_time: props.countryCaseload12MonthsCalc.start},
+            {date_time: props.countryCaseload12MonthsCalc.end},
+          ],
+          ...(props.countryCaseload12MonthsCalc ? props.countryCaseload12MonthsCalc : {value: null}),
+        },
+      ]
+    };
+    const firstDatum = items.values[0];
+    console.log('items')
+    console.log(items)
+    items.data_source = firstDatum.data_source;
+    items.updated_at = firstDatum.updated_at;
+    return items;
+  };
+
   // If loading do not show JSX content.
   console.log('props')
   console.log(props)
@@ -849,51 +920,7 @@ const Details = (props) => {
                 </div>
                 {
                   [
-                    {
-                      'title': 'Last reported caseload',
-                      'value_fmt': Util.formatSIInteger,
-                      'value_label': 'cases',
-                      'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'month')},
-                      'deltaData': props.countryTrendCaseload1Months ? Util.getDeltaData(
-                        props.countryTrendCaseload1Months
-                      ) : undefined,
-                      'period': 'month',
-                      'hideSource': true,
-                      ...(props.countryCaseloadHistory ? props.countryCaseloadHistory[props.countryCaseloadHistory.length - 1] : {value: null}),
-                    },
-                    {
-                      'title': '6-month cumulative total',
-                      'value_fmt': Util.formatSIInteger,
-                      'value_label': 'cases',
-                      'date_time_fmt': (date_time) => {return Util.getDateTimeRange({value: date_time})},
-                      'deltaData': props.countryTrendCaseload6Months ? Util.getDeltaData(
-                        props.countryTrendCaseload6Months
-                      ) : undefined,
-                      'hideSource': true,
-                      'period': '6 months',
-                      dateTimeObs: [
-                        {date_time: props.countryCaseload6MonthsCalc.start},
-                        {date_time: props.countryCaseload6MonthsCalc.end},
-                      ],
-                      ...(props.countryCaseload6MonthsCalc ? props.countryCaseload6MonthsCalc : {value: null}),
-                    },
-                    {
-                      'title': '12-month cumulative total',
-                      'value_fmt': Util.formatSIInteger,
-                      'value_label': 'cases',
-                      'date_time_fmt': (date_time) => {return Util.getDateTimeRange({value: date_time})},
-                      'deltaData': props.countryTrendCaseload6Months ? Util.getDeltaData(
-                        props.countryTrendCaseload12Months
-                      ) : undefined,
-                      'hideSource': false,
-                      'period': '12 months',
-                      dateTimeObs: [
-                        {date_time: props.countryCaseload12MonthsCalc.start},
-                        {date_time: props.countryCaseload12MonthsCalc.end},
-                      ],
-                      ...(props.countryCaseload12MonthsCalc ? props.countryCaseload12MonthsCalc : {value: null}),
-                    },
-
+                    getMeaslesCaseloadItems(),
                     // {
                     //   'title': 'Population',
                     //   'value_fmt': Util.formatSI,
@@ -913,7 +940,7 @@ const Details = (props) => {
                     <div className={styles.itemContainer}>
                     {
                       // For normal non-JEE items:
-                      (item.type === undefined || item.type !== 'jee') &&
+                      (!item.type.includes('multi')) &&
                         <div className={styles.item}>
                           <span className={styles.title}>
                             <span>
@@ -945,7 +972,6 @@ const Details = (props) => {
                                 </span>
                               ))
                             }
-                            { getDeltaJsx(item, item.period) }
                             {
                               // Data not available message, if applicable.
                               ((item.value === null || item.notAvail === true) && (
@@ -971,11 +997,13 @@ const Details = (props) => {
                         </div>
                     }
                     {
-                      // For JEE items:
-                      (item.type === 'jee') &&
+                      // For multi items:
+                      (item.type.includes('multi')) &&
                         <div className={classNames(
                           styles.item,
-                          styles.jee,
+                          {
+                            [styles.jee]: item.type.includes('jee'),
+                          },
                         )}>
                           <span className={styles.title}>
                             <span className={styles.text}>
@@ -990,25 +1018,50 @@ const Details = (props) => {
                           <div className={classNames(styles.content, styles.jee)}>
                           {
                             item.values.map(jeeItem =>
-                              <div className={styles.jeeItem}>
-                              {
-                                // Display title
-                                <div className={styles.title}>{jeeItem.title}</div>
-                              }
-                              {
-                                // Display formatted value and label
-                                (jeeItem.value !== null && (
-                                  jeeItem.value_fmt(jeeItem.value)
-                                ))
-                              }
-                              {
-                                // Data not available message, if applicable.
-                                (jeeItem.value === null && (
-                                  <span className={'notAvail'}>
-                                    Data not available
-                                  </span>
-                                ))
-                              }
+                              <div className={styles.subsection}>
+                                <div className={styles.left}>
+                                  {
+                                    <span className={styles.title}>
+                                      <span>{jeeItem.title}</span>
+                                      <span className={'dateTimeStamp'}>{jeeItem.date_time_fmt(jeeItem.dateTimeObs || jeeItem)}</span>
+                                    </span>
+                                  }
+                                  {
+                                    // Display formatted value and label
+                                    jeeItem.value !== null && (
+                                      <span className={styles.value}>
+                                        {jeeItem.value_fmt(jeeItem.value)}
+                                      </span>
+                                    )
+                                  }
+                                  {
+                                    (jeeItem.value_label) &&
+                                    <span className={styles.label}>
+                                      &nbsp;{jeeItem.value_label}
+                                    </span>
+                                  }
+                                  {
+                                    // Data not available message, if applicable.
+                                    (jeeItem.value === null && (
+                                      <span className={'notAvail'}>
+                                        Data not available
+                                      </span>
+                                    ))
+                                  }
+                                </div>
+                                <div className={styles.right}>
+                                  {
+                                    // display chart
+                                    (jeeItem.chart_jsx !== undefined) &&
+                                      <div className={styles.chart}>
+                                        { jeeItem.chart_jsx() }
+                                      </div>
+                                  }
+                                  {
+                                    // Display secondary value content if it exists
+                                    getDeltaJsx(jeeItem, jeeItem.period)
+                                  }
+                                </div>
                               </div>
                             )
                           }
@@ -1017,7 +1070,6 @@ const Details = (props) => {
                             // Display data source text if available.
                             (item.data_source && item.value !== null && !item.notAvail && !item.hideSource) &&
                               <div className={classNames('dataSource', styles.source)}>
-                                Data for {item.value !== null ? `${item.date_time_fmt(item)}` : ''}.
                                 Source: {item.data_source}{ item.updated_at && (
                                     ' as of ' + new Date(item.updated_at).toLocaleString('en-us', {
                                       month: 'short',
@@ -1039,7 +1091,7 @@ const Details = (props) => {
                     {
                       'title': 'JEE country capacity',
                       'infoTooltipText': () => <span className={classNames(styles.item, styles.jee)}><span>The Joint External Evaluation tool (JEE) measures country-specific progress in developing the capacities needed to prevent, detect, and respond to public health threats. <span className={styles.title}>{ getJeeChart('legend') }</span></span></span>,
-                      'type': 'jee',
+                      'type': ['jee', 'multi'],
                       // 'legend_jsx': () => getJeeChart('legend'),
                       'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'year')}, // TODO
                       'values': [
@@ -1070,7 +1122,7 @@ const Details = (props) => {
                     <div className={styles.itemContainer}>
                     {
                       // For normal non-JEE items:
-                      (item.type === undefined || item.type !== 'jee') &&
+                      (item.type === undefined || !item.type.includes('multi')) &&
                         <div className={styles.item}>
                           <span className={styles.title}>
                             {item.title}
@@ -1122,7 +1174,7 @@ const Details = (props) => {
                     }
                     {
                       // For JEE items:
-                      (item.type === 'jee') &&
+                      (item.type.includes('jee')) &&
                         <div className={classNames(
                           styles.item,
                           styles.jee,
@@ -1140,7 +1192,7 @@ const Details = (props) => {
                           <div className={classNames(styles.content, styles.jee)}>
                           {
                             item.values.map(jeeItem =>
-                              <div className={styles.jeeItem}>
+                              <div className={styles.subsection}>
                               {
                                 // Display title
                                 <div className={styles.title}>{jeeItem.title}</div>
