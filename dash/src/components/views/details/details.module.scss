@@ -587,10 +587,14 @@ $spacing: 20px;
   }
 }
 
+.left {
+  width: auto;
+}
 
 .right {
   display: flex;
   flex-flow: column;
+  width: 50%;
 }
 
 // Delta styling, matching geomPopup.module.scss

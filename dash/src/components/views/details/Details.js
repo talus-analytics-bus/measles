@@ -4,6 +4,7 @@ import axios from 'axios'
 import { Link } from 'react-router-dom'
 import Chart from '../../chart/Chart.js'
 import SlidingLine from './content/SlidingLine.js'
+import SparkLine from './content/SparkLine.js'
 import ReactTooltip from 'react-tooltip';
 import InfoTooltip from '../../../components/misc/InfoTooltip.js';
 import infoTooltipStyles from '../../../components/misc/infotooltip.module.scss';
@@ -845,6 +846,9 @@ const Details = (props) => {
   // Get data for measles caseload items
   const getMeaslesCaseloadItems = () => {
 
+    const sparklineBaseData = JSON.parse(JSON.stringify(props.countryCaseloadHistory)).reverse().slice(0, 24);
+    sparklineBaseData.reverse();
+    
     const items = {
       'title': 'Measles caseload',
       'type': ['multi'],
@@ -859,6 +863,15 @@ const Details = (props) => {
           ) : undefined,
           'period': 'month',
           'hideSource': true,
+          'chart_jsx': (deltaData, i) => <SparkLine
+            data={sparklineBaseData}
+            window={2}
+            i={i}
+            direction={
+              deltaData.delta > 0 ? 'inc' :
+                (deltaData.delta < 0 ? 'dec' : 'same')
+            }
+          />,
           ...(props.countryCaseloadHistory ? props.countryCaseloadHistory[props.countryCaseloadHistory.length - 1] : {value: null}),
         },
         {
@@ -870,6 +883,15 @@ const Details = (props) => {
             props.countryTrendCaseload6Months
           ) : undefined,
           'hideSource': true,
+          'chart_jsx': (deltaData, i) => <SparkLine
+            data={sparklineBaseData}
+            window={12}
+            i={i}
+            direction={
+              deltaData.delta > 0 ? 'inc' :
+                (deltaData.delta < 0 ? 'dec' : 'same')
+            }
+          />,
           'period': '6 months',
           dateTimeObs: [
             {date_time: props.countryCaseload6MonthsCalc.start},
@@ -886,6 +908,15 @@ const Details = (props) => {
             props.countryTrendCaseload12Months
           ) : undefined,
           'hideSource': false,
+          'chart_jsx': (deltaData, i) => <SparkLine
+            data={sparklineBaseData}
+            window={24}
+            i={i}
+            direction={
+              deltaData.delta > 0 ? 'inc' :
+                (deltaData.delta < 0 ? 'dec' : 'same')
+            }
+          />,
           'period': '12 months',
           dateTimeObs: [
             {date_time: props.countryCaseload12MonthsCalc.start},
@@ -1017,7 +1048,7 @@ const Details = (props) => {
                           </span>
                           <div className={classNames(styles.content, styles.jee)}>
                           {
-                            item.values.map(jeeItem =>
+                            item.values.map((jeeItem, i) =>
                               <div className={styles.subsection}>
                                 <div className={styles.left}>
                                   {
@@ -1054,7 +1085,7 @@ const Details = (props) => {
                                     // display chart
                                     (jeeItem.chart_jsx !== undefined) &&
                                       <div className={styles.chart}>
-                                        { jeeItem.chart_jsx() }
+                                        { jeeItem.chart_jsx(jeeItem.deltaData, i) }
                                       </div>
                                   }
                                   {
