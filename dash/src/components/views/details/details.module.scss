@@ -315,7 +315,8 @@ $spacing: 20px;
         }
 
         // Trapezoid sizing for normal wedge chart
-        $wedge-width: 78.5px;
+        $wedge-width: 119px;
+        // $wedge-width: 78.5px;
         $wedge-height: 8px;
 
         $wedge-height-btm: $wedge-height;
@@ -324,7 +325,7 @@ $spacing: 20px;
         @for $i from 0 through 4 {
           .trapezoid-#{$i+1} {
             .bottom {
-              height: $wedge-height-top*$i;
+              height: $wedge-height-top*($i + 1);
             }
           }
         }
@@ -422,11 +423,11 @@ $spacing: 20px;
 
           &.active {
             .bottom {
-              // box-shadow: 3px 3px 2.5px 0 rgba(0, 0, 0, 0.3);
+              box-shadow: 3px 3px 2.5px 0 rgba(0, 0, 0, 0.3);
               background-color: $value-red;
             }
             .top {
-              // box-shadow: 3px 3px 2.5px 0 rgba(0, 0, 0, 0.3);
+              box-shadow: 3px 3px 2.5px 0 rgba(0, 0, 0, 0.3);
               border-color:transparent $value-red $value-red transparent;
             }
           }

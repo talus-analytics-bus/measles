@@ -226,8 +226,8 @@ const Details = (props) => {
 
   const getWedgeChart = (val) => {
     if (val === 0) return (
-        <div className={styles.noCases}>
-        No cases
+        <div className={classNames(styles.noCases, 'notAvail')}>
+        No cases reported
         </div>
     );
 
@@ -246,15 +246,19 @@ const Details = (props) => {
                 <div
                 className={classNames(
                   styles.shape,
-                  styles.rect,
+                  styles.trapezoid,
+                  styles['trapezoid-' + bin],
                   {
                     [styles.active]: bin === binData.i,
                   }
                 )}
-                style={{
-                  'backgroundColor': bin === binData.i ? wedgeColor : '',
-                }}
                 >
+                  <div
+                    className={styles.top}
+                  />
+                  <div
+                    className={styles.bottom}
+                  />
                 </div>
               </div>
             )
@@ -848,7 +852,7 @@ const Details = (props) => {
 
     const sparklineBaseData = JSON.parse(JSON.stringify(props.countryCaseloadHistory)).reverse().slice(0, 24);
     sparklineBaseData.reverse();
-    
+
     const items = {
       'title': 'Measles caseload',
       'type': ['multi'],
