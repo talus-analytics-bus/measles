@@ -8,11 +8,8 @@ import classNames from 'classnames';
  * @method SparkLine
  */
 const SparkLine = (props) => {
-  console.log('props - SparkLine')
-  console.log(props)
 
   React.useEffect(function initSparkLine () {
-    console.log('initSparkline');
 
     // Init sparkline data series
     const params = {
