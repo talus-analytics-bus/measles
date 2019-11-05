@@ -953,13 +953,6 @@ const Details = (props) => {
       props.countryCaseloadHistory.length - 1
     ];
 
-    console.log('binData')
-    console.log(binData)
-
-    // // Set tooltip data
-    // const items = [
-    //   Util.getTooltipItem(recentIncidence)
-    // ];
     return (
       <div className={styles.wedgeTooltip}>
         There were <span>{Util.comma(recentCaseload.value)} measles cases in {props.countryName} in {Util.getDatetimeStamp(recentCaseload, 'month')}</span>, or about {Util.formatIncidence(recentIncidence.value)} cases per 1M people. Compared to historical global trends, this is a <span>relatively {getWedgeChartLabel(binData.i)} measles incidence</span>.
