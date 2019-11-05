@@ -113,19 +113,6 @@ const Details = (props) => {
     );
   };
 
-  // /**
-  //  * Get JSX for rendering JEE scores.
-  //  * @method getScoreJsx
-  //  */
-  // const getScoreJsx = (score) => {
-  //   const scoreLabeling = getScoreLabeling(score);
-  //   return (
-  //     <div className={classNames(styles.jee, styles[scoreLabeling.color])} style={ { 'borderStyle': 'solid', 'borderWidth': '0 0 0 10px' } }>
-  //       {scoreLabeling.label}
-  //     </div>
-  //   );
-  // };
-
   const getVaccinationChartBin = (val) => {
     // 0, '#d6f0b2',
     // 0.35, '#b9d7a8',
@@ -224,6 +211,8 @@ const Details = (props) => {
   //   .domain([0, 1])
   //   .range(['#e6c1c6', '#9d3e4c']);
 
+  const binData = getWedgeChartBin();
+
   const getWedgeChart = (val) => {
     if (val === 0) return (
         <div className={classNames(styles.noCases, 'notAvail')}>
@@ -232,13 +221,13 @@ const Details = (props) => {
     );
 
     // Get vaccination chart bins
-    const binData = getWedgeChartBin();
+
 
     const wedgeColor = '#9d3e4c';
     // const wedgeColor = wedgeColorScale(binData.i / 4);
 
     return (
-      <div className={classNames(styles.chart, styles.measlesWedgeChart, styles.shapes)}>
+      <div data-tip={true} data-for={'wedgeTooltip'} className={classNames(styles.chart, styles.measlesWedgeChart, styles.shapes)}>
         <div className={classNames(styles.trapezoidContainers)}>
           {
             [0,1,2,3,4].map(bin =>
@@ -938,6 +927,46 @@ const Details = (props) => {
     return items;
   };
 
+  // Get qualitative label for wedge bins.
+  const getWedgeChartLabel = (bin) => {
+    switch (bin) {
+      case 0:
+        return 'low';
+      case 1:
+        return 'low to average';
+      case 2:
+        return 'average';
+      case 3:
+        return 'average to high';
+      case 4:
+        return 'high';
+    }
+  };
+
+  // Get tooltip data for hover-over on recent caseload severity chart
+  const getWedgeTooltipContent = () => {
+    // Get wedge chart data: measles caseload and the population for that year
+    const recentIncidence = props.countryIncidenceHistory[
+      props.countryIncidenceHistory.length - 1
+    ];
+    const recentCaseload = props.countryCaseloadHistory[
+      props.countryCaseloadHistory.length - 1
+    ];
+
+    console.log('binData')
+    console.log(binData)
+
+    // // Set tooltip data
+    // const items = [
+    //   Util.getTooltipItem(recentIncidence)
+    // ];
+    return (
+      <div className={styles.wedgeTooltip}>
+        There were <span>{Util.comma(recentCaseload.value)} measles cases in {props.countryName} in {Util.getDatetimeStamp(recentCaseload, 'month')}</span>, or about {Util.formatIncidence(recentIncidence.value)} cases per 1M people. Compared to historical global trends, this is a <span>relatively {getWedgeChartLabel(binData.i)} measles incidence</span>.
+      </div>
+    );
+  };
+
   // If loading do not show JSX content.
   console.log('props')
   console.log(props)
@@ -1418,6 +1447,17 @@ const Details = (props) => {
                 getContent={ (tooltipData) =>
                   tooltipData
                 }
+                />
+            }
+            {
+              // Tooltip for wedge chart
+              <ReactTooltip
+                id={'wedgeTooltip'}
+                type='light'
+                className={infoTooltipStyles.infoTooltipContainer}
+                place="top"
+                effect="float"
+                getContent={ getWedgeTooltipContent }
                 />
             }
           </div>
