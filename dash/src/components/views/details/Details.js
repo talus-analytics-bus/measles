@@ -482,6 +482,7 @@ const Details = (props) => {
           label: slidingLineMetric === 'incidence_monthly' ? 'Incidence not reported' : 'Cases not reported',
           class: styles.noIncidence,
           shape: 'rect',
+          skip: !props.countryCaseloadHistory.some(d => d.value === null),
         },
       ];
 
