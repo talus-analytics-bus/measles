@@ -33,6 +33,10 @@ $spacing: 20px;
   .sidebars {
     display: flex;
     flex-flow: column;
+    // width: auto;
+    // min-width: 508px;
+    // max-width: 30%;
+    // min-width: 500px;
 
     .sidebar {
       &:not(:first-child) {
