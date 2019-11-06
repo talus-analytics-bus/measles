@@ -407,7 +407,7 @@ Util.getTooltipItem = (datum) => {
         name: 'Vaccination coverage',
         datum: datum,
         period: 'year',
-        value: Util.percentize(datum.value),
+        value: datum.value ? Util.percentize(datum.value) : null,
         label: 'of infants',
       };
     case 'avg_coverage_mcv1_infant': // DEBUG

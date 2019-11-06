@@ -778,20 +778,36 @@ class SlidingLine extends Chart {
           const xDateLineStr = `${xDateLineStrComponents.year}-${xDateLineStrComponents.month}`;
 
           // Get the datum for each y axis (left and right)
-          const yDatum = chart.data.vals.find(d => d.date_time.startsWith(xDateLineStr));
-          const y2Datum = chart.data.vaccVals.find(d => d.date_time.startsWith(xDateLineStrComponents.year));
+          const yDatum = chart.data.vals.find(d => d.date_time.startsWith(xDateLineStr)) ||
+            {
+              metric: chart.data.vals[0].metric,
+              value: null,
+              date_time: xDateLineStr,
+            };
+          const y2Datum = chart.data.vaccVals.find(d => d.date_time.startsWith(xDateLineStrComponents.year)) ||
+            {
+              metric: chart.data.vaccVals[0].metric,
+              value: null,
+              date_time: xDateLineStrComponents.year,
+            };
 
           const items = [];
           [
             yDatum,
             y2Datum,
           ].forEach(itemDatum => {
-            if (!itemDatum || itemDatum.value === null) return;
-            else {
-              items.push(
-                Util.getTooltipItem(itemDatum)
-              );
-            }
+            items.push(
+              Util.getTooltipItem(itemDatum)
+            );
+            // if (!itemDatum || itemDatum.value === null) {
+            //     // Do placeholde datum
+            //
+            // }
+            // else {
+            //   items.push(
+            //     Util.getTooltipItem(itemDatum)
+            //   );
+            // }
           });
           chart.params.setTooltipData(
             {

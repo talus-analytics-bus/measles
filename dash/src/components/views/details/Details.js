@@ -1423,10 +1423,19 @@ const Details = (props) => {
                               {Util.getDatetimeStamp(item.datum, item.period)}
                             </span>
                           </div>
-                          <div className={stylesTooltip.content}>
-                            <span className={stylesTooltip.value}>{item.value}</span>
-                            <span className={stylesTooltip.unit}>{item.label}</span>
-                          </div>
+                          {
+                            (item.value !== null) &&
+                            <div className={stylesTooltip.content}>
+                              <span className={stylesTooltip.value}>{item.value}</span>
+                              <span className={stylesTooltip.unit}>{item.label}</span>
+                            </div>
+                          }
+                          {
+                            (item.value === null) &&
+                            <div className={stylesTooltip.content}>
+                              <span className={'notAvail'}>Data not available</span>
+                            </div>
+                          }
                         </div>
                       )
                     }
