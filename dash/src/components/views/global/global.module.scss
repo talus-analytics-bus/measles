@@ -14,7 +14,7 @@ $scatterSize: 75vh;
 .Scatter {
   height: $scatterSize;
   // width: 100%;
-  max-width: 95%;
+  max-width: 93%;
   margin-top: 20px;
   // width: $scatterSize + 120px;
 }
@@ -571,7 +571,8 @@ $scatterSize: 75vh;
 // Bar chart and page controls
 .PagingBar {
   height: 600px;
-  max-width: 1000px;
+  max-width: 1300px;
+  margin: 0 auto;
 }
 .pageControls {
   display: flex;

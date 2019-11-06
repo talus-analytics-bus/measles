@@ -108,7 +108,8 @@ class PagingBar extends Chart {
     // if (!this.params.margin) {
     this.setMargin({
       top: 47,
-      right: longestBarValueWidth + 5,
+      right: 5,
+      // right: longestBarValueWidth + 5,
       bottom: 20,
       left: 200-30,
     });
