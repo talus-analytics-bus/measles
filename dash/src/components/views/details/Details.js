@@ -833,7 +833,6 @@ const Details = (props) => {
 
   // Get severity tooltip text, which is dynamic.
   const getSeverityTooltip = (item) => {
-    console.log(item);
     return `Five caseload severity levels were determined based on the quintiles of monthly incidence values for all countries from Jan 2011 through Aug 2019. In this way, the severity of a caseload in a given country is assessed relative to historical, global trends in measles incidence over time.`;
   };
 
@@ -850,7 +849,7 @@ const Details = (props) => {
         {
           'title': 'Last reported',
           'value_fmt': Util.formatSIInteger,
-          'value_label': 'cases',
+          'value_label': Util.getPeopleNoun,
           'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'month')},
           'deltaData': props.countryTrendCaseload1Months ? Util.getDeltaData(
             props.countryTrendCaseload1Months
@@ -871,7 +870,7 @@ const Details = (props) => {
         {
           'title': '6-month cumulative',
           'value_fmt': Util.formatSIInteger,
-          'value_label': 'cases',
+          'value_label': Util.getPeopleNoun,
           'date_time_fmt': (date_time) => {return Util.getDateTimeRange({value: date_time})},
           'deltaData': props.countryTrendCaseload6Months ? Util.getDeltaData(
             props.countryTrendCaseload6Months
@@ -896,7 +895,7 @@ const Details = (props) => {
         {
           'title': '12-month cumulative',
           'value_fmt': Util.formatSIInteger,
-          'value_label': 'cases',
+          'value_label': Util.getPeopleNoun,
           'date_time_fmt': (date_time) => {return Util.getDateTimeRange({value: date_time})},
           'deltaData': props.countryTrendCaseload6Months ? Util.getDeltaData(
             props.countryTrendCaseload12Months
@@ -921,8 +920,6 @@ const Details = (props) => {
       ]
     };
     const firstDatum = items.values[0];
-    console.log('items')
-    console.log(items)
     items.data_source = firstDatum.data_source;
     items.updated_at = firstDatum.updated_at;
     return items;
@@ -954,16 +951,24 @@ const Details = (props) => {
       props.countryCaseloadHistory.length - 1
     ];
 
-    return (
-      <div className={styles.wedgeTooltip}>
-        There were <span>{Util.comma(recentCaseload.value)} measles cases in {props.countryName} in {Util.getDatetimeStamp(recentCaseload, 'month')}</span>, or about {Util.formatIncidence(recentIncidence.value)} cases per 1M people. Compared to historical global trends, this is a <span>relatively {getWedgeChartLabel(binData.i)} measles incidence</span>.
-      </div>
-    );
+    if (recentCaseload.value !== 1) {
+      return (
+        <div className={styles.wedgeTooltip}>
+          There were <span>{Util.comma(recentCaseload.value)} measles cases in {props.countryName} in {Util.getDatetimeStamp(recentCaseload, 'month')}</span>, or about {Util.formatIncidence(recentIncidence.value)} cases per 1M people. Compared to historical global trends, this is a <span>relatively {getWedgeChartLabel(binData.i)} measles incidence</span>.
+        </div>
+      );
+    } else {
+      return (
+        <div className={styles.wedgeTooltip}>
+          There was <span>{Util.comma(recentCaseload.value)} measles case in {props.countryName} in {Util.getDatetimeStamp(recentCaseload, 'month')}</span>, or about {Util.formatIncidence(recentIncidence.value)} cases per 1M people. Compared to historical global trends, this is a <span>relatively {getWedgeChartLabel(binData.i)} measles incidence</span>.
+        </div>
+      );
+    }
   };
 
   // If loading do not show JSX content.
-  console.log('props')
-  console.log(props)
+  // console.log('props')
+  // console.log(props)
   return (<div className={styles.details}>
             <div className={styles.sidebars}>
               <div className={styles.sidebar}>
@@ -1095,7 +1100,7 @@ const Details = (props) => {
                                   {
                                     (jeeItem.value_label) &&
                                     <span className={styles.label}>
-                                      &nbsp;{jeeItem.value_label}
+                                      &nbsp;{jeeItem.value_label(jeeItem.value)}
                                     </span>
                                   }
                                   {
