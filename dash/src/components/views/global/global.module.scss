@@ -147,8 +147,12 @@ $scatterSize: 75vh;
       flex-flow: column;
       justify-content: space-between;
       input {
-        margin-right: 10px;
-        vertical-align: top;
+        // margin-right: 10px;
+        // vertical-align: top;
+        margin: 0 5px;
+        vertical-align: baseline;
+        position: relative;
+        top: -.15em;
       }
       .value {
         font-size: 2em;

@@ -35,8 +35,13 @@ $icon-height: 20px;
   }
   .dataToggle {
     input {
-      vertical-align: middle;
-      margin: 0 5px 5px 5px;
+      // vertical-align: middle;
+      // margin: 0 5px 5px 5px;
+      // margin: 0;
+      margin: 0 5px;
+      vertical-align: baseline;
+      position: relative;
+      top: -.1em;
     }
     label {
       margin-right: 15px;
