@@ -21,8 +21,6 @@ const Nav = (props) => {
   const [regionPicked, setRegionPicked] = React.useState(null);
 
   function countryOnClick (e, c) {
-    console.log('c')
-    console.log(c)
     setLocationPicked(c[0]);
     ReactTooltip.rebuild();
   }
