@@ -3,10 +3,21 @@
 ######################################################################
 
 ## set your working directory
-setwd("/Volumes/GoogleDrive/Shared drives/Talus Current Projects/Measles")
+setwd("~/Google\ Drive\ File\ Stream/Shared\ drives/Talus\ Current\ Projects/Measles/")
 
-## load required libraries
-library(readxl)
+## load required libraries ## need to install first
+#install.packages('readxl')
+#install.packages('reshape2')
+#install.packages('sqldf')
+#install.packages('rworldmap')
+#install.packages('RColorBrewer')
+#install.packages('sqldf');
+#install.packages('chron')
+#install.packages('RPostgres')
+#install.packages('DBI')
+#install.packages('gsheet')
+#install.packages('ggplot2')
+library (readxl)
 library(reshape2)
 library(sqldf)
 library(rworldmap)
@@ -27,6 +38,7 @@ dbname <- "metric"
 host <- "talus-dev.cvsrrvlopzxr.us-west-1.rds.amazonaws.com"
 port <- 5432
 user <- "talus"
+password <- "UKwwGaH5X8q688K4"
 
 ######################################################################
 ### Specify data proccesing parameters info ##########################
@@ -34,7 +46,7 @@ user <- "talus"
 
 ## what is the most recent month and year for which ANY caseload data are available from WHO? 
 ## this month = the most recent month that ANY 
-this_month <- as.Date("2019-08-01")
+this_month <- as.Date("2019-09-01")
 
 ######################################################################
 ### Connect to DB ####################################################
@@ -45,7 +57,8 @@ con <- dbConnect(RPostgres::Postgres(),
                  dbname = dbname,
                  host = host,
                  port = port,
-                 user = user)
+                 user = user,
+                 password = password)
 
 ######################################################################
 ### Read in data #####################################################
@@ -65,7 +78,8 @@ datetime <- dbGetQuery(con, "select * from datetime")
 datetime$date <- as.Date(datetime$dt)
 
 ## find the max observation id currently in the database (connect to DB to get this info)
-max_observation_id <- dbGetQuery(con, "select max(observation_id) from observation")
+## This is incremented every time rows are added.
+max_observation_id <- dbGetQuery(con, "select max(observation_id) from observation") 
 
 ## read in dataset of countries and codes
 codes <- read_excel("Data/Countries and codes.xlsx")
@@ -93,7 +107,7 @@ countrycaseload <- read_excel("Data/WHO Measles Caseload.xls", sheet = 2)
 jeedeets <- gsheet2tbl("docs.google.com/spreadsheets/d/14inHYg_TbT5EgYL8TPHL3U5EBjZDXuszpvQjqF-sTBA/edit#gid=1720987443")
 
 ## read in JEE scores (JEE 1.0)
-jee1 <- gsheet2tbl("docs.google.com/spreadsheets/d/14inHYg_TbT5EgYL8TPHL3U5EBjZDXuszpvQjqF-sTBA/edit#gid=1694059117")[-c(1),]
+jee1 <- gsheet2tbl("docs.google.com/spreadsheets/d/14inHYg_TbT5EgYL8TPHL3U5EBjZDXuszpvQjqF-sTBA/edit#gid=1694059117")
 
 ## GDP per capita data
 gdp <- read_excel("Data/World Bank GDP.xls")[-c(1,2),]
@@ -144,6 +158,9 @@ popdat <- sqldf("select 3 as metric_id,
 
 popdat$observation_id <- (1:nrow(popdat)) + (as.numeric(max_observation_id)+1)
 
+## increment max obs id
+max_observation_id = max_observation_id + nrow(popdat)
+
 ###############################################################################
 ### Initial processing of GDP data ###########################################
 ###############################################################################
@@ -182,6 +199,9 @@ gdp_db <- sqldf("select 14 as metric_id,
                             order by place_id, datetime.dt_id")
 
 gdp_db$observation_id <- (1:nrow(gdp_db)) + (as.numeric(max_observation_id)+1)
+
+## increment max obs id
+max_observation_id = max_observation_id + nrow(gdp_db)
 
 ###############################################################################
 ### Initial processing of JEE details data ####################################
@@ -238,6 +258,9 @@ jee1_imm_db <- sqldf("select 16 as metric_id,
 
 jee1_imm_db$observation_id <- (1:nrow(jee1_imm_db)) + (as.numeric(max_observation_id)+1)
 
+## increment max obs id
+max_observation_id = max_observation_id + nrow(jee1_imm_db)
+
 ## take the average of all indicators for "real time surveillance"
 jee1_rts <- sqldf("select country,
                   iso2,
@@ -265,6 +288,9 @@ jee1_rts_db <- sqldf("select 17 as metric_id,
 
 jee1_rts_db$observation_id <- (1:nrow(jee1_rts_db)) + (as.numeric(max_observation_id)+1)
 
+## increment max obs id
+max_observation_id = max_observation_id + nrow(jee1_rts_db)
+
 ## take the average of all indicators for "Medical Countermeasures and Personnel Deployment"
 jee1_mcm <- sqldf("select country,
                   iso2,
@@ -289,6 +315,9 @@ jee1_mcm_db <- sqldf("select 18 as metric_id,
                      order by place_id, datetime.dt_id")
 
 jee1_mcm_db$observation_id <- (1:nrow(jee1_mcm_db)) + (as.numeric(max_observation_id)+1)
+
+## increment max obs id
+max_observation_id = max_observation_id + nrow(jee1_mcm_db)
 
 ###############################################################################
 ### Initial processing of WHO/MCV data #######################################
@@ -324,6 +353,9 @@ who_mcv1 <- sqldf("select 4 as metric_id,
 ## give a unique observation ID that isn't already taken, count upwards sequentially
 who_mcv1$observation_id <- (1:nrow(who_mcv1)) + (as.numeric(max_observation_id)+1)
 
+## increment max obs id
+max_observation_id = max_observation_id + nrow(who_mcv1)
+
 ###############################################################################
 ### Initial processing of WHO caseload data ###################################
 ###############################################################################
@@ -350,7 +382,7 @@ countrycaseloadlong <- countrycaseloadlong[-which(countrycaseloadlong$date > thi
 ccl <- sqldf("select 6 as metric_id,
                   c.value as value,
                   'WHO Measles Surveillance Data' as data_source,
-                  '2019-09-17' as updated_at,
+                  '2019-10-14' as updated_at,
                   place.place_id as place_id,
                   datetime.dt_id as datetime_id,
                   NULL as observation_id
@@ -361,6 +393,9 @@ ccl <- sqldf("select 6 as metric_id,
 
 ## give a unique observation ID that isn't already taken, count upwards sequentially
 ccl$observation_id <- (1:nrow(ccl)) + (as.numeric(max_observation_id)+1)
+
+## increment max obs id
+max_observation_id = max_observation_id + nrow(ccl)
 
 ###############################################################################
 ### Initial processing of JEE score data ######################################
@@ -402,38 +437,38 @@ ccl$observation_id <- (1:nrow(ccl)) + (as.numeric(max_observation_id)+1)
 ### Write WHO MCV1 data #######################################################
 ###############################################################################
 
-#dbWriteTable(con, "observation", who_mcv1, overwrite = FALSE, append = TRUE, row.names = FALSE)
+dbWriteTable(con, "observation", who_mcv1, overwrite = FALSE, append = TRUE, row.names = FALSE)
 
 ###############################################################################
 ### Write JEE 1.0 scores ######################################################
 ###############################################################################
 
 ## immunization
-#dbWriteTable(con, "observation", jee1_imm_db, overwrite = FALSE, append = TRUE, row.names = FALSE)
+dbWriteTable(con, "observation", jee1_imm_db, overwrite = FALSE, append = TRUE, row.names = FALSE)
 
 ## real-time surveillance
-#dbWriteTable(con, "observation", jee1_rts_db, overwrite = FALSE, append = TRUE, row.names = FALSE)
+dbWriteTable(con, "observation", jee1_rts_db, overwrite = FALSE, append = TRUE, row.names = FALSE)
 
 ## medical countermeasures and personnel deployment
-#dbWriteTable(con, "observation", jee1_mcm_db, overwrite = FALSE, append = TRUE, row.names = FALSE)
+dbWriteTable(con, "observation", jee1_mcm_db, overwrite = FALSE, append = TRUE, row.names = FALSE)
 
 ###############################################################################
 ### Write caseload data #######################################################
 ###############################################################################
 
-#dbWriteTable(con, "observation", ccl, overwrite = FALSE, append = TRUE, row.names = FALSE)
+dbWriteTable(con, "observation", ccl, overwrite = FALSE, append = TRUE, row.names = FALSE)
 
 ###############################################################################
 ### Write population size data ################################################
 ###############################################################################
 
-#dbWriteTable(con, "observation", popdat, overwrite = FALSE, append = TRUE, row.names = FALSE)
+dbWriteTable(con, "observation", popdat, overwrite = FALSE, append = TRUE, row.names = FALSE)
 
 ###############################################################################
 ### Write GDP data  ###########################################################
 ###############################################################################
 
-#dbWriteTable(con, "observation", gdp_db, overwrite = FALSE, append = TRUE, row.names = FALSE)
+dbWriteTable(con, "observation", gdp_db, overwrite = FALSE, append = TRUE, row.names = FALSE)
 
 
 dat <- dbGetQuery(con, "select p.name as location,
@@ -456,7 +491,7 @@ dat <- dbGetQuery(con, "select p.name as location,
                      order by 2 desc")
 
 cases <- dbGetQuery(con, "select p.name as location,
-                    dt.date as date,
+                    dt.dt as date,
                     metric_name,
                     value,
                     unit,
