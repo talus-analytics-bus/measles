@@ -13,12 +13,6 @@ Util.getMonthsDiff = (aStr, bStr) => {
     bStr.replace(/-/g, '/')
   );
 
-  console.log('aDt')
-  console.log(aDt)
-
-  console.log('bDt')
-  console.log(bDt)
-
   // count months
   let monthsDiff = 0;
   let stop = false;
@@ -372,6 +366,22 @@ Util.getSvgChartLabelData = (datum) => {
 Util.getUTCDate = (dt) => {
   const utcYear = dt.getUTCFullYear();
   const utcMonth = dt.getUTCMonth();
+  const utcDt = new Date(`${utcYear}/${utcMonth + 1}/1`);
+  return utcDt;
+};
+
+Util.getLocalDate = (dt) => {
+  let utcYear = dt.getFullYear();
+  const utcMonth = dt.getMonth() % 12
+  if (utcMonth !== dt.getMonth()) utcYear++;
+  const utcDt = new Date(`${utcYear}/${utcMonth + 1}/1`);
+  return utcDt;
+};
+
+Util.getLocalNextMonth = (dt) => {
+  let utcYear = dt.getFullYear();
+  const utcMonth = (dt.getMonth() + 1) % 12;
+  if (utcMonth !== (dt.getMonth() + 1)) utcYear++;
   const utcDt = new Date(`${utcYear}/${utcMonth + 1}/1`);
   return utcDt;
 };

@@ -734,12 +734,21 @@ class SlidingLine extends Chart {
           const xValCursor = x.invert(posXCursor);
           const xDateCursor = new Date(xValCursor);
           let xValLine, posXLine;
-          const nextMonth = d3.timeMonth(new Date(xDateCursor).setMonth(xDateCursor.getMonth() + 1));
-          const isCloserToNextMonth = (xDateCursor - d3.timeMonth(xDateCursor)) > (nextMonth - xDateCursor);
-          if (isCloserToNextMonth) {
+
+          const nextMonth = Util.getLocalNextMonth(xDateCursor);
+          const curMonth = Util.getLocalDate(xDateCursor)
+
+          const isCloserToNextMonth = (xDateCursor - curMonth) > (nextMonth - xDateCursor);
+          const isHoveredMonth = (xDateCursor - curMonth) === 0;
+
+          if (isHoveredMonth) {
+            xValLine = new Date(xDateCursor);
+          }
+          else if (isCloserToNextMonth) {
             xValLine = nextMonth;
-          } else {
-            xValLine = d3.timeMonth(xDateCursor);
+          }
+          else {
+            xValLine = curMonth;
           }
           posXLine = x(xValLine);
           chart[styles.tooltipLine]
