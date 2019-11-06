@@ -328,12 +328,21 @@ class MiniLine extends Chart {
               const posXCursor = d3.mouse(this)[0];
               const xValCursor = x.invert(posXCursor);
               const xDateCursor = new Date(xValCursor);
-              const nextMonth = d3.timeMonth(new Date(xDateCursor).setUTCMonth(xDateCursor.getUTCMonth() + 1));
-              const isCloserToNextMonth = (xDateCursor - d3.timeMonth(xDateCursor)) > (nextMonth - xDateCursor);
-              if (isCloserToNextMonth) {
+
+              const nextMonth = Util.getLocalNextMonth(xDateCursor);
+              const curMonth = Util.getLocalDate(xDateCursor)
+
+              const isCloserToNextMonth = (xDateCursor - curMonth) > (nextMonth - xDateCursor);
+              const isHoveredMonth = (xDateCursor - curMonth) === 0;
+
+              if (isHoveredMonth) {
+                xValLine = new Date(xDateCursor);
+              }
+              else if (isCloserToNextMonth) {
                 xValLine = nextMonth;
-              } else {
-                xValLine = d3.timeMonth(xDateCursor);
+              }
+              else {
+                xValLine = curMonth;
               }
             }
             const posXLine = x(xValLine);
