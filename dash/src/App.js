@@ -600,36 +600,36 @@ const App = () => {
   // Detect browser and return appropriate content.
   //
 
-  const welcomeModal = (
-    <div className={styles.modal}>
-      <div className={styles.header}>
-        Welcome to the Measles Tracker
-      </div>
-      <div className={styles.content}>
-        <div className={styles.text}>
-          <p>The Measles Tracker integrates, analyzes, and visualizes measles surveillance and vaccination data to provide a comprehensive overview of the current status of the measles outbreak globally, including the populations and regions most at risk. The dashboard was developed by Talus Analytics and is designed to be used in Chrome or Firefox.</p>
-        </div>
-        <button className={classNames('button', 'modal')}>Continue</button>
-      </div>
-    </div>
-  );
+  // const welcomeModal = (
+  //   <div className={styles.modal}>
+  //     <div className={styles.header}>
+  //       Welcome to the Measles Tracker
+  //     </div>
+  //     <div className={styles.content}>
+  //       <div className={styles.text}>
+  //         <p>The Measles Tracker integrates, analyzes, and visualizes measles surveillance and vaccination data to provide a comprehensive overview of the current status of the measles outbreak globally, including the populations and regions most at risk. The dashboard was developed by Talus Analytics and is designed to be used in Chrome or Firefox.</p>
+  //       </div>
+  //       <button className={classNames('button', 'modal')}>Continue</button>
+  //     </div>
+  //   </div>
+  // );
 
-  const browserModal = (browser) => (
-    <div className={styles.modal}>
-      <div className={styles.header}>
-        Please try a different browser
-      </div>
-      <div className={styles.content}>
-        <div className={styles.text}>
-          <p>The Measles Tracker was designed for Chrome and Firefox desktop browsers, but you seem to be using {browser}.</p>
-          <p>If this is correct, please open the Measles Tracker in Chrome or Firefox instead.</p>
-        </div>
-        <button className={classNames('button', 'modal')}>Continue</button>
-      </div>
-    </div>
-  );
+  // const browserModal = (browser) => (
+  //   <div className={styles.modal}>
+  //     <div className={styles.header}>
+  //       Please try a different browser
+  //     </div>
+  //     <div className={styles.content}>
+  //       <div className={styles.text}>
+  //         <p>The Measles Tracker was designed for Chrome and Firefox desktop browsers, but you seem to be using {browser}.</p>
+  //         <p>If this is correct, please open the Measles Tracker in Chrome or Firefox instead.</p>
+  //       </div>
+  //       <button className={classNames('button', 'modal')}>Continue</button>
+  //     </div>
+  //   </div>
+  // );
 
-  const browserValid = {
+  const modalToShow = {
     chrome: () => welcomeModal,
     firefox: () => welcomeModal,
     edge: (browser) => browserModal('Edge'),
@@ -639,13 +639,55 @@ const App = () => {
     default: (browser) => browserModal('an unsupported browser'),
   };
 
-  const modalToShow = (
-    <BrowserDetection>
+  const welcomeModal = (
+    <Modal
+      position="top center"
+      on="click"
+      closeOnDocumentClick
+      defaultOpen={showWelcomeModal}
+      modal
+    >
       {
-          browserValid
+        close => (<div className={styles.modal}>
+          <div className={styles.header}>
+            Welcome to the Measles Tracker
+          </div>
+          <div className={styles.content}>
+            <div className={styles.text}>
+              <p>The Measles Tracker integrates, analyzes, and visualizes measles surveillance and vaccination data to provide a comprehensive overview of the current status of the measles outbreak globally, including the populations and regions most at risk. The dashboard was developed by Talus Analytics and is designed to be used in Chrome or Firefox.</p>
+            </div>
+            <button className={classNames('button', 'modal')} onClick={close}>Continue</button>
+          </div>
+        </div>)
       }
-    </BrowserDetection>
+    </Modal>
   );
+  const browserModal = browser => (
+    <Modal
+      position="top center"
+      on="click"
+      closeOnDocumentClick
+      defaultOpen={showWelcomeModal}
+      modal
+    >
+      {
+        close => <div className={styles.modal}>
+          <div className={styles.header}>
+            Please try a different browser
+          </div>
+          <div className={styles.content}>
+            <div className={styles.text}>
+              <p>The Measles Tracker was designed for Chrome and Firefox desktop browsers, but you seem to be using {browser}.</p>
+              <p>If this is correct, please open the Measles Tracker in Chrome or Firefox instead.</p>
+            </div>
+            <button className={classNames('button', 'modal')} onClick={close}>Continue</button>
+          </div>
+        </div>
+      }
+    </Modal>
+  );
+
+
   // const modalToShow = (
   //   <BrowserDetection>
   //     {
@@ -706,15 +748,9 @@ const App = () => {
         }
         {
           showWelcomeModal && (
-            <Modal
-              position="top center"
-              on="click"
-              closeOnDocumentClick
-              defaultOpen={showWelcomeModal}
-              modal
-            >
+            <BrowserDetection>
               {modalToShow}
-            </Modal>
+            </BrowserDetection>
           )
         }
       </BrowserRouter>
