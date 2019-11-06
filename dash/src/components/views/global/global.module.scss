@@ -13,7 +13,8 @@ $spacing: 20px;
 $scatterSize: 75vh;
 .Scatter {
   height: $scatterSize;
-  width: 100%;
+  // width: 100%;
+  max-width: 95%;
   margin-top: 20px;
   // width: $scatterSize + 120px;
 }
@@ -57,7 +58,7 @@ $scatterSize: 75vh;
     margin-bottom: 40px;
     .itemContainer .item {
       // max-width: unset;
-      max-width: 1220px;
+      // max-width: 1220px;
       .title {
         font-size: 1.8em;
       }
@@ -80,7 +81,7 @@ $scatterSize: 75vh;
     padding: $spacing;
     margin-left: $spacing*2;
     margin-right: $spacing*2;
-    max-width: 30%;
+    // max-width: 30%;
     min-width: 390px;
   }
   .title {
@@ -337,7 +338,7 @@ $scatterSize: 75vh;
         padding-bottom: 10px;
       }
       .item {
-        max-width: $itemMaxWidth;
+        // max-width: $itemMaxWidth;
         .title {
           display: flex;
           flex-flow: column;
@@ -570,6 +571,7 @@ $scatterSize: 75vh;
 // Bar chart and page controls
 .PagingBar {
   height: 600px;
+  max-width: 1000px;
 }
 .pageControls {
   display: flex;
