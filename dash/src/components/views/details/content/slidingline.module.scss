@@ -1,4 +1,6 @@
 @import '../../../../assets/styles/colors.scss';
+$lineVaccBlue: darken(#5781ab, 15%);
+$lineVaccBlue-2: #5781ab;
 .invisible {
   display: none;
 }
@@ -20,7 +22,8 @@
 }
 .lineVacc {
   path {
-    stroke: #333333;
+    stroke: $lineVaccBlue;
+    // stroke: #333333;
     stroke-width: 1.5px;
     stroke-dasharray: 6;
     stroke-linecap: square;
@@ -96,7 +99,7 @@
 }
 .lineVaccLabel {
   text-anchor: end;
-  fill: $grey;
+  fill: lighten($lineVaccBlue, 30%);
   clip-path: url('#plotArea');
 }
 

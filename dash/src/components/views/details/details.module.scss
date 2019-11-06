@@ -553,7 +553,8 @@ $spacing: 20px;
             height: 0;
           }
           &.vaccinationCoverage {
-            stroke: #333333;
+            stroke: darken(#5781ab, 15%);
+            // stroke: #333333;
             stroke-width: 1.5px;
             stroke-dasharray: 6, 6;
             stroke-linecap: square;
