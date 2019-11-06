@@ -6,6 +6,8 @@ import Tooltip from 'rc-tooltip';
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
 import 'rc-tooltip/assets/bootstrap.css';
+import InfoTooltip from '../../../components/misc/InfoTooltip.js';
+import infoTooltipStyles from '../../../components/misc/infotooltip.module.scss';
 
 import MiniMap from '../../../components/map/MiniMap.js'
 
@@ -593,15 +595,16 @@ const Global = (props) => {
         'title': 'Cases reported globally',
         'chart_jsx': () => <div className={classNames(styles.MiniLine, 'MiniLine-0')} />,
         'value_fmt': Util.comma,
-        'value_label': 'cases',
+        'value_label': 'current cases',
         'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'month')},
         ...infographicValues[0]
       },
       {
-        'title': 'Average vaccination coverage of countries',
+        'title': 'Average vaccination coverage',
         'chart_jsx': () => <div className={classNames(styles.MiniLine, 'MiniLine-1')} />,
         'value_fmt': Util.percentize,
         'value_label': 'of infants',
+        'infoTooltipText': 'Simple average of vaccination coverage of infants for all reporting countries (not population-weighted)',
         'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'year')},
         ...infographicValues[1]
       },
@@ -644,7 +647,12 @@ const Global = (props) => {
                     <div className={styles.itemContainer}>
                       <div className={styles.item}>
                         <span className={styles.title}>
-                          <span>{item.title}</span>
+                          <span>{item.title}
+                          {
+                            // If info tooltip text, render one
+                            (item.infoTooltipText) && <InfoTooltip text={item.infoTooltipText} />
+                          }
+                          </span>
                           <span className={'dateTimeStamp'}>{item.date_time_fmt(item)}</span>
                         </span>
                         <div className={styles.content}>
@@ -876,6 +884,20 @@ const Global = (props) => {
                 />
             }
           </div>
+          {
+            // Tooltip for info tooltip icons.
+            <ReactTooltip
+              id={'infoTooltip'}
+              type='light'
+              className={infoTooltipStyles.infoTooltipContainer}
+              place="top"
+              effect="float"
+              html={true}
+              getContent={ (tooltipData) =>
+                tooltipData
+              }
+              />
+          }
         </div>
     );
 };
