@@ -574,8 +574,12 @@ class SlidingLine extends Chart {
         const roundFunc = i === 0 ? Math.ceil
           : Math.floor;
 
+        // const frac = val / chart.width;
+        // const nData = chart.data.vals.length;
+        // let index = roundFunc(frac * nData);
         let index = roundFunc(val / eachBand);
         const exact = Math.abs(index - (val / eachBand)) <= 1e-6;
+        // const exact = Math.abs(index - (frac * nData)) <= 1e-6;
 
         // // LOGS
         // console.log('val')
@@ -692,6 +696,7 @@ class SlidingLine extends Chart {
       initSelection = xVals;
     }
     else {
+
       gBrush
         .call(brush.move, [chart.brushStartPos, chart.width]);
       initSelection = [chart.brushStartPos, chart.width];
