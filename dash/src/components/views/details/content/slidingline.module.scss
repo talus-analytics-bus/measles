@@ -94,6 +94,10 @@
     fill: white;
   }
 }
+.lineVaccLabel {
+  text-anchor: end;
+  fill: $grey;
+}
 
 .tooltipLine {
   stroke: $grey;

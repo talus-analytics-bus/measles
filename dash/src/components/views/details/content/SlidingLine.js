@@ -423,12 +423,67 @@ class SlidingLine extends Chart {
       .enter().append('path')
         .attr('d', d => area(d));
 
+
+    // Add vaccination line to chart.
     const vaccLineData = formatVaccVals();
     chart.newGroup(styles.lineVacc)
       .selectAll('path')
       .data([vaccLineData])
       .enter().append('path')
         .attr('d', d => lineVacc(d));
+
+    console.log('vaccLineData')
+    console.log(vaccLineData)
+
+
+
+    // Add label for vaccination line, only show if missing values on chart are
+    // visible.
+    const vaccLineLabelDatum = vaccLineData[
+      vaccLineData.length - 1
+    ];
+
+    const vaccLineLabel = chart[styles.lineVacc]
+      .append('text')
+        .attr('class', styles.lineVaccLabel)
+        .attr('dy', '1em')
+        .attr('y', yRight(vaccLineLabelDatum.value));
+
+    const vaccLineLabelXVal = new Date (
+      vaccLineLabelDatum.date_time
+    );
+    const vaccLineLabelX = x(
+      vaccLineLabelXVal
+    );
+
+    vaccLineLabel.append('tspan')
+      .attr('x', vaccLineLabelX)
+      .text('2019 data');
+
+    vaccLineLabel.append('tspan')
+      .attr('x', vaccLineLabelX)
+      .attr('dy', '1.1em')
+      .text('not yet reported');
+
+    // // Add endpoint circle for vaccination line to chart.
+    // chart[styles.lineVacc].selectAll('circle')
+    //   .data(
+    //     [chart.data.vaccVals[
+    //       chart.data.vaccVals.length - 1
+    //     ]]
+    //   )
+    //   .enter().append('circle')
+    //     .attr('class','mvmtest')
+    //     .attr('r', 3)
+    //     .attr('cx', d => {
+    //       const tmpDt = new Date(d.date_time.replace(/-/g, '/'));
+    //       return x(tmpDt);
+    //     })
+    //     .attr('cy', d => yRight(d.value));
+    //   console.log('vaccl')
+    //   console.log(chart.data.vaccVals[
+    //     chart.data.vaccVals.length - 1
+    //   ])
 
     // Add rects to slider
     chart[styles.slider].selectAll('rect')
@@ -654,6 +709,21 @@ class SlidingLine extends Chart {
       // Reposition chart elements
 			chart[styles.lineValue].selectAll('path'). attr('d', d => line(d));
 			chart[styles.lineVacc].selectAll('path'). attr('d', d => lineVacc(d));
+
+      const newVaccLineLabelX = x(
+        vaccLineLabelXVal
+      );
+
+      const showVaccLineLabel = vaccLineLabelXVal < x.domain()[1];
+
+      vaccLineLabel.selectAll('tspan')
+        .attr('x', newVaccLineLabelX)
+        .style('visibility', showVaccLineLabel ? 'visible' : 'hidden');
+
+			// chart[styles.lineVacc].selectAll('circle'). attr('cx', d => {
+      //   const tmpDt = new Date(d.date_time.replace(/-/g, '/'));
+      //   return x(tmpDt);
+      // });
 			chart[styles.areaNull].selectAll('path'). attr('d', d => area(d));
 
       // Store this position
