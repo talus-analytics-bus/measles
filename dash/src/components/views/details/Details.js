@@ -468,7 +468,7 @@ const Details = (props) => {
     const legendEntries = noLineData ? [] :
       [
         {
-          label: slidingLineMetric === 'incidence_monthly' ? 'Monthly incidence rate' : 'New cases',
+          label: slidingLineMetric === 'incidence_monthly' ? 'Monthly incidence rate' : 'Cases',
           class: styles.monthlyIncidence,
           shape: 'line',
         },

@@ -590,7 +590,7 @@ const Global = (props) => {
     ];
     return [
       {
-        'title': 'New cases reported globally',
+        'title': 'Cases reported globally',
         'chart_jsx': () => <div className={classNames(styles.MiniLine, 'MiniLine-0')} />,
         'value_fmt': Util.comma,
         'value_label': 'cases',

@@ -206,7 +206,7 @@ Util.getMetricChartParams = (metric) => {
         tickFormat: Util.formatSIInteger,
         sort: 'desc',
         metric: 'cumcaseload_totalpop',
-        label: 'New cases in past 12 months',
+        label: 'Cases in past 12 months',
         dateFmt: (allObs) => {
           const firstObs = allObs[0];
           const firstObsDt = new Date (
@@ -259,7 +259,7 @@ Util.getMetricChartParams = (metric) => {
         metric: 'monthlycaseload_totalpop',
         sort: 'desc',
         temporal_resolution: 'monthly',
-        label: 'New cases reported globally',
+        label: 'Cases reported globally',
       };
 
     case 'coverage_mcv1_infant': // DEBUG
@@ -348,7 +348,7 @@ Util.getSvgChartLabelData = (datum) => {
   switch (datum.metric) {
     case 'caseload_totalpop':
       return [
-        'New cases reported',
+        'Cases reported',
       ];
     case 'incidence_monthly': // DEBUG
       return [
@@ -390,7 +390,7 @@ Util.getTooltipItem = (datum) => {
   switch (datum.metric) {
     case 'caseload_totalpop':
       return {
-        name: 'New cases reported',
+        name: 'Cases reported',
         datum: datum,
         period: 'month',
         value: datum.value === null ? null : Util.comma(datum.value),
@@ -406,7 +406,7 @@ Util.getTooltipItem = (datum) => {
       };
     case 'monthlycaseload_totalpop': // DEBUG
       return {
-        name: 'New cases reported',
+        name: 'Cases reported',
         datum: datum,
         period: 'month',
         value: Util.comma(datum.value),

@@ -307,7 +307,7 @@ const App = () => {
         // const fakeTrendValue = [
         //   {
         //     "change_per_period": secondToLastDatum.value - lastDatum.value,
-        //     "definition": "The number of new cases per month among the total population",
+        //     "definition": "The number of cases per month among the total population",
         //     "end_date": lastDatum.date_time,
         //     "end_obs": lastDatum.value,
         //     "metric": "caseload_totalpop",
