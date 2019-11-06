@@ -6,7 +6,13 @@ $logo-height: 70px;
   grid-template-columns: auto; // ensures header resizes correctly if window size is changed
   // Subtract header and foot from main content
   grid-template-rows: 80px minmax(calc(100vh - 80px - 95px), auto);
-  &.windowed { height: 100%; }
+  &.windowed {
+    height: 100%;
+    > div:nth-child(2) > div {
+      height: 100% !important;
+    }
+  }
+
 }
 
 .watermark {

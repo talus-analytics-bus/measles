@@ -117,7 +117,6 @@ const Map = ({ fillObservations, bubbleObservations, trendObservations, incidenc
     map.setLayoutProperty('metric-bubbles-incidence_monthly', 'visibility', 'none');
     map.setLayoutProperty('metric-bubbles-caseload_totalpop', 'visibility', 'none');
     map.setLayoutProperty('metric-bubbles-' + bubbleMetric, 'visibility', 'visible');
-
   }, [bubbleMetric]);
 
   const navTitleEl = document.getElementById('navTitle').textContent =
