@@ -531,9 +531,18 @@ class SlidingLine extends Chart {
 
 
     brush
-		  .on('brush', () => {
+      // .on('start end', () => {
+      //   console.log('was a start end')
+      // })
+		  .on('brush start end', () => {
 
-      if (d3.event.sourceEvent && d3.event.sourceEvent.type === "brush") return;
+      if (
+        d3.event.sourceEvent && (
+          d3.event.sourceEvent.type === "brush"
+          || d3.event.sourceEvent.type === "start"
+          || d3.event.sourceEvent.type === "end"
+        )
+      ) return;
 
       // Get current start/end positions of brush ([1, 2])
       const s = d3.event.selection || x2.range();

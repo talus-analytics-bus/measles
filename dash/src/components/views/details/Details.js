@@ -559,11 +559,15 @@ const Details = (props) => {
             metricParams.getUnits(countSummary)
         }
         </span>
-        <span> during selected window (
-          {
-            countSummaryDateRange
-          }
-        )</span>
+        <span> during selected window
+        {
+          (countSummaryDateRange !== '') && <span>&nbsp;(
+            {
+              countSummaryDateRange
+            }
+          )</span>
+        }
+        </span>
       </div>
     );
 
