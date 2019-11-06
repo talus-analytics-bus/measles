@@ -97,6 +97,7 @@
 .lineVaccLabel {
   text-anchor: end;
   fill: $grey;
+  clip-path: url('#plotArea');
 }
 
 .tooltipLine {
