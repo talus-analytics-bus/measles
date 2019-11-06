@@ -5,6 +5,7 @@ import Modal from 'reactjs-popup'
 import classNames from 'classnames';
 import * as d3 from 'd3/dist/d3.min';
 import ReactTooltip from 'react-tooltip';
+import BrowserDetection from 'react-browser-detection';
 
 // layout
 import Nav from './components/layout/nav/Nav.js'
@@ -596,6 +597,63 @@ const App = () => {
   //   // $unsupportedModal.modal();
   // }
 
+  // Detect browser and return appropriate content.
+  //
+
+  const welcomeModal = (
+    <div className={styles.modal}>
+      <div className={styles.header}>
+        Welcome to the Measles Tracker
+      </div>
+      <div className={styles.content}>
+        <div className={styles.text}>
+          <p>The Measles Tracker integrates, analyzes, and visualizes measles surveillance and vaccination data to provide a comprehensive overview of the current status of the measles outbreak globally, including the populations and regions most at risk. The dashboard was developed by Talus Analytics and is designed to be used in Chrome or Firefox.</p>
+        </div>
+        <button className={classNames('button', 'modal')}>Continue</button>
+      </div>
+    </div>
+  );
+
+  const browserModal = (browser) => (
+    <div className={styles.modal}>
+      <div className={styles.header}>
+        Please try a different browser
+      </div>
+      <div className={styles.content}>
+        <div className={styles.text}>
+          <p>The Measles Tracker was designed for Chrome and Firefox desktop browsers, but you seem to be using {browser}.</p>
+          <p>If this is correct, please open the Measles Tracker in Chrome or Firefox instead.</p>
+        </div>
+        <button className={classNames('button', 'modal')}>Continue</button>
+      </div>
+    </div>
+  );
+
+  const browserValid = {
+    chrome: () => welcomeModal,
+    firefox: () => welcomeModal,
+    edge: (browser) => browserModal('Edge'),
+    ie: (browser) => browserModal('Internet Explorer'),
+    safari: (browser) => browserModal('Safari'),
+    opera: (browser) => browserModal('Opera'),
+    default: (browser) => browserModal('an unsupported browser'),
+  };
+
+  const modalToShow = (
+    <BrowserDetection>
+      {
+          browserValid
+      }
+    </BrowserDetection>
+  );
+  // const modalToShow = (
+  //   <BrowserDetection>
+  //     {
+  //         browserValid
+  //     }
+  //   </BrowserDetection>
+  // );
+
   // JSX for main app. Switch component allows links in the header to be used to
   // determine main app content.
   return (
@@ -655,21 +713,7 @@ const App = () => {
               defaultOpen={showWelcomeModal}
               modal
             >
-              {
-                close => (
-                  <div className={styles.modal}>
-                    <div className={styles.header}>
-                      Welcome to the Measles Tracker
-                    </div>
-                    <div className={styles.content}>
-                      <div className={styles.text}>
-                        <p>The Measles Tracker integrates, analyzes, and visualizes measles surveillance and vaccination data to provide a comprehensive overview of the current status of the measles outbreak globally, including the populations and regions most at risk. The dashboard was developed by Talus Analytics and is designed to be used in Chrome or Firefox.</p>
-                      </div>
-                      <button className={classNames('button', 'modal')} onClick={close}>Continue</button>
-                    </div>
-                  </div>
-                )
-              }
+              {modalToShow}
             </Modal>
           )
         }
