@@ -95,7 +95,7 @@ class SlidingLine extends Chart {
     };
 
     chart.newGroup(styles.slider)
-      .attr('transform', `translate(0, ${35})`);
+      .attr('transform', `translate(0, ${45})`);
 
     // Extend chart to accomodate slider
     const curHeight = chart.svg.attr('height');
@@ -173,12 +173,14 @@ class SlidingLine extends Chart {
     function multiFormat(date) {
 
       let format;
+      this.dataset.year = formatYear(date);
       if (d3.timeMonth(date) < date) {
         this.parentElement.remove();
       } else if (d3.timeYear(date) < date) {
         format = formatMonth(date);
       } else {
-        format = formatYear(date);
+        format = formatMonth(date) + ' ' + formatYear(date);
+        this.dataset.type = 'year-and-month';
       }
       return format;
     }
@@ -190,9 +192,52 @@ class SlidingLine extends Chart {
       .tickFormat(multiFormat)
       .scale(x);
 
+    const wrapTimeLabels = (selection) => {
+      let doWrap = selection
+        .selectAll('text')
+          .nodes()
+            .some(d => d.dataset.type !== 'year-and-month');
+
+      let noYearsShown = selection
+        .selectAll('text')
+          .nodes()
+            .every(d => d.dataset.type !== 'year-and-month');
+
+      if (!doWrap) {
+        // Remove Jan from tick label
+        selection.selectAll('text').each(function removeJan () {
+          const text = d3.select(this);
+          const arr = text.text().split(' ');
+          text.text(arr[1]);
+        })
+
+        return;
+      };
+
+      selection.selectAll('text').each(function doWrap (d, i) {
+
+        const text = d3.select(this);
+        const arr = text.text().split(' ');
+
+        if (noYearsShown && i === 0) arr.push(text.node().dataset.year);
+
+        if (arr.length > 1) {
+          text.text('');
+          text.append('tspan')
+            .attr('x', 0)
+            .text(arr[0]);
+          text.append('tspan')
+            .attr('x', 0)
+            .attr('dy', '1.1em')
+            .text(arr[1]);
+        }
+      });
+    };
+
     const xAxisG = chart.newGroup(styles['x-axis'])
       .attr('transform', `translate(0, ${chart.height})`)
-      .call(xAxis);
+      .call(xAxis)
+      .call(wrapTimeLabels);
 
     // y scale: incidence - main chart
     // Never changes
@@ -602,7 +647,9 @@ class SlidingLine extends Chart {
         return getDomainInvertVals(d, i);
       });
 			x.domain(invertedVals);
-			chart[styles['x-axis']].call(xAxis);
+			chart[styles['x-axis']]
+      .call(xAxis)
+      .call(wrapTimeLabels);
 
       // Reposition chart elements
 			chart[styles.lineValue].selectAll('path'). attr('d', d => line(d));

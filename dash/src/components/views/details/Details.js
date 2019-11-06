@@ -791,7 +791,7 @@ const Details = (props) => {
       margin: {
         top: 20,
         right: 98,
-        bottom: 60,
+        bottom: 70,
         left: 100,
       },
     };
