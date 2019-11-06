@@ -52,12 +52,28 @@ $scatterSize: 75vh;
   display: flex;
   flex-flow: column;
 
+  .sidebars {
+    display: flex;
+    flex-flow: column;
+
+    .sidebar {
+      &:not(:first-child) {
+        margin-top: 5px;
+      }
+      &:first-child {
+        .item .content .subsection .title {
+          max-width: unset;
+        }
+      }
+    }
+  }
+
   .main.mainBottom {
     margin-left: 40px;
     margin-bottom: 40px;
     .itemContainer .item {
       // max-width: unset;
-      max-width: 1220px;
+      // max-width: 1220px;
       .title {
         font-size: 1.8em;
       }
@@ -80,7 +96,7 @@ $scatterSize: 75vh;
     padding: $spacing;
     margin-left: $spacing*2;
     margin-right: $spacing*2;
-    max-width: 30%;
+    // max-width: 30%;
     min-width: 390px;
   }
   .title {
@@ -131,7 +147,7 @@ $scatterSize: 75vh;
       font-weight: bold;
       // max-width: 80%;
       line-height: 1;
-      margin-top: 20px;
+      // margin-top: 20px;
       // white-space: nowrap;
 
       .info {
@@ -331,13 +347,17 @@ $scatterSize: 75vh;
     width: 100%;
     .itemContainer {
 
+      &:first-child {
+        margin-top: 40px;
+      }
+
       &:not(:last-child) {
         // &:first-child {
         border-bottom: 1px solid #b2b2b2;
         padding-bottom: 10px;
       }
       .item {
-        max-width: $itemMaxWidth;
+        // max-width: $itemMaxWidth;
         .title {
           display: flex;
           flex-flow: column;
