@@ -225,6 +225,9 @@ const Nav = (props) => {
           month: 'short',
           year: 'numeric',
           day: 'numeric',
+          hour: 'numeric',
+          minute: 'numeric',
+          timeZoneName: 'short',
         });
       default:
         return ''; // TODO check this. Should we show the same for each page?

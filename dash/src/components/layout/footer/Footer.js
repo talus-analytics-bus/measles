@@ -20,6 +20,9 @@ const Footer = () => {
           month: 'short',
           year: 'numeric',
           day: 'numeric',
+          hour: 'numeric',
+          minute: 'numeric',
+          timeZoneName: 'short',
         })
       }
     </div>
