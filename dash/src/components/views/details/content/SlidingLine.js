@@ -432,10 +432,6 @@ class SlidingLine extends Chart {
       .enter().append('path')
         .attr('d', d => lineVacc(d));
 
-    console.log('vaccLineData')
-    console.log(vaccLineData)
-
-
 
     // Add label for vaccination line, only show if missing values on chart are
     // visible.
