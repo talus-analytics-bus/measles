@@ -110,7 +110,7 @@ class PagingBar extends Chart {
       top: 47,
       right: longestBarValueWidth + 5,
       bottom: 20,
-      left: 200,
+      left: 200-30,
     });
       // this.params.margin = {
       //   top: 47,
@@ -124,7 +124,7 @@ class PagingBar extends Chart {
     // this.init();
     // set left margin based on the longest country name included.
     const yLabels = this.data.bars.map(d => d.place_name);
-    this.params.margin.left = this.fitLeftMargin(yLabels, true) + 20;
+    this.params.margin.left = this.fitLeftMargin(yLabels, true) - 10;
     this.onResize(this);
     this.draw();
   }
@@ -194,15 +194,15 @@ class PagingBar extends Chart {
     xAxisLabel.append('tspan')
       .attr('x', chart.width / 2);
 
-    // Add y-axis label
-    const yAxisLabel = chart[styles['y-axis']].append('text')
-      .attr('x', -chart.height / 2)
-      .attr('y', chart.labelShift - yAxis.tickPadding() + yLabelShift)
-      .attr('class', styles.label);
-
-    yAxisLabel.append('tspan')
-      .attr('x', -chart.height / 2)
-      .text('Country');
+    // // Add y-axis label
+    // const yAxisLabel = chart[styles['y-axis']].append('text')
+    //   .attr('x', -chart.height / 2)
+    //   .attr('y', chart.labelShift - yAxis.tickPadding() + yLabelShift)
+    //   .attr('class', styles.label);
+    //
+    // yAxisLabel.append('tspan')
+    //   .attr('x', -chart.height / 2)
+    //   .text('Country');
 
     // Callback on click to route to country details page
     const routeToCountryDetails = (id) => {
@@ -259,14 +259,14 @@ class PagingBar extends Chart {
       y.domain(yTickLabels);
       chart[styles['y-axis']].call(yAxis);
 
-      // Get position of y-label given widest y-axis tick label.
-      const xAxisLabelPos = chart.getYLabelPos(
-        y,
-        true,
-        yTickLabels,
-        '1em',
-      );
-      yAxisLabel.attr('y', chart.labelShift - yAxis.tickPadding() + yLabelShift)
+      // // Get position of y-label given widest y-axis tick label.
+      // const xAxisLabelPos = chart.getYLabelPos(
+      //   y,
+      //   true,
+      //   yTickLabels,
+      //   '1em',
+      // );
+      // yAxisLabel.attr('y', chart.labelShift - yAxis.tickPadding() + yLabelShift)
 
       // Update bar values (should only need to happen once since underlying
       // data are not updated).
