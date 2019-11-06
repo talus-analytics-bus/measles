@@ -8964,6 +8964,13 @@ react-bootstrap-table2-paginator@^2.0.8:
   resolved "https://registry.yarnpkg.com/react-bootstrap-table2-paginator/-/react-bootstrap-table2-paginator-2.0.8.tgz#49d628f181000cfca0574f69de1b4e15c02d0d4e"
   integrity sha512-9cFBSs0IYMcLcdG3voGF8xcWVN/ePYuRzKZ4A2GAzl3jZF1FkR6ETNlAPQzkhhKo6rOpdsQ4oFmJxt1oV7h6UQ==
 
+react-browser-detection@^1.2.1:
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/react-browser-detection/-/react-browser-detection-1.2.1.tgz#7cafa3f7e2772394101a3b14b114b6fe7c6124fc"
+  integrity sha512-ku57WQN/NprjxvDjPQuZwmtgWqr77Wq0LM7B0Kn6irVfQFwz/X9qnBNXNQJFiKWCcECPioKDNBSo6MZMNtszYw==
+  dependencies:
+    prop-types "^15.5.10"
+
 react-chartjs-2@^2.7.6:
   version "2.7.6"
   resolved "https://registry.yarnpkg.com/react-chartjs-2/-/react-chartjs-2-2.7.6.tgz#b8cd29bed00bf55b9e8172b06466b4ecf2b86bfb"
