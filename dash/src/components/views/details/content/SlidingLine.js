@@ -248,20 +248,17 @@ class SlidingLine extends Chart {
           start = datum;
           // if (prev) segment.push(prev);
           segment.push(datum);
-          // console.log('If no start and datum not-null, datum is start')
           prev = datum;
           return;
         }
         // If no start and datum null, continue
         if (!start && datum.value === null) {
-          // console.log('If no start and datum null, continue')
           prev = datum;
           return;
         }
         // If start and datum not-null, push to segment
         if (start && datum.value !== null) {
           segment.push(datum);
-          // console.log('If start and datum not-null, push to segment')
           prev = datum;
           return;
         }
@@ -271,11 +268,9 @@ class SlidingLine extends Chart {
           start = undefined;
           valueLineSegments.push(segment);
           segment = [];
-          // console.log('If start and datum null, push to segment, and start new one')
           prev = datum;
           return;
         }
-        // console.log('Error: reached unreachable state');
       });
 
       if (segment.length > 0) {
@@ -343,20 +338,17 @@ class SlidingLine extends Chart {
           start = datum;
           if (prev) segment.push(prev);
           segment.push(datum);
-          // console.log('If no start and datum not-null, datum is start')
           prev = datum;
           return;
         }
         // If no start and datum null, continue
         if (!start && datum.value !== null) {
-          // console.log('If no start and datum null, continue')
           prev = datum;
           return;
         }
         // If start and datum null, push to segment
         if (start && datum.value === null) {
           segment.push(datum);
-          // console.log('If start and datum not-null, push to segment')
           prev = datum;
           return;
         }
@@ -366,22 +358,15 @@ class SlidingLine extends Chart {
           start = undefined;
           valueLineSegments.push(segment);
           segment = [];
-          // console.log('If start and datum null, push to segment, and start new one')
           prev = datum;
           return;
         }
-        // console.log('Error: reached unreachable state');
       });
 
       if (segment.length > 0) {
-        // console.log('segment - ending')
-        // console.log(segment)
         valueLineSegments.push(segment);
         segment = [];
-        // console.log('If ending segment has values, push them')
       }
-      // console.log('nullLineSegments')
-      // console.log(valueLineSegments)
       return valueLineSegments;
     };
 
@@ -580,22 +565,6 @@ class SlidingLine extends Chart {
         let index = roundFunc(val / eachBand);
         const exact = Math.abs(index - (val / eachBand)) <= 1e-6;
         // const exact = Math.abs(index - (frac * nData)) <= 1e-6;
-
-        // // LOGS
-        // console.log('val')
-        // console.log(val)
-        // console.log('eachBand')
-        // console.log(eachBand)
-        // console.log('val / eachBand')
-        // console.log(val / eachBand)
-        // console.log('index')
-        // console.log(index)
-        // console.log('exact')
-        // console.log(exact)
-        // console.log('chart.data.vals.length')
-        // console.log(chart.data.vals.length)
-
-
 
         if (index > chart.data.vals.length - 1) {
           index = chart.data.vals.length - 1;
