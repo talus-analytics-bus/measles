@@ -64,7 +64,9 @@ class SlidingLine extends Chart {
 
     // Get max incidence from data.
     // [ max, min ]
-    this.yDomainDefault = [d3.max(this.data.vals, d => d.value) || 5, 0];
+    const yMaxTmp = d3.max(this.data.vals, d => d.value) || 5;
+    const yMax = yMaxTmp > 5 ? yMaxTmp : 5;
+    this.yDomainDefault = [yMax, 0];
 
     // Adjust margins if not showing incidence or vaccination
     if (!this.show.vacc) {

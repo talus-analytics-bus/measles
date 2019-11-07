@@ -139,6 +139,7 @@ Util.getCumulativeTrend = (data, end, lagMonths = 12) => {
     "start_obs": start.observation_id,
     "startDatum": start,
     "endDatum": end,
+    "incomplete": start.n_null > 0 || end.n_null > 0,
   };
 };
 
@@ -175,10 +176,19 @@ Util.getPeopleNoun = (val) => {
 
 Util.getDeltaData = (datum) => {
   if (datum && datum['percent_change'] !== null) {
+
+    const pct = datum['percent_change'];
+    let direction;
+    if (datum.incomplete === true) direction = 'notCalc';
+    else if (pct > 0) direction = 'inc';
+    else if (pct < 0) direction = 'dec';
+    else if (pct === 0) direction = 'same';
+
     return {
       delta: datum['percent_change'],
       deltaSign: Util.getDeltaSign(datum['percent_change']),
       deltaFmt: Util.percentizeDelta(datum['percent_change']),
+      direction: direction,
     }
   } else return {};
 };

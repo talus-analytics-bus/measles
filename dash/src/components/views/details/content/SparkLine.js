@@ -30,6 +30,8 @@ const SparkLine = (props) => {
     );
 
   }, [])
+
+
   return (
     <div
       className={classNames(
@@ -38,7 +40,6 @@ const SparkLine = (props) => {
         styles[props.direction],
       )}
     >
-      Hello, world!
     </div>
   );
 };

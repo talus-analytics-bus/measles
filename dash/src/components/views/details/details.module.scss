@@ -716,6 +716,16 @@ $spacing: 20px;
     .delta-text { margin-left: 5px;}
     display: none;
   }
+  &.notCalc {
+    i { display: none; }
+    .num {
+      color: $grey;
+      font-size: 1.1em;
+    }
+    line-height: 1.1;
+    width: min-content;
+    // background-color: $grey;
+  }
 }
 
 // JEE block/trapezoid colors

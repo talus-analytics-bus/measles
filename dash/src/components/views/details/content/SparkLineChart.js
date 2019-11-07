@@ -73,10 +73,9 @@ class SparkLineChart extends Chart {
     this.data.vals = vals.slice(0, this.params.window);
     vals.reverse();
 
-    console.log('this.data.vals')
-    console.log(this.data.vals)
-
-    // const yTickFormatFunc = this.params.yMetricParams.tickFormat;
+    // // Does sparkline have complete data?
+    // const incompleteSparkline = this.data.vals.some(d => d.value === null);
+    // if (incompleteSparkline) return;
 
     // get incidence y-scale and y-axis
     this.init();

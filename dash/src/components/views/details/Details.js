@@ -624,11 +624,7 @@ const Details = (props) => {
       })}>
         <div className={classNames(
           styles.deltaBadge,
-          {
-            [styles['inc']]: deltaData.delta > 0,
-            [styles['dec']]: deltaData.delta < 0,
-            [styles['same']]: deltaData.delta === 0,
-          },
+          styles[deltaData.direction]
         )
           }>
           <i className={classNames('material-icons')}>play_arrow</i>
@@ -637,10 +633,24 @@ const Details = (props) => {
               // Don't include sign for now since it's redundant
               // <span className={styles['sign']}>{d.deltaSign}</span>
             }
-            <span className={styles['num']}>{deltaData.deltaFmt}</span>
+            {
+              (deltaData.direction !== 'notCalc') &&
+              <span className={styles['num']}>{deltaData.deltaFmt}</span>
+            }
+            {
+              (deltaData.direction === 'notCalc') &&
+              <span className={styles['num']}>Trend not calculated</span>
+            }
           </span>
         </div>
-        <span className={styles['delta-text']}>{Util.getDeltaWord(deltaData.delta)} from<br/>previous {period}</span>
+        {
+          (deltaData.direction !== 'notCalc') &&
+          <span className={styles['delta-text']}>{Util.getDeltaWord(deltaData.delta)} from<br/>previous {period}</span>
+        }
+        {
+          (deltaData.direction === 'notCalc') &&
+          <span className={styles['delta-text']}>some data<br/>unavailable</span>
+        }
       </div>
   };
 
@@ -909,10 +919,7 @@ const Details = (props) => {
             data={sparklineBaseData}
             window={24}
             i={i}
-            direction={
-              deltaData.delta > 0 ? 'inc' :
-                (deltaData.delta < 0 ? 'dec' : 'same')
-            }
+            direction={ deltaData.direction }
           /> : '',
           'period': '12 months',
           dateTimeObs: [

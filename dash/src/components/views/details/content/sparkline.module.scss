@@ -26,6 +26,14 @@
       fill: $value-red;
     }
   }
+  &.notCalc {
+    .lineValue {
+      stroke: $grey;
+    }
+    circle {
+      fill: $grey;
+    }
+  }
   &.dec {
     .lineValue path {
       stroke: $value-green;
