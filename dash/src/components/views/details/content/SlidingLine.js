@@ -535,7 +535,7 @@ class SlidingLine extends Chart {
 
     yAxisLabel.append('tspan')
     .attr('x', -chart.height / 2)
-      .text(chart.params.metric === 'incidence_monthly' ? 'Monthly incidence of measles' : 'New measles');
+      .text(chart.params.metric === 'incidence_monthly' ? 'Monthly incidence of measles' : 'Total measles');
     yAxisLabel.append('tspan')
     .attr('x', -chart.height / 2)
       .attr('dy', '1.2em')
