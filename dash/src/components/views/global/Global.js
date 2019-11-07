@@ -635,12 +635,14 @@ const Global = (props) => {
                 <div className={styles.title}>
                   Global caseload
                 </div>
-                <div className={styles.map}>
-                  {
-                    <MiniMap countryIso2={props.countryIso2}/>
-                  }
-                </div>
                 {
+                  // Global minimap
+                  // <div className={styles.map}>
+                  //   <MiniMap countryIso2={props.countryIso2}/>
+                  // </div>
+                }
+                <div className={styles.itemContainers}>
+                  {
                   [
                     ...getMiniLineJsx(),
                   ].map(item =>
@@ -701,6 +703,7 @@ const Global = (props) => {
                     </div>
                   )
                 }
+                </div>
               </div>
               <div className={styles.main}>
               {

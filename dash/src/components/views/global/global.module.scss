@@ -7,16 +7,17 @@ $spacing: 20px;
 
 .MiniLine {
   height: 200px;
-  width: auto;
+  width: 390px;
 }
 
 $scatterSize: 55vh;
 .Scatter {
-  height: $scatterSize;
-  // width: 100%;
+  display: grid;
+  grid-template-rows: minmax(448px, $scatterSize);
+  grid-template-columns: auto;
+  // height: $scatterSize;
   max-width: 93%;
   margin-top: 20px;
-  // width: $scatterSize + 120px;
 }
 
 .visible {
@@ -82,7 +83,19 @@ $scatterSize: 55vh;
     margin-left: $spacing*2;
     margin-right: $spacing*2;
     // max-width: 30%;
+    height: min-content;
     min-width: 390px;
+
+    .itemContainers {
+      display: flex;
+      flex-flow: column;
+      // justify-content: space-between;
+      height: min-content;
+      .itemContainer:not(:last-child) {
+        margin-bottom: 40px;
+      }
+    }
+
   }
   .title {
     display: flex;
@@ -123,7 +136,7 @@ $scatterSize: 55vh;
   .item {
     display: flex;
     flex-flow: column;
-    margin-top: 20px;
+    // margin-top: 20px;
 
     .title {
       color: $dark-grey;
@@ -330,6 +343,7 @@ $scatterSize: 55vh;
   .main {
     margin-right: $spacing*2;
     width: 100%;
+
     .itemContainer {
 
       &:not(:last-child) {
