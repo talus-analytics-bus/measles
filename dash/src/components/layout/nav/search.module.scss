@@ -1,0 +1,28 @@
+@import '../../../assets/styles/colors.scss';
+
+.search {
+  .field {
+    display: flex;
+    flex-flow: row;
+    padding: 5px;
+    margin: 15px;
+    border-radius: $border-radius;
+    border: 1px solid $grey;
+    i {
+      color: $grey;
+      cursor: default;
+    }
+    input, input::placeholder {
+      cursor: text !important;
+      outline: none;
+      border: none;
+      font-size: 1em;
+      color: $dark-grey-2;
+      font-family: 'Open Sans', sans-serif;
+
+      &::placeholder, &::before {
+        color: red;
+      }
+    }
+  }
+}

@@ -3,6 +3,7 @@ import classNames from 'classnames'
 import { Link } from 'react-router-dom'
 import styles from './nav.module.scss'
 import Util from '../../../components/misc/Util.js'
+import Search from './Search.js'
 import logo from '../../../assets/images/measles_tracker.svg'
 import iconPin from '../../../assets/images/pin.svg'
 import iconFlag from '../../../assets/images/flag.svg'
@@ -142,6 +143,7 @@ const Nav = (props) => {
           Countries by region
         </div>
         <div className={styles.content}>
+          <Search />
           {
             props.places.map((p) =>
               <div className={styles.regionContainer}>
