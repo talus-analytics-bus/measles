@@ -20,6 +20,7 @@ const Nav = (props) => {
   // Track picked   country (triggers refresh of tooltips)
   const [locationPicked, setLocationPicked] = React.useState(null);
   const [regionPicked, setRegionPicked] = React.useState(null);
+  const [searchResults, setSearchResults] = React.useState(null);
 
   function countryOnClick (e, c) {
     setLocationPicked(c[0]);
@@ -84,6 +85,11 @@ const Nav = (props) => {
     document.getElementById('regionTooltip').scrollTop = 0;
   }, [regionPicked]);
 
+  React.useEffect(() => {
+    ReactTooltip.hide();
+    ReactTooltip.rebuild();
+  }, [searchResults]);
+
   /**
    * Callback for when a region is clicked in the menu.
    */
@@ -143,8 +149,11 @@ const Nav = (props) => {
           Countries by region
         </div>
         <div className={styles.content}>
-          <Search />
+          <Search
+            setSearchResults={setSearchResults}
+          />
           {
+            (searchResults === null) &&
             props.places.map((p) =>
               <div className={styles.regionContainer}>
                 <div className={styles.region} data-tip={p.name} data-for='regionTooltip'>
