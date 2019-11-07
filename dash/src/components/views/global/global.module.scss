@@ -55,7 +55,7 @@ $scatterSize: 55vh;
   flex-flow: column;
 
   .main.mainBottom {
-    margin-left: 40px;
+    // margin-left: 40px;
     margin-bottom: 40px;
     .itemContainer .item {
       // max-width: unset;
@@ -66,13 +66,19 @@ $scatterSize: 55vh;
     }
   }
 
+  .top, .bottom {
+  }
+
   .top {
     display: flex;
     flex-flow: row;
+    margin-right: 40px;
   }
   .bottom {
     display: flex;
     flex-flow: row;
+    border-top: 1px solid #b2b2b2;
+    margin: 10px 40px 0 40px;
   }
 
   .sidebar {
@@ -136,7 +142,6 @@ $scatterSize: 55vh;
   .item {
     display: flex;
     flex-flow: column;
-    // margin-top: 20px;
 
     .title {
       color: $dark-grey;
@@ -337,11 +342,15 @@ $scatterSize: 55vh;
     .itemContainer:first-child .item .instructions {
       margin-bottom: 40px;
     }
+    .item {
+      margin-top: 20px;
+    }
   }
 
   $itemMaxWidth: 750px;
   .main {
-    margin-right: $spacing*2;
+    // margin-right: 40px;
+    // margin-right: $spacing*2;
     width: 100%;
 
     .itemContainer {
