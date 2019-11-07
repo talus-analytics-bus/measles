@@ -28,8 +28,6 @@ const Nav = (props) => {
   }
 
   function searchedCountryOnClick (e, c) {
-    console.log('c')
-    console.log(c)
     setLocationPicked(c.id);
     ReactTooltip.rebuild();
   }
@@ -158,6 +156,7 @@ const Nav = (props) => {
           <Search
             setSearchResults={setSearchResults}
             places={props.places}
+            locationPicked={locationPicked}
           />
           {
             (searchResults === null) &&

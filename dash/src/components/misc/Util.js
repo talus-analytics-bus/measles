@@ -583,8 +583,6 @@ Util.today = () => {
 };
 
 Util.getDatetimeStamp = (datum, type = 'year') => {
-  console.log('datum')
-  console.log(datum)
   if (!datum || datum['value'] === null) return '';
 
   let datetimeStamp;

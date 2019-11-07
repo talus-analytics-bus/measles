@@ -54,15 +54,27 @@ const Search = (props) => {
     }
   };
 
+  React.useEffect(() => {
+    setTimeout(
+      () => {
+        window.document.getElementById('countryTextSearch').value = '';
+        props.setSearchResults(null);
+      },
+      500,
+    )
+
+  }, [props.locationPicked])
+
   return (
     <div className={styles.search}>
       <div className={styles.field}>
         <i className={classNames('material-icons')}>search</i>
         <input
+          id={'countryTextSearch'}
           type="text"
           placeholder="type country name..."
           onChange={handleInputChange}
-          onKeyDown ={handleKeyPress}
+          onKeyDown={handleKeyPress}
         />
       </div>
     </div>
