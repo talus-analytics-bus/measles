@@ -281,13 +281,19 @@ const App = () => {
         // const countryIncidenceHistory = results.countryIncidenceHistoryFull
         //   .filter(d => d.value !== null);
 
-        let countryIncidenceLatest = countryIncidenceHistory.length > 0 ? countryIncidenceHistory[countryIncidenceHistory.length - 1] : {};
-        // Don't use it if more than 3 months old.
-        const age = Util.getMonthsDiff(
-          Util.formatDatetimeApi(Util.today()),
-          countryIncidenceLatest.date_time,
-        );
-        if (age > 3) countryIncidenceLatest = { value: null };
+        let countryIncidenceLatest = countryIncidenceHistory.length > 0 ? countryIncidenceHistory[countryIncidenceHistory.length - 1] : {value: null};
+        console.log('countryIncidenceLatest')
+        console.log(countryIncidenceLatest)
+
+        if (countryIncidenceLatest.date_time !== undefined) {
+
+          // Don't use it if more than 3 months old.
+          const age = Util.getMonthsDiff(
+            Util.formatDatetimeApi(Util.today()),
+            countryIncidenceLatest.date_time,
+          );
+          if (age > 3) countryIncidenceLatest = { value: null };
+        }
 
 
         // Vacc. coverage history and latest observation

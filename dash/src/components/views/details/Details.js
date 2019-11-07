@@ -854,13 +854,13 @@ const Details = (props) => {
           'title': 'Last reported',
           'value_fmt': Util.formatSIInteger,
           'value_label': Util.getPeopleNoun,
-          'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'month')},
+          'date_time_fmt': (date_time) => {return date_time.date_time !== undefined ? Util.getDatetimeStamp(date_time, 'month') : ''},
           'deltaData': props.countryTrendCaseload1Months ? Util.getDeltaData(
             props.countryTrendCaseload1Months
           ) : undefined,
           'period': 'month',
           'hideSource': true,
-          'chart_jsx': (deltaData, i) => <SparkLine
+          'chart_jsx': (deltaData, i) => sparklineBaseData.length > 0 ? <SparkLine
             data={sparklineBaseData}
             window={2}
             i={i}
@@ -868,8 +868,8 @@ const Details = (props) => {
               deltaData.delta > 0 ? 'inc' :
                 (deltaData.delta < 0 ? 'dec' : 'same')
             }
-          />,
-          ...(props.countryCaseloadHistory ? props.countryCaseloadHistory[props.countryCaseloadHistory.length - 1] : {value: null}),
+          /> : '',
+          ...((props.countryCaseloadHistory && props.countryCaseloadHistory.length > 0) ? props.countryCaseloadHistory[props.countryCaseloadHistory.length - 1] : {value: null}),
         },
         {
           'title': '6-month cumulative',
@@ -880,7 +880,7 @@ const Details = (props) => {
             props.countryTrendCaseload6Months
           ) : undefined,
           'hideSource': true,
-          'chart_jsx': (deltaData, i) => <SparkLine
+          'chart_jsx': (deltaData, i) => sparklineBaseData.length > 0 ? <SparkLine
             data={sparklineBaseData}
             window={12}
             i={i}
@@ -888,7 +888,7 @@ const Details = (props) => {
               deltaData.delta > 0 ? 'inc' :
                 (deltaData.delta < 0 ? 'dec' : 'same')
             }
-          />,
+          /> : '',
           'period': '6 months',
           dateTimeObs: [
             {date_time: props.countryCaseload6MonthsCalc.start},
@@ -905,7 +905,7 @@ const Details = (props) => {
             props.countryTrendCaseload12Months
           ) : undefined,
           'hideSource': false,
-          'chart_jsx': (deltaData, i) => <SparkLine
+          'chart_jsx': (deltaData, i) => sparklineBaseData.length > 0 ? <SparkLine
             data={sparklineBaseData}
             window={24}
             i={i}
@@ -913,7 +913,7 @@ const Details = (props) => {
               deltaData.delta > 0 ? 'inc' :
                 (deltaData.delta < 0 ? 'dec' : 'same')
             }
-          />,
+          /> : '',
           'period': '12 months',
           dateTimeObs: [
             {date_time: props.countryCaseload12MonthsCalc.start},
@@ -955,7 +955,10 @@ const Details = (props) => {
       props.countryCaseloadHistory.length - 1
     ];
 
-    if (recentCaseload.value !== 1) {
+    if (recentCaseload === undefined) {
+      return '';
+    }
+    else if (recentCaseload.value !== 1) {
       return (
         <div className={styles.wedgeTooltip}>
           There were <span>{Util.comma(recentCaseload.value)} measles cases in {props.countryName} in {Util.getDatetimeStamp(recentCaseload, 'month')}</span>, or about {Util.formatIncidence(recentIncidence.value)} cases per 1M people. Compared to historical global trends, this is a <span>relatively {getWedgeChartLabel(binData.i)} measles incidence</span>.
@@ -971,8 +974,8 @@ const Details = (props) => {
   };
 
   // If loading do not show JSX content.
-  // console.log('props')
-  // console.log(props)
+  console.log('props')
+  console.log(props)
   return (<div className={styles.details}>
             <div className={styles.sidebars}>
               <div className={styles.sidebar}>
@@ -1026,7 +1029,7 @@ const Details = (props) => {
                           <div className={styles.content}>
                             {
                               // Display formatted value and label
-                              (item.value !== null && (
+                              (item.value !== null (
                                 <span>
                                   <span className={styles.value}>
                                     {item.value_fmt(item.value)}
@@ -1102,7 +1105,7 @@ const Details = (props) => {
                                     )
                                   }
                                   {
-                                    (jeeItem.value_label) &&
+                                    (jeeItem.value !== null && jeeItem.value_label) &&
                                     <span className={styles.label}>
                                       &nbsp;{jeeItem.value_label(jeeItem.value)}
                                     </span>
@@ -1119,14 +1122,14 @@ const Details = (props) => {
                                 <div className={styles.right}>
                                   {
                                     // display chart
-                                    (jeeItem.chart_jsx !== undefined) &&
+                                    (jeeItem.chart_jsx !== undefined && jeeItem.value !== null) &&
                                       <div className={styles.chart}>
                                         { jeeItem.chart_jsx(jeeItem.deltaData, i) }
                                       </div>
                                   }
                                   {
                                     // Display secondary value content if it exists
-                                    getDeltaJsx(jeeItem, jeeItem.period)
+                                    (jeeItem.value !== null) && getDeltaJsx(jeeItem, jeeItem.period)
                                   }
                                 </div>
                               </div>
@@ -1365,7 +1368,7 @@ const Details = (props) => {
                         // Data not available message, if applicable.
                         ((item.value === null || item.notAvail === true) && (
                           <span className={'notAvail'}>
-                            Recent data not available
+                            Data not available
                           </span>
                         ))
                       }

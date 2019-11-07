@@ -519,6 +519,8 @@ Util.getDateTimeRange = (item) => {
   const first = data[0]['date_time'];
   const last = data[data.length - 1]['date_time'];
 
+  if (first === undefined) return '';
+
   const firstStr = new Date(first.replace(/-/g, '/')).toLocaleString('en-us', {
     month: 'short',
     year: 'numeric',
@@ -571,6 +573,8 @@ Util.today = () => {
 };
 
 Util.getDatetimeStamp = (datum, type = 'year') => {
+  console.log('datum')
+  console.log(datum)
   if (!datum || datum['value'] === null) return '';
 
   let datetimeStamp;
