@@ -19,7 +19,8 @@ const initMap = (map, fillObservations, bubbleObservations, incidenceObservation
     if (!map.getSource('centroids'))
       map.addSource('centroids', {
         type: 'vector',
-        url: 'mapbox://traethethird.9g6e0amc'
+        url: 'mapbox://traethethird.69p1vezr'
+        // url: 'mapbox://traethethird.9g6e0amc'
       })
 
     fillObservations.forEach(( observation) => {
@@ -123,7 +124,7 @@ const initMap = (map, fillObservations, bubbleObservations, incidenceObservation
           const stale = getStaleStatus(observation, 'month');
 
           if (!value) {
-            map.setFeatureState({source: 'centroids', sourceLayer: 'centroids_id_rpr_latlon', id: place_id }, {
+            map.setFeatureState({source: 'centroids', sourceLayer: 'mvmupdatescentroids', id: place_id }, {
               value: 0,
               value2: value2 || 0,
               stale: stale,
@@ -135,7 +136,7 @@ const initMap = (map, fillObservations, bubbleObservations, incidenceObservation
               value2: value2 || 0,
               stale: stale,
             };
-            map.setFeatureState({source: 'centroids', sourceLayer: 'centroids_id_rpr_latlon', id: place_id }, state);
+            map.setFeatureState({source: 'centroids', sourceLayer: 'mvmupdatescentroids', id: place_id }, state);
           }
         });
       };
@@ -152,7 +153,7 @@ const initMap = (map, fillObservations, bubbleObservations, incidenceObservation
       //
       //   // Load centroids
       //   const centroids = map.querySourceFeatures('centroids', {
-      //     sourceLayer: 'centroids_id_rpr_latlon',
+      //     sourceLayer: 'mvmupdatescentroids',
       //   });
       //
       //   const markerData = {
@@ -165,7 +166,7 @@ const initMap = (map, fillObservations, bubbleObservations, incidenceObservation
       //     const place_id = +observation['place_id']
       //
       //     if (!value) {
-      //       map.setFeatureState({source: 'centroids', sourceLayer: 'centroids_id_rpr_latlon', id: place_id }, {
+      //       map.setFeatureState({source: 'centroids', sourceLayer: 'mvmupdatescentroids', id: place_id }, {
       //         value: 0,
       //         lat: null,
       //         lon: null,
@@ -182,7 +183,7 @@ const initMap = (map, fillObservations, bubbleObservations, incidenceObservation
       //         lat: centroid.properties.lat,
       //         lon: centroid.properties.lon,
       //       };
-      //       map.setFeatureState({source: 'centroids', sourceLayer: 'centroids_id_rpr_latlon', id: place_id }, state);
+      //       map.setFeatureState({source: 'centroids', sourceLayer: 'mvmupdatescentroids', id: place_id }, state);
       //       markerData.features.push(
       //         {
       //           type: 'Feature',
@@ -246,7 +247,7 @@ const initMap = (map, fillObservations, bubbleObservations, incidenceObservation
         },
         'type': 'circle',
         'source': 'centroids',
-        'source-layer': 'centroids_id_rpr_latlon',
+        'source-layer': 'mvmupdatescentroids',
         'paint': {
         'circle-radius': [
             'interpolate',
@@ -301,7 +302,7 @@ const initMap = (map, fillObservations, bubbleObservations, incidenceObservation
         },
         'type': 'circle',
         'source': 'centroids',
-        'source-layer': 'centroids_id_rpr_latlon',
+        'source-layer': 'mvmupdatescentroids',
         'paint': {
         'circle-radius': [
             'interpolate',
@@ -356,7 +357,7 @@ const initMap = (map, fillObservations, bubbleObservations, incidenceObservation
         id: "markers",
         type: "symbol",
         // 'source': 'centroids',
-        // 'source-layer': 'centroids_id_rpr_latlon',
+        // 'source-layer': 'mvmupdatescentroids',
         source: {
           type: "geojson",
           data: { // placeholder data to start
@@ -385,7 +386,7 @@ const initMap = (map, fillObservations, bubbleObservations, incidenceObservation
         'id': 'population',
         'type': 'circle',
         'source': 'centroids',
-        'source-layer': 'centroids_id_rpr_latlon',
+        'source-layer': 'mvmupdatescentroids',
         'paint': {
         'circle-radius': 0,
           'circle-opacity': 0,
@@ -450,7 +451,7 @@ export const initMiniMap = (map, fillObservations, bubbleObservations, incidence
         'id': 'metric-bubbles',
         'type': 'circle',
         'source': 'centroids',
-        'source-layer': 'centroids_id_rpr_latlon',
+        'source-layer': 'mvmupdatescentroids',
         'paint': {
         'circle-radius': [
             'interpolate',
