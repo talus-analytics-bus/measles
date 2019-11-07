@@ -27,6 +27,13 @@ const Nav = (props) => {
     ReactTooltip.rebuild();
   }
 
+  function searchedCountryOnClick (e, c) {
+    console.log('c')
+    console.log(c)
+    setLocationPicked(c.id);
+    ReactTooltip.rebuild();
+  }
+
   document.getElementById('root').onmousemove = (e) => {
     const navButtons = document.getElementsByClassName(styles.navButtonContainer)[1]; // TODO elegantly
     if (navButtons && navButtons.contains(e.target)) return;
@@ -40,7 +47,7 @@ const Nav = (props) => {
     return ({left: 'unset', top: top})
   }
 
-
+  let curCountry = -9999;
   const renderCountryPicker = (regionName) => {
 
     setRegionPicked(regionName);
@@ -55,7 +62,6 @@ const Nav = (props) => {
     // if (showLocationPicker) {
     //   document.getElementById('regionTooltip').scrollTop = 0;
     // }
-    let curCountry = -9999;
     if (window.location.pathname.startsWith('/details'))
       curCountry = +window.location.pathname.split('/')[2];
     return (
@@ -151,6 +157,7 @@ const Nav = (props) => {
         <div className={styles.content}>
           <Search
             setSearchResults={setSearchResults}
+            places={props.places}
           />
           {
             (searchResults === null) &&
@@ -160,6 +167,14 @@ const Nav = (props) => {
                   <span>{p.name}</span>
                 </div>
               </div>
+            )
+          }
+          {
+            (searchResults !== null) &&
+            searchResults.map((c) =>
+              <Link onClick={(e) => searchedCountryOnClick(e, c)} className={classNames(styles.countryResult, {[styles.active]: c.id === curCountry})} to={`/details/${c.id}`}>
+                  {c.name}
+              </Link>
             )
           }
           {
