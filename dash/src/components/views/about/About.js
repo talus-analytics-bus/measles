@@ -10,14 +10,16 @@ const About = () => {
   return (
     <div className={styles.about}>
     <h1>Overview</h1>
-    <p>The Measles Dashboard provides up-to-date information on global measles outbreaks and vaccination coverage to support public health decision making. The dashboard provides access to data visualizations communicating who is vaccinated, where, relative to the status of ongoing outbreaks. Below, we describe the sources of data integrated within the dashboard and the analytical methods used to analyze and communicate those data.</p>
-    <h1>Data</h1>
-    <h2>Data requirements</h2>
-    <p>The Measles Dashboard relies on a set of core data elements that, together, provide an overview of vaccination efforts. Vaccination coverage data define the percent of the population who have been vaccinated for measles. Typically, measles vaccination occurs in a two dose sequence of measles-containing vaccine (MCV), so vaccination coverage can be reported as the percent of the population who have received at least one dose of measles-containing vaccine (MCV1), or the percent of the population who have received two doses of measles-containing vaccine (MCV2).<a class={styles.footnote} href="#_ftn1" name="_ftnref1">[1]</a> This two-dose course of measles is believed to provide lifetime immunity, and booster doses are typically not needed.<a class={styles.footnote} href="#_ftn2" name="_ftnref2">[2]</a> As a result, vaccination coverage data are typically reported on an annual basis, as the majority of vaccination efforts are focused largely on infants.</p>
+    <p>Measles Tracker was developed by Talus Analytics to provide up-to-date information on global measles outbreaks and vaccination coverage, providing a global picture to support public health decision making and efforts to control and eliminate measles. The dashboard provides access to analysis and data visualizations communicating the status of ongoing outbreaks relative to who is vaccinated, where, and whether these outbreaks are improving or worsening. These trends in vaccination and measles caseload are provided at the country level with the ability to view global comparisons and draw new insights by bringing together the best available data tracking measles cases and vaccination coverage, currently and over time. Where available, key information about country capacity to prevent, detect, and rapidly respond to public health threats is also included in the form of assessment results from the Joint External Evaluation process performed under the International Health Regulations.</p>
+    <p>Development and maintenance of the Measles Tracker dashboard is funded by Talus Analytics who is solely responsible for its content. Talus Analytics exclusively owns and reserves the right to all visualizations, novel analyses, and site design. For any questions about use of Measles Tracker or its data and analysis, please email <a target="_blank" href="mailto:info@talusanalytics.com">info@talusanalytics.com</a>. For more information on Talus Analytics, please visit our website <a target="_blank" href="http://talusanalytics.com/">here</a>.</p>
+    <h1>Data and methods documentation</h1>
+    <p>The Measles Tracker provides up-to-date information on global measles outbreaks and vaccination coverage to support public health decision making. The dashboard provides access to data visualizations communicating who is vaccinated, where, relative to the status of ongoing outbreaks. Below, we describe the sources of data integrated within the dashboard and the analytical methods used to analyze and communicate those data.</p>
+    <h2>Data sources</h2>
+    <p>The Measles Tracker relies on a set of core data elements that, together, provide an overview of vaccination efforts. Vaccination coverage data define the percent of the population who have been vaccinated for measles. Typically, measles vaccination occurs in a two dose sequence of measles-containing vaccine (MCV), so vaccination coverage can be reported as the percent of the population who have received at least one dose of measles-containing vaccine (MCV1), or the percent of the population who have received two doses of measles-containing vaccine (MCV2).<a class={styles.footnote} href="#_ftn1" name="_ftnref1">[1]</a> This two-dose course of measles is believed to provide lifetime immunity, and booster doses are typically not needed.<a class={styles.footnote} href="#_ftn2" name="_ftnref2">[2]</a> As a result, vaccination coverage data are typically reported on an annual basis, as the majority of vaccination efforts are focused largely on infants.</p>
     <p>Caseload data define the total number of new measles cases in a given geography at a given point in time. These data are reported monthly by the World Health Organization (WHO), and include laboratory confirmed, epidemiologically linked, and/or clinical cases reported to WHO. Based on these available caseload data, it is possible to calculate the monthly incidence rate, or the number of persons newly diagnosed with measles, per 1,000,000 total population, per month.<a class={styles.footnote} href="#_ftn3" name="_ftnref3">[3]</a></p>
-    <p>For context on existing public health and economic capacity, and to enable comparisons between countries, vaccination coverage and caseload data msut also be compared alongside other relevant information on a country&rsquo;s current status, including, for example, scores from Joint External Evaluations and country-level GDP data.</p>
+    <p>For context on existing public health and economic capacity, and to enable comparisons between countries, vaccination coverage and caseload data must also be compared alongside other relevant information on a country&rsquo;s current status, including, for example, scores from Joint External Evaluations</p>
     <p>Table 1, below, provides an overview of data sources currently available to meet these requirements. These data sources are described in additional detail in the subsequent sections of this document.</p>
-    <p><strong>Table 1:</strong> Sources of data currently displayed in the Measles Dashboard</p>
+    <p><strong>Table 1:</strong> Sources of data currently displayed in the Measles Tracker</p>
     <table width="863">
       <thead>
         <tr>
@@ -136,32 +138,6 @@ const About = () => {
         </tr>
         <tr>
           <td width="97">
-            <p>GDP per capita</p>
-          </td>
-          <td width="110">
-            <p>World Bank GDP per capita data</p>
-          </td>
-          <td width="192">
-            <p>Data report GDP per capita (in current US$ currency) for 195 countries from 1960 through 2018.<a class={styles.footnote} href="#_ftn5" name="_ftnref5">[5]</a></p>
-          </td>
-          <td width="77">
-            <p>yearly</p>
-          </td>
-          <td width="93">
-            <p>country</p>
-          </td>
-          <td width="102">
-            <p>total population</p>
-          </td>
-          <td width="97">
-            <p>2018</p>
-          </td>
-          <td width="96">
-            <p>not reported by World Bank</p>
-          </td>
-        </tr>
-        <tr>
-          <td width="97">
             <p>Country capacity</p>
             <p><em>select JEE scores</em></p>
           </td>
@@ -198,7 +174,7 @@ const About = () => {
     <p>Countries report caseload data to the World Health Organization every 1-2 months, and not always at the same frequency. In data available from the World Health Organization, for the most recent month for which data are available, some countries have reported caseload data, and some have not. However, the WHO dataset does not distinguish between &ldquo;data not yet reported&rdquo; and &ldquo;0 cases reported&rdquo;. As a result, for the most recent month for which data are available, all values of zero are treated as &ldquo;data not yet reported&rdquo; and therefore a missing value. These values will be iteratively updated as new data become available. In the site, the most recently available data will be shown, so for countries with these missing values indicated for the most recent month, caseload data (with appropriate timestamp labels) from the prior month will be shown by default until additional data become available.</p>
     <p>As of October 2019, the WHO Measles Surveillance Dataset contains no caseload data for Algeria or Ecuador for the year 2019. As a result, caseload data cannot be shown for these countries.</p>
     <h3>Crosswalking Joint External Evaluations 1.0 and 2.0</h3>
-    <p>Joint External Evaluations (JEEs) assess a country&rsquo;s capacity to prevent, detect, and respond to infectious disease threats. Countries are assessed across 19 technical areas, each of which is scored based on one or more specific indicators that have attributes reflecting various levels of capacity. Scores range from one to five, where one indicates <em>no capacity</em> and five indicates <em>sustainable capacity</em>. The Measles Dashboard summarizes country-level capacity based on the average of indicator-level scores for the following core capacities related to measles prevention, detection, and response:</p>
+    <p>Joint External Evaluations (JEEs) assess a country&rsquo;s capacity to prevent, detect, and respond to infectious disease threats. Countries are assessed across 19 technical areas, each of which is scored based on one or more specific indicators that have attributes reflecting various levels of capacity. Scores range from one to five, where one indicates <em>no capacity</em> and five indicates <em>sustainable capacity</em>. The Measles Tracker summarizes country-level capacity based on the average of indicator-level scores for the following core capacities related to measles prevention, detection, and response:</p>
     <ul>
       <li>Immunization</li>
       <li>Real Time Surveillance</li>
@@ -206,8 +182,8 @@ const About = () => {
     </ul>
     <p>Two versions of the JEE have been released, a first edition (JEE 1.0) released in February 2016 and a second, revised edition (JEE 2.0), with revised questions and scoring rules, released in January 2018.</p>
     <p>As of October 2019, a total of 82 countries have completed JEE 1.0 and 10 countries have completed JEE 2.0.<a class={styles.footnote} href="#_ftn6" name="_ftnref6">[6]</a> To align the scores between the two assessments and enable an &ldquo;apples to apples&rdquo; comparison of scores, scores from JEE 1.0 must be crosswalked to align with scores from JEE 2.0 based on a series of data alignment rules documented in Appendix 2 of JEE 2.0.<a class={styles.footnote} href="#_ftn7" name="_ftnref7">[7]</a></p>
-    <p>In the measles dashboard, scores from JEE 2.0 are reported directly, while scores from JEE 1.0 are first crosswalked to align with JEE 2.0 scores based on the scoring rules documented below, derived from Appendix 2 of JEE 2.0.</p>
-    <p><strong>Table 2:</strong> JEE scoring rules for incorporation into the Measles Dashboard</p>
+    <p>In the Measles Tracker, scores from JEE 2.0 are reported directly, while scores from JEE 1.0 are first crosswalked to align with JEE 2.0 scores based on the scoring rules documented below, derived from Appendix 2 of JEE 2.0.</p>
+    <p><strong>Table 2:</strong> JEE scoring rules for incorporation into the Measles Tracker</p>
     <table className={styles.narrow}>
       <thead>
         <tr>
