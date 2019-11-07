@@ -454,7 +454,7 @@ class SlidingLine extends Chart {
       vaccLineLabelXVal
     );
 
-    const vaccYear = vaccLineLabelXVal.getUTCFullYear();
+    const vaccYear = vaccLineLabelXVal.getUTCFullYear() + 1;
 
     vaccLineLabel.append('tspan')
       .attr('x', vaccLineLabelX)
