@@ -120,8 +120,8 @@ const Map = ({ fillObservations, bubbleObservations, trendObservations, incidenc
   }, [bubbleMetric]);
 
   const navTitleEl = document.getElementById('navTitle').textContent =
-    bubbleMetric === 'incidence_monthly' ? 'Vaccination coverage and incidence of measles'
-    : 'Vaccination coverage and cases of measles';
+    bubbleMetric === 'incidence_monthly' ? 'Measles vaccination coverage and monthly incidence'
+    : 'Measles vaccination coverage and caseload';
 
   /**
    * Reset the viewport to the default values. This is fired when the "Reset"

@@ -212,7 +212,7 @@ const Nav = (props) => {
   const getPageTitle = (page) => {
     switch (page) {
       case 'map':
-        return 'Vaccination coverage and cases of measles';
+        return 'Measles vaccination coverage and caseload';
       default:
         return ''; // TODO check this. Should we show the same for each page?
     }
