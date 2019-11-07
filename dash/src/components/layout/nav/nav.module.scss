@@ -198,6 +198,13 @@ $logo-height: $nav-height/2;
         }
       }
 
+      & + .navButton {
+        cursor: default;
+        &:active {
+          background-color: darken(#5781ab, 15%);
+        }
+      }
+
       .header {
         display: flex;
         flex-flow: column;

@@ -212,31 +212,6 @@ const initMap = (map, fillObservations, bubbleObservations, incidenceObservation
 
     // Display circles as circle layer.
     const setupCircleBubbles = () => {
-      // Get radius scale based on current bubble metric
-
-      // let radiusScale;
-      // console.log('metric = ' + bubbleMetric)
-      // if (bubbleMetric === 'caseload_totalpop') {
-      //   radiusScale = [
-      //       'interpolate',
-      //       ['linear'],
-      //       ["feature-state", "value"],
-      //           0, 0,
-      //           10000, 150
-      //     ];
-      // }
-      //
-      // // TODO
-      // else {
-      //   radiusScale = [
-      //       'interpolate',
-      //       ['linear'],
-      //       ["feature-state", "value"],
-      //           0, 0,
-      //           0.001, 5,
-      //           100, 150
-      //     ];
-      // }
 
       // Add centroids to map so they can be accessed via getSourceFeatures.
       // Monthly incidence layer
@@ -350,50 +325,6 @@ const initMap = (map, fillObservations, bubbleObservations, incidenceObservation
       }, "country-small");
     };
 
-    // Display circles as symbols (warning: issues)
-    const setupSymbolCircleLayers = () => {
-      // Add circles as symbols. Also uncomment setupSymbolCircles if using this.
-      map.addLayer({
-        id: "markers",
-        type: "symbol",
-        // 'source': 'centroids',
-        // 'source-layer': 'mvmupdatescentroids',
-        source: {
-          type: "geojson",
-          data: { // placeholder data to start
-            type: 'FeatureCollection',
-            features: [],
-          }
-        },
-        layout: {
-          "icon-image": ["get", "image"],
-          "icon-size": [
-              'interpolate',
-              ['linear'],
-              ["get", "value"],
-                  0, 0,
-                  0.001, 10/100,
-                  100, 150/100
-            ],
-          "icon-allow-overlap": true,
-          "icon-ignore-placement": true,
-        }
-      });
-      map.moveLayer('markers', 'country-small');
-
-      // Add centroids to map so they can be accessed via getSourceFeatures.
-      map.addLayer({
-        'id': 'population',
-        'type': 'circle',
-        'source': 'centroids',
-        'source-layer': 'mvmupdatescentroids',
-        'paint': {
-        'circle-radius': 0,
-          'circle-opacity': 0,
-        }
-      }, "country-small");
-    };
-    // setupSymbolCircleLayers();
     setupCircleBubbles();
 
   }

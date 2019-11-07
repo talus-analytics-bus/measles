@@ -16,7 +16,7 @@ const Nav = (props) => {
   // Track whether the country picker menu is being shown.
   const [showLocationPicker, setShowLocationPicker] = React.useState(false);
 
-  // Track picked country (triggers refresh of tooltips)
+  // Track picked   country (triggers refresh of tooltips)
   const [locationPicked, setLocationPicked] = React.useState(null);
   const [regionPicked, setRegionPicked] = React.useState(null);
 
@@ -25,7 +25,7 @@ const Nav = (props) => {
     ReactTooltip.rebuild();
   }
 
-  document.getElementById('root').onclick = (e) => {
+  document.getElementById('root').onmousemove = (e) => {
     const navButtons = document.getElementsByClassName(styles.navButtonContainer)[1]; // TODO elegantly
     if (navButtons && navButtons.contains(e.target)) return;
     else {
@@ -195,7 +195,12 @@ const Nav = (props) => {
         <div className={classNames(styles.navButtonContainer, page === button.page ? styles.active : '')}>
           <div className={classNames(styles.buttonSpinner)}></div>
           {renderLocationPicker()}
-          <div onClick={(e) => { setShowLocationPicker(!showLocationPicker); e.stopPropagation(); return false; }} className={classNames(styles.navButton)} data-tip={button.tooltip} data-for={'navTooltip'}>
+          <div
+            onMouseEnter={(e) => { if (!showLocationPicker) setShowLocationPicker(!showLocationPicker); e.stopPropagation(); return false; }}
+            className={classNames(styles.navButton)}
+            data-tip={button.tooltip}
+            data-for={'navTooltip'}
+            >
             <img src={button.icon} />
           </div>
         </div>
