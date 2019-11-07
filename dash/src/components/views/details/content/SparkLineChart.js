@@ -9,10 +9,6 @@ class SparkLineChart extends Chart {
     selector,
     params = {}
   ) {
-
-
-    console.log('selector')
-    console.log(selector)
     super(selector, params);
 
     this.params = params;
@@ -137,6 +133,14 @@ class SparkLineChart extends Chart {
       .x(d => x(new Date(d.date_time.replace(/-/g, '/'))))
       .y(d => y(d.value));
 
+    // Define rectangle area function - main chart, nulls
+    const area = d3.area()
+      .x(d => x(
+        new Date(d.date_time.replace(/-/g, '/'))
+      ))
+      .y0(chart.height)
+  		.y1(0);
+
     // Time formatting
     var formatMillisecond = d3.timeFormat(".%L"),
     formatSecond = d3.timeFormat(":%S"),
@@ -229,6 +233,59 @@ class SparkLineChart extends Chart {
       }
       return valueLineSegments;
     };
+
+    // Get "value" line segments -- all segments where data are available (not
+    // null).
+    const getNullLineSegments = () => {
+      const valueLineSegments = [];
+      let start, end, prev;
+      let segment = [];
+      chart.data.vals.forEach(datum => {
+
+        // If no start and datum not-null, datum is start
+        // If there was a previous datum, also include it
+        if (!start && datum.value === null) {
+          start = datum;
+          if (prev) segment.push(prev);
+          segment.push(datum);
+          prev = datum;
+          return;
+        }
+        // If no start and datum null, continue
+        if (!start && datum.value !== null) {
+          prev = datum;
+          return;
+        }
+        // If start and datum null, push to segment
+        if (start && datum.value === null) {
+          segment.push(datum);
+          prev = datum;
+          return;
+        }
+        // If start and datum not-null, push to segment, and start new one
+        if (start && datum.value !== null) {
+          segment.push(datum);
+          start = undefined;
+          valueLineSegments.push(segment);
+          segment = [];
+          prev = datum;
+          return;
+        }
+      });
+
+      if (segment.length > 0) {
+        valueLineSegments.push(segment);
+        segment = [];
+      }
+      return valueLineSegments;
+    };
+
+    const nullLineSegments = getNullLineSegments();
+    chart.newGroup(styles.areaNull)
+      .selectAll('path')
+      .data(nullLineSegments)
+      .enter().append('path')
+        .attr('d', d => area(d));
 
     // Add line to chart
     const valueLineSegments = getValueLineSegments();
