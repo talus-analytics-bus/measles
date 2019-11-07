@@ -357,7 +357,7 @@ class SlidingLine extends Chart {
           const pointDt = new Date(v.date_time.replace(/-/g, '/'));
           const year = pointDt.getUTCFullYear();
           pointDt.setUTCFullYear(year + 1);
-          const fakeDtStr = pointDt.toString();
+          const fakeDtStr = Util.formatDatetimeApi(pointDt);
           const fakeFuturePoint = {
             value: v.value,
             date_time: fakeDtStr,
@@ -426,6 +426,8 @@ class SlidingLine extends Chart {
 
     // Add vaccination line to chart.
     const vaccLineData = formatVaccVals();
+    console.log('vaccLineData')
+    console.log(vaccLineData)
     chart.newGroup(styles.lineVacc)
       .selectAll('path')
       .data([vaccLineData])
