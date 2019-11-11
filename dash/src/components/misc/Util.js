@@ -303,7 +303,7 @@ Util.getMetricChartParams = (metric) => {
         temporal_resolution: 'yearly',
         sort: 'asc',
         defaultTicks: [0, 50, 100],
-        label: 'Average vaccination coverage of countries',
+        label: 'Average vaccination coverage',
         dateFmt: (allObs) => Util.getDatetimeStamp(allObs[0], 'year'),
       };
     }
@@ -446,7 +446,7 @@ Util.getTooltipItem = (datum) => {
       };
     case 'avg_coverage_mcv1_infant': // DEBUG
       return {
-        name: 'Average vaccination coverage of countries',
+        name: 'Average vaccination coverage',
         datum: datum,
         period: 'year',
         value: Util.percentize(datum.value),
