@@ -712,6 +712,7 @@ const Details = (props) => {
       deltaData: Util.getDeltaData(trend),
       notAvail: obs['value'] === null,
     };
+
     return data;
   };
 
@@ -874,10 +875,7 @@ const Details = (props) => {
             data={sparklineBaseData}
             window={2}
             i={i}
-            direction={
-              deltaData.delta > 0 ? 'inc' :
-                (deltaData.delta < 0 ? 'dec' : 'same')
-            }
+            direction={deltaData.direction}
           /> : '',
           ...((props.countryCaseloadHistory && props.countryCaseloadHistory.length > 0) ? props.countryCaseloadHistory[props.countryCaseloadHistory.length - 1] : {value: null}),
         },
@@ -894,10 +892,7 @@ const Details = (props) => {
             data={sparklineBaseData}
             window={12}
             i={i}
-            direction={
-              deltaData.delta > 0 ? 'inc' :
-                (deltaData.delta < 0 ? 'dec' : 'same')
-            }
+            direction={deltaData.direction}
           /> : '',
           'period': '6 months',
           dateTimeObs: [
