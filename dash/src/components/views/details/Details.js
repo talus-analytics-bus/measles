@@ -791,7 +791,7 @@ const Details = (props) => {
         y2: props.countryIncidenceHistory,
       },
       vaccData: props.countryVaccHistory,
-      noResizeEvent: true,
+      noResizeEvent: false,
       setTooltipData: setTooltipData,
       tooltipClassName: stylesTooltip.slidingLineTooltip,
       setShowReset: setShowReset,
