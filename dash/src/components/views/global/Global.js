@@ -882,8 +882,8 @@ const Global = (props) => {
               // Tooltip for paging bar chart
               <ReactTooltip
                 id={'pagingBarTooltip'}
-                type='dark'
-                className={styles.sliderTooltip}
+                type='light'
+                className={infoTooltipStyles.infoTooltipContainer}
                 place="top"
                 effect="float"
                 getContent={ () =>
