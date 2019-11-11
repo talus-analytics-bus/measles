@@ -2,8 +2,8 @@
 
 #globalTooltip {
   opacity: .95;
-  min-width: 300px;
-  max-width: 400px;
+  // min-width: 300px;
+  // max-width: 400px;
   font-size: 24px; // TODO elegantly
 
   .tooltipContainer {
@@ -30,6 +30,11 @@
         font-size: 1em;
         font-family: 'Gotham Bold', serif;
         color: $dark-grey;
+
+        &.placeName {
+          min-width: 300px;
+          max-width: 350px;
+        }
 
         img {
           height: 60px;

@@ -812,7 +812,14 @@ const Global = (props) => {
                       // If name, show
                       (tooltipData.name !== undefined) &&
                       <div className={stylesTooltip.tooltipHeader}>
-                        <div className={stylesTooltip.tooltipName}>
+                        <div className={
+                          classNames (
+                            stylesTooltip.tooltipName,
+                            {
+                              [stylesTooltip.placeName]: tooltipData.flagPath !== undefined,
+                            },
+                          )
+                      }>
                           <img src={tooltipData.flagPath} />
                           {tooltipData.name}
                         </div>
