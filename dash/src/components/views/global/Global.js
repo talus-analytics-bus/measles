@@ -85,13 +85,14 @@ const Global = (props) => {
       const chartType = props.chartParams[chartTypeName];
       chartType.forEach(function (chart, i) {
         if (!chart.class) return;
+        chart.params.noResizeEvent = true;
         // Set tooltip data function
         chart.params.setTooltipData = setTooltipData;
-        chart.params.noResizeEvent = true;
         chart.params.tooltipClassName = stylesTooltip.globalTooltip;
         if (chart.params.className === 'Scatter') {
           chart.params.curSliderVal = curSliderVal;
           chart.params.setRedirectPath = setRedirectPath;
+          chart.params.noResizeEvent = false;
         }
 
         // Set state variables and setters for PagingBar
@@ -158,6 +159,7 @@ const Global = (props) => {
   const handleSliderAfterChange = () => {
     // Set scatterplot update
     const scatterChart = charts.find(c => c.params.className === 'Scatter');
+    scatterChart.params.curSliderVal = curSliderVal;
     scatterChart.update(curSliderVal);
 
     // Stop playing if needed

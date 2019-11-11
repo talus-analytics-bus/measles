@@ -125,18 +125,9 @@ class Scatter extends Chart {
     const xAxis = d3.axisBottom()
       .tickSize(0)
       .tickPadding(10)
-      .tickValues([0, 1])
-      .tickFormat(function (val) {
-        if (val === 0) {
-            return '';
-        }
-        if (val === 1) return '';
-        else this.remove();
-      })
-      .scale(x);
-    const xAxisG = chart.newGroup(styles['x-axis'])
-      .call(xAxis)
-      .attr('transform', `translate(0, ${chart.height})`);
+      .tickFormat(() => '');
+
+    const xAxisG = chart.newGroup(styles['x-axis']);
 
     // Define y scale - incidence
     const y = d3.scaleLinear()
@@ -145,17 +136,28 @@ class Scatter extends Chart {
 
     // Define y axis - incidence
     const yAxis = d3.axisLeft()
-      .tickSize(0)
+      .tickSize(5)
       .tickPadding(10)
-      .tickValues([0, 1])
-      .tickFormat(function (val) {
-        if (val === 0) return '';
-        if (val === 1) return '';
-        else this.remove();
-      })
-      .scale(y);
-    const yAxisG = chart.newGroup(styles['y-axis'])
-      .call(yAxis);
+      .tickFormat(() => '');
+
+    const yAxisG = chart.newGroup(styles['y-axis']);
+
+    const resizeAxes = () => {
+      yAxis
+        .scale(y)
+        .tickValues(y.domain());
+      xAxis
+        .scale(x)
+        .tickValues(x.domain());
+
+      chart[styles['y-axis']]
+        .html('')
+        .call(yAxis);
+
+      chart[styles['x-axis']]
+        .html('')
+        .call(xAxis)
+        .attr('transform', `translate(0, ${chart.height})`);
 
       // Update xaxis tick labels
       chart[styles['x-axis']]
@@ -199,6 +201,7 @@ class Scatter extends Chart {
                 .text('(2016-2019)');
           }
         });
+
       chart[styles['y-axis']]
         .selectAll('g.tick')
         .each(function addYTickText (d, i) {
@@ -244,10 +247,39 @@ class Scatter extends Chart {
                 .attr('dy', '1.1em')
                 .attr('x', -10)
                 .text('(2016-2019)');
-          }
-        });
+            }
+          });
 
+      // Add y-axis label
+      const yAxisLabel = chart[styles['y-axis']].append('text')
+        .attr('y', -100)
+        .attr('class', styles.label);
 
+      yAxisLabel.append('tspan')
+      .attr('x', -chart.height / 2)
+        .text(Util.getScatterLabelData(chart.params.data.y[0]));
+
+      yAxisLabel.append('tspan')
+      .attr('x', -chart.height / 2)
+        .attr('dy', '1.2em')
+        .text('(log scale)');
+
+      // Add x-axis label
+      const xAxisLabel = chart[styles['x-axis']].append('text')
+        .attr('x', chart.width / 2)
+        .attr('y', chart.margin.bottom - 20)
+        .attr('class', styles.label);
+
+      xAxisLabel.append('tspan')
+        .attr('x', chart.width / 2)
+        .text('Vaccination coverage');
+
+      xAxisLabel.append('tspan')
+        .attr('x', chart.width / 2)
+        .attr('dy', '1.2em')
+        .text('(relative)');
+    };
+    resizeAxes();
 
     // Add bubbles group (assume one datum per country). Enter one bubble for
     // each that we have pop data for, in the update function.
@@ -259,7 +291,6 @@ class Scatter extends Chart {
         .attr('class', styles.monthYearLabel)
         .attr('x', chart.width/2)
         .attr('y', '1em')
-        // .attr('y', chart.height/2)
         .text('Aug 2019');
 
     // Add avg vaccination coverage line
@@ -287,34 +318,6 @@ class Scatter extends Chart {
       .attr('dy', '1.2em')
       .text('across all countries');
 
-    // Add y-axis label
-    const yAxisLabel = chart[styles['y-axis']].append('text')
-      .attr('y', -100)
-      .attr('class', styles.label);
-
-    yAxisLabel.append('tspan')
-    .attr('x', -chart.height / 2)
-      .text(Util.getScatterLabelData(chart.params.data.y[0]));
-
-    yAxisLabel.append('tspan')
-    .attr('x', -chart.height / 2)
-      .attr('dy', '1.2em')
-      .text('(log scale)');
-
-    // Add x-axis label
-    const xAxisLabel = chart[styles['x-axis']].append('text')
-      .attr('x', chart.width / 2)
-      .attr('y', chart.margin.bottom - 20)
-      .attr('class', styles.label);
-
-    xAxisLabel.append('tspan')
-      .attr('x', chart.width / 2)
-      .text('Vaccination coverage');
-
-    xAxisLabel.append('tspan')
-      .attr('x', chart.width / 2)
-      .attr('dy', '1.2em')
-      .text('(relative)');
 
     // TODO - Exclude "global" bubble.
     //
@@ -323,7 +326,24 @@ class Scatter extends Chart {
 
     // Update function: Draw lines, add tooltips, etc.
     // Called: Every time the month/year slider is changed.
-    chart.update = (dt) => {
+    chart.update = (dt = chart.params.curSliderVal, resize = false) => {
+      if (chart.svg.node().parentElement === null) return;
+      chart.svg.node().parentElement.classList.remove(styles.drawn);
+
+      console.log('dt')
+      console.log(dt)
+
+      if (resize) {
+        console.log('SCATTER UPDATE - CHART RESIZE')
+
+        // Update x-scale
+        x.range([0, chart.width]);
+        y.range([chart.height, 0]);
+
+        // Resize axes
+        resizeAxes();
+      }
+
       const sortBySize = (a, b) => {
 
         // A: If this bubble is NOT null
@@ -823,11 +843,18 @@ class Scatter extends Chart {
         timeZone: 'utc',
       });
 
-      monthYearLabel.text(monthYearLabelString);
-      yAxisLabel.select('tspan:nth-child(2)')
+      monthYearLabel
+        .attr('x', chart.width / 2)
+        .text(monthYearLabelString);
+      chart[styles['y-axis']].select('text tspan:nth-child(2)')
         .text(`in ${monthYearLabelString} (log scale)`);
-      xAxisLabel.select('tspan:nth-child(2)')
+      chart[styles['y-axis']].select('text tspan:nth-child(2)')
         .text(`in ${xDataYearlyStr}`);
+    };
+
+    chart.resize = () => {
+      const resize = true;
+      chart.update(chart.params.curSliderVal, resize);
     };
 
     // Call update function, using most recent dt of data as the initial
