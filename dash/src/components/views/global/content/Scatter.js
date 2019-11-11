@@ -327,14 +327,10 @@ class Scatter extends Chart {
     // Update function: Draw lines, add tooltips, etc.
     // Called: Every time the month/year slider is changed.
     chart.update = (dt = chart.params.curSliderVal, resize = false) => {
-      if (chart.svg.node().parentElement === null) return;
-      chart.svg.node().parentElement.classList.remove(styles.drawn);
 
-      console.log('dt')
-      console.log(dt)
+      if (chart.svg.node().parentElement === null) return;
 
       if (resize) {
-        console.log('SCATTER UPDATE - CHART RESIZE')
 
         // Update x-scale
         x.range([0, chart.width]);
@@ -342,6 +338,11 @@ class Scatter extends Chart {
 
         // Resize axes
         resizeAxes();
+
+        // update avg line
+        avgXLine
+          .attr('y1', y(y.domain()[0]))
+          .attr('y2', y(y.domain()[1])-31);
       }
 
       const sortBySize = (a, b) => {
@@ -869,7 +870,7 @@ class Scatter extends Chart {
     chart.update(initDt);
 
     // Reduce width at the end
-    chart.svg.node().parentElement.classList.add(styles.drawn);
+    // chart.svg.node().parentElement.classList.add(styles.drawn);
   }
 }
 
