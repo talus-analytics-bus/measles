@@ -61,7 +61,7 @@ const Search = (props) => {
         props.setSearchResults(null);
       },
       500,
-    )
+    );
 
   }, [props.locationPicked])
 
