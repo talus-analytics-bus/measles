@@ -11,7 +11,7 @@ const PlaceQuery = async function (place_id = null, by_region = false) {
     by_region: by_region,
   };
 
-  if (place_id !== null) params.place_id = place_id
+  if (place_id !== null) params.id = place_id
 
   const res = await axios(`${Util.API_URL}/places`, {
     params

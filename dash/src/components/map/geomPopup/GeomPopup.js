@@ -105,12 +105,17 @@ const GeomPopup = ({ popupData, bubbleMetric }) => {
         // getTooltipMetricData(popupData, 'incidence'),
       ];
 
+  // https://medium.com/@webcore1/react-fallback-for-broken-images-strategy-a8dfa9c1be1e
+  const addDefaultSrc = (ev) => {
+    ev.target.src = '/flags/unspecified.png';
+  };
+
   return (
     <div className={classNames(styles.container, styles[bubbleMetric])}>
       <div className={styles.header}>
         <div className={styles.titleContainer}>
           <p className={styles.stateName}>
-            {flag && popupData['fill'] !== undefined && <img src={flag} />}
+            {flag && <img src={flag} onError={(e) => addDefaultSrc(e)} />}
             {popupData['fill'] ? popupData['fill']['place_name'] : popupData['place_name']}
           </p>
         </div>

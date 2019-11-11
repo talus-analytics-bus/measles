@@ -174,6 +174,7 @@ const App = () => {
 
         // Get all needed values in parallel
         const queries = {
+          countryBasicsQ: PlaceQuery(country, false),
           countryPopQ: ObservationQuery(3, 'yearly', '2018-01-01', '2018-01-01', country),
           countryGDPQ: ObservationQuery(14, 'yearly', '2018-01-01', '2018-01-01', country),
           countryJeeImmunQ: ObservationQuery(16, 'occasion', undefined, undefined, country),
@@ -199,8 +200,8 @@ const App = () => {
 
         // Country basic info
         const countryPop = results.countryPopQ[0];
-        const countryName = results.countryPopQ[0]['place_name'];
-        const countryIso2 = results.countryPopQ[0]['place_iso'];
+        const countryName = results.countryBasicsQ[0][1];
+        const countryIso2 = results.countryBasicsQ[0][2];
         const countryGDP = results.countryGDPQ[0];
 
         // Latest relevant JEE scores.

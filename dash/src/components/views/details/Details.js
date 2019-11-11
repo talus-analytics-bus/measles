@@ -980,6 +980,11 @@ const Details = (props) => {
     }
   };
 
+  // https://medium.com/@webcore1/react-fallback-for-broken-images-strategy-a8dfa9c1be1e
+  const addDefaultSrc = (ev) => {
+    ev.target.src = '/flags/unspecified.png';
+  };
+
   // If loading do not show JSX content.
   console.log('props')
   console.log(props)
@@ -987,7 +992,7 @@ const Details = (props) => {
             <div className={styles.sidebars}>
               <div className={styles.sidebar}>
                 <div className={styles.title}>
-                  {props.countryIso2 && <img src={`/flags/${props.countryIso2}.png`} className={styles.flag} />}
+                  {props.countryIso2 && <img src={`/flags/${props.countryIso2}.png`} onError={(e) => addDefaultSrc(e)} className={styles.flag} />}
                   {props.countryName}
                 </div>
                 <div className={styles.map}>

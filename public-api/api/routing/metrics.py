@@ -323,7 +323,8 @@ class Places(Resource):
           "Africa",
           "South-East Asia",
           "Western Pacific",
-          "Americas"
+          "Americas",
+          "Unspecified"
         ];
         res = schema.getEntityInstances(db.Place, 'place_id', organizing_attribute, order, filters, params)
         return res
