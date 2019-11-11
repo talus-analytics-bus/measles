@@ -59,3 +59,8 @@ $loading-spinner-gradient: radial-gradient(
     );
 // $loading-spinner-gradient: linear-gradient(90deg, rgba(255, 255, 255, 0.5) 0%, transparent 100%);
 // $loading-spinner-gradient: linear-gradient(90deg, white 0%, transparent 100%);
+
+
+// MEDIA QUERIES
+$phone: "screen and (max-width : 375px)";
+$phone-width: 375px;

@@ -16,6 +16,10 @@ $spacing: 5px;
   transition: all .5s;
   transform-origin: bottom;
 
+  @media #{$phone} {
+    display: none;
+  }
+
   .toggleButton {
     display: flex;
     flex-flow: row;

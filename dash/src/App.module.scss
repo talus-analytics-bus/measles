@@ -1,3 +1,4 @@
+@import './assets/styles/colors.scss';
 // $alert-height: 60px;
 $logo-height: 70px;
 
@@ -10,6 +11,13 @@ $logo-height: 70px;
     height: 100%;
     > div:nth-child(2) > div {
       height: 100% !important;
+      width: 100% !important;
+    }
+  }
+
+  @media #{$phone} {
+    * {
+      max-width: $phone-width;
     }
   }
 

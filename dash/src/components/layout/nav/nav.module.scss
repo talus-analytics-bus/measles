@@ -137,14 +137,24 @@ $logo-height: $nav-height/2;
 
   a {
     display: flex;
+    @media #{$phone} {
+      margin: 0 auto;
+    }
     .img {
       height: $logo-height;
+      @media #{$phone} {
+        height: $logo-height*.75;
+        margin: 10px;
+      }
       margin: auto 25px;
     }
   }
 
   .text {
     display: flex;
+    @media #{$phone} {
+      display: none;
+    }
     flex-flow: column;
     text-align: left;
     justify-content: center;
