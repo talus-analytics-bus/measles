@@ -417,7 +417,7 @@ Util.getTooltipItem = (datum) => {
         name: 'Cases reported',
         datum: datum,
         period: 'month',
-        value: datum.value === null ? null : Util.comma(datum.value),
+        value: datum.value === null ? null : Util.formatSIInteger(datum.value),
         label: datum.value === 1 ? 'case' : 'cases',
       };
     case 'incidence_monthly': // DEBUG
@@ -433,7 +433,7 @@ Util.getTooltipItem = (datum) => {
         name: 'Cases reported',
         datum: datum,
         period: 'month',
-        value: Util.comma(datum.value),
+        value: Util.formatSIInteger(datum.value),
         label: 'cases',
       };
     case 'coverage_mcv1_infant': // DEBUG
