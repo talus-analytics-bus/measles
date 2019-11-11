@@ -103,6 +103,7 @@ const Global = (props) => {
           chart.params.setRedirectPath = setRedirectPath;
           chart.params.setSectionTitle = setSectionTitle;
           chart.params.setSectionDatetime = setSectionDatetime;
+          // chart.params.noResizeEvent = false;
         }
 
         // Create chart instance
