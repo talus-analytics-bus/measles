@@ -453,7 +453,7 @@ const Map = ({ fillObservations, bubbleObservations, trendObservations, incidenc
 
       return '#b3b3b3';
     };
-    const valueRed = '#9d3e4c';
+    const valueRed = '#b02c3a';
     const valueRed2 = '#d65c68';
     const valueGreen = '#006837';
 
