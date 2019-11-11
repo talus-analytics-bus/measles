@@ -41,7 +41,7 @@ const GeomPopup = ({ popupData, bubbleMetric }) => {
       case 'bubble':
         if (obs === undefined) return {
           notAvail: true,
-          label: 'Measeles cases reported',
+          label: 'Measles cases reported',
           dateFmt: '',
         }
         else return {
