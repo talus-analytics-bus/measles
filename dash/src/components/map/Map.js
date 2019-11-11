@@ -429,47 +429,44 @@ const Map = ({ fillObservations, bubbleObservations, trendObservations, incidenc
   // JSX for bubble metric toggle
   const renderDataToggles = () => {
 
-    const bubbleTrendColorScale = (val) => {
-      const unexpectedColor = '#b3b3b3';
-
-      if (val === null) return unexpectedColor;
-      else if (val === 0) return 'white';
-      else {
-        const scaleNeg = d3.scaleLinear()
-          .domain([-1, 0])
-          .range(['darkgreen', 'white']); // TODO fix colors
-        const scalePos = d3.scaleLinear()
-          .domain([0, 2])
-          .range(['white', 'darkred']); // TODO fix colors
-        if (val < 0) {
-          if (val < -2) return scaleNeg(-2);
-          else return scaleNeg(val);
-        }
-        else {
-          if (val > 2) return scalePos(2);
-          else return scalePos(val);
-        }
-      }
-
-      return '#b3b3b3';
-    };
-    const valueRed = '#b02c3a';
-    const valueRed2 = '#d65c68';
-    const valueGreen = '#006837';
+    // const bubbleTrendColorScale = (val) => {
+    //   const unexpectedColor = '#b3b3b3';
+    //
+    //   if (val === null) return unexpectedColor;
+    //   else if (val === 0) return 'white';
+    //   else {
+    //     const scaleNeg = d3.scaleLinear()
+    //       .domain([-1, 0])
+    //       .range(['darkgreen', 'white']); // TODO fix colors
+    //     const scalePos = d3.scaleLinear()
+    //       .domain([0, 2])
+    //       .range(['white', 'darkred']); // TODO fix colors
+    //     if (val < 0) {
+    //       if (val < -2) return scaleNeg(-2);
+    //       else return scaleNeg(val);
+    //     }
+    //     else {
+    //       if (val > 2) return scalePos(2);
+    //       else return scalePos(val);
+    //     }
+    //   }
+    //
+    //   return '#b3b3b3';
+    // };
 
     const bubbleTrend = ['case',
         ['==', ['feature-state', 'value3'], null],
-          '#b3b3b3',
+          Util.changeColors.missing,
         ['==', ['feature-state', 'value3'], 0],
-          'white',
+          Util.changeColors.same,
         [
           'interpolate',
             ["linear"],
               ["feature-state", "value3"],
-                -1, valueGreen,
-                0, 'white',
-                1, valueRed2,
-                2, valueRed,
+                -1, Util.changeColors.neg,
+                0, Util.changeColors.same,
+                1, Util.changeColors.posLight,
+                2, Util.changeColors.pos,
         ],
     ];
 
@@ -616,7 +613,10 @@ const Map = ({ fillObservations, bubbleObservations, trendObservations, incidenc
       >
         <NavigationControl />
       </div>
-      <Legend legendBubbleLabeling={legendBubbleLabeling}/>
+      <Legend
+        legendBubbleLabeling={legendBubbleLabeling}
+        bubbleColorIsTrend={bubbleColorIsTrend}
+      />
       {showReset && (<ResetZoom handleClick={resetViewport}/>)}
       {showGeomPopup && (
         <Popup

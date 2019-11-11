@@ -77,6 +77,42 @@ $spacing: 5px;
   padding-bottom: $spacing*10 - 2px;
   background-color: rgba(255, 255, 255, 0.92);
 
+  .section.change {
+    .legendEntryGroups .legendEntryGroup {
+      &:not(:last-child) {
+        margin-right: 20px;
+      }
+      .legendEntry {
+        width: unset;
+
+        &.dataNotAvailable { margin-left: unset; }
+        .legendLabels {
+          display: flex;
+          flex-flow: row;
+          width: 100%;
+          justify-content: space-between;
+          align-items: flex-start;
+
+          .legendLabel {
+            position: relative;
+            top: unset;
+            bottom: unset;
+            text-align: center;
+            width: 33%;
+
+            &:first-child {
+              text-align: left;
+            }
+
+            &:last-child {
+              text-align: right;
+            }
+          }
+        }
+      }
+    }
+  }
+
   .section {
     display: flex;
     flex-flow: column;
@@ -114,10 +150,18 @@ $spacing: 5px;
           display: flex;
           flex-flow: column;
           position: relative;
+
+          .changeGradient {
+            background: $value-change-gradient;
+            width: $rect-width*4 !important;
+          }
+
           &.dataNotAvailable {
             margin-left: $rect-width / 2;
+
             .legendIcon.rect {
               border-color: $grey;
+              background-color: rgb(179, 179, 179);
             }
             .legendIcon.circle {
               margin: auto 0;
@@ -151,6 +195,7 @@ $spacing: 5px;
               // -webkit-box-shadow: 5px 5px 10px 0px #0000008c;
             }
           }
+
           .legendLabel {
             position: absolute;
             font-size: 0.8605em;

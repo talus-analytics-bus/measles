@@ -193,6 +193,20 @@ Util.getDeltaData = (datum) => {
   } else return {};
 };
 
+// Color series for change since previous time period in measles caseload.
+const valueRed = '#b02c3a';
+const valueRed2 = '#d65c68';
+const valueGreen = '#006837';
+const valueGreen2 = '#14b86b';
+Util.changeColors = {
+  same: 'white',
+  neg: valueGreen,
+  negLight: valueGreen2,
+  pos: valueRed,
+  posLight: valueRed2,
+  missing: '#b3b3b3',
+};
+
 // Color series used to indicate relative vaccination coverage from least to
 // most vaccinated.
 Util.vaccinationColors = [

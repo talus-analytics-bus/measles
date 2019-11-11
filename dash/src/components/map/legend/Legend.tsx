@@ -58,9 +58,9 @@ const Legend = (props: any) => {
                 {
                   <div className={classNames(styles.legendEntry, styles.dataNotAvailable)}>
                     <div className={classNames(styles.legendIcon, styles.rect)} style={ {'backgroundColor': noDataColor} } />
-                    <div className={styles.legendLabel}>{
-                      'Data not available'
-                    }</div>
+                    <div className={styles.legendLabel}>
+                      Data not available
+                    </div>
                   </div>
                 }
               </div>
@@ -99,6 +99,46 @@ const Legend = (props: any) => {
                   </div>
                 }
               </div>
+            </div>
+          </div>
+        }
+        {
+          // Vaccination coverage
+          (props.bubbleColorIsTrend) &&
+          <div className={classNames(styles.section, styles.change)}>
+            <p className={styles.sectionName}>Change from previous month</p>
+            <div className={styles.legendEntryGroups}>
+              <div className={styles.legendEntryGroup}>
+                {
+                  <div className={styles.legendEntry}>
+                    <div className={classNames(styles.legendIcon, styles.rect, styles.changeGradient)} />
+                    <div className={styles.legendLabels}>
+                      <div className={styles.legendLabel}>
+                        -100%
+                      </div>
+                      <div className={styles.legendLabel}>
+                        0%
+                      </div>
+                      <div className={styles.legendLabel}>
+                        + 200%<br/>or more
+                      </div>
+                    </div>
+                  </div>
+                }
+              </div>
+              <div className={styles.legendEntryGroup}>
+                {
+                  <div className={classNames(styles.legendEntry, styles.dataNotAvailable)}>
+                    <div className={classNames(styles.legendIcon, styles.rect)} />
+                    <div className={styles.legendLabels}>
+                      <div className={styles.legendLabel}>
+                        Data not available
+                      </div>
+                    </div>
+                  </div>
+                }
+              </div>
+
             </div>
           </div>
         }
