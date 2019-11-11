@@ -41,12 +41,15 @@ const MiniMap = (props) => {
       function afterMapLoaded () {
 
         const centroidFeatures = map.querySourceFeatures('centroids', {
-          sourceLayer: 'centroids_id_rpr_latlon',
+          sourceLayer: 'mvmupdatescentroidsv2',
         });
 
         const countryFeature = centroidFeatures.find(f => {
           return f.properties.ISO_A2 === props.countryIso2;
         });
+
+        console.log('centroidFeatures')
+        console.log(centroidFeatures)
 
         if (countryFeature) {
           setMarkerCoords(

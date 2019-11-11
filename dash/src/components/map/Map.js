@@ -74,12 +74,12 @@ const Map = ({ fillObservations, bubbleObservations, trendObservations, incidenc
       const place_id = observation['place_id']
 
       if (!value) {
-        // map.setFeatureState({source: 'centroids', sourceLayer: 'centroids_id_rpr_latlon', id: place_id }, {value: 0});
+        // map.setFeatureState({source: 'centroids', sourceLayer: 'mvmupdatescentroidsv2', id: place_id }, {value: 0});
       } else {
         //const state = { value: Math.floor(256 * value)};
         const state = {value: value};
-        // map.setFeatureState({source: 'centroids', sourceLayer: 'centroids_id_rpr_latlon', id: place_id }, state);
-        const featureState = map.getFeatureState({source: 'centroids', sourceLayer: 'centroids_id_rpr_latlon', id: place_id });
+        // map.setFeatureState({source: 'centroids', sourceLayer: 'mvmupdatescentroidsv2', id: place_id }, state);
+        const featureState = map.getFeatureState({source: 'centroids', sourceLayer: 'mvmupdatescentroidsv2', id: place_id });
         if (featureState.lat !== null && featureState.lon !== null) {
 
           // Get size (height and width) of marker according to the linear scale
@@ -156,7 +156,7 @@ const Map = ({ fillObservations, bubbleObservations, trendObservations, incidenc
     if (!movedOnMap) {
       if (hoveredCountry) {
         setHoverState({source: 'geoms', sourceLayer: 'countries_id_rpr', id: hoveredCountry.id }, false);
-        setHoverState({source: 'centroids', sourceLayer: 'centroids_id_rpr_latlon', id: hoveredCountry.id }, false);
+        setHoverState({source: 'centroids', sourceLayer: 'mvmupdatescentroidsv2', id: hoveredCountry.id }, false);
         hoveredCountry = undefined;
       }
       return;
@@ -175,7 +175,7 @@ const Map = ({ fillObservations, bubbleObservations, trendObservations, incidenc
       return f['layer']['source-layer'] === 'countries_id_rpr';
     });
     const bubbleFeature = features.find(f => {
-      return f['layer']['source-layer'] === 'centroids_id_rpr_latlon';
+      return f['layer']['source-layer'] === 'mvmupdatescentroidsv2';
     });
 
 
@@ -199,15 +199,15 @@ const Map = ({ fillObservations, bubbleObservations, trendObservations, incidenc
     if (onCountry || onBubble) {
       if (hoveredCountry && hoveredCountry.id !== countryFeature.id) {
         setHoverState({source: 'geoms', sourceLayer: 'countries_id_rpr', id: hoveredCountry.id }, false);
-        setHoverState({source: 'centroids', sourceLayer: 'centroids_id_rpr_latlon', id: hoveredCountry.id }, false);
+        setHoverState({source: 'centroids', sourceLayer: 'mvmupdatescentroidsv2', id: hoveredCountry.id }, false);
       }
       hoveredCountry = countryFeature;
       setHoverState({source: 'geoms', sourceLayer: 'countries_id_rpr', id: hoveredCountry.id }, true);
-      setHoverState({source: 'centroids', sourceLayer: 'centroids_id_rpr_latlon', id: hoveredCountry.id }, true);
+      setHoverState({source: 'centroids', sourceLayer: 'mvmupdatescentroidsv2', id: hoveredCountry.id }, true);
     } else {
       if (hoveredCountry) {
         setHoverState({source: 'geoms', sourceLayer: 'countries_id_rpr', id: hoveredCountry.id }, false);
-        setHoverState({source: 'centroids', sourceLayer: 'centroids_id_rpr_latlon', id: hoveredCountry.id }, false);
+        setHoverState({source: 'centroids', sourceLayer: 'mvmupdatescentroidsv2', id: hoveredCountry.id }, false);
       }
     }
 
@@ -266,7 +266,7 @@ const Map = ({ fillObservations, bubbleObservations, trendObservations, incidenc
     if (selectedGeomID > 0) {
 
       map.setFeatureState({source: 'geoms', sourceLayer: 'countries_id_rpr', id: selectedGeomID }, {clicked: false});
-      map.setFeatureState({source: 'centroids', sourceLayer: 'centroids_id_rpr_latlon', id: selectedGeomID }, {clicked: false});
+      map.setFeatureState({source: 'centroids', sourceLayer: 'mvmupdatescentroidsv2', id: selectedGeomID }, {clicked: false});
 
       const tooltipArr = document.getElementsByClassName('mapboxgl-popup');
       if (tooltipArr.length > 0) {
@@ -296,6 +296,8 @@ const Map = ({ fillObservations, bubbleObservations, trendObservations, incidenc
       id = clickedOnGeom.id;
       iso = clickedOnGeom.properties.ISO_A2 !== '-99' ? clickedOnGeom.properties.ISO_A2 : clickedOnGeom.properties.WB_A2;
       name = clickedOnGeom.properties.NAME;
+      // console.log('clickedOnGeom')
+      // console.log(clickedOnGeom)
     }
 
     const bubbleData = bubbleObservations.find(f => f.place_id === id)
@@ -317,13 +319,13 @@ const Map = ({ fillObservations, bubbleObservations, trendObservations, incidenc
 
     if (id !== selectedGeomID) {
       map.setFeatureState({source: 'geoms', sourceLayer: 'countries_id_rpr', id: id }, {clicked: true});
-      map.setFeatureState({source: 'centroids', sourceLayer: 'centroids_id_rpr_latlon', id: id }, {clicked: true});
+      map.setFeatureState({source: 'centroids', sourceLayer: 'mvmupdatescentroidsv2', id: id }, {clicked: true});
       setSelectedGeomID(id)
       setCursorLngLat(e.lngLat)
       setShowGeomPopup(true)
     } else {
       map.setFeatureState({source: 'geoms', sourceLayer: 'countries_id_rpr', id: id }, {clicked: false});
-      map.setFeatureState({source: 'centroids', sourceLayer: 'centroids_id_rpr_latlon', id: id }, {clicked: false});
+      map.setFeatureState({source: 'centroids', sourceLayer: 'mvmupdatescentroidsv2', id: id }, {clicked: false});
       setSelectedGeomID(-1)
       setShowGeomPopup(false)
     }
@@ -410,7 +412,7 @@ const Map = ({ fillObservations, bubbleObservations, trendObservations, incidenc
     const map = mapRef.getMap()
     const id = selectedGeomID
     map.setFeatureState({source: 'geoms', sourceLayer: 'countries_id_rpr', id: id }, {clicked: false});
-    map.setFeatureState({source: 'centroids', sourceLayer: 'centroids_id_rpr_latlon', id: id }, {clicked: false});
+    map.setFeatureState({source: 'centroids', sourceLayer: 'mvmupdatescentroidsv2', id: id }, {clicked: false});
     setShowGeomPopup(false)
     setSelectedGeomID(-1)
   }

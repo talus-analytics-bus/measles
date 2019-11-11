@@ -19,7 +19,8 @@ const initMap = (map, fillObservations, bubbleObservations, incidenceObservation
     if (!map.getSource('centroids'))
       map.addSource('centroids', {
         type: 'vector',
-        url: 'mapbox://traethethird.69p1vezr'
+        url: 'mapbox://traethethird.civp15xl'
+        // url: 'mapbox://traethethird.69p1vezr'
         // url: 'mapbox://traethethird.9g6e0amc'
       })
 
@@ -128,7 +129,7 @@ const initMap = (map, fillObservations, bubbleObservations, incidenceObservation
           const stale = getStaleStatus(observation, 'month');
 
           if (!value) {
-            map.setFeatureState({source: 'centroids', sourceLayer: 'mvmupdatescentroids', id: place_id }, {
+            map.setFeatureState({source: 'centroids', sourceLayer: 'mvmupdatescentroidsv2', id: place_id }, {
               value: 0,
               value2: value2 !== null ? value2 : null,
               stale: stale,
@@ -141,7 +142,7 @@ const initMap = (map, fillObservations, bubbleObservations, incidenceObservation
               value3: value3 !== null ? value3 : null,
               stale: stale,
             };
-            map.setFeatureState({source: 'centroids', sourceLayer: 'mvmupdatescentroids', id: place_id }, state);
+            map.setFeatureState({source: 'centroids', sourceLayer: 'mvmupdatescentroidsv2', id: place_id }, state);
           }
         });
       };
@@ -158,7 +159,7 @@ const initMap = (map, fillObservations, bubbleObservations, incidenceObservation
       //
       //   // Load centroids
       //   const centroids = map.querySourceFeatures('centroids', {
-      //     sourceLayer: 'mvmupdatescentroids',
+      //     sourceLayer: 'mvmupdatescentroidsv2',
       //   });
       //
       //   const markerData = {
@@ -171,7 +172,7 @@ const initMap = (map, fillObservations, bubbleObservations, incidenceObservation
       //     const place_id = +observation['place_id']
       //
       //     if (!value) {
-      //       map.setFeatureState({source: 'centroids', sourceLayer: 'mvmupdatescentroids', id: place_id }, {
+      //       map.setFeatureState({source: 'centroids', sourceLayer: 'mvmupdatescentroidsv2', id: place_id }, {
       //         value: 0,
       //         lat: null,
       //         lon: null,
@@ -188,7 +189,7 @@ const initMap = (map, fillObservations, bubbleObservations, incidenceObservation
       //         lat: centroid.properties.lat,
       //         lon: centroid.properties.lon,
       //       };
-      //       map.setFeatureState({source: 'centroids', sourceLayer: 'mvmupdatescentroids', id: place_id }, state);
+      //       map.setFeatureState({source: 'centroids', sourceLayer: 'mvmupdatescentroidsv2', id: place_id }, state);
       //       markerData.features.push(
       //         {
       //           type: 'Feature',
@@ -227,7 +228,7 @@ const initMap = (map, fillObservations, bubbleObservations, incidenceObservation
         },
         'type': 'circle',
         'source': 'centroids',
-        'source-layer': 'mvmupdatescentroids',
+        'source-layer': 'mvmupdatescentroidsv2',
         'paint': {
         'circle-radius': [
             'interpolate',
@@ -282,7 +283,7 @@ const initMap = (map, fillObservations, bubbleObservations, incidenceObservation
         },
         'type': 'circle',
         'source': 'centroids',
-        'source-layer': 'mvmupdatescentroids',
+        'source-layer': 'mvmupdatescentroidsv2',
         'paint': {
         'circle-radius': [
             'interpolate',
@@ -352,7 +353,8 @@ export const initMiniMap = (map, fillObservations, bubbleObservations, incidence
     if (!map.getSource('centroids'))
       map.addSource('centroids', {
         type: 'vector',
-        url: 'mapbox://traethethird.9g6e0amc'
+        url: 'mapbox://traethethird.civp15xl'
+        // url: 'mapbox://traethethird.9g6e0amc'
         // url: 'mapbox://traethethird.5u7sntcb'
       })
 
@@ -387,7 +389,7 @@ export const initMiniMap = (map, fillObservations, bubbleObservations, incidence
         'id': 'metric-bubbles',
         'type': 'circle',
         'source': 'centroids',
-        'source-layer': 'mvmupdatescentroids',
+        'source-layer': 'mvmupdatescentroidsv2',
         'paint': {
         'circle-radius': [
             'interpolate',
