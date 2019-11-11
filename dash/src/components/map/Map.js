@@ -44,6 +44,7 @@ const Map = ({ fillObservations, bubbleObservations, trendObservations, incidenc
   // caseload_totalpop
   // incidence_monthly
   const [bubbleMetric, setBubbleMetric]  = React.useState('caseload_totalpop');
+  const [bubbleColorIsTrend, setBubbleColorIsTrend]  = React.useState(false);
 
   let mapRef = React.createRef()
 
@@ -98,7 +99,7 @@ const Map = ({ fillObservations, bubbleObservations, trendObservations, incidenc
   React.useEffect(() => {
     const map = mapRef.getMap();
 
-    initMap(map, fillObservations, bubbleObservations, incidenceObservations, bubbleMetric, function afterMapLoaded () {
+    initMap(map, fillObservations, bubbleObservations, incidenceObservations, trendObservations, bubbleMetric, function afterMapLoaded () {
       map.setLayoutProperty('metric-bubbles-' + bubbleMetric, 'visibility', 'visible');
       if (!showDataToggles) setShowDataToggles(true);
     });
@@ -427,6 +428,60 @@ const Map = ({ fillObservations, bubbleObservations, trendObservations, incidenc
 
   // JSX for bubble metric toggle
   const renderDataToggles = () => {
+
+    const bubbleTrendColorScale = (val) => {
+      const unexpectedColor = '#b3b3b3';
+
+      if (val === null) return unexpectedColor;
+      else if (val === 0) return 'white';
+      else {
+        const scaleNeg = d3.scaleLinear()
+          .domain([-1, 0])
+          .range(['darkgreen', 'white']); // TODO fix colors
+        const scalePos = d3.scaleLinear()
+          .domain([0, 2])
+          .range(['white', 'darkred']); // TODO fix colors
+        if (val < 0) {
+          if (val < -2) return scaleNeg(-2);
+          else return scaleNeg(val);
+        }
+        else {
+          if (val > 2) return scalePos(2);
+          else return scalePos(val);
+        }
+      }
+
+      return '#b3b3b3';
+    };
+    const valueRed = '#9d3e4c';
+    const valueRed2 = '#d65c68';
+    const valueGreen = '#006837';
+
+    const bubbleTrend = ['case',
+        ['==', ['feature-state', 'value3'], null],
+          '#b3b3b3',
+        ['==', ['feature-state', 'value3'], 0],
+          'white',
+        [
+          'interpolate',
+            ["linear"],
+              ["feature-state", "value3"],
+                -1, valueGreen,
+                0, 'white',
+                1, valueRed2,
+                2, valueRed,
+        ],
+    ];
+
+    const bubbleRed = [
+        'case',
+        ['==', ['feature-state', 'stale'], false],
+        '#b02c3a',
+        ['==', ['feature-state', 'stale'], true],
+        '#b02c3a',
+        'white',
+    ];
+
     const dataToggles = (
       <div className={
         classNames(
@@ -465,19 +520,28 @@ const Map = ({ fillObservations, bubbleObservations, trendObservations, incidenc
           </div>
         )
       }
-      <div className={styles.dataToggle}>
+      <div
+        className={styles.dataToggle}
+        onClick={() => {
+          const map = mapRef.getMap();
+          if (bubbleColorIsTrend) {
+            map.setPaintProperty('metric-bubbles-incidence_monthly', 'circle-color', bubbleRed);
+            map.setPaintProperty('metric-bubbles-caseload_totalpop', 'circle-color', bubbleRed);
+          }
+          else {
+            map.setPaintProperty('metric-bubbles-incidence_monthly', 'circle-color', bubbleTrend);
+            map.setPaintProperty('metric-bubbles-caseload_totalpop', 'circle-color', bubbleTrend);
+          }
+          setBubbleColorIsTrend(!bubbleColorIsTrend);
+        }}
+        >
         <label for="bubbleColor">
           <input
             type="checkbox"
             name="bubbleColor"
-            checked={false}
-            onClick={() => {
-              const map = mapRef.getMap();
-              map.setPaintProperty('metric-bubbles-incidence_monthly', 'circle-color', 'green');
-              map.setPaintProperty('metric-bubbles-caseload_totalpop', 'circle-color', 'green');
-            }}
+            checked={bubbleColorIsTrend}
           />
-          color by trend
+          show trend color
         </label>
       </div>
       </div>

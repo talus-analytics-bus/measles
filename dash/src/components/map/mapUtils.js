@@ -2,7 +2,7 @@
 
 import circleImg from '../../assets/images/circle@3x.png';
 import Util from '../../components/misc/Util.js';
-const initMap = (map, fillObservations, bubbleObservations, incidenceObservations, bubbleMetric, callback) => {
+const initMap = (map, fillObservations, bubbleObservations, incidenceObservations, trendObservations, bubbleMetric, callback) => {
 
   map.on('load', function() {
     initGeoms(fillObservations, bubbleObservations, incidenceObservations);
@@ -115,10 +115,14 @@ const initMap = (map, fillObservations, bubbleObservations, incidenceObservation
 
         incidenceObservations.forEach((observation) => {
           const caseLoadObservation = bubbleObservations.find(bubObs => bubObs.place_id === observation.place_id);
+          const trendObservation = trendObservations.find(tndObs => tndObs.place_id === observation.place_id);
           const value = observation['value'];
-          let value2;
+          let value2, value3;
           if (caseLoadObservation) {
             value2 = caseLoadObservation['value'];
+          }
+          if (trendObservation) {
+            value3 = trendObservation['percent_change']
           }
           const place_id = +observation['place_id']
           const stale = getStaleStatus(observation, 'month');
@@ -126,14 +130,15 @@ const initMap = (map, fillObservations, bubbleObservations, incidenceObservation
           if (!value) {
             map.setFeatureState({source: 'centroids', sourceLayer: 'mvmupdatescentroids', id: place_id }, {
               value: 0,
-              value2: value2 || 0,
+              value2: value2 !== null ? value2 : null,
               stale: stale,
             }
           );
           } else {
             const state = {
               value: value,
-              value2: value2 || 0,
+              value2: value2 !== null ? value2 : null,
+              value3: value3 !== null ? value3 : null,
               stale: stale,
             };
             map.setFeatureState({source: 'centroids', sourceLayer: 'mvmupdatescentroids', id: place_id }, state);
