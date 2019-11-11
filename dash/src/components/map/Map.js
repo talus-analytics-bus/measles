@@ -465,6 +465,21 @@ const Map = ({ fillObservations, bubbleObservations, trendObservations, incidenc
           </div>
         )
       }
+      <div className={styles.dataToggle}>
+        <label for="bubbleColor">
+          <input
+            type="checkbox"
+            name="bubbleColor"
+            checked={false}
+            onClick={() => {
+              const map = mapRef.getMap();
+              map.setPaintProperty('metric-bubbles-incidence_monthly', 'circle-color', 'green');
+              map.setPaintProperty('metric-bubbles-caseload_totalpop', 'circle-color', 'green');
+            }}
+          />
+          color by trend
+        </label>
+      </div>
       </div>
     )
     return dataToggles;
