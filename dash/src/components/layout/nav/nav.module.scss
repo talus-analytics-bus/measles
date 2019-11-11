@@ -221,8 +221,7 @@ $logo-height: $nav-height/2;
         font-size: .66em;
         .regionContainer {
 
-          // TODO elegantly
-          &:nth-child(7) .region {
+          &:nth-last-child(2) .region {
             border-radius: 0 0 10px 10px;
           }
           .region {
