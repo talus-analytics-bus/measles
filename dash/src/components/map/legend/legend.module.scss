@@ -74,38 +74,53 @@ $spacing: 5px;
   display: flex;
   flex-flow: row;
   padding: $spacing*2;
-  padding-bottom: $spacing*10 - 2px;
+  // padding-bottom: $spacing*10 - 2px;
   background-color: rgba(255, 255, 255, 0.92);
 
-  .section.change {
+  .section {
+    &.change .legendLabel { width: 33%; }
     .legendEntryGroups .legendEntryGroup {
       &:not(:last-child) {
-        margin-right: 20px;
+        margin-right: 0px;
       }
       .legendEntry {
         width: unset;
 
+        .legendIcons {
+          display: flex;
+          flex-flow: row;
+          justify-content: space-between;
+        }
+
         &.dataNotAvailable { margin-left: unset; }
+
         .legendLabels {
           display: flex;
           flex-flow: row;
           width: 100%;
           justify-content: space-between;
           align-items: flex-start;
+          margin-top: 5px;
+          width: 100%;
 
           .legendLabel {
             position: relative;
             top: unset;
             bottom: unset;
             text-align: center;
-            width: 33%;
 
             &:first-child {
               text-align: left;
+              &:not(:last-child) {
+                margin-right: 10px;
+              }
             }
 
             &:last-child {
               text-align: right;
+              &:not(:first-child) {
+                margin-left: 10px;
+              }
             }
           }
         }
@@ -119,7 +134,7 @@ $spacing: 5px;
     cursor: default;
     color: #161616;
 
-    padding-right: $spacing*22;
+    padding-right: $spacing*10;
     &:last-child {
       padding-right: 3px;
     }
@@ -128,7 +143,6 @@ $spacing: 5px;
       font-family: 'rawline', serif;
       font-size: 1.0605em;
       margin-bottom: 10px;
-      min-width: 244px;
     }
     .legendEntryGroups {
       display: flex;
@@ -143,9 +157,9 @@ $spacing: 5px;
         $rect-border-width: 1px;
 
         .legendEntry {
-          width: $rect-width;
+          // width: $rect-width;
           &.circle {
-            width: auto;
+            // min-width: 200px;
           }
           display: flex;
           flex-flow: column;
@@ -164,7 +178,7 @@ $spacing: 5px;
               background-color: rgb(179, 179, 179);
             }
             .legendIcon.circle {
-              margin: auto 0;
+              // margin: auto 0;
               background-color: $no-data-gray;
               border-color: $grey;
               // background: repeating-linear-gradient(
@@ -182,12 +196,22 @@ $spacing: 5px;
               width: $rect-width;
               height: $rect-height;
               border: $rect-border-width solid #666666;
+
+              &:first-child {
+                &:last-child {
+                  border-right: $rect-border-width solid #666666;
+                }
+              }
+              &:not(:last-child) {
+                border-right: none;
+              }
+
             }
             &.circle {
               border-radius: 9999px;
               width: $circle-radius;
               height: $circle-radius;
-              margin: auto 25px;
+              // margin: auto 25px;
               background-color: #b02c3a;
               opacity: 0.85;
               border: 1px solid #b02c3a;
@@ -197,17 +221,17 @@ $spacing: 5px;
           }
 
           .legendLabel {
-            position: absolute;
+            // position: absolute;
             font-size: 0.8605em;
             white-space: nowrap;
-            bottom: 0;
-            top: $rect-height + 10px;
+            // bottom: 0;
+            // top: $rect-height + 10px;
             line-height: 1.1;
             &.wrap {
               white-space: normal;
             }
           }
-          &:not(.dataNotAvailable) {
+          &:not(.dataNotAvailable) .legendIcons .legendIcon.circle {
             &:nth-child(3) {
               .legendIcon.circle {
                 // right: $circle-radius/2;
@@ -215,24 +239,27 @@ $spacing: 5px;
               }
             }
             &:nth-child(2) {
-              .legendIcon.circle {
+              // .legendIcon.circle {
                 width: ($circle-radius * .75);
                 height: ($circle-radius * .75);
                 // margin: auto;
-              }
+              // }
             }
             &:nth-child(1) {
-              .legendIcon.circle {
+              // .legendIcon.circle {
                 width: ($circle-radius * .5);
                 height: ($circle-radius * .5);
                 // margin: auto;
-              }
+              // }
             }
           }
           &.circle {
+            .legendIcon.circle {
+              margin: auto 25px;
+            }
             &:first-child {
               .legendIcon.circle { margin-left: 0; }
-              .legendLabel { left: -1px; }
+              // .legendLabel { left: -1px; }
             }
             &:last-child {
               .legendIcon.circle { margin-right: 0; }
