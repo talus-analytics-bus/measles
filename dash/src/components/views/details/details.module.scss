@@ -491,7 +491,8 @@ $spacing: 20px;
   $slidingLineHeight: 50vh;
   // $slidingLineWidth: 750px;
   .slidingLineContainer {
-    width: 60vw;
+    width: 100%;
+    // width: calc(100% - 60vw);
     // width: 50vw;
     // min-width: 300px;
     // max-width: 100%;

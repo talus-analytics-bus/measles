@@ -22,6 +22,10 @@ $icon-height: 20px;
   transition: opacity .25s;
   opacitY: 0;
 
+  @media #{$phone} {
+    display: none;
+  }
+
   &.visible { opacity: 1; }
 
   cursor: default;

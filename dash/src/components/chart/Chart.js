@@ -389,17 +389,17 @@ class Chart {
     // initialize sizing
     onResize(this);
 
-    // if (this.params.noResizeEvent !== true) {
-    //   // event listener
-    //   // https://css-tricks.com/snippets/jquery/done-resizing-event/
-    //   let timer;
-    //   window.addEventListener('resize', () => {
-    //     clearTimeout(timer);
-    //     timer = window.setTimeout(() => {
-    //       onResize(this);
-    //     }, 100);
-    //   });
-    // }
+    if (this.params.noResizeEvent !== true) {
+      // event listener
+      // https://css-tricks.com/snippets/jquery/done-resizing-event/
+      let timer;
+      window.addEventListener('resize', () => {
+        clearTimeout(timer);
+        timer = window.setTimeout(() => {
+          onResize(this);
+        }, 100);
+      });
+    }
 
   }
 
