@@ -7,6 +7,7 @@ import SlidingLine from './content/SlidingLine.js'
 import SparkLine from './content/SparkLine.js'
 import ReactTooltip from 'react-tooltip';
 import InfoTooltip from '../../../components/misc/InfoTooltip.js';
+import YearlyReport from '../../../components/misc/YearlyReport.js';
 import infoTooltipStyles from '../../../components/misc/infotooltip.module.scss';
 
 import MiniMap from '../../../components/map/MiniMap.js'
@@ -772,6 +773,7 @@ const Details = (props) => {
     && props.countryVaccHistory.length === 0;
 
   // Effect hook to load API data.
+  const showYearlyReport = Util.yearlyReportIso2.includes(props.countryIso2);
   React.useEffect(() => {
 
     // Scroll to top of window afer loading.
@@ -808,7 +810,7 @@ const Details = (props) => {
     };
 
     // Sliding line chart defined in SlidingLine.js
-    if (!noLineData) {
+    if (!noLineData && !showYearlyReport) {
       const slidingLineChart = new SlidingLine(
 
         // Selector of DOM element in Resilience.js component where the chart
@@ -996,23 +998,9 @@ const Details = (props) => {
                   }
                 </div>
                 {
+                  !showYearlyReport &&
                   [
                     getMeaslesCaseloadItems(),
-                    // {
-                    //   'title': 'Population',
-                    //   'value_fmt': Util.formatSI,
-                    //   'value_label': 'people',
-                    //   'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'year')}, // TODO
-                    //   ...(props.countryPop ? props.countryPop : {value: null}),
-                    // },
-                    // {
-                    //   'title': 'Gross domestic product per capita',
-                    //   'value_fmt': Util.formatSI,
-                    //   // 'value_fmt': Util.money,
-                    //   'value_label': 'USD',
-                    //   'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'year')}, // TODO
-                    //   ...(props.countryGDP ? props.countryGDP : {value: null}),
-                    // },
                   ].map(item =>
                     <div className={styles.itemContainer}>
                     {
@@ -1315,12 +1303,33 @@ const Details = (props) => {
             </div>
             <div className={styles.main}>
             {
+              showYearlyReport &&
+              <div className={styles.itemContainer}>
+                <div className={styles.item}>
+                  <span className={styles.title}>
+                    <span>Measles caseload</span>
+                    <span className={'dateTimeStamp'}>2011 to 2019</span>
+                  </span>
+                  <div className={styles.content}>
+                    <YearlyReport
+                      place_name={props.countryName}
+                      place_iso={props.countryIso2}
+                      metric={'caseload_totalpop'}
+                      inTooltip={false}
+                      showBothMetrics={true}
+                    />
+                  </div>
+                </div>
+              </div>
+            }
+            {
               [
                 {
                   'title': slidingLineMetric === 'caseload_totalpop' ? 'Measles cases and vaccination over time' : 'Monthly incidence rate and vaccination over time',
                   'chart_jsx': getSlidingLineJsx,
                   'date_time_fmt': Util.getDateTimeRange,
                   'data_source': getSlidingLineDataSources,
+                  skip: showYearlyReport,
                   ...(props.countryIncidenceHistory.length > 0 ? { value: props.countryIncidenceHistory } : { value: null }),
                 },
                 {
@@ -1329,6 +1338,7 @@ const Details = (props) => {
                   'value_fmt': Util.percentize,
                   'value_label': 'of infants',
                   'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'year')},
+                  skip: false,
                   ...(props.countryVaccLatest.value !== undefined ? props.countryVaccLatest : { value: null }),
                 },
                 {
@@ -1337,11 +1347,12 @@ const Details = (props) => {
                   'value_fmt': Util.formatIncidence,
                   'value_label': 'cases per 1M population',
                   'infoTooltipText': (item) => getSeverityTooltip(item),
-                  // 'value2_jsx': getCaseloadAndDeltaJsx,
                   'date_time_fmt': (date_time) => {return Util.getDatetimeStamp(date_time, 'month')},
+                  skip: showYearlyReport,
                   ...(props.countryIncidenceLatest.value !== undefined ? props.countryIncidenceLatest : { value: null }),
                 },
               ].map(item =>
+                item.skip !== true &&
                 <div className={styles.itemContainer}>
                   <div className={styles.item}>
                     <span className={styles.title}>
@@ -1356,21 +1367,6 @@ const Details = (props) => {
                     </span>
                     <div className={styles.content}>
                       <div className={styles.stackedValues}>
-                      {
-                        // // Display formatted value and label
-                        // ((item.value !== null && typeof item.value !== 'object') && (
-                        //   <span>
-                        //     <span className={styles.value}>
-                        //       {item.value_fmt(item.value)}
-                        //     </span>
-                        //     {
-                        //       item.value_label && <span className={styles.label}>
-                        //         &nbsp;{item.value_label}
-                        //       </span>
-                        //     }
-                        //   </span>
-                        // ))
-                      }
                       {
                         // Data not available message, if applicable.
                         ((item.value === null || item.notAvail === true) && (
