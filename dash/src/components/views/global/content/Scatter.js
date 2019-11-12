@@ -430,6 +430,7 @@ class Scatter extends Chart {
       // Collate data points
       const data = [];
       xData.forEach(xDatum => {
+        if (xDatum.place_iso === 'VE') return; // skip VE for now.
         const placeId = xDatum.place_id;
         const sizeDatum = sizeData.find(d => d.place_id === placeId);
         const yDatum = yData.find(d => d.place_id === placeId);

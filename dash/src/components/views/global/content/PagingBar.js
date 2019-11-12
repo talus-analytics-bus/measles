@@ -34,7 +34,7 @@ class PagingBar extends Chart {
           this.data.vals.x = params.data.y || [];
         }
 
-        this.data.vals.x.filter(v => v.value !== null)
+        this.data.vals.x.filter(v => v.value !== null);
       };
 
       const setYData = () => {
@@ -46,7 +46,8 @@ class PagingBar extends Chart {
               place_name: v.place_name,
               place_iso: v.place_iso,
             };
-          });
+          })
+          .filter(v => v.value !== null && v.place_iso !== 'VE'); // skip VE for now.
       };
 
       const setBarData = () => {
