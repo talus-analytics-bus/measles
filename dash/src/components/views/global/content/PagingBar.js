@@ -254,20 +254,12 @@ class PagingBar extends Chart {
         const maxX = view === 'coverage_mcv1_infant' ? 100 : d3.max(chart.data.bars, d => d.value);
 
         // Set domain, update axis
-        chart[styles['x-axis']].call(xAxis);
-        console.log('maxX')
-        console.log(maxX)
         x.domain([0, maxX])
           .nice();
         xAxis
-          .scale(x)
-          // .tickFormat(chart.xMetricParams.tickFormat)
+          .tickFormat(chart.xMetricParams.tickFormat)
 
-        console.log("chart[styles['x-axis']]")
-        console.log(chart[styles['x-axis']])
-        console.log('xAxis')
-        console.log(xAxis)
-        chart[styles['x-axis']].call(xAxis);
+        chart[styles['x-axis']].select('g').call(xAxis);
 
         // Set color scale
         xColor = Util.getColorScaleForMetric(view, [0, maxX]);
@@ -279,10 +271,7 @@ class PagingBar extends Chart {
       chart.params.setSectionDatetime(chart.xMetricParams.dateFmt(chart.data.vals.x));
 
       // Get data for this page
-      // chart.data.bars = filterData(chart.data.bars);
       const data = chart.data.bars.filter(d => d.page === pageNumber-1);
-      console.log('data')
-      console.log(data)
 
       // Append dummy bars if needed
       let i = 0;
