@@ -935,11 +935,6 @@ class SlidingLine extends Chart {
 
     // Update function: Change metric, basically redraw chart
     chart.update = (metric) => {
-      // Hide chart components
-
-      console.log('chart.svg.node().parentElement')
-      console.log(chart.svg.node().parentElement)
-
       if (chart.svg.node().parentElement === null) return;
       chart.svg.node().parentElement.classList.remove(styles.drawn);
       chart.svg.html('');
@@ -960,6 +955,9 @@ class SlidingLine extends Chart {
       );
 
       ReactTooltip.rebuild();
+    };
+    chart.resize = () => {
+      chart.update(chart.params.metric);
     };
   }
 }

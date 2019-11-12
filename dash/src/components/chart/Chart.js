@@ -592,8 +592,8 @@ function onResize(chart) {
     }
   }
 
-  if (chart.data) {
-    chart.update(chart.data);
+  if (chart.resize) {
+    chart.resize();
   }
 }
 

@@ -2,6 +2,7 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import classNames from 'classnames'
 import Util from '../../misc/Util.js'
+import YearlyReport from '../../misc/YearlyReport.js'
 
 import styles from './geomPopup.module.scss'
 
@@ -9,14 +10,8 @@ import styles from './geomPopup.module.scss'
 const GeomPopup = ({ popupData, bubbleMetric }) => {
   console.log(popupData)
 
-
-
   const detailsPath = '/details/' + popupData['place_id'];
   const flag = `/flags/${popupData['place_iso']}.png`;
-
-  // const flagTest = new File(`/flags/${popupData['place_iso']}.png`)
-  // console.log('flagTest')
-  // console.log(flagTest)
 
   const getTooltipMetricData = (popupData, type) => {
     const obs = popupData[type];
@@ -110,6 +105,11 @@ const GeomPopup = ({ popupData, bubbleMetric }) => {
     ev.target.src = '/flags/unspecified.png';
   };
 
+  // Determine whether to show a yearly report or normal data, based on which
+  // countries are on the yearly report list.
+  const place_iso = popupData['place_iso'];
+  const showYearlyReport = Util.yearlyReportIso2.includes(place_iso);
+
   return (
     <div className={classNames(styles.container, styles[bubbleMetric])}>
       <div className={styles.header}>
@@ -120,78 +120,171 @@ const GeomPopup = ({ popupData, bubbleMetric }) => {
           </p>
         </div>
       </div>
-      <div>
-        <div className={styles.data}>
-          {
-            tooltipItems.map(d =>
-              <div className={classNames(
-                styles[d.slug],
-                styles.datum
-              )}>
-                <p className={classNames(styles[d.slug], styles.label)}>
-                  <span>{d.label}</span>
-                  <span className={'dateTimeStamp'}>{d.dateFmt && `${d.dateFmt}`}</span>
-                </p>
-                <p className={classNames(
+      {
+        // Normal reports
+        !showYearlyReport &&
+        <div>
+          <div className={styles.data}>
+            {
+              tooltipItems.map(d =>
+                <div className={classNames(
                   styles[d.slug],
-                  styles.content,
-                  {
-                    [styles['notAvail']]: d.notAvail,
-                    [styles.zero]: d.valueNum !== undefined && d.valueNum === 0,
-                  },
+                  styles.datum
                 )}>
-                  <div className={styles.value}>
-                  {d.notAvail ? 'Recent data not available' : d.value}
-                  </div>
-                  {
-                    d.notAvail ? '' : <div className={styles.unit}>{renderUnit(d.unit)}</div>
-                  }
-                  {
-                    // If value2 exists, add that
-                    (d.value2 !== undefined) && <span className={styles.value2}>{d.value2}</span>
-                  }
-                  {
-                      // If delta exists, add that
-                      (d.deltaData && d.deltaData.delta !== undefined) && !d.notAvail && <div className={classNames(styles.delta, {
-                        [styles['inc']]: d.deltaData.delta > 0,
-                        [styles['dec']]: d.deltaData.delta < 0,
-                        [styles['same']]: d.deltaData.delta === 0,
-                      })}>
-                        <i className={classNames('material-icons')}>play_arrow</i>
-                        <span className={styles['delta-value']}>
-                          {
-                            // Don't include sign for now since it's redundant
-                            // <span className={styles['sign']}>{d.deltaSign}</span>
-                          }
-                          <span className={styles['num']}>{d.deltaData.deltaFmt}</span>
-                        </span>
-                        <span className={styles['delta-text']}>{Util.getDeltaWord(d.deltaData.delta)} from<br/>previous month</span>
-                      </div>
-                    }
-                </p>
-                {
-                  (d.dataSource && !d.notAvail) &&
-                    <div className={classNames('dataSource', styles.dataSource)}>
-                      Source: {d.dataSource}{ d.dataSourceLastUpdated && ( // TODO remove "false" when this field is ready
-                          ' as of ' + new Date(d.dataSourceLastUpdated).toLocaleString('en-us', { // TODO correctly
-                            month: 'short',
-                            year: 'numeric',
-                            timeZone: 'UTC',
-                          })
-                        )
-                      }
+                  <p className={classNames(styles[d.slug], styles.label)}>
+                    <span>{d.label}</span>
+                    <span className={'dateTimeStamp'}>{d.dateFmt && `${d.dateFmt}`}</span>
+                  </p>
+                  <p className={classNames(
+                    styles[d.slug],
+                    styles.content,
+                    {
+                      [styles['notAvail']]: d.notAvail,
+                      [styles.zero]: d.valueNum !== undefined && d.valueNum === 0,
+                    },
+                  )}>
+                    <div className={styles.value}>
+                    {d.notAvail ? 'Recent data not available' : d.value}
                     </div>
-                }
+                    {
+                      d.notAvail ? '' : <div className={styles.unit}>{renderUnit(d.unit)}</div>
+                    }
+                    {
+                      // If value2 exists, add that
+                      (d.value2 !== undefined) && <span className={styles.value2}>{d.value2}</span>
+                    }
+                    {
+                        // If delta exists, add that
+                        (d.deltaData && d.deltaData.delta !== undefined) && !d.notAvail && <div className={classNames(styles.delta, {
+                          [styles['inc']]: d.deltaData.delta > 0,
+                          [styles['dec']]: d.deltaData.delta < 0,
+                          [styles['same']]: d.deltaData.delta === 0,
+                        })}>
+                          <i className={classNames('material-icons')}>play_arrow</i>
+                          <span className={styles['delta-value']}>
+                            {
+                              // Don't include sign for now since it's redundant
+                              // <span className={styles['sign']}>{d.deltaSign}</span>
+                            }
+                            <span className={styles['num']}>{d.deltaData.deltaFmt}</span>
+                          </span>
+                          <span className={styles['delta-text']}>{Util.getDeltaWord(d.deltaData.delta)} from<br/>previous month</span>
+                        </div>
+                      }
+                  </p>
+                  {
+                    (d.dataSource && !d.notAvail) &&
+                      <div className={classNames('dataSource', styles.dataSource)}>
+                        Source: {d.dataSource}{ d.dataSourceLastUpdated && ( // TODO remove "false" when this field is ready
+                            ' as of ' + new Date(d.dataSourceLastUpdated).toLocaleString('en-us', { // TODO correctly
+                              month: 'short',
+                              year: 'numeric',
+                              timeZone: 'UTC',
+                            })
+                          )
+                        }
+                      </div>
+                  }
+                </div>
+              )
+            }
+          </div>
+          <div className={styles.buttons}>
+            <Link to={detailsPath}>
+              <button>View country</button>
+            </Link>
+          </div>
+        </div>
+      }
+      {
+        // Yearly reports (monthly data not available)
+        showYearlyReport && (
+          <div>
+            <YearlyReport
+              place_name={popupData['place_name']}
+              place_iso={place_iso}
+              metric={bubbleMetric}
+              inTooltip={true}
+            />
+            {
+              <div className={styles.data}>
+              {
+                [
+                  getTooltipMetricData(popupData, 'fill'),
+                ].map(d =>
+                  <div className={classNames(
+                    styles[d.slug],
+                    styles.datum
+                  )}>
+                    <p className={classNames(styles[d.slug], styles.label)}>
+                      <span>{d.label}</span>
+                      <span className={'dateTimeStamp'}>{d.dateFmt && `${d.dateFmt}`}</span>
+                    </p>
+                    <p className={classNames(
+                      styles[d.slug],
+                      styles.content,
+                      {
+                        [styles['notAvail']]: d.notAvail,
+                        [styles.zero]: d.valueNum !== undefined && d.valueNum === 0,
+                      },
+                    )}>
+                      <div className={styles.value}>
+                      {d.notAvail ? 'Recent data not available' : d.value}
+                      </div>
+                      {
+                        d.notAvail ? '' : <div className={styles.unit}>{renderUnit(d.unit)}</div>
+                      }
+                      {
+                        // If value2 exists, add that
+                        (d.value2 !== undefined) && <span className={styles.value2}>{d.value2}</span>
+                      }
+                      {
+                          // If delta exists, add that
+                          (d.deltaData && d.deltaData.delta !== undefined) && !d.notAvail && <div className={classNames(styles.delta, {
+                            [styles['inc']]: d.deltaData.delta > 0,
+                            [styles['dec']]: d.deltaData.delta < 0,
+                            [styles['same']]: d.deltaData.delta === 0,
+                          })}>
+                            <i className={classNames('material-icons')}>play_arrow</i>
+                            <span className={styles['delta-value']}>
+                              {
+                                // Don't include sign for now since it's redundant
+                                // <span className={styles['sign']}>{d.deltaSign}</span>
+                              }
+                              <span className={styles['num']}>{d.deltaData.deltaFmt}</span>
+                            </span>
+                            <span className={styles['delta-text']}>{Util.getDeltaWord(d.deltaData.delta)} from<br/>previous month</span>
+                          </div>
+                        }
+                    </p>
+                    {
+                      (d.dataSource && !d.notAvail) &&
+                        <div className={classNames('dataSource', styles.dataSource)}>
+                          Source: {d.dataSource}{ d.dataSourceLastUpdated && ( // TODO remove "false" when this field is ready
+                              ' as of ' + new Date(d.dataSourceLastUpdated).toLocaleString('en-us', { // TODO correctly
+                                month: 'short',
+                                year: 'numeric',
+                                timeZone: 'UTC',
+                              })
+                            )
+                          }
+                        </div>
+                    }
+                  </div>
+                )
+              }
               </div>
-            )
-          }
-        </div>
-        <div className={styles.buttons}>
-          <Link to={detailsPath}>
-            <button>View country</button>
-          </Link>
-        </div>
-      </div>
+            }
+            <div className={styles.buttons}>
+              <Link to={detailsPath}>
+                <button>View country</button>
+              </Link>
+            </div>
+          </div>
+        )
+
+      }
+
     </div>
   )
 }

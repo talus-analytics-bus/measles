@@ -1,7 +1,10 @@
 import * as d3 from 'd3/dist/d3.min';
 
-// Utility functions.
+// Utility functions and data.
 const Util = {};
+
+// List of countries that report data yearly only.
+Util.yearlyReportIso2 = ['VE'];
 
 // Calculate age difference in months from text datetime strings.
 // Assumes a is more recent than b
@@ -259,6 +262,7 @@ Util.getMetricChartParams = (metric) => {
     case 'caseload_totalpop':
       return {
         tickFormat: Util.formatSIInteger,
+        tickFormatLong: Util.comma,
         metric: 'caseload_totalpop',
         units: 'cases',
         getUnits: (val) => val === 1 ? 'case' : 'cases',
@@ -270,6 +274,7 @@ Util.getMetricChartParams = (metric) => {
     case 'incidence_monthly':
       return {
         tickFormat: Util.formatIncidence,
+        tickFormatLong: Util.formatIncidence,
         metric: 'incidence_monthly',
         sort: 'desc',
         units: 'cases per 1M population',
@@ -277,9 +282,21 @@ Util.getMetricChartParams = (metric) => {
         label: 'Monthly incidence of measles (cases per 1M population)',
         name: 'Monthly incidence rate',
       };
+    case 'incidence_yearly':
+      return {
+        tickFormat: Util.formatIncidence,
+        tickFormatLong: Util.formatIncidence,
+        metric: 'incidence_yearly',
+        sort: 'desc',
+        units: 'cases per 1M population',
+        getUnits: (val) => val === 1 ? 'case per 1M population' : 'cases per 1M population',
+        label: 'Yearly incidence of measles (cases per 1M population)',
+        name: 'Yearly incidence rate',
+      };
     case 'monthlycaseload_totalpop':
       return {
         tickFormat: Util.formatSIInteger,
+        tickFormatLong: Util.comma,
         metric: 'monthlycaseload_totalpop',
         sort: 'desc',
         temporal_resolution: 'monthly',
@@ -289,6 +306,7 @@ Util.getMetricChartParams = (metric) => {
     case 'coverage_mcv1_infant': // DEBUG
       return {
         tickFormat: Util.percentize,
+        tickFormatLong: Util.percentize,
         metric: 'coverage_mcv1_infant',
         temporal_resolution: 'yearly',
         sort: 'asc',
@@ -299,6 +317,7 @@ Util.getMetricChartParams = (metric) => {
     case 'avg_coverage_mcv1_infant': // DEBUG
       return {
         tickFormat: Util.percentize,
+        tickFormatLong: Util.percentize,
         metric: 'avg_coverage_mcv1_infant',
         temporal_resolution: 'yearly',
         sort: 'asc',
