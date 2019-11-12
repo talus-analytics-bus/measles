@@ -10,6 +10,7 @@ import InfoTooltip from '../../../components/misc/InfoTooltip.js';
 import infoTooltipStyles from '../../../components/misc/infotooltip.module.scss';
 
 import MiniMap from '../../../components/map/MiniMap.js'
+import Selectpicker from '../../../components/chart/Selectpicker/Selectpicker.js'
 
 // Utilities (date formatting, etc.)
 import Util from '../../../components/misc/Util.js'
@@ -63,6 +64,9 @@ const Global = (props) => {
   // Track which data series is being shown in the paging bar chart.
   const [ pagingBarData, setPagingBarData ]  = React.useState('cumcaseload_totalpop'); // PLACEHOLDER
 
+  // Track displayed region in paging bar chart
+  const [ pagingBarRegion, setPagingBarRegion ]  = React.useState('all');
+
   // Track how many pages there are for the bar chart
   const [ pageCount, setPageCount ]  = React.useState(1);
 
@@ -103,6 +107,8 @@ const Global = (props) => {
           chart.params.setRedirectPath = setRedirectPath;
           chart.params.setSectionTitle = setSectionTitle;
           chart.params.setSectionDatetime = setSectionDatetime;
+          chart.params.pagingBarRegion = pagingBarRegion;
+          chart.params.places = props.places;
           // chart.params.noResizeEvent = false;
         }
 
@@ -137,11 +143,16 @@ const Global = (props) => {
 
   React.useEffect(() => {
     const PagingBarChart = charts.find(d => d.params.className === 'PagingBar');
-    if (PagingBarChart) PagingBarChart.update(curPage, pagingBarData);
+    if (PagingBarChart) {
+      if (pagingBarRegion !== PagingBarChart.params.pagingBarRegion) {
+        setCurPage(1);
+      }
+      PagingBarChart.update(curPage, pagingBarData, pagingBarRegion);
+    }
 
     // Rebuild tooltips after the chart is drawn
     ReactTooltip.rebuild();
-  }, [curPage, pagingBarData])
+  }, [curPage, pagingBarData, pagingBarRegion])
 
   // Updates scatterplot and slider label when slider is changed.
   const handleSliderChange = (valNumeric, a, b) => {
@@ -422,6 +433,14 @@ const Global = (props) => {
           </div>
         )
       }
+      {
+        // Selectpicker for region
+        <Selectpicker
+          setOption={setPagingBarRegion}
+          optionList={props.places.map(p => p.name)}
+          allOption={"All countries"}
+        />
+      }
       </div>
     );
 
@@ -614,8 +633,8 @@ const Global = (props) => {
     ];
   };
   // If loading do not show JSX content.
-  // console.log('props')
-  // console.log(props)
+  console.log('props')
+  console.log(props)
 
   const curSliderValStr = curSliderVal.toLocaleString('en-us', {
     month: 'short',

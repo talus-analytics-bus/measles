@@ -549,6 +549,7 @@ const App = () => {
         };
 
         setGlobalComponent(<Global
+          places={places} // for paging bar chart regions
           chartParams={chartParams}
         />);
       }
