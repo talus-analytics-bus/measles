@@ -1,0 +1,28 @@
+@import '../../assets/styles/colors.scss';
+
+.yearlyReport {
+  width: 350px;
+  padding: 10px;
+  p {
+    margin-bottom: 10px;
+  }
+  table {
+    border-spacing: 0;
+    border: 1px solid $light-grey;
+    padding: 0;
+
+    tr:first-child td {
+      // font-weight: 600;
+      font-family: 'Gotham Bold', serif;
+      vertical-align: bottom;
+    }
+    tr:nth-child(2n) {
+      background-color: $light-grey-2;
+    }
+    td {
+      padding: 5px;
+      width: 50%;
+      font-family: 'Gotham Book', sans-serif;
+    }
+  }
+}
