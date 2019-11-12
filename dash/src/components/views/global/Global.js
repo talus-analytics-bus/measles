@@ -853,6 +853,16 @@ const Global = (props) => {
                             </div>
                           }
                           {
+                            // If delta exists, add that
+                            (item.value !== null && item.deltaData && item.deltaData.delta !== undefined) && !item.notAvail && <div className={classNames(stylesTooltip.delta, stylesTooltip[item.deltaData.direction])}>
+                              <i className={classNames('material-icons')}>play_arrow</i>
+                              <span className={stylesTooltip['delta-value']}>
+                                <span className={stylesTooltip['num']}>{item.deltaData.deltaFmt}</span>
+                              </span>
+                              <span className={stylesTooltip['delta-text']}>{Util.getDeltaWord(item.deltaData.delta)} from<br/>previous month</span>
+                            </div>
+                          }
+                          {
                             // Write not reported otherwise
                             item.value === null &&
                             <span className={classNames(stylesTooltip.value, stylesTooltip.notAvail)}>Not reported</span>

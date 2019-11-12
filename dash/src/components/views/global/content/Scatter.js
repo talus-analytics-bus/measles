@@ -373,6 +373,12 @@ class Scatter extends Chart {
       const monthlyStr = `${yyyymmddArr[0]}-${yyyymmddArr[1]}`;
       const yearlyStr = `${yyyymmddArr[0]}`;
 
+      const dtPrev = new Date(dt);
+      dtPrev.setMonth(dtPrev.getMonth()-1);
+      const yyyymmddPrev = Util.formatDatetimeApi(dtPrev);
+      const yyyymmddArrPrev = yyyymmddPrev.split('-');
+      const monthlyStrPrev = `${yyyymmddArrPrev[0]}-${yyyymmddArrPrev[1]}`;
+
       // Get this data to bind
       // y data
       const yData = chart.data.vals.y.filter(d => {
@@ -389,6 +395,12 @@ class Scatter extends Chart {
           // d.value_normalized = d.value / chart.grandMaxY
           // d.value_normalized = d.value / yDataMax
         }
+      });
+
+
+      // Get previous time point's y-data for comparison trend
+      const yDataPrev = chart.data.vals.y.filter(d => {
+        return d.date_time.startsWith(monthlyStrPrev);
       });
 
       // x data - use most recent available
@@ -429,12 +441,29 @@ class Scatter extends Chart {
 
       // Collate data points
       const data = [];
+      const dataTrend = [];
       xData.forEach(xDatum => {
         if (xDatum.place_iso === 'VE') return; // skip VE for now.
         const placeId = xDatum.place_id;
         const sizeDatum = sizeData.find(d => d.place_id === placeId);
         const yDatum = yData.find(d => d.place_id === placeId);
         if (yDatum && sizeDatum) {
+          let deltaData;
+
+          // Calculate y trend
+          const yDatumPrev = yDataPrev.find(d => d.place_id === placeId);
+          if (yDatumPrev) {
+            deltaData = Util.getDeltaData(
+              {
+                percent_change: Util.getPercentChange(
+                  yDatumPrev.value,
+                  yDatum.value,
+                )
+              }
+            );
+          }
+
+          // Push data to array
           data.push(
             {
               value_normalized: {
@@ -449,14 +478,20 @@ class Scatter extends Chart {
               xDatum: xDatum,
               yDatum: yDatum,
               sizeDatum: sizeDatum,
+              deltaData: deltaData,
             }
           );
+
+
         }
       });
 
       // Sort data by size so that largest circles are in the back.
       data
         .sort(sortBySize);
+
+      console.log('data')
+      console.log(data)
 
       // Update x-scale domain so that far left side corresponds to the
       // lowest normalized x value.
@@ -631,11 +666,17 @@ class Scatter extends Chart {
                   'yDatum',
                   'xDatum',
                 ].forEach(itemName => {
+                  const datum = d[itemName];
+                  const item = Util.getTooltipItem(datum);
+                  if (itemName === 'sizeDatum' && d.deltaData) {
+                    item.deltaData = d.deltaData;
+                  }
                   items.push(
-                    Util.getTooltipItem(d[itemName])
+                    item
                   );
                 });
-                console.log(d)
+                console.log('items')
+                console.log(items)
                 chart.params.setTooltipData(
                   {
                     name: d.place_name,

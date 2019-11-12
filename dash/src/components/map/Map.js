@@ -467,8 +467,7 @@ const Map = ({ fillObservations, bubbleObservations, trendObservations, incidenc
               ["feature-state", "value3"],
                 -1, Util.changeColors.neg,
                 0, Util.changeColors.same,
-                1, Util.changeColors.posLight,
-                2, Util.changeColors.pos,
+                1, Util.changeColors.pos,
         ],
     ];
 

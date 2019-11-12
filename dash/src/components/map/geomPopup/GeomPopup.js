@@ -154,23 +154,19 @@ const GeomPopup = ({ popupData, bubbleMetric }) => {
                       (d.value2 !== undefined) && <span className={styles.value2}>{d.value2}</span>
                     }
                     {
-                        // If delta exists, add that
-                        (d.deltaData && d.deltaData.delta !== undefined) && !d.notAvail && <div className={classNames(styles.delta, {
-                          [styles['inc']]: d.deltaData.delta > 0,
-                          [styles['dec']]: d.deltaData.delta < 0,
-                          [styles['same']]: d.deltaData.delta === 0,
-                        })}>
-                          <i className={classNames('material-icons')}>play_arrow</i>
-                          <span className={styles['delta-value']}>
-                            {
-                              // Don't include sign for now since it's redundant
-                              // <span className={styles['sign']}>{d.deltaSign}</span>
-                            }
-                            <span className={styles['num']}>{d.deltaData.deltaFmt}</span>
-                          </span>
-                          <span className={styles['delta-text']}>{Util.getDeltaWord(d.deltaData.delta)} from<br/>previous month</span>
-                        </div>
-                      }
+                      // If delta exists, add that
+                      (d.deltaData && d.deltaData.delta !== undefined) && !d.notAvail && <div className={classNames(styles.delta, {
+                        [styles['inc']]: d.deltaData.delta > 0,
+                        [styles['dec']]: d.deltaData.delta < 0,
+                        [styles['same']]: d.deltaData.delta === 0,
+                      })}>
+                        <i className={classNames('material-icons')}>play_arrow</i>
+                        <span className={styles['delta-value']}>
+                          <span className={styles['num']}>{d.deltaData.deltaFmt}</span>
+                        </span>
+                        <span className={styles['delta-text']}>{Util.getDeltaWord(d.deltaData.delta)} from<br/>previous month</span>
+                      </div>
+                    }
                   </p>
                   {
                     (d.dataSource && !d.notAvail) &&
