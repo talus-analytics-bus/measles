@@ -295,6 +295,7 @@ class PagingBar extends Chart {
               .attr('x', -32)
               .attr('y', d => y(d.place_name))
               .attr('height', y.bandwidth())
+              .attr('width', y.bandwidth())
               .attr('href', d => `/flags/${d.place_iso}.png`);
 
 
