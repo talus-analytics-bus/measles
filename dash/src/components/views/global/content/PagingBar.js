@@ -131,7 +131,7 @@ class PagingBar extends Chart {
     // if (!this.params.margin) {
     this.setMargin({
       top: 47,
-      right: 5,
+      right: 30,
       // right: longestBarValueWidth + 5,
       bottom: 20,
       left: 200-30,
@@ -236,19 +236,37 @@ class PagingBar extends Chart {
     // Update function: Update chart to show countries on the given page num.
     chart.update = (pageNumber, view, region = undefined) => {
 
+      console.log('pageNumber')
+      console.log(pageNumber)
+      console.log('view')
+      console.log(view)
+      console.log('region')
+      console.log(region)
+      console.log('chart')
+      console.log(chart)
+
       // If view not the same as this view, set data and domains
       if (view !== chart.params.view || region !== chart.params.pagingBarRegion) {
         if (region) chart.params.pagingBarRegion = region;
         chart.setData(view);
 
         // update x scale
-        const maxX = d3.max(chart.data.bars, d => d.value);
+        const maxX = view === 'coverage_mcv1_infant' ? 100 : d3.max(chart.data.bars, d => d.value);
 
         // Set domain, update axis
+        chart[styles['x-axis']].call(xAxis);
+        console.log('maxX')
+        console.log(maxX)
         x.domain([0, maxX])
           .nice();
         xAxis
-          .tickFormat(chart.xMetricParams.tickFormat)
+          .scale(x)
+          // .tickFormat(chart.xMetricParams.tickFormat)
+
+        console.log("chart[styles['x-axis']]")
+        console.log(chart[styles['x-axis']])
+        console.log('xAxis')
+        console.log(xAxis)
         chart[styles['x-axis']].call(xAxis);
 
         // Set color scale
@@ -284,6 +302,7 @@ class PagingBar extends Chart {
       const yTickLabels = data.map(d => d.place_name);
       y.domain(yTickLabels);
       chart[styles['y-axis']].call(yAxis);
+
 
       // // Get position of y-label given widest y-axis tick label.
       // const xAxisLabelPos = chart.getYLabelPos(
@@ -352,7 +371,7 @@ class PagingBar extends Chart {
         );
     };
 
-    chart.update(1, 'cumcaseload_totalpop');
+    chart.update(1, 'cumcaseload_totalpop', 'all');
 
     // Reduce width at the end
     chart.svg.node().parentElement.classList.add(styles.drawn);
