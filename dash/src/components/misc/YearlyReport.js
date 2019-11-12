@@ -1,4 +1,5 @@
 import React from 'react';
+import classNames from 'classnames';
 import styles from './yearlyreport.module.scss';
 import Util from './Util.js';
 
@@ -46,9 +47,21 @@ const YearlyReport = (props) => {
   const data = yearlyReportData[paramName][props.place_iso];
   const metricName = props.metric === 'caseload_totalpop' ? 'Measles caseloads'
     : 'Measles incidence rates';
+
+  const showBothMetrics = props.showBothMetrics;
+  let otherMetricParams;
+  if (showBothMetrics) {
+    otherMetricParams = Util.getMetricChartParams('incidence_yearly');
+  }
+
   return (
     <div
-      className={styles.yearlyReport}
+      className={classNames(
+        styles.yearlyReport,
+        {
+          [styles.inTooltip]: props.inTooltip,
+        }
+      )}
     >
       <p>
         {metricName} for {props.place_name} are currently only available by year. Data for all years on record are provided in the table below.
@@ -61,6 +74,12 @@ const YearlyReport = (props) => {
             <td>
               {metricParams.name} ({metricParams.units})
             </td>
+            {
+              showBothMetrics &&
+              <td>
+                {otherMetricParams.name} ({otherMetricParams.units})
+              </td>
+            }
           </tr>
         {
           data.values.map(d =>
@@ -71,12 +90,21 @@ const YearlyReport = (props) => {
               <td>
                 {metricParams.tickFormatLong(d.value)}
               </td>
+              {
+                showBothMetrics &&
+                <td>
+                {otherMetricParams.tickFormatLong(
+                  yearlyReportData['incidence_yearly'][props.place_iso].values
+                    .find(dd => dd.year === d.year).value
+                )}
+                </td>
+              }
             </tr>
           )
         }
       </table>
-      <div className={'dataSource'}>
-        Source: { data.data_source }
+      <div className={classNames('dataSource', styles.dataSource)}>
+        Source: { !showBothMetrics ? data.data_source :  yearlyReportData['incidence_yearly'][props.place_iso].data_source }
       </div>
     </div>
   );

@@ -1,8 +1,22 @@
 @import '../../assets/styles/colors.scss';
 
 .yearlyReport {
-  width: 350px;
-  padding: 10px;
+
+  width: 100%;
+
+  &.inTooltip {
+    width: 350px;
+    padding: 10px;
+
+    .dataSource {
+      text-align: left;
+    }
+
+    table td {
+      width: 50%;
+    }
+  }
+
   p {
     margin-bottom: 10px;
   }
@@ -10,6 +24,7 @@
     border-spacing: 0;
     border: 1px solid $light-grey;
     padding: 0;
+    max-width: 680px;
 
     tr:first-child td {
       // font-weight: 600;
@@ -21,8 +36,13 @@
     }
     td {
       padding: 5px;
-      width: 50%;
+      width: 33%;
       font-family: 'Gotham Book', sans-serif;
     }
+  }
+
+  .dataSource {
+    text-align: right;
+    max-width: unset;
   }
 }

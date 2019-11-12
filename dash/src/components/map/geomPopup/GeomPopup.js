@@ -204,6 +204,7 @@ const GeomPopup = ({ popupData, bubbleMetric }) => {
               place_name={popupData['place_name']}
               place_iso={place_iso}
               metric={bubbleMetric}
+              inTooltip={true}
             />
             {
               <div className={styles.data}>
