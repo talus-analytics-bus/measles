@@ -275,6 +275,11 @@ const GeomPopup = ({ popupData, bubbleMetric }) => {
               }
               </div>
             }
+            <div className={styles.buttons}>
+              <Link to={detailsPath}>
+                <button>View country</button>
+              </Link>
+            </div>
           </div>
         )
 
