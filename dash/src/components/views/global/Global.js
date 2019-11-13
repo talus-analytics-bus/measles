@@ -57,15 +57,15 @@ const Global = (props) => {
   // Track slider play timeouts
   const [ playTimeouts, setPlayTimeouts ] = React.useState([]);
 
+  // Track displayed region in paging bar chart
+  const [ pagingBarRegion, setPagingBarRegion ]  = React.useState('all');
+
   // Track which data series is being shown in the paging bar chart.
-  const [ sectionTitle, setSectionTitle ]  = React.useState('Measles cases reported by country'); // PLACEHOLDER
+  const [ sectionTitle, setSectionTitle ]  = React.useState(`Measles cases reported by country (${pagingBarRegion})`); // PLACEHOLDER
   const [ sectionDatetime, setSectionDatetime ]  = React.useState(''); // PLACEHOLDER
 
   // Track which data series is being shown in the paging bar chart.
   const [ pagingBarData, setPagingBarData ]  = React.useState('cumcaseload_totalpop'); // PLACEHOLDER
-
-  // Track displayed region in paging bar chart
-  const [ pagingBarRegion, setPagingBarRegion ]  = React.useState('all');
 
   // Track how many pages there are for the bar chart
   const [ pageCount, setPageCount ]  = React.useState(1);
@@ -439,6 +439,7 @@ const Global = (props) => {
           setOption={setPagingBarRegion}
           optionList={props.places.map(p => p.name)}
           allOption={"All countries"}
+          label={"WHO region"}
         />
       }
       </div>
@@ -577,7 +578,7 @@ const Global = (props) => {
   const getScatterData = () => {
     return [
       {
-        'title': 'Total measles cases, incidence, and vaccination coverage by country',
+        'title': `Total measles cases, incidence, and vaccination coverage by country`,
         'instructions': 'Drag slider to view data for different months. Hover on bubble to view data. Click bubble to pin country name. Double click to go to country page.',
         'chart_jsx': getScatterJsx,
         'date_time_fmt': () => '',

@@ -249,7 +249,14 @@ class PagingBar extends Chart {
 
       // X-axis label and section title
       xAxisLabel.text(`${chart.xMetricParams.label} (${chart.xMetricParams.dateFmt(chart.data.vals.x)})`);
-      chart.params.setSectionTitle(`${chart.xMetricParams.label} by country`);
+      const getRegionLabel = () => {
+        const r = chart.params.pagingBarRegion;
+        if (r === 'all') return '';
+        else if (r === 'Unspecified region') return ' (unspecified region)';
+        else return ` (${r})`;
+      };
+      const regionLabel = getRegionLabel();
+      chart.params.setSectionTitle(`${chart.xMetricParams.label} by country${regionLabel}`);
       chart.params.setSectionDatetime(chart.xMetricParams.dateFmt(chart.data.vals.x));
 
       // Get data for this page

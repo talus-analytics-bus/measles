@@ -8,23 +8,24 @@ import Util from '../../misc/Util.js';
  * Default is none.
  * @method Selectpicker
  */
-const Selectpicker = ({setOption, optionList, allOption, ...props}) => {
+const Selectpicker = ({setOption, optionList, allOption, label, ...props}) => {
 
   const handleChange = e => {
     setOption(e.target.value);
   };
   return (
     <div className={styles.selectpicker}>
-    <select onChange={handleChange} name="pagingBarOptions">
-      {
-        allOption && <option value="all">{allOption}</option>
-      }
-      {
-        optionList.map(o =>
-          <option value={o}>{o}</option>
-        )
-      }
-    </select>
+      <div className={styles.label}>{label}</div>
+      <select onChange={handleChange} name="pagingBarOptions">
+        {
+          allOption && <option value="all">{allOption}</option>
+        }
+        {
+          optionList.map(o =>
+            <option value={o}>{o}</option>
+          )
+        }
+      </select>
     </div>
   );
 };
