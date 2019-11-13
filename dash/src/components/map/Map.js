@@ -423,8 +423,6 @@ const Map = ({ fillObservations, bubbleObservations, trendObservations, incidenc
 
   const renderMarkerComponents = (incidenceObservations, mapRef) => {
 
-    // if (incidenceObservations.length === 0) return;
-    // // setMarkersLoaded(true)
     return markerComponents.map(component => component);
   };
 
