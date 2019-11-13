@@ -123,7 +123,7 @@ const initMap = (map, fillObservations, bubbleObservations, incidenceObservation
             value2 = caseLoadObservation['value'];
           }
           if (trendObservation) {
-            if (trendObservation.place_iso === 'VE') {
+            if (Util.yearlyReportIso2.includes(trendObservation.place_iso)) {
               value3 = null;
             }
             else {

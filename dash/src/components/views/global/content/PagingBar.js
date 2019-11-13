@@ -26,7 +26,6 @@ class PagingBar extends Chart {
           this.data.vals.x = params.data.y || [];
         }
         else if (view === 'coverage_mcv1_infant') { // most recent vaccinatin cov. val.
-          console.log('Doing vacc')
           this.data.vals.x = params.data.y2 || [];
         }
         else {
@@ -47,23 +46,17 @@ class PagingBar extends Chart {
               place_iso: v.place_iso,
             };
           })
-          .filter(v => v.value !== null && v.place_iso !== 'VE'); // skip VE for now.
+          .filter(v => v.value !== null && !Util.yearlyReportIso2.includes(v.place_iso)); // skip VE for now.
       };
 
       // Get list of allowed countries
       const filterData = (dataTmp) => {
         const curRegion = this.params.pagingBarRegion;
-        console.log('curRegion')
-        console.log(curRegion)
         if (curRegion === 'all') return dataTmp;
         else {
           const regionPlaces = this.params.places.find(d => d.name === curRegion).data;
-          console.log('regionPlaces')
-          console.log(regionPlaces)
 
           const allowedIso2Codes = regionPlaces.map(d => d[2]);
-          console.log('allowedIso2Codes')
-          console.log(allowedIso2Codes)
           return dataTmp.filter(d => allowedIso2Codes.includes(d.place_iso));
         }
       };
@@ -86,8 +79,6 @@ class PagingBar extends Chart {
         });
 
         this.data.bars = filterData(this.data.bars);
-        console.log('this.data.bars')
-        console.log(this.data.bars)
 
       // TODO remove data not for the time period we need
       // Sort data by descending value and assign page numbers
@@ -235,15 +226,6 @@ class PagingBar extends Chart {
 
     // Update function: Update chart to show countries on the given page num.
     chart.update = (pageNumber, view, region = undefined) => {
-
-      console.log('pageNumber')
-      console.log(pageNumber)
-      console.log('view')
-      console.log(view)
-      console.log('region')
-      console.log(region)
-      console.log('chart')
-      console.log(chart)
 
       // If view not the same as this view, set data and domains
       if (view !== chart.params.view || region !== chart.params.pagingBarRegion) {
