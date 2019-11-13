@@ -44,11 +44,18 @@ const Map = ({ fillObservations, bubbleObservations, trendObservations, incidenc
   // caseload_totalpop
   // incidence_monthly
   const [bubbleMetric, setBubbleMetric]  = React.useState('caseload_totalpop');
-  const [bubbleColorIsTrend, setBubbleColorIsTrend]  = React.useState(false);
+  const [bubbleColorIsTrend, setBubbleColorIsTrend]  = React.useState(true);
 
   let mapRef = React.createRef();
-  const showTrendColor = (show) => {
-    const map = mapRef.getMap();
+  const showTrendColor = (map, show) => {
+
+    // If the map argument was not defined or the map reference is not null,
+    // get the map variable from the mapRef.
+    const getMapFromRef =
+      mapRef !== null || map === undefined;
+    if (getMapFromRef) map = mapRef.getMap();
+
+    // Define color schemes for bubbles for MapBox
     const bubbleTrend = ['case',
         ['==', ['feature-state', 'value3'], null],
           Util.changeColors.missing,
@@ -72,6 +79,8 @@ const Map = ({ fillObservations, bubbleObservations, trendObservations, incidenc
         '#b02c3a',
         'white',
     ];
+
+    // Show or hide bubble trend color as needed.
     if (show) {
       map.setPaintProperty('metric-bubbles-incidence_monthly', 'circle-color', bubbleTrend);
       map.setPaintProperty('metric-bubbles-caseload_totalpop', 'circle-color', bubbleTrend);
@@ -136,8 +145,10 @@ const Map = ({ fillObservations, bubbleObservations, trendObservations, incidenc
     initMap(map, fillObservations, bubbleObservations, incidenceObservations, trendObservations, bubbleMetric, function afterMapLoaded () {
       map.setLayoutProperty('metric-bubbles-' + bubbleMetric, 'visibility', 'visible');
       if (!showDataToggles) setShowDataToggles(true);
+
+      // Show bubble trend color if selected.
+      showTrendColor(map, bubbleColorIsTrend);
     });
-    console.log('updated loadingNav -- Map')
     setLoadingNav(false);
   }, [])
 
@@ -152,6 +163,7 @@ const Map = ({ fillObservations, bubbleObservations, trendObservations, incidenc
     map.setLayoutProperty('metric-bubbles-incidence_monthly', 'visibility', 'none');
     map.setLayoutProperty('metric-bubbles-caseload_totalpop', 'visibility', 'none');
     map.setLayoutProperty('metric-bubbles-' + bubbleMetric, 'visibility', 'visible');
+
   }, [bubbleMetric]);
 
   const navTitleEl = document.getElementById('navTitle').textContent =
@@ -504,7 +516,7 @@ const Map = ({ fillObservations, bubbleObservations, trendObservations, incidenc
       <div
         className={styles.dataToggle}
         onClick={() => {
-          showTrendColor(!bubbleColorIsTrend);
+          showTrendColor(undefined, !bubbleColorIsTrend);
           setBubbleColorIsTrend(!bubbleColorIsTrend);
         }}
         >
