@@ -431,31 +431,6 @@ const Map = ({ fillObservations, bubbleObservations, trendObservations, incidenc
   // JSX for bubble metric toggle
   const renderDataToggles = () => {
 
-    // const bubbleTrendColorScale = (val) => {
-    //   const unexpectedColor = '#b3b3b3';
-    //
-    //   if (val === null) return unexpectedColor;
-    //   else if (val === 0) return 'white';
-    //   else {
-    //     const scaleNeg = d3.scaleLinear()
-    //       .domain([-1, 0])
-    //       .range(['darkgreen', 'white']); // TODO fix colors
-    //     const scalePos = d3.scaleLinear()
-    //       .domain([0, 2])
-    //       .range(['white', 'darkred']); // TODO fix colors
-    //     if (val < 0) {
-    //       if (val < -2) return scaleNeg(-2);
-    //       else return scaleNeg(val);
-    //     }
-    //     else {
-    //       if (val > 2) return scalePos(2);
-    //       else return scalePos(val);
-    //     }
-    //   }
-    //
-    //   return '#b3b3b3';
-    // };
-
     const bubbleTrend = ['case',
         ['==', ['feature-state', 'value3'], null],
           Util.changeColors.missing,
