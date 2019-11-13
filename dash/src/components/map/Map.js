@@ -47,7 +47,7 @@ const Map = ({ fillObservations, bubbleObservations, trendObservations, incidenc
   const [bubbleColorIsTrend, setBubbleColorIsTrend]  = React.useState(true);
 
   let mapRef = React.createRef();
-  const showTrendColor = (map, show) => {
+  const showTrendColor = ({map, show}) => {
 
     // If the map argument was not defined or the map reference is not null,
     // get the map variable from the mapRef.
@@ -147,7 +147,12 @@ const Map = ({ fillObservations, bubbleObservations, trendObservations, incidenc
       if (!showDataToggles) setShowDataToggles(true);
 
       // Show bubble trend color if selected.
-      showTrendColor(map, bubbleColorIsTrend);
+      showTrendColor(
+        {
+          map: map,
+          show: bubbleColorIsTrend
+        }
+      );
     });
     setLoadingNav(false);
   }, [])
@@ -516,7 +521,12 @@ const Map = ({ fillObservations, bubbleObservations, trendObservations, incidenc
       <div
         className={styles.dataToggle}
         onClick={() => {
-          showTrendColor(undefined, !bubbleColorIsTrend);
+          showTrendColor(
+            {
+              map: undefined,
+              show: !bubbleColorIsTrend
+            }
+          );
           setBubbleColorIsTrend(!bubbleColorIsTrend);
         }}
         >
