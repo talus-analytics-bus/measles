@@ -549,6 +549,7 @@ const App = () => {
         };
 
         setGlobalComponent(<Global
+          places={places} // for paging bar chart regions
           chartParams={chartParams}
         />);
       }
@@ -639,9 +640,9 @@ const App = () => {
   const modalToShow = {
     chrome: () => welcomeModal,
     firefox: () => welcomeModal,
+    safari: (browser) => welcomeModal,
     edge: (browser) => browserModal('Edge'),
     ie: (browser) => browserModal('Internet Explorer'),
-    safari: (browser) => browserModal('Safari'),
     opera: (browser) => browserModal('Opera'),
     default: (browser) => browserModal('an unsupported browser'),
   };

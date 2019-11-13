@@ -1,0 +1,14 @@
+@import '../../../assets/styles/colors.scss';
+
+.selectpicker {
+  font-family: 'Open Sans', sans-serif;
+  .label {
+    // font-style: italic;
+    margin-bottom: 2px;
+  }
+  select {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 1em;
+  }
+  margin: 10px 5px;
+}

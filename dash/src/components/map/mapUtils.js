@@ -123,7 +123,12 @@ const initMap = (map, fillObservations, bubbleObservations, incidenceObservation
             value2 = caseLoadObservation['value'];
           }
           if (trendObservation) {
-            value3 = trendObservation['percent_change']
+            if (Util.yearlyReportIso2.includes(trendObservation.place_iso)) {
+              value3 = null;
+            }
+            else {
+              value3 = trendObservation['percent_change'];
+            }
           }
           const place_id = +observation['place_id']
           const stale = getStaleStatus(observation, 'month');

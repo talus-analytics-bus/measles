@@ -55,7 +55,7 @@ $value-change-gradient: linear-gradient(90deg, $value-green 0%, white 50%, $valu
 $loading-spinner-gradient: radial-gradient(
       circle at top right,
       white,
-      transparent 75%
+      rgba(255,255,255,0.0001) 75%
     );
 // $loading-spinner-gradient: linear-gradient(90deg, rgba(255, 255, 255, 0.5) 0%, transparent 100%);
 // $loading-spinner-gradient: linear-gradient(90deg, white 0%, transparent 100%);

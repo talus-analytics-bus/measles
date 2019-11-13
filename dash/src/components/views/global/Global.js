@@ -10,6 +10,7 @@ import InfoTooltip from '../../../components/misc/InfoTooltip.js';
 import infoTooltipStyles from '../../../components/misc/infotooltip.module.scss';
 
 import MiniMap from '../../../components/map/MiniMap.js'
+import Selectpicker from '../../../components/chart/Selectpicker/Selectpicker.js'
 
 // Utilities (date formatting, etc.)
 import Util from '../../../components/misc/Util.js'
@@ -56,8 +57,11 @@ const Global = (props) => {
   // Track slider play timeouts
   const [ playTimeouts, setPlayTimeouts ] = React.useState([]);
 
+  // Track displayed region in paging bar chart
+  const [ pagingBarRegion, setPagingBarRegion ]  = React.useState('all');
+
   // Track which data series is being shown in the paging bar chart.
-  const [ sectionTitle, setSectionTitle ]  = React.useState('Measles cases reported by country'); // PLACEHOLDER
+  const [ sectionTitle, setSectionTitle ]  = React.useState(`Measles cases reported by country (${pagingBarRegion})`); // PLACEHOLDER
   const [ sectionDatetime, setSectionDatetime ]  = React.useState(''); // PLACEHOLDER
 
   // Track which data series is being shown in the paging bar chart.
@@ -103,6 +107,8 @@ const Global = (props) => {
           chart.params.setRedirectPath = setRedirectPath;
           chart.params.setSectionTitle = setSectionTitle;
           chart.params.setSectionDatetime = setSectionDatetime;
+          chart.params.pagingBarRegion = pagingBarRegion;
+          chart.params.places = props.places;
           // chart.params.noResizeEvent = false;
         }
 
@@ -137,11 +143,16 @@ const Global = (props) => {
 
   React.useEffect(() => {
     const PagingBarChart = charts.find(d => d.params.className === 'PagingBar');
-    if (PagingBarChart) PagingBarChart.update(curPage, pagingBarData);
+    if (PagingBarChart) {
+      if (pagingBarRegion !== PagingBarChart.params.pagingBarRegion) {
+        setCurPage(1);
+      }
+      PagingBarChart.update(curPage, pagingBarData, pagingBarRegion);
+    }
 
     // Rebuild tooltips after the chart is drawn
     ReactTooltip.rebuild();
-  }, [curPage, pagingBarData])
+  }, [curPage, pagingBarData, pagingBarRegion])
 
   // Updates scatterplot and slider label when slider is changed.
   const handleSliderChange = (valNumeric, a, b) => {
@@ -422,6 +433,15 @@ const Global = (props) => {
           </div>
         )
       }
+      {
+        // Selectpicker for region
+        <Selectpicker
+          setOption={setPagingBarRegion}
+          optionList={props.places.map(p => p.name)}
+          allOption={"All countries"}
+          label={"WHO region"}
+        />
+      }
       </div>
     );
 
@@ -558,7 +578,7 @@ const Global = (props) => {
   const getScatterData = () => {
     return [
       {
-        'title': 'Total measles cases, incidence, and vaccination coverage by country',
+        'title': `Total measles cases, incidence, and vaccination coverage by country`,
         'instructions': 'Drag slider to view data for different months. Hover on bubble to view data. Click bubble to pin country name. Double click to go to country page.',
         'chart_jsx': getScatterJsx,
         'date_time_fmt': () => '',
@@ -614,8 +634,8 @@ const Global = (props) => {
     ];
   };
   // If loading do not show JSX content.
-  // console.log('props')
-  // console.log(props)
+  console.log('props')
+  console.log(props)
 
   const curSliderValStr = curSliderVal.toLocaleString('en-us', {
     month: 'short',
@@ -850,6 +870,16 @@ const Global = (props) => {
                             <div>
                               <span className={stylesTooltip.value}>{item.value}</span>
                               <span className={stylesTooltip.unit}>{item.label}</span>
+                            </div>
+                          }
+                          {
+                            // If delta exists, add that
+                            (item.value !== null && item.deltaData && item.deltaData.delta !== undefined) && !item.notAvail && <div className={classNames(stylesTooltip.delta, stylesTooltip[item.deltaData.direction])}>
+                              <i className={classNames('material-icons')}>play_arrow</i>
+                              <span className={stylesTooltip['delta-value']}>
+                                <span className={stylesTooltip['num']}>{item.deltaData.deltaFmt}</span>
+                              </span>
+                              <span className={stylesTooltip['delta-text']}>{Util.getDeltaWord(item.deltaData.delta)} from<br/>previous month</span>
                             </div>
                           }
                           {

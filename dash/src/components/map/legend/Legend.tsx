@@ -141,7 +141,7 @@ const Legend = (props: any) => {
                         0%
                       </div>
                       <div className={styles.legendLabel}>
-                        + 200%<br/>or more
+                        +100%<br/>or more
                       </div>
                     </div>
                   </div>

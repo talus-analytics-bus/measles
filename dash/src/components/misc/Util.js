@@ -103,6 +103,19 @@ Util.getCumulativeCount = (data, nMonth = 12, lagMonths = 0) => {
 
 };
 
+// Calculate percent change between two values
+Util.getPercentChange = (prv, cur) => {
+  const diff = cur - prv;
+  if (diff === 0) return 0;
+  else if (prv === 0) {
+    if (diff < 0) return -1000000000;
+    else return 1000000000;
+  }
+  else {
+    return (diff / prv);
+  }
+};
+
 Util.getCumulativeTrend = (data, end, lagMonths = 12) => {
 
   const start = Util.getCumulativeCount(
@@ -111,19 +124,7 @@ Util.getCumulativeTrend = (data, end, lagMonths = 12) => {
     lagMonths, // lag months
   );
 
-  // Calculate percent change between two values
-  const getPercentChange = (prv, cur) => {
-    const diff = cur - prv;
-    if (diff === 0) return 0;
-    else if (prv === 0) {
-      if (diff < 0) return -1000000000;
-      else return 1000000000;
-    }
-    else {
-      return (diff / prv);
-    }
-  };
-  const percentChange = getPercentChange(start.value, end.value);
+  const percentChange = Util.getPercentChange(start.value, end.value);
 
   return {
     "change_per_period": end.value - start.value,
@@ -684,7 +685,7 @@ Util.percentizeDelta = (deltaTmp) => {
 	const d3Format = d3.format(',.0%');
 	const d3FormattedNum = d3Format(delta);
 
-  if (Math.abs(delta) > 2) return '>200%';
+  if (Math.abs(delta) > 1) return '>100%';
 
 	if (d3FormattedNum === "0%" && delta !== 0) {
 		return "<1%";

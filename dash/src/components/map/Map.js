@@ -44,9 +44,52 @@ const Map = ({ fillObservations, bubbleObservations, trendObservations, incidenc
   // caseload_totalpop
   // incidence_monthly
   const [bubbleMetric, setBubbleMetric]  = React.useState('caseload_totalpop');
-  const [bubbleColorIsTrend, setBubbleColorIsTrend]  = React.useState(false);
+  const [bubbleColorIsTrend, setBubbleColorIsTrend]  = React.useState(true);
 
-  let mapRef = React.createRef()
+  let mapRef = React.createRef();
+  const showTrendColor = ({map, show}) => {
+
+    // If the map argument was not defined or the map reference is not null,
+    // get the map variable from the mapRef.
+    const getMapFromRef =
+      mapRef !== null || map === undefined;
+    if (getMapFromRef) map = mapRef.getMap();
+
+    // Define color schemes for bubbles for MapBox
+    const bubbleTrend = ['case',
+        ['==', ['feature-state', 'value3'], null],
+          Util.changeColors.missing,
+        ['==', ['feature-state', 'value3'], 0],
+          Util.changeColors.same,
+        [
+          'interpolate',
+            ["linear"],
+              ["feature-state", "value3"],
+                -1, Util.changeColors.neg,
+                0, Util.changeColors.same,
+                1, Util.changeColors.pos,
+        ],
+    ];
+
+    const bubbleRed = [
+        'case',
+        ['==', ['feature-state', 'stale'], false],
+        '#b02c3a',
+        ['==', ['feature-state', 'stale'], true],
+        '#b02c3a',
+        'white',
+    ];
+
+    // Show or hide bubble trend color as needed.
+    if (show) {
+      map.setPaintProperty('metric-bubbles-incidence_monthly', 'circle-color', bubbleTrend);
+      map.setPaintProperty('metric-bubbles-caseload_totalpop', 'circle-color', bubbleTrend);
+    }
+    else {
+      map.setPaintProperty('metric-bubbles-incidence_monthly', 'circle-color', bubbleRed);
+      map.setPaintProperty('metric-bubbles-caseload_totalpop', 'circle-color', bubbleRed);
+    }
+  };
 
   // Given incidence value, return scaled linear radius of marker.
   const markerSizeScale = d3.scaleLinear()
@@ -102,8 +145,15 @@ const Map = ({ fillObservations, bubbleObservations, trendObservations, incidenc
     initMap(map, fillObservations, bubbleObservations, incidenceObservations, trendObservations, bubbleMetric, function afterMapLoaded () {
       map.setLayoutProperty('metric-bubbles-' + bubbleMetric, 'visibility', 'visible');
       if (!showDataToggles) setShowDataToggles(true);
+
+      // Show bubble trend color if selected.
+      showTrendColor(
+        {
+          map: map,
+          show: bubbleColorIsTrend
+        }
+      );
     });
-    console.log('updated loadingNav -- Map')
     setLoadingNav(false);
   }, [])
 
@@ -118,6 +168,7 @@ const Map = ({ fillObservations, bubbleObservations, trendObservations, incidenc
     map.setLayoutProperty('metric-bubbles-incidence_monthly', 'visibility', 'none');
     map.setLayoutProperty('metric-bubbles-caseload_totalpop', 'visibility', 'none');
     map.setLayoutProperty('metric-bubbles-' + bubbleMetric, 'visibility', 'visible');
+
   }, [bubbleMetric]);
 
   const navTitleEl = document.getElementById('navTitle').textContent =
@@ -423,63 +474,11 @@ const Map = ({ fillObservations, bubbleObservations, trendObservations, incidenc
 
   const renderMarkerComponents = (incidenceObservations, mapRef) => {
 
-    // if (incidenceObservations.length === 0) return;
-    // // setMarkersLoaded(true)
     return markerComponents.map(component => component);
   };
 
   // JSX for bubble metric toggle
   const renderDataToggles = () => {
-
-    // const bubbleTrendColorScale = (val) => {
-    //   const unexpectedColor = '#b3b3b3';
-    //
-    //   if (val === null) return unexpectedColor;
-    //   else if (val === 0) return 'white';
-    //   else {
-    //     const scaleNeg = d3.scaleLinear()
-    //       .domain([-1, 0])
-    //       .range(['darkgreen', 'white']); // TODO fix colors
-    //     const scalePos = d3.scaleLinear()
-    //       .domain([0, 2])
-    //       .range(['white', 'darkred']); // TODO fix colors
-    //     if (val < 0) {
-    //       if (val < -2) return scaleNeg(-2);
-    //       else return scaleNeg(val);
-    //     }
-    //     else {
-    //       if (val > 2) return scalePos(2);
-    //       else return scalePos(val);
-    //     }
-    //   }
-    //
-    //   return '#b3b3b3';
-    // };
-
-    const bubbleTrend = ['case',
-        ['==', ['feature-state', 'value3'], null],
-          Util.changeColors.missing,
-        ['==', ['feature-state', 'value3'], 0],
-          Util.changeColors.same,
-        [
-          'interpolate',
-            ["linear"],
-              ["feature-state", "value3"],
-                -1, Util.changeColors.neg,
-                0, Util.changeColors.same,
-                1, Util.changeColors.posLight,
-                2, Util.changeColors.pos,
-        ],
-    ];
-
-    const bubbleRed = [
-        'case',
-        ['==', ['feature-state', 'stale'], false],
-        '#b02c3a',
-        ['==', ['feature-state', 'stale'], true],
-        '#b02c3a',
-        'white',
-    ];
 
     const dataToggles = (
       <div className={
@@ -522,15 +521,12 @@ const Map = ({ fillObservations, bubbleObservations, trendObservations, incidenc
       <div
         className={styles.dataToggle}
         onClick={() => {
-          const map = mapRef.getMap();
-          if (bubbleColorIsTrend) {
-            map.setPaintProperty('metric-bubbles-incidence_monthly', 'circle-color', bubbleRed);
-            map.setPaintProperty('metric-bubbles-caseload_totalpop', 'circle-color', bubbleRed);
-          }
-          else {
-            map.setPaintProperty('metric-bubbles-incidence_monthly', 'circle-color', bubbleTrend);
-            map.setPaintProperty('metric-bubbles-caseload_totalpop', 'circle-color', bubbleTrend);
-          }
+          showTrendColor(
+            {
+              map: undefined,
+              show: !bubbleColorIsTrend
+            }
+          );
           setBubbleColorIsTrend(!bubbleColorIsTrend);
         }}
         >

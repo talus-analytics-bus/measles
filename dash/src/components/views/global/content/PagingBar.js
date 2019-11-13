@@ -26,7 +26,6 @@ class PagingBar extends Chart {
           this.data.vals.x = params.data.y || [];
         }
         else if (view === 'coverage_mcv1_infant') { // most recent vaccinatin cov. val.
-          console.log('Doing vacc')
           this.data.vals.x = params.data.y2 || [];
         }
         else {
@@ -47,7 +46,19 @@ class PagingBar extends Chart {
               place_iso: v.place_iso,
             };
           })
-          .filter(v => v.value !== null && v.place_iso !== 'VE'); // skip VE for now.
+          .filter(v => v.value !== null && !Util.yearlyReportIso2.includes(v.place_iso)); // skip VE for now.
+      };
+
+      // Get list of allowed countries
+      const filterData = (dataTmp) => {
+        const curRegion = this.params.pagingBarRegion;
+        if (curRegion === 'all') return dataTmp;
+        else {
+          const regionPlaces = this.params.places.find(d => d.name === curRegion).data;
+
+          const allowedIso2Codes = regionPlaces.map(d => d[2]);
+          return dataTmp.filter(d => allowedIso2Codes.includes(d.place_iso));
+        }
       };
 
       const setBarData = () => {
@@ -61,11 +72,13 @@ class PagingBar extends Chart {
                 ...yDatum,
                 value: xDatum.value,
                 metric: xDatum.metric,
-                join_id: yDatum.place_name + '-' + view,
+                join_id: yDatum.place_name + '-' + view + '-' + this.params.pagingBarRegion,
               }
             );
           }
         });
+
+        this.data.bars = filterData(this.data.bars);
 
       // TODO remove data not for the time period we need
       // Sort data by descending value and assign page numbers
@@ -109,7 +122,7 @@ class PagingBar extends Chart {
     // if (!this.params.margin) {
     this.setMargin({
       top: 47,
-      right: 5,
+      right: 30,
       // right: longestBarValueWidth + 5,
       bottom: 20,
       left: 200-30,
@@ -212,21 +225,23 @@ class PagingBar extends Chart {
     };
 
     // Update function: Update chart to show countries on the given page num.
-    chart.update = (pageNumber, view) => {
+    chart.update = (pageNumber, view, region = undefined) => {
 
       // If view not the same as this view, set data and domains
-      if (view !== chart.params.view) {
+      if (view !== chart.params.view || region !== chart.params.pagingBarRegion) {
+        if (region) chart.params.pagingBarRegion = region;
         chart.setData(view);
 
         // update x scale
-        const maxX = d3.max(chart.data.bars, d => d.value);
+        const maxX = view === 'coverage_mcv1_infant' ? 100 : d3.max(chart.data.bars, d => d.value);
 
         // Set domain, update axis
         x.domain([0, maxX])
           .nice();
         xAxis
           .tickFormat(chart.xMetricParams.tickFormat)
-        chart[styles['x-axis']].call(xAxis);
+
+        chart[styles['x-axis']].select('g').call(xAxis);
 
         // Set color scale
         xColor = Util.getColorScaleForMetric(view, [0, maxX]);
@@ -234,13 +249,18 @@ class PagingBar extends Chart {
 
       // X-axis label and section title
       xAxisLabel.text(`${chart.xMetricParams.label} (${chart.xMetricParams.dateFmt(chart.data.vals.x)})`);
-      chart.params.setSectionTitle(`${chart.xMetricParams.label} by country`);
+      const getRegionLabel = () => {
+        const r = chart.params.pagingBarRegion;
+        if (r === 'all') return '';
+        else if (r === 'Unspecified region') return ' (unspecified region)';
+        else return ` (${r})`;
+      };
+      const regionLabel = getRegionLabel();
+      chart.params.setSectionTitle(`${chart.xMetricParams.label} by country${regionLabel}`);
       chart.params.setSectionDatetime(chart.xMetricParams.dateFmt(chart.data.vals.x));
 
       // Get data for this page
       const data = chart.data.bars.filter(d => d.page === pageNumber-1);
-      console.log('data')
-      console.log(data)
 
       // Append dummy bars if needed
       let i = 0;
@@ -260,6 +280,7 @@ class PagingBar extends Chart {
       const yTickLabels = data.map(d => d.place_name);
       y.domain(yTickLabels);
       chart[styles['y-axis']].call(yAxis);
+
 
       // // Get position of y-label given widest y-axis tick label.
       // const xAxisLabelPos = chart.getYLabelPos(
@@ -295,6 +316,7 @@ class PagingBar extends Chart {
               .attr('x', -32)
               .attr('y', d => y(d.place_name))
               .attr('height', y.bandwidth())
+              .attr('width', y.bandwidth())
               .attr('href', d => `/flags/${d.place_iso}.png`);
 
 
@@ -327,7 +349,7 @@ class PagingBar extends Chart {
         );
     };
 
-    chart.update(1, 'cumcaseload_totalpop');
+    chart.update(1, 'cumcaseload_totalpop', 'all');
 
     // Reduce width at the end
     chart.svg.node().parentElement.classList.add(styles.drawn);
