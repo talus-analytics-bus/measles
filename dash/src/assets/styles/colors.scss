@@ -62,5 +62,8 @@ $loading-spinner-gradient: radial-gradient(
 
 
 // MEDIA QUERIES
-$phone: "screen and (max-width : 375px)";
-$phone-width: 375px;
+$phone: "screen and (max-width : 670px)";
+$phone-narrow: "screen and (max-width : 375px)";
+// $phone: "screen and (max-width : 375px)";
+$phone-width: 670px;
+$phone-width-narrow: 375px;

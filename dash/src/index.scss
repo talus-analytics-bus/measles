@@ -296,7 +296,8 @@ input:empty:before {
   z-index: 10 !important;
   @media #{$phone} {
     width: 100% !important;
-    max-height: 100vh;
+    max-height: 100vh !important;
+    margin-top: 0 !important;
   }
 }
 
