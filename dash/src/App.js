@@ -637,7 +637,7 @@ const App = () => {
   //   </div>
   // );
 
-  const modalToShow = {
+  const modalToShow = Util.mobilecheck() ? { default: () => browserModal('a mobile browser') } : {
     chrome: () => welcomeModal,
     firefox: () => welcomeModal,
     safari: (browser) => welcomeModal,
