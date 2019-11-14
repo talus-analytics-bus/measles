@@ -685,8 +685,8 @@ const App = () => {
           </div>
           <div className={styles.content}>
             <div className={styles.text}>
-              <p>The Measles Tracker was designed for Chrome and Firefox desktop browsers, but you seem to be using {browser}.</p>
-              <p>If this is correct, please open the Measles Tracker in Chrome or Firefox instead.</p>
+              <p>The Measles Tracker was designed for Chrome, Firefox, and Safari desktop browsers, but you seem to be using {browser}.</p>
+              <p>If this is correct, please open the Measles Tracker in Chrome, Firefox, or Safari for desktop instead.</p>
             </div>
             <button className={classNames('button', 'modal')} onClick={close}>Continue</button>
           </div>
