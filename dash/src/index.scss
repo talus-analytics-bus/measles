@@ -294,6 +294,10 @@ input:empty:before {
   padding: 10px !important;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
   z-index: 10 !important;
+  @media #{$phone} {
+    width: 100% !important;
+    max-height: 100vh;
+  }
 }
 
 $iconSize: 20px;
