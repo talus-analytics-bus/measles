@@ -33,10 +33,6 @@ $spacing: 20px;
   .sidebars {
     display: flex;
     flex-flow: column;
-    // width: auto;
-    // min-width: 508px;
-    // max-width: 30%;
-    // min-width: 500px;
 
     .sidebar {
       &:not(:first-child) {
@@ -89,8 +85,6 @@ $spacing: 20px;
     // TODO confirm cross-browser compat.
     transform: scale(.75);
     transform-origin: top center;
-    // margin-bottom: -90px;
-    // margin-right: -125px;
     margin: 0 -62.5px -90px -52.5px;
 
     &, & * { cursor: default };
@@ -107,10 +101,6 @@ $spacing: 20px;
       justify-content: space-between;
       position: relative;
       flex-flow: row;
-
-      // .text {
-      //   max-width: 50%;
-      // }
 
       .chart {
         display: flex;
@@ -142,7 +132,6 @@ $spacing: 20px;
                 font-weight: normal;
                 font-family: 'Open Sans', sans-serif;
                 text-align: center;
-                ;
                 &.labelTop {
                   top: calc(-37px - 1.5em);
                 }
@@ -181,10 +170,6 @@ $spacing: 20px;
       font-size: 1.298em;
       font-weight: bold;
 
-      // > span {
-      //   display: flex;
-      // }
-
       .info {
         // TODO
         img {
@@ -198,14 +183,10 @@ $spacing: 20px;
       flex-flow: row;
       position: relative;
       width: 100%;
-      // justify-content: space-between;
 
       > span {
         width: 40%;
       }
-      // .stackedValues {
-      //   display: none;
-      // }
 
       .value2Content {
         display: flex;
@@ -274,8 +255,6 @@ $spacing: 20px;
         font-weight: bold;
 
         .jee {
-          // padding-left: 5px;
-          // padding-bottom: 5px;
           margin-top: 5px;
           line-height: 2.5;
           font-size: .8em;
@@ -287,7 +266,6 @@ $spacing: 20px;
             margin-right: 5px;
             .jeeBlock {
 
-              // position: absolute;
               height: $jeeBlockSize;
               width: $jeeBlockSize;
               margin-bottom: 1px;
@@ -295,7 +273,6 @@ $spacing: 20px;
               &:last-child {
                 margin-bottom: 0;
               }
-              // border: 1px solid #f1f1f1;
             }
           }
         }
@@ -455,12 +432,14 @@ $spacing: 20px;
 
   // $itemMaxWidth: 1140px;
   .main {
+    display: flex;
+    flex-flow: row wrap;
+
     margin-right: $spacing*2;
     margin-top: 10px;
     margin-bottom: 40px;
     width: 100%;
-    // width: calc(67% - 0px);
-    // width: 100%;
+    // max-width: 300px;
 
     .source {
       text-align: right;
@@ -468,8 +447,17 @@ $spacing: 20px;
     }
 
     .itemContainer {
+      flex-shrink: 0;
+
+      &:first-child {
+        flex-grow: 2;
+      }
+
+      &:not(:first-child) {
+        width: 50%;
+      }
+
       &:not(:last-child) {
-        // &:first-child {
         border-bottom: 1px solid #b2b2b2;
         padding-bottom: 10px;
       }
@@ -477,7 +465,6 @@ $spacing: 20px;
         margin-top: 18px;
       }
       .item {
-        // max-width: $itemMaxWidth;
         .title {
           font-family: 'rawline', sans-serif;
           font-size: 1.298em;
@@ -673,33 +660,8 @@ $spacing: 20px;
     margin-left: 5px;
   }
 }
-// .delta {
-//   &.inc {
-//     i {
-//       transform: rotate(-90deg);
-//       transform-origin: center;
-//     }
-//     i, .delta-value {
-//       color: $value-red;
-//     }
-//   }
-//   &.dec {
-//     i {
-//       transform: rotate(90deg);
-//     }
-//     i, .delta-value {
-//       color: $value-green;
-//     }
-//   }
-//   &.same {
-//     .delta-text { margin-left: 5px;}
-//     .delta-value, i {
-//       display: none;
-//     }
-//   }
-// }
+
 .deltaBadge {
-  // margin-right: auto;
   &.inc {
     i {
       transform: rotate(-90deg);
@@ -725,7 +687,6 @@ $spacing: 20px;
     }
     line-height: 1.1;
     width: min-content;
-    // background-color: $grey;
   }
 }
 

@@ -848,6 +848,12 @@ const Details = (props) => {
   },
   [slidingLineMetric]);
 
+  // Update sliding line chart sizing when it is created
+  React.useEffect(() => {
+    if (slidingLine !== null)
+      slidingLine.onResize(slidingLine);
+  }, [slidingLine])
+
   // Get severity tooltip text, which is dynamic.
   const getSeverityTooltip = (item) => {
     return `Five caseload severity levels were determined based on the quintiles of monthly incidence values for all countries from Jan 2011 through Aug 2019. In this way, the severity of a caseload in a given country is assessed relative to historical, global trends in measles incidence over time.`;
