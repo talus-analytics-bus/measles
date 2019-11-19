@@ -395,7 +395,8 @@ const Details = (props) => {
     return finalPos;
   };
   const getVaccActiveWedgeWidth = (val) => {
-    return (val/100) * gutterWidth;
+    return `${val}%`
+    // return (val/100) * gutterWidth;
   };
 
   // Get continuous vacc color scale
@@ -416,7 +417,6 @@ const Details = (props) => {
         <div className={classNames(styles.trapezoidContainers)}>
           {
             [0, 1].map(bin =>
-              <div className={styles.rectContainer}>
                 <div
                 className={classNames(
                   styles.rect,
@@ -445,7 +445,6 @@ const Details = (props) => {
                   }
                   </div>
                 </div>
-              </div>
             )
           }
         </div>

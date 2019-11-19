@@ -348,8 +348,9 @@ $spacing: 20px;
         }
 
         &.vaccChart {
+          width: 75%;
           .gutter {
-            width: 608px;
+            width: 100%;
           }
           .active {
             position: absolute;
@@ -452,7 +453,7 @@ $spacing: 20px;
     .itemContainer {
 
       padding-right: 15px;
-      
+
 
       &:first-child {
         flex-basis: 100%;
