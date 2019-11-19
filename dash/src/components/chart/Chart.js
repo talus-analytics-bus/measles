@@ -394,10 +394,11 @@ class Chart {
       // https://css-tricks.com/snippets/jquery/done-resizing-event/
       let timer;
       window.addEventListener('resize', () => {
-        clearTimeout(timer);
-        timer = window.setTimeout(() => {
-          onResize(this);
-        }, 100);
+        onResize(this);
+        // clearTimeout(timer);
+        // timer = window.setTimeout(() => {
+        //   onResize(this);
+        // }, 100);
       });
     }
 

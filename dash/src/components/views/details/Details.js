@@ -216,10 +216,12 @@ const Details = (props) => {
   const binData = getWedgeChartBin();
 
   const getWedgeChart = (val) => {
-    // Add event listener for resize
-    window.addEventListener('resize', function resizeWedge () {
+
+    function resizeWedge () {
       // Get top elements of traps
       const tops = document.getElementsByClassName(styles.top);
+
+      if (tops.length === 0) return;
 
       // Set initial width to zero
       // Set width
@@ -237,16 +239,19 @@ const Details = (props) => {
       for (let i = 0; i < tops.length; i++) {
         tops[i].style.borderLeftWidth = `${newWidth - 3}px`;
       }
-    });
+    }
+
+    // Add event listener for resize
+    window.addEventListener('resize', resizeWedge);
     if (val === 0) return (
         <div className={classNames(styles.noCases, 'notAvail')}>
         No cases reported
         </div>
     );
 
+    resizeWedge();
+
     // Get vaccination chart bins
-
-
     const wedgeColor = '#9d3e4c';
     // const wedgeColor = wedgeColorScale(binData.i / 4);
 
