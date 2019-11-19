@@ -147,7 +147,7 @@ $spacing: 20px;
   }
 
   .itemContainer {
-    min-width: 410px;
+    // min-width: 410px;
   }
   .itemContainer:not(:first-child) {
     margin-top: $spacing;
@@ -182,6 +182,8 @@ $spacing: 20px;
       display: flex;
       flex-flow: row;
       position: relative;
+      // justify-content: center;
+
       width: 100%;
 
       > span {
@@ -434,6 +436,7 @@ $spacing: 20px;
   .main {
     display: flex;
     flex-flow: row wrap;
+    // justify-content: space-between;
 
     margin-right: $spacing*2;
     margin-top: 10px;
@@ -447,24 +450,30 @@ $spacing: 20px;
     }
 
     .itemContainer {
-      flex-shrink: 0;
+
+      padding-right: 15px;
+      
 
       &:first-child {
-        flex-grow: 2;
+        flex-basis: 100%;
       }
 
       &:not(:first-child) {
-        width: 50%;
+        flex-basis: auto;
+        flex-grow: 1;
+        padding-top: 10px;
+        border-top: 1px solid #b2b2b2;
+        &:not(:last-child) {
+        }
       }
 
-      &:not(:last-child) {
-        border-bottom: 1px solid #b2b2b2;
-        padding-bottom: 10px;
-      }
+
       &:first-child {
         margin-top: 18px;
       }
       .item {
+        min-height: 175px;
+
         .title {
           font-family: 'rawline', sans-serif;
           font-size: 1.298em;

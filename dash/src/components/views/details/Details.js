@@ -31,6 +31,7 @@ const Details = (props) => {
 
   // Track whether the sliding line chart has been drawn
   const [ slidingLineMetric, setSlidingLineMetric ]  = React.useState('caseload_totalpop');
+  const [ resizedSlidingLineOnce, setResizedSlidingLineOnce ]  = React.useState(false);
 
   // Track SlidingLine chart tooltip data
   const [ tooltipData, setTooltipData ]  = React.useState(null);
@@ -850,8 +851,10 @@ const Details = (props) => {
 
   // Update sliding line chart sizing when it is created
   React.useEffect(() => {
-    if (slidingLine !== null)
-      slidingLine.onResize(slidingLine);
+    if (slidingLine !== null && !resizedSlidingLineOnce) {
+      setResizedSlidingLineOnce(true);
+      slidingLine.update(slidingLineMetric);
+    }
   }, [slidingLine])
 
   // Get severity tooltip text, which is dynamic.
