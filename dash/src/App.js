@@ -547,7 +547,7 @@ const App = () => {
           </div>
           <div className={styles.content}>
             <div className={styles.text}>
-              <p>The Measles Tracker integrates, analyzes, and visualizes measles surveillance and vaccination data to provide a comprehensive overview of the current status of the measles outbreak globally, including the populations and regions most at risk. The dashboard was developed by <b><a target="_blank" href="http://talusanalytics.com/">Talus Analytics</a></b> and is designed to be used in Chrome or Firefox.</p>
+              <p>The Measles Tracker integrates, analyzes, and visualizes measles surveillance and vaccination data to provide a comprehensive overview of the current status of the measles outbreak globally, including the populations and regions most at risk. The dashboard was developed by <b><a target="_blank" href="http://talusanalytics.com/">Talus Analytics</a></b> and is designed to be used in Chrome, Firefox, or Safari desktop browsers.</p>
             </div>
             <button className={classNames('button', 'modal')} onClick={close}>Continue</button>
           </div>
