@@ -292,6 +292,14 @@ $spacing: 20px;
         flex-flow: row;
         position: relative;
 
+        width: 100%;
+        .trapezoidContainers {
+          width: 100%;
+          .trapezoidContainer {
+            width: 100%;
+          }
+        }
+
         &.shapes {
           flex-flow: column;
           justify-content: center;
@@ -299,7 +307,9 @@ $spacing: 20px;
         }
 
         // Trapezoid sizing for normal wedge chart
-        $wedge-width: 119px;
+        $wedge-width-tmp: 100%;
+        $wedge-width: $wedge-width-tmp;
+        // $wedge-width: 119px;
         // $wedge-width: 78.5px;
         $wedge-height: 8px;
 
@@ -315,14 +325,18 @@ $spacing: 20px;
         }
         .trapezoid {
           margin-right: 1px;
+          width: 100%;
           .top {
+            // width: 100%;
+
             height: 0;
-            border-width:0 0 $wedge-height-btm $wedge-width;
+            border-width:0 0 $wedge-height-btm 1px;
             border-style:solid;
             border-color:transparent $light-grey-2 $light-grey-2 transparent;
           }
 
           .bottom {
+            // width: 100%;
             background-color: $light-grey-2;
           }
         }
