@@ -216,6 +216,28 @@ const Details = (props) => {
   const binData = getWedgeChartBin();
 
   const getWedgeChart = (val) => {
+    // Add event listener for resize
+    window.addEventListener('resize', function resizeWedge () {
+      // Get top elements of traps
+      const tops = document.getElementsByClassName(styles.top);
+
+      // Set initial width to zero
+      // Set width
+      for (let i = 0; i < tops.length; i++) {
+        tops[i].style.borderLeftWidth = '0px';
+      }
+
+      // Calculate needed width of trap tops
+      // TODO elegantly.
+      const newWidth = tops[0]
+        .parentElement.parentElement.parentElement.parentElement.parentElement
+        .getBoundingClientRect().width / 6.57;
+
+      // Set width
+      for (let i = 0; i < tops.length; i++) {
+        tops[i].style.borderLeftWidth = `${newWidth - 3}px`;
+      }
+    });
     if (val === 0) return (
         <div className={classNames(styles.noCases, 'notAvail')}>
         No cases reported
