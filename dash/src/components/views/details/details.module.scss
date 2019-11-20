@@ -459,20 +459,22 @@ $spacing: 20px;
     margin-top: 10px;
     margin-bottom: 40px;
     width: 100%;
-    // max-width: 300px;
-
-    .source {
-      text-align: right;
-      margin-left: auto;
-    }
 
     .itemContainer {
 
       padding-right: 15px;
 
+      .source {
+        margin-left: 0;
+        text-align: left;
+      }
 
       &:first-child {
         flex-basis: 100%;
+        .source {
+          // text-align: right;
+          // margin-left: auto;
+        }
       }
 
       &:not(:first-child) {
