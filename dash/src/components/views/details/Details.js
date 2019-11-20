@@ -31,6 +31,7 @@ const Details = (props) => {
 
   // Track whether the sliding line chart has been drawn
   const [ slidingLineMetric, setSlidingLineMetric ]  = React.useState('caseload_totalpop');
+  const [ resizedSlidingLineOnce, setResizedSlidingLineOnce ]  = React.useState(false);
 
   // Track SlidingLine chart tooltip data
   const [ tooltipData, setTooltipData ]  = React.useState(null);
@@ -215,15 +216,42 @@ const Details = (props) => {
   const binData = getWedgeChartBin();
 
   const getWedgeChart = (val) => {
+
+    function resizeWedge () {
+      // Get top elements of traps
+      const tops = document.getElementsByClassName(styles.top);
+
+      if (tops.length === 0) return;
+
+      // Set initial width to zero
+      // Set width
+      for (let i = 0; i < tops.length; i++) {
+        tops[i].style.borderLeftWidth = '0px';
+      }
+
+      // Calculate needed width of trap tops
+      // TODO elegantly.
+      const newWidth = tops[0]
+        .parentElement.parentElement.parentElement.parentElement.parentElement
+        .getBoundingClientRect().width / 6.57;
+
+      // Set width
+      for (let i = 0; i < tops.length; i++) {
+        tops[i].style.borderLeftWidth = `${newWidth - 3}px`;
+      }
+    }
+
+    // Add event listener for resize
+    window.addEventListener('resize', resizeWedge);
     if (val === 0) return (
         <div className={classNames(styles.noCases, 'notAvail')}>
         No cases reported
         </div>
     );
 
+    resizeWedge();
+
     // Get vaccination chart bins
-
-
     const wedgeColor = '#9d3e4c';
     // const wedgeColor = wedgeColorScale(binData.i / 4);
 
@@ -394,7 +422,8 @@ const Details = (props) => {
     return finalPos;
   };
   const getVaccActiveWedgeWidth = (val) => {
-    return (val/100) * gutterWidth;
+    return `${val}%`
+    // return (val/100) * gutterWidth;
   };
 
   // Get continuous vacc color scale
@@ -415,7 +444,6 @@ const Details = (props) => {
         <div className={classNames(styles.trapezoidContainers)}>
           {
             [0, 1].map(bin =>
-              <div className={styles.rectContainer}>
                 <div
                 className={classNames(
                   styles.rect,
@@ -444,7 +472,6 @@ const Details = (props) => {
                   }
                   </div>
                 </div>
-              </div>
             )
           }
         </div>
@@ -847,6 +874,14 @@ const Details = (props) => {
     ReactTooltip.rebuild();
   },
   [slidingLineMetric]);
+
+  // Update sliding line chart sizing when it is created
+  React.useEffect(() => {
+    if (slidingLine !== null && !resizedSlidingLineOnce) {
+      setResizedSlidingLineOnce(true);
+      slidingLine.update(slidingLineMetric);
+    }
+  }, [slidingLine])
 
   // Get severity tooltip text, which is dynamic.
   const getSeverityTooltip = (item) => {

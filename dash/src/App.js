@@ -279,12 +279,7 @@ const App = () => {
           1,
         );
 
-        // const countryIncidenceHistory = results.countryIncidenceHistoryFull
-        //   .filter(d => d.value !== null);
-
         let countryIncidenceLatest = countryIncidenceHistory.length > 0 ? countryIncidenceHistory[countryIncidenceHistory.length - 1] : {value: null};
-        console.log('countryIncidenceLatest')
-        console.log(countryIncidenceLatest)
 
         if (countryIncidenceLatest.date_time !== undefined) {
 
@@ -303,39 +298,6 @@ const App = () => {
         // Get quartile of incidence
         const countryIncidenceQuantile = Util.getIncidenceQuantile(countryIncidenceLatest);
 
-        // // Compute trend from caseload data
-        // // TODO using TrendQuery API call instead when that is working
-        // const lastDatum = countryCaseloadHistory[
-        //   countryCaseloadHistory.length - 1
-        // ];
-        // const secondToLastDatum = countryCaseloadHistory[
-        //   countryCaseloadHistory.length - 2
-        // ];
-
-        // const fakeTrendValue = [
-        //   {
-        //     "change_per_period": secondToLastDatum.value - lastDatum.value,
-        //     "definition": "The number of cases per month among the total population",
-        //     "end_date": lastDatum.date_time,
-        //     "end_obs": lastDatum.value,
-        //     "metric": "caseload_totalpop",
-        //     "percent_change": getPercentChange(
-        //       secondToLastDatum.value,
-        //       lastDatum.value
-        //     ),
-        //     "place_fips": lastDatum.place_fips,
-        //     "place_id": lastDatum.place_id,
-        //     "place_iso": lastDatum.place_iso,
-        //     "place_name": lastDatum.place_name,
-        //     "stale_flag": lastDatum.stale_flag,
-        //     "start_date": secondToLastDatum.date_time,
-        //     "start_obs": secondToLastDatum.value,
-        //   }
-        // ];
-
-        // Currently unused
-        // const caseHistoryQ = await ObservationQuery(6, 'monthly', '2010-01-01', '2018-01-01', country);
-
         setDetailsComponent(<Details
           id={country}
           countryPop={countryPop}
@@ -353,7 +315,6 @@ const App = () => {
           countryTrendCaseload6Months={countryTrendCaseload6Months}
           countryCaseload6MonthsCalc={countryCaseload6MonthsCalc}
           countryTrendCaseload1Months={countryTrendCaseload1Months}
-          // countryCaseloadTrend={results.countryCaseloadTrend}
           countryIncidenceLatest={countryIncidenceLatest}
           countryIncidenceQuantile={countryIncidenceQuantile}
           countryVaccHistory={results.countryVaccHistory}
@@ -365,7 +326,6 @@ const App = () => {
       return <div />;
     } else {
       setLoadingNav(false);
-      // window.scrollTo(0,0);
       return detailsComponent;
     }
   }
@@ -562,81 +522,6 @@ const App = () => {
     }
   }
 
-  // // Check browser compatibility
-  // function isSupportedBrowser () {
-  //   // Opera 8.0+
-  //   var isOpera = (!!window.opr && !!opr.addons) || !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0;
-  //
-  //   // Firefox 1.0+
-  //   var isFirefox = typeof InstallTrigger !== 'undefined';
-  //
-  //   // Safari 3.0+ "[object HTMLElementConstructor]"
-  //   var isSafari = /constructor/i.test(window.HTMLElement) || (function (p) { return p.toString() === "[object SafariRemoteNotification]"; })(!window['safari'] || (typeof safari !== 'undefined' && safari.pushNotification));
-  //
-  //   // Internet Explorer 6-11
-  //   var isIE = /*@cc_on!@*/false || !!document.documentMode;
-  //
-  //   // Edge 20+
-  //   var isEdge = !isIE && !!window.StyleMedia;
-  //
-  //   // Chrome 1 - 71
-  //   var isChrome = !!window.chrome && (!!window.chrome.webstore || !!window.chrome.runtime);
-  //
-  //   // Blink engine detection
-  //   var isBlink = (isChrome || isOpera) && !!window.CSS;
-  //
-  //   if (isOpera) return { supported: false, browser: 'Opera'};
-  //   else if (isFirefox) return { supported: true, browser: 'Firefox'};
-  //   else if (isSafari) return { supported: true, browser: 'Safari'};
-  //   else if (isIE) return { supported: false, browser: 'Internet Explorer'};
-  //   else if (isEdge) return { supported: false, browser: 'Edge'};
-  //   else if (isChrome) return { supported: true, browser: 'Chrome'};
-  //   else if (isBlink) return { supported: false, browser: 'Blink'};
-  //   else return { supported: false, browser: 'an unrecognized browser'};
-  // };
-  //
-  // // Browser check
-  // const browserData = isSupportedBrowser();
-  // console.log(browserData)
-  // if (!browserData.supported) {
-  //   // const $unsupportedModal = $('.modal.unsupported');
-  //   // $unsupportedModal.find('.user-browser').text(browserData.browser);
-  //   // // Launch modal.
-  //   // $unsupportedModal.modal();
-  // }
-
-  // Detect browser and return appropriate content.
-  //
-
-  // const welcomeModal = (
-  //   <div className={styles.modal}>
-  //     <div className={styles.header}>
-  //       Welcome to the Measles Tracker
-  //     </div>
-  //     <div className={styles.content}>
-  //       <div className={styles.text}>
-  //         <p>The Measles Tracker integrates, analyzes, and visualizes measles surveillance and vaccination data to provide a comprehensive overview of the current status of the measles outbreak globally, including the populations and regions most at risk. The dashboard was developed by Talus Analytics and is designed to be used in Chrome or Firefox.</p>
-  //       </div>
-  //       <button className={classNames('button', 'modal')}>Continue</button>
-  //     </div>
-  //   </div>
-  // );
-
-  // const browserModal = (browser) => (
-  //   <div className={styles.modal}>
-  //     <div className={styles.header}>
-  //       Please try a different browser
-  //     </div>
-  //     <div className={styles.content}>
-  //       <div className={styles.text}>
-  //         <p>The Measles Tracker was designed for Chrome and Firefox desktop browsers, but you seem to be using {browser}.</p>
-  //         <p>If this is correct, please open the Measles Tracker in Chrome or Firefox instead.</p>
-  //       </div>
-  //       <button className={classNames('button', 'modal')}>Continue</button>
-  //     </div>
-  //   </div>
-  // );
-
   const modalToShow = Util.mobilecheck() ? { default: () => browserModal('a mobile browser') } : {
     chrome: () => welcomeModal,
     firefox: () => welcomeModal,
@@ -662,7 +547,7 @@ const App = () => {
           </div>
           <div className={styles.content}>
             <div className={styles.text}>
-              <p>The Measles Tracker integrates, analyzes, and visualizes measles surveillance and vaccination data to provide a comprehensive overview of the current status of the measles outbreak globally, including the populations and regions most at risk. The dashboard was developed by <b><a target="_blank" href="http://talusanalytics.com/">Talus Analytics</a></b> and is designed to be used in Chrome or Firefox.</p>
+              <p>The Measles Tracker integrates, analyzes, and visualizes measles surveillance and vaccination data to provide a comprehensive overview of the current status of the measles outbreak globally, including the populations and regions most at risk. The dashboard was developed by <b><a target="_blank" href="http://talusanalytics.com/">Talus Analytics</a></b> and is designed to be used in Chrome, Firefox, or Safari desktop browsers.</p>
             </div>
             <button className={classNames('button', 'modal')} onClick={close}>Continue</button>
           </div>
@@ -685,8 +570,8 @@ const App = () => {
           </div>
           <div className={styles.content}>
             <div className={styles.text}>
-              <p>The Measles Tracker was designed for Chrome and Firefox desktop browsers, but you seem to be using {browser}.</p>
-              <p>If this is correct, please open the Measles Tracker in Chrome or Firefox instead.</p>
+              <p>The Measles Tracker was designed for Chrome, Firefox, and Safari desktop browsers, but you seem to be using {browser}.</p>
+              <p>If this is correct, please open the Measles Tracker in Chrome, Firefox, or Safari for desktop instead.</p>
             </div>
             <button className={classNames('button', 'modal')} onClick={close}>Continue</button>
           </div>
