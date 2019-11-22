@@ -2,10 +2,10 @@ import React from 'react'
 import { Route, Switch, BrowserRouter } from 'react-router-dom'
 import axios from 'axios'
 import Modal from 'reactjs-popup'
-import classNames from 'classnames';
-import * as d3 from 'd3/dist/d3.min';
-import ReactTooltip from 'react-tooltip';
-import BrowserDetection from 'react-browser-detection';
+import classNames from 'classnames'
+import * as d3 from 'd3/dist/d3.min'
+import ReactTooltip from 'react-tooltip'
+import BrowserDetection from 'react-browser-detection'
 
 // layout
 import Nav from './components/layout/nav/Nav.js'
@@ -23,7 +23,7 @@ import About from './components/views/about/About.js'
 // styles
 import styles from './App.module.scss'
 import './components/views/details/details.module.scss'
-import infoTooltipStyles from './components/misc/infotooltip.module.scss';
+import infoTooltipStyles from './components/misc/infotooltip.module.scss'
 import 'material-design-icons/iconfont/material-icons.css'
 
 // queries
@@ -38,36 +38,37 @@ import PagingBar from './components/views/global/content/PagingBar.js'
 
 //: React.FC
 const App = () => {
-
   // Track which page is being shown to keep the logo bar updated.
   const [page, setPage] = React.useState('')
 
   const [showWm, setShowWm] = React.useState(false)
 
   const [bubbleObservations, setBubbleObservations] = React.useState(() => {
-    const initialState = [];
-    return initialState;
-  });
+    const initialState = []
+    return initialState
+  })
 
   const [trendObservations, setTrendObservations] = React.useState(() => {
-    const initialState = [];
-    return initialState;
-  });
+    const initialState = []
+    return initialState
+  })
 
-  const [incidenceObservations, setIncidenceObservations] = React.useState(() => {
-    const initialState = [];
-    return initialState;
-  });
+  const [incidenceObservations, setIncidenceObservations] = React.useState(
+    () => {
+      const initialState = []
+      return initialState
+    }
+  )
 
   const [fillObservations, setFillObservations] = React.useState(() => {
-    const initialState = [];
-    return initialState;
-  });
+    const initialState = []
+    return initialState
+  })
 
   const [places, setPlaces] = React.useState(() => {
-    const initialState = [];
-    return initialState;
-  });
+    const initialState = []
+    return initialState
+  })
 
   // set nav title
   // const [navTitle, setNavTitle] = React.useState('');
@@ -80,7 +81,7 @@ const App = () => {
   // Hide the "How to use this map" modal if it has already been displayed
   // once to the user.
   // turning off always until we need interval
-  const [shownMapModal, setShownMapModal] = React.useState(true);
+  const [shownMapModal, setShownMapModal] = React.useState(true)
 
   // Track whether the welcome modal has been shown once yet.
   const [showWelcomeModal, setShowWelcomeModal] = React.useState(false)
@@ -100,54 +101,68 @@ const App = () => {
   async function getAppData() {
     const placesParams = {
       place_id: null,
-      by_region: true,
-    };
+      by_region: true
+    }
     const queries = {
-      caseload: ObservationQuery(6, 'monthly', Util.formatDatetimeApi(Util.today())),
-      incidence: ObservationQuery(15, 'monthly', Util.formatDatetimeApi(Util.today())),
+      caseload: ObservationQuery(
+        6,
+        'monthly',
+        Util.formatDatetimeApi(Util.today())
+      ),
+      incidence: ObservationQuery(
+        15,
+        'monthly',
+        Util.formatDatetimeApi(Util.today())
+      ),
       vaccination: ObservationQuery(4, 'yearly', '2018-01-01'),
       trend: TrendQuery(6, Util.formatDatetimeApi(Util.today())),
-      places: PlaceQuery(placesParams.place_id, placesParams.by_region),
-    };
+      places: PlaceQuery(placesParams.place_id, placesParams.by_region)
+    }
 
-    const results = {};
+    // for (const [key, value] of Object.entries(object1)) {
+    //     console.log(`${key}: ${value}`);
+    // }
+
+    const results = {}
     for (let q in queries) {
-      results[q] = await queries[q];
+      results[q] = await queries[q]
     }
     // get the bubble data
-    setBubbleObservations(results['caseload']);
+    setBubbleObservations(results['caseload'])
 
     // get the trend data
-    setTrendObservations(results['trend']);
+    setTrendObservations(results['trend'])
 
     // get the incidence data
-    setIncidenceObservations(results['incidence']);
+    setIncidenceObservations(results['incidence'])
 
     // get the places data
-    setPlaces(results['places']);
+    setPlaces(results['places'])
 
     // get the fill data
     // TODO make this work the same way as the other "get most recent data queries", since it doesn't seem to
-    setFillObservations(results['vaccination']);
-    setLoading(false);
+    setFillObservations(results['vaccination'])
+    setLoading(false)
   }
 
   // Track whether the welcome modal has been shown yet. If so, do not show it
   // again.
-  let alreadyShowedWelcomeModal = false;
+  let alreadyShowedWelcomeModal = false
   React.useEffect(() => {
     getAppData()
 
     // If welcome modal isn't being shown currently and it has not already been
     // shown, show it, and mark it as already shown.
     if (!showWelcomeModal && !alreadyShowedWelcomeModal) {
-      setShowWelcomeModal(true);
-      alreadyShowedWelcomeModal = true;
+      setShowWelcomeModal(true)
+      alreadyShowedWelcomeModal = true
     }
   }, [])
 
   // Functions to render each page's elements.
-  const renderMap = loading ? <div /> :
+  const renderMap = loading ? (
+    <div />
+  ) : (
     <Map // map page
       fillObservations={fillObservations} // observation data for map
       bubbleObservations={bubbleObservations} // observation data for map
@@ -158,175 +173,242 @@ const App = () => {
       setLoadingNav={setLoadingNav}
       // setNavTitle={changeNavTitle}
       className={'map'}
-      />
+    />
+  )
 
   const renderDetails = id => {
     if (loading) {
       return <div />
-    }
-    else if (detailsComponent === null || (detailsComponent && detailsComponent.props.id !== id)) {
+    } else if (
+      detailsComponent === null ||
+      (detailsComponent && detailsComponent.props.id !== id)
+    ) {
       // // if no selected country, load the correct one based on the ID
       // const coverage = fillObservations.find(o => +o.place_id === +id)
       // const cases = bubbleObservations.find(o => +o.place_id === +id)
 
       // Function to make API calls to get data for the state variables above.
-      const getDetailsData = async (country) => {
-
+      const getDetailsData = async country => {
         // Get all needed values in parallel
         const queries = {
           countryBasicsQ: PlaceQuery(country, false),
-          countryPopQ: ObservationQuery(3, 'yearly', '2018-01-01', '2018-01-01', country),
-          countryGDPQ: ObservationQuery(14, 'yearly', '2018-01-01', '2018-01-01', country),
-          countryJeeImmunQ: ObservationQuery(16, 'occasion', undefined, undefined, country),
-          countryJeeSurvQ: ObservationQuery(17, 'occasion', undefined, undefined, country),
-          countryJeeMcmQ: ObservationQuery(18, 'occasion', undefined, undefined, country),
-          countryIncidenceHistoryFull: ObservationQuery(15, 'monthly', '2019-10-01', '2010-01-01', country),
-          countryCaseloadHistoryFull: ObservationQuery(6, 'monthly', '2019-10-01', '2010-01-01', country),
-          countryCaseloadTrend: TrendQuery(6, Util.formatDatetimeApi(Util.today()), 6, country),
-          countryVaccHistory: ObservationQuery(4, 'yearly', '2018-01-01', '2010-01-01', country),
+          countryPopQ: ObservationQuery(
+            3,
+            'yearly',
+            '2018-01-01',
+            '2018-01-01',
+            country
+          ),
+          countryGDPQ: ObservationQuery(
+            14,
+            'yearly',
+            '2018-01-01',
+            '2018-01-01',
+            country
+          ),
+          countryJeeImmunQ: ObservationQuery(
+            16,
+            'occasion',
+            undefined,
+            undefined,
+            country
+          ),
+          countryJeeSurvQ: ObservationQuery(
+            17,
+            'occasion',
+            undefined,
+            undefined,
+            country
+          ),
+          countryJeeMcmQ: ObservationQuery(
+            18,
+            'occasion',
+            undefined,
+            undefined,
+            country
+          ),
+          countryIncidenceHistoryFull: ObservationQuery(
+            15,
+            'monthly',
+            '2019-10-01',
+            '2010-01-01',
+            country
+          ),
+          countryCaseloadHistoryFull: ObservationQuery(
+            6,
+            'monthly',
+            '2019-10-01',
+            '2010-01-01',
+            country
+          ),
+          countryCaseloadTrend: TrendQuery(
+            6,
+            Util.formatDatetimeApi(Util.today()),
+            6,
+            country
+          ),
+          countryVaccHistory: ObservationQuery(
+            4,
+            'yearly',
+            '2018-01-01',
+            '2010-01-01',
+            country
+          ),
           caseload_12months: ObservationQuery(
             7,
             'monthly',
             Util.formatDatetimeApi(Util.today()),
             Util.formatDatetimeApi(Util.today()),
             country
-          ),
-        };
+          )
+        }
 
-        const results = {};
+        const results = {}
         for (let q in queries) {
-          results[q] = await queries[q];
+          results[q] = await queries[q]
         }
 
         // Country basic info
-        const countryPop = results.countryPopQ[0];
-        const countryName = results.countryBasicsQ[0][1];
-        const countryIso2 = results.countryBasicsQ[0][2];
-        const countryGDP = results.countryGDPQ[0];
+        const countryPop = results.countryPopQ[0]
+        const countryName = results.countryBasicsQ[0][1]
+        const countryIso2 = results.countryBasicsQ[0][2]
+        const countryGDP = results.countryGDPQ[0]
 
         // Latest relevant JEE scores.
-        const countryJeeImmun = results.countryJeeImmunQ[0];
-        const countryJeeSurv = results.countryJeeSurvQ[0];
-        const countryJeeMcm = results.countryJeeMcmQ[0];
+        const countryJeeImmun = results.countryJeeImmunQ[0]
+        const countryJeeSurv = results.countryJeeSurvQ[0]
+        const countryJeeMcm = results.countryJeeMcmQ[0]
 
         // Clean up incidence and caseload history data
-        const cleanHistories = (dataName) => {
+        const cleanHistories = dataName => {
           // Incidence history and latest observation
           // Do not show null values in data for now
           const foundNotNullVal = {
             fromStart: false,
-            fromEnd: false,
-          };
+            fromEnd: false
+          }
 
           return results[dataName]
-              .filter(d => {
-                if (foundNotNullVal.fromStart) return true;
+            .filter(d => {
+              if (foundNotNullVal.fromStart) return true
+              else {
+                if (d.value === null) return false
                 else {
-                  if (d.value === null) return false;
-                  else {
-                    foundNotNullVal.fromStart = true;
-                    return true;
-                  }
+                  foundNotNullVal.fromStart = true
+                  return true
                 }
-              })
-              .reverse()
-              .filter(d => {
-                if (foundNotNullVal.fromEnd) return true;
+              }
+            })
+            .reverse()
+            .filter(d => {
+              if (foundNotNullVal.fromEnd) return true
+              else {
+                if (d.value === null) return false
                 else {
-                  if (d.value === null) return false;
-                  else {
-                    foundNotNullVal.fromEnd = true;
-                    return true;
-                  }
+                  foundNotNullVal.fromEnd = true
+                  return true
                 }
-              })
-              .reverse();
-        };
-        const countryIncidenceHistory = cleanHistories('countryIncidenceHistoryFull')
-        const countryCaseloadHistory = cleanHistories('countryCaseloadHistoryFull')
+              }
+            })
+            .reverse()
+        }
+        const countryIncidenceHistory = cleanHistories(
+          'countryIncidenceHistoryFull'
+        )
+        const countryCaseloadHistory = cleanHistories(
+          'countryCaseloadHistoryFull'
+        )
 
         // Calculate 12-month and 6-month case totals
         const countryCaseload12MonthsCalc = Util.getCumulativeCount(
           countryCaseloadHistory,
           12,
-          0,
-        );
+          0
+        )
         const countryCaseload6MonthsCalc = Util.getCumulativeCount(
           countryCaseloadHistory,
           6,
-          0,
-        );
+          0
+        )
         const countryCaseload1MonthsCalc = Util.getCumulativeCount(
           countryCaseloadHistory,
           1,
-          0,
-        );
+          0
+        )
 
         const countryTrendCaseload12Months = Util.getCumulativeTrend(
           countryCaseloadHistory,
           countryCaseload12MonthsCalc,
-          12,
-        );
+          12
+        )
 
         const countryTrendCaseload6Months = Util.getCumulativeTrend(
           countryCaseloadHistory,
           countryCaseload6MonthsCalc,
-          6,
-        );
+          6
+        )
         const countryTrendCaseload1Months = Util.getCumulativeTrend(
           countryCaseloadHistory,
           countryCaseload1MonthsCalc,
-          1,
-        );
+          1
+        )
 
-        let countryIncidenceLatest = countryIncidenceHistory.length > 0 ? countryIncidenceHistory[countryIncidenceHistory.length - 1] : {value: null};
+        let countryIncidenceLatest =
+          countryIncidenceHistory.length > 0
+            ? countryIncidenceHistory[countryIncidenceHistory.length - 1]
+            : { value: null }
 
         if (countryIncidenceLatest.date_time !== undefined) {
-
           // Don't use it if more than 3 months old.
           const age = Util.getMonthsDiff(
             Util.formatDatetimeApi(Util.today()),
-            countryIncidenceLatest.date_time,
-          );
-          if (age > 3) countryIncidenceLatest = { value: null };
+            countryIncidenceLatest.date_time
+          )
+          if (age > 3) countryIncidenceLatest = { value: null }
         }
 
-
         // Vacc. coverage history and latest observation
-        const countryVaccLatest = results.countryVaccHistory.length > 0 ? results.countryVaccHistory[results.countryVaccHistory.length - 1] : {};
+        const countryVaccLatest =
+          results.countryVaccHistory.length > 0
+            ? results.countryVaccHistory[results.countryVaccHistory.length - 1]
+            : {}
 
         // Get quartile of incidence
-        const countryIncidenceQuantile = Util.getIncidenceQuantile(countryIncidenceLatest);
+        const countryIncidenceQuantile = Util.getIncidenceQuantile(
+          countryIncidenceLatest
+        )
 
-        setDetailsComponent(<Details
-          id={country}
-          countryPop={countryPop}
-          countryName={countryName}
-          countryIso2={countryIso2}
-          countryGDP={countryGDP}
-          countryJeeImmun={countryJeeImmun}
-          countryJeeSurv={countryJeeSurv}
-          countryJeeMcm={countryJeeMcm}
-          countryIncidenceHistory={countryIncidenceHistory}
-          countryCaseloadHistory={countryCaseloadHistory}
-          countryCaseload12Months={results.caseload_12months}
-          countryCaseload12MonthsCalc={countryCaseload12MonthsCalc}
-          countryTrendCaseload12Months={countryTrendCaseload12Months}
-          countryTrendCaseload6Months={countryTrendCaseload6Months}
-          countryCaseload6MonthsCalc={countryCaseload6MonthsCalc}
-          countryTrendCaseload1Months={countryTrendCaseload1Months}
-          countryIncidenceLatest={countryIncidenceLatest}
-          countryIncidenceQuantile={countryIncidenceQuantile}
-          countryVaccHistory={results.countryVaccHistory}
-          countryVaccLatest={countryVaccLatest}
-        />);
+        setDetailsComponent(
+          <Details
+            id={country}
+            countryPop={countryPop}
+            countryName={countryName}
+            countryIso2={countryIso2}
+            countryGDP={countryGDP}
+            countryJeeImmun={countryJeeImmun}
+            countryJeeSurv={countryJeeSurv}
+            countryJeeMcm={countryJeeMcm}
+            countryIncidenceHistory={countryIncidenceHistory}
+            countryCaseloadHistory={countryCaseloadHistory}
+            countryCaseload12Months={results.caseload_12months}
+            countryCaseload12MonthsCalc={countryCaseload12MonthsCalc}
+            countryTrendCaseload12Months={countryTrendCaseload12Months}
+            countryTrendCaseload6Months={countryTrendCaseload6Months}
+            countryCaseload6MonthsCalc={countryCaseload6MonthsCalc}
+            countryTrendCaseload1Months={countryTrendCaseload1Months}
+            countryIncidenceLatest={countryIncidenceLatest}
+            countryIncidenceQuantile={countryIncidenceQuantile}
+            countryVaccHistory={results.countryVaccHistory}
+            countryVaccLatest={countryVaccLatest}
+          />
+        )
       }
-      getDetailsData(id);
+      getDetailsData(id)
 
-      return <div />;
+      return <div />
     } else {
-      setLoadingNav(false);
-      return detailsComponent;
+      setLoadingNav(false)
+      return detailsComponent
     }
   }
 
@@ -334,13 +416,11 @@ const App = () => {
     if (loading) {
       // Does NOT result in double load
       return <div />
-    }
-    else if (globalComponent === null) {
+    } else if (globalComponent === null) {
       // ALWAYS results in double load
 
       // Function to make API calls to get data for the state variables above.
       const getGlobalData = async () => {
-
         // Initialize chart parameters.
         const chartParams = {
           MiniLine: [
@@ -353,8 +433,8 @@ const App = () => {
                   top: 35,
                   right: 0,
                   bottom: 22,
-                  left: 20,
-                },
+                  left: 20
+                }
               }
             },
             {
@@ -366,10 +446,10 @@ const App = () => {
                   top: 35,
                   right: 0,
                   bottom: 22,
-                  left: 20,
-                },
+                  left: 20
+                }
               }
-            },
+            }
           ],
           Scatter: [
             {
@@ -381,122 +461,123 @@ const App = () => {
                   top: 68,
                   right: 20,
                   bottom: 80,
-                  left: 120,
-                },
+                  left: 120
+                }
               }
-            },
+            }
           ],
           PagingBar: [
             {
               class: PagingBar,
               params: {
                 className: 'PagingBar',
-                domain: [new Date('2016/01/01'), Util.today()],
+                domain: [new Date('2016/01/01'), Util.today()]
               }
-            },
-          ],
+            }
+          ]
         }
 
         // Get all needed values in parallel
         // TODO
         const queries = {
           // TODO - make global and yearly
-          miniLine1Data: ObservationQuery( // global monthly caseload
+          miniLine1Data: ObservationQuery(
+            // global monthly caseload
             23,
             'monthly',
             Util.formatDatetimeApi(chartParams.MiniLine[0].params.domain[1]),
             Util.formatDatetimeApi(chartParams.MiniLine[0].params.domain[0]),
             315, // Global
-            'global',
+            'global'
           ),
           // TODO - make global
           miniLine2Data: ObservationQuery(
             4,
             'yearly',
             Util.formatDatetimeApi(chartParams.MiniLine[0].params.domain[1]),
-            Util.formatDatetimeApi(chartParams.MiniLine[0].params.domain[0]),
+            Util.formatDatetimeApi(chartParams.MiniLine[0].params.domain[0])
           ),
           caseload: ObservationQuery(
             6,
             'monthly',
             Util.formatDatetimeApi(chartParams.Scatter[0].params.domain[1]),
-            Util.formatDatetimeApi(chartParams.Scatter[0].params.domain[0]),
+            Util.formatDatetimeApi(chartParams.Scatter[0].params.domain[0])
           ),
-          caseload_12months: ObservationQuery( // DEBUG: replace with metric 24
+          caseload_12months: ObservationQuery(
+            // DEBUG: replace with metric 24
             // 6,
             7,
             'monthly',
-            Util.formatDatetimeApi(Util.today()),
+            Util.formatDatetimeApi(Util.today())
           ),
           incidence: ObservationQuery(
             15,
             'monthly',
             Util.formatDatetimeApi(chartParams.Scatter[0].params.domain[1]),
-            Util.formatDatetimeApi(chartParams.Scatter[0].params.domain[0]),
+            Util.formatDatetimeApi(chartParams.Scatter[0].params.domain[0])
           ),
           vaccination: ObservationQuery(
             4,
             'yearly',
             Util.formatDatetimeApi(chartParams.Scatter[0].params.domain[1]),
-            Util.formatDatetimeApi(chartParams.Scatter[0].params.domain[0]),
+            Util.formatDatetimeApi(chartParams.Scatter[0].params.domain[0])
           ),
           vaccination_recent: ObservationQuery(
             4,
             'yearly',
-            Util.formatDatetimeApi(Util.today()),
+            Util.formatDatetimeApi(Util.today())
           ),
           population: ObservationQuery(
             3,
             'yearly',
             Util.formatDatetimeApi(chartParams.Scatter[0].params.domain[1]),
-            Util.formatDatetimeApi(chartParams.Scatter[0].params.domain[0]),
-          ),
-        };
-
-        const results = {};
-        for (let q in queries) {
-          results[q] = await queries[q];
+            Util.formatDatetimeApi(chartParams.Scatter[0].params.domain[0])
+          )
         }
-        chartParams.MiniLine[0].params.data = results.miniLine1Data;
+
+        const results = {}
+        for (let q in queries) {
+          results[q] = await queries[q]
+        }
+        chartParams.MiniLine[0].params.data = results.miniLine1Data
 
         // Get average vaccination for each year based on average of countries
-        const averageVaccDataObj = {};
+        const averageVaccDataObj = {}
         results.miniLine2Data.forEach(d => {
           if (averageVaccDataObj[d.date_time] === undefined) {
-            if (d.value === null) return;
+            if (d.value === null) return
             else {
-              d.metric = 'avg_coverage_mcv1_infant';
+              d.metric = 'avg_coverage_mcv1_infant'
               averageVaccDataObj[d.date_time] = {
                 ...d,
-                tempValues: [d.value],
-              };
+                tempValues: [d.value]
+              }
             }
-          }
-          else {
-            if (d.value === null) return;
+          } else {
+            if (d.value === null) return
             else {
-              averageVaccDataObj[d.date_time].tempValues.push(d.value);
+              averageVaccDataObj[d.date_time].tempValues.push(d.value)
             }
           }
-        });
+        })
 
         // Take averages -- TODO in database view, not in JS.
-        const averageVaccData = [];
+        const averageVaccData = []
         for (let key in averageVaccDataObj) {
-          const curYearDatum = averageVaccDataObj[key];
-          curYearDatum.value = d3.mean(curYearDatum.tempValues);
-          delete curYearDatum.tempValues;
-          averageVaccData.push(curYearDatum);
+          const curYearDatum = averageVaccDataObj[key]
+          curYearDatum.value = d3.mean(curYearDatum.tempValues)
+          delete curYearDatum.tempValues
+          averageVaccData.push(curYearDatum)
         }
-        chartParams.MiniLine[1].params.data = averageVaccData;
+        chartParams.MiniLine[1].params.data = averageVaccData
         // chartParams.MiniLine[1].params.data = results.miniLine2Data;
 
         chartParams.Scatter[0].params.data = {
           x: results.vaccination,
           y: results.incidence,
           // y2: results.caseload,
-          size: results.caseload,
-        };
+          size: results.caseload
+        }
         // chartParams.Scatter[0].params.data = {
         //   x: results.vaccination,
         //   y: results.caseload,
@@ -505,81 +586,103 @@ const App = () => {
         // };
         chartParams.PagingBar[0].params.data = {
           y: results.caseload_12months,
-          y2: results.vaccination_recent,
-        };
+          y2: results.vaccination_recent
+        }
 
-        setGlobalComponent(<Global
-          places={places} // for paging bar chart regions
-          chartParams={chartParams}
-        />);
+        setGlobalComponent(
+          <Global
+            places={places} // for paging bar chart regions
+            chartParams={chartParams}
+          />
+        )
       }
-      getGlobalData(id);
-      return <div />;
+      getGlobalData(id)
+      return <div />
     } else {
       // Does NOT result in double load
-      setLoadingNav(false);
-      return globalComponent;
+      setLoadingNav(false)
+      return globalComponent
     }
   }
 
-  const modalToShow = Util.mobilecheck() ? { default: () => browserModal('a mobile browser') } : {
-    chrome: () => welcomeModal,
-    firefox: () => welcomeModal,
-    safari: (browser) => welcomeModal,
-    edge: (browser) => browserModal('Edge'),
-    ie: (browser) => browserModal('Internet Explorer'),
-    opera: (browser) => browserModal('Opera'),
-    default: (browser) => browserModal('an unsupported browser'),
-  };
+  const modalToShow = Util.mobilecheck()
+    ? { default: () => browserModal('a mobile browser') }
+    : {
+        chrome: () => welcomeModal,
+        firefox: () => welcomeModal,
+        safari: browser => welcomeModal,
+        edge: browser => browserModal('Edge'),
+        ie: browser => browserModal('Internet Explorer'),
+        opera: browser => browserModal('Opera'),
+        default: browser => browserModal('an unsupported browser')
+      }
 
   const welcomeModal = (
     <Modal
-      position="top center"
-      on="click"
+      position='top center'
+      on='click'
       closeOnDocumentClick
       defaultOpen={showWelcomeModal}
       modal
     >
-      {
-        close => (<div className={styles.modal}>
-          <div className={styles.header}>
-            Welcome to the Measles Tracker
-          </div>
+      {close => (
+        <div className={styles.modal}>
+          <div className={styles.header}>Welcome to the Measles Tracker</div>
           <div className={styles.content}>
             <div className={styles.text}>
-              <p>The Measles Tracker integrates, analyzes, and visualizes measles surveillance and vaccination data to provide a comprehensive overview of the current status of the measles outbreak globally, including the populations and regions most at risk. The dashboard was developed by <b><a target="_blank" href="http://talusanalytics.com/">Talus Analytics</a></b> and is designed to be used in Chrome, Firefox, or Safari desktop browsers.</p>
+              <p>
+                The Measles Tracker integrates, analyzes, and visualizes measles
+                surveillance and vaccination data to provide a comprehensive
+                overview of the current status of the measles outbreak globally,
+                including the populations and regions most at risk. The
+                dashboard was developed by{' '}
+                <b>
+                  <a target='_blank' href='http://talusanalytics.com/'>
+                    Talus Analytics
+                  </a>
+                </b>{' '}
+                and is designed to be used in Chrome, Firefox, or Safari desktop
+                browsers.
+              </p>
             </div>
-            <button className={classNames('button', 'modal')} onClick={close}>Continue</button>
-          </div>
-        </div>)
-      }
-    </Modal>
-  );
-  const browserModal = browser => (
-    <Modal
-      position="top center"
-      on="click"
-      closeOnDocumentClick
-      defaultOpen={showWelcomeModal}
-      modal
-    >
-      {
-        close => <div className={styles.modal}>
-          <div className={styles.header}>
-            Please try a different browser
-          </div>
-          <div className={styles.content}>
-            <div className={styles.text}>
-              <p>The Measles Tracker was designed for Chrome, Firefox, and Safari desktop browsers, but you seem to be using {browser}.</p>
-              <p>If this is correct, please open the Measles Tracker in Chrome, Firefox, or Safari for desktop instead.</p>
-            </div>
-            <button className={classNames('button', 'modal')} onClick={close}>Continue</button>
+            <button className={classNames('button', 'modal')} onClick={close}>
+              Continue
+            </button>
           </div>
         </div>
-      }
+      )}
     </Modal>
-  );
-
+  )
+  const browserModal = browser => (
+    <Modal
+      position='top center'
+      on='click'
+      closeOnDocumentClick
+      defaultOpen={showWelcomeModal}
+      modal
+    >
+      {close => (
+        <div className={styles.modal}>
+          <div className={styles.header}>Please try a different browser</div>
+          <div className={styles.content}>
+            <div className={styles.text}>
+              <p>
+                The Measles Tracker was designed for Chrome, Firefox, and Safari
+                desktop browsers, but you seem to be using {browser}.
+              </p>
+              <p>
+                If this is correct, please open the Measles Tracker in Chrome,
+                Firefox, or Safari for desktop instead.
+              </p>
+            </div>
+            <button className={classNames('button', 'modal')} onClick={close}>
+              Continue
+            </button>
+          </div>
+        </div>
+      )}
+    </Modal>
+  )
 
   // const modalToShow = (
   //   <BrowserDetection>
@@ -592,29 +695,52 @@ const App = () => {
   // JSX for main app. Switch component allows links in the header to be used to
   // determine main app content.
   return (
-    <div className={
-      classNames(
-        styles.app,
-        {
-          [styles.windowed]: page === 'map',
-        }
-      )
-    }>
+    <div
+      className={classNames(styles.app, {
+        [styles.windowed]: page === 'map'
+      })}
+    >
       <BrowserRouter>
         <Nav page={page} loadingNav={loadingNav} places={places} />
         <Switch>
           <div>
-            <Route exact path='/' component={ () => { setPage('map'); setLoadingNav(true); return renderMap; } } />
-            <Route exact path='/map' component={ () => { setPage('map'); setLoadingNav(true); return renderMap; } } />
-            {
-              false &&
-              <Route exact path='/global' component={ () => { setPage('global'); return <div className={'dev global'}>The global page is currently being developed.</div>; } } />
-            }
+            <Route
+              exact
+              path='/'
+              component={() => {
+                setPage('map')
+                setLoadingNav(true)
+                return renderMap
+              }}
+            />
+            <Route
+              exact
+              path='/map'
+              component={() => {
+                setPage('map')
+                setLoadingNav(true)
+                return renderMap
+              }}
+            />
+            {false && (
+              <Route
+                exact
+                path='/global'
+                component={() => {
+                  setPage('global')
+                  return (
+                    <div className={'dev global'}>
+                      The global page is currently being developed.
+                    </div>
+                  )
+                }}
+              />
+            )}
             <Route
               path='/global'
               render={d => {
-                setPage('global');
-                setLoadingNav(true);
+                setPage('global')
+                setLoadingNav(true)
                 // window.scrollTo(0,0);
                 return renderGlobal()
               }}
@@ -622,30 +748,26 @@ const App = () => {
             <Route
               path='/details/:id'
               render={d => {
-                setPage('details');
-                setLoadingNav(true);
+                setPage('details')
+                setLoadingNav(true)
                 // window.scrollTo(0,0);
                 return renderDetails(d.match.params.id)
               }}
             />
-            <Route exact path='/about' component={ () => {
-              setPage('about');
-              setLoadingNav(false);
-              // window.scrollTo(0,0);
-              return <About />;
-            } } />
+            <Route
+              exact
+              path='/about'
+              component={() => {
+                setPage('about')
+                setLoadingNav(false)
+                // window.scrollTo(0,0);
+                return <About />
+              }}
+            />
           </div>
         </Switch>
-        {
-          (page !== 'map') && <Footer />
-        }
-        {
-          showWelcomeModal && (
-            <BrowserDetection>
-              {modalToShow}
-            </BrowserDetection>
-          )
-        }
+        {page !== 'map' && <Footer />}
+        {showWelcomeModal && <BrowserDetection>{modalToShow}</BrowserDetection>}
       </BrowserRouter>
     </div>
   )
