@@ -61,19 +61,56 @@ const Map = ({
     const getMapFromRef = mapRef !== null || map === undefined
     if (getMapFromRef) map = mapRef.getMap()
 
-    // Define color schemes for bubbles for MapBox
+    // Step-wise color scheme from white to 5 shades of red marking whether an
+    // increase in measles caseload since the previous month was varying levels
+    // of significance.
+    // Define red base color.
+    const redScale = Util.getColorScaleForMetric('caseload_totalpop', [0, 100])
+
+    // Define color stop points
+    const stops = [[0, 0], [0.2, 20], [0.4, 40], [0.6, 60], [0.8, 80], [1, 100]]
+    stops.reverse()
+
+    // Define the color scheme.
     const bubbleTrend = [
       'case',
       ['==', ['feature-state', 'value3'], null],
       Util.changeColors.missing,
       ['==', ['feature-state', 'value3'], 0],
+      Util.changeColors.same
+      // ['>=', ['feature-state', 'value3'], thresh],
+      // '#b02c3a',
+      // Util.changeColors.same
+    ]
+
+    stops.forEach(stop => {
+      bubbleTrend.push(['>=', ['feature-state', 'value3'], stop[0]])
+      bubbleTrend.push(redScale(stop[1]))
+    })
+
+    bubbleTrend.push(Util.changeColors.same)
+
+    console.log('bubbleTrend')
+    console.log(bubbleTrend)
+
+    // Color scheme binary from white to red marking whether any increase in
+    // measles caseload since the previous month was significant (greater than
+    // or equal to a threshold percentage change value) or not.
+    const thresh = 0.8
+    const bubbleTrendThreshold = [
+      'case',
+      ['==', ['feature-state', 'value3'], null],
+      Util.changeColors.missing,
+      ['==', ['feature-state', 'value3'], 0],
       Util.changeColors.same,
-      ['>=', ['feature-state', 'value3'], 0.8],
+      ['>=', ['feature-state', 'value3'], thresh],
       '#b02c3a',
       Util.changeColors.same
     ]
 
-    const bubbleTrendOld = [
+    // Color scheme gradient from green to white to red that marks the decrease
+    // or increase since the previous month in measles caseload/incidence.
+    const bubbleTrendLinearInterpOrig = [
       'case',
       ['==', ['feature-state', 'value3'], null],
       Util.changeColors.missing,

@@ -188,7 +188,7 @@ const valueRed2 = '#d65c68'
 const valueGreen = '#006837'
 const valueGreen2 = '#14b86b'
 Util.changeColors = {
-  same: 'white',
+  same: '#fffff2',
   neg: valueGreen,
   negLight: valueGreen2,
   pos: valueRed,
@@ -317,7 +317,7 @@ Util.setColorScaleProps = (metric, colorScale) => {
     case 'cumcaseload_totalpop':
     case 'caseload_totalpop':
     case 'incidence_monthly':
-      colorScale.interpolate(d3.interpolateRgb).range(['#e6c1c6', '#9d3e4c'])
+      colorScale.interpolate(d3.interpolateRgb).range(['#e6c1c6', '#b02c3a'])
       return
 
     case 'coverage_mcv1_infant': // DEBUG
@@ -336,7 +336,7 @@ Util.getColorScaleForMetric = (metric, domain) => {
     case 'incidence_monthly':
       return d3
         .scaleLinear()
-        .range(['#e6c1c6', '#9d3e4c'])
+        .range(['#e6c1c6', '#b02c3a'])
         .domain(domain)
       return
 
@@ -591,8 +591,8 @@ Util.formatDatetimeApi = dt => {
 
 Util.today = () => {
   const today = new Date()
-  // today.setDate(1)
-  // today.setMonth(0)
+  today.setDate(1)
+  today.setMonth(0)
   return today // TODO put time traveling here if needed
 }
 
