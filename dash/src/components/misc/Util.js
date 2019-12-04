@@ -594,12 +594,19 @@ Util.formatDatetimeApi = dt => {
   // return `${yyyymmdd}T${hhmmss}`;
 }
 
+Util.globalMaxDate = () => {
+  const globalMaxDate = new Date()
+  globalMaxDate.setDate(1)
+  globalMaxDate.setMonth(9)
+  globalMaxDate.setYear(2019)
+  return globalMaxDate
+}
+
 Util.today = () => {
   const today = new Date()
-  // today.setDate(1)
-  // today.setMonth(0)
-  // today.setYear(2018)
-  return today
+  // today.setDate(30);
+  // today.setMonth(9);
+  return today // TODO put time traveling here if needed
 }
 
 Util.getDatetimeStamp = (datum, type = 'year') => {
@@ -654,14 +661,10 @@ Util.sortByName = (a, b) => {
   if (a.name < b.name) return 1
   return 0
 }
-Util.sortByField = (field, params = {}) => {
-  let func = e => e
-  if (params.convertToDate === true) func = Util.getDateObject
+Util.sortByField = field => {
   return (a, b) => {
-    console.log(a)
-    console.log(a[field])
-    if (func(a[field]) > func(b[field])) return -1
-    if (func(a[field]) < func(b[field])) return 1
+    if (a[field] > b[field]) return -1
+    if (a[field] < b[field]) return 1
     return 0
   }
 }

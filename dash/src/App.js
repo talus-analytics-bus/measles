@@ -427,7 +427,7 @@ const App = () => {
             {
               class: MiniLine,
               params: {
-                domain: [new Date('2016/01/01'), Util.today()],
+                domain: [new Date('2016/01/01'), Util.globalMaxDate()],
                 className: 'MiniLine',
                 margin: {
                   top: 35,
@@ -440,7 +440,7 @@ const App = () => {
             {
               class: MiniLine,
               params: {
-                domain: [new Date('2016/01/01'), Util.today()],
+                domain: [new Date('2016/01/01'), Util.globalMaxDate()],
                 className: 'MiniLine',
                 margin: {
                   top: 35,
@@ -456,7 +456,7 @@ const App = () => {
               class: Scatter,
               params: {
                 className: 'Scatter',
-                domain: [new Date('2016/01/01'), Util.today()],
+                domain: [new Date('2016/01/01'), Util.globalMaxDate()],
                 margin: {
                   top: 68,
                   right: 20,
@@ -471,7 +471,7 @@ const App = () => {
               class: PagingBar,
               params: {
                 className: 'PagingBar',
-                domain: [new Date('2016/01/01'), Util.today()]
+                domain: [new Date('2016/01/01'), Util.globalMaxDate()]
               }
             }
           ]
@@ -508,7 +508,7 @@ const App = () => {
             // 6,
             7,
             'monthly',
-            Util.formatDatetimeApi(Util.today())
+            Util.formatDatetimeApi(Util.globalMaxDate())
           ),
           incidence: ObservationQuery(
             15,
@@ -525,7 +525,7 @@ const App = () => {
           vaccination_recent: ObservationQuery(
             4,
             'yearly',
-            Util.formatDatetimeApi(Util.today())
+            Util.formatDatetimeApi(Util.globalMaxDate())
           ),
           population: ObservationQuery(
             3,
