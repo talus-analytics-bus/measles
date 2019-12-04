@@ -68,11 +68,13 @@ const Map = ({
     const redScale = Util.getColorScaleForMetric('caseload_totalpop', [0, 100])
 
     // Define color stop points
-    const stops = [[0, 0], [0.2, 20], [0.4, 40], [0.6, 60], [0.8, 80], [1, 100]]
+    const stops = [0, 1 / 3, 2 / 3, 3 / 3]
+    const stops5 = [0, 0.2, 0.4, 0.6, 0.8, 1]
+    // const stops = [[0, 0], [0.2, 20], [0.4, 40], [0.6, 60], [0.8, 80], [1, 100]]
     stops.reverse()
 
     // Define the color scheme.
-    const bubbleTrend = [
+    const bubbleTrendStops = [
       'case',
       ['==', ['feature-state', 'value3'], null],
       Util.changeColors.missing,
@@ -84,14 +86,14 @@ const Map = ({
     ]
 
     stops.forEach(stop => {
-      bubbleTrend.push(['>=', ['feature-state', 'value3'], stop[0]])
-      bubbleTrend.push(redScale(stop[1]))
+      bubbleTrendStops.push(['>=', ['feature-state', 'value3'], stop])
+      bubbleTrendStops.push(redScale(stop * 100))
+      console.log('\n')
+      console.log(stop)
+      console.log(d3.color(redScale(stop * 100)).formatHex())
     })
 
-    bubbleTrend.push(Util.changeColors.same)
-
-    console.log('bubbleTrend')
-    console.log(bubbleTrend)
+    bubbleTrendStops.push(Util.changeColors.same)
 
     // Color scheme binary from white to red marking whether any increase in
     // measles caseload since the previous month was significant (greater than
@@ -106,6 +108,25 @@ const Map = ({
       ['>=', ['feature-state', 'value3'], thresh],
       '#b02c3a',
       Util.changeColors.same
+    ]
+
+    // Color scheme gradient from green to white to red that marks the decrease
+    // or increase since the previous month in measles caseload/incidence.
+    const bubbleTrendLinearInterpIncOnly = [
+      'case',
+      ['==', ['feature-state', 'value3'], null],
+      Util.changeColors.missing,
+      ['<=', ['feature-state', 'value3'], 0],
+      Util.changeColors.same,
+      [
+        'interpolate',
+        ['linear'],
+        ['feature-state', 'value3'],
+        0,
+        Util.changeColors.same,
+        1,
+        Util.changeColors.pos
+      ]
     ]
 
     // Color scheme gradient from green to white to red that marks the decrease
@@ -128,6 +149,8 @@ const Map = ({
         Util.changeColors.pos
       ]
     ]
+
+    const bubbleTrend = bubbleTrendStops
 
     const bubbleRed = [
       'case',

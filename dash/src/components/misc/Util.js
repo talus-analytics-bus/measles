@@ -591,9 +591,10 @@ Util.formatDatetimeApi = dt => {
 
 Util.today = () => {
   const today = new Date()
-  today.setDate(1)
-  today.setMonth(0)
-  return today // TODO put time traveling here if needed
+  // today.setDate(1)
+  // today.setMonth(0)
+  // today.setYear(2018)
+  return today
 }
 
 Util.getDatetimeStamp = (datum, type = 'year') => {
