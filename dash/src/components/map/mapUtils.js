@@ -321,19 +321,19 @@ const initMap = (
               1,
               0.85
             ],
-            'circle-stroke-width': 0,
-            // 'circle-stroke-width': [
-            //   'case',
-            //   ['==', ['feature-state', 'stale'], null],
-            //   0,
-            //   ['==', ['feature-state', 'value'], 0],
-            //   0,
-            //   ['==', ['feature-state', 'clicked'], true],
-            //   2,
-            //   ['==', ['feature-state', 'hover'], true],
-            //   2,
-            //   1
-            // ],
+            // 'circle-stroke-width': 0,
+            'circle-stroke-width': [
+              'case',
+              ['==', ['feature-state', 'stale'], null],
+              0,
+              ['==', ['feature-state', 'value'], 0],
+              0,
+              ['==', ['feature-state', 'clicked'], true],
+              2,
+              ['==', ['feature-state', 'hover'], true],
+              2,
+              1
+            ],
             'circle-stroke-color': [
               'case',
               ['==', ['feature-state', 'stale'], false],
@@ -383,19 +383,19 @@ const initMap = (
               1,
               0.85
             ],
-            'circle-stroke-width': 0,
-            // 'circle-stroke-width': [
-            //   'case',
-            //   ['==', ['feature-state', 'stale'], null],
-            //   0,
-            //   ['==', ['feature-state', 'value2'], 0],
-            //   0,
-            //   ['==', ['feature-state', 'clicked'], true],
-            //   2,
-            //   ['==', ['feature-state', 'hover'], true],
-            //   2,
-            //   1
-            // ],
+            // 'circle-stroke-width': 0,
+            'circle-stroke-width': [
+              'case',
+              ['==', ['feature-state', 'stale'], null],
+              0,
+              ['==', ['feature-state', 'value2'], 0],
+              0,
+              ['==', ['feature-state', 'clicked'], true],
+              2,
+              ['==', ['feature-state', 'hover'], true],
+              2,
+              1
+            ],
             'circle-stroke-color': [
               'case',
               ['==', ['feature-state', 'stale'], false],
@@ -512,19 +512,19 @@ export const initMiniMap = (
             1,
             0.85
           ],
-          'circle-stroke-width': 0,
-          // 'circle-stroke-width': [
-          //   'case',
-          //   ['==', ['feature-state', 'stale'], null],
-          //   0,
-          //   ['==', ['feature-state', 'value'], 0],
-          //   0,
-          //   ['==', ['feature-state', 'clicked'], true],
-          //   2,
-          //   ['==', ['feature-state', 'hover'], true],
-          //   2,
-          //   1
-          // ],
+          // 'circle-stroke-width': 0,
+          'circle-stroke-width': [
+            'case',
+            ['==', ['feature-state', 'stale'], null],
+            0,
+            ['==', ['feature-state', 'value'], 0],
+            0,
+            ['==', ['feature-state', 'clicked'], true],
+            2,
+            ['==', ['feature-state', 'hover'], true],
+            2,
+            1
+          ],
           'circle-stroke-color': [
             'case',
             ['==', ['feature-state', 'stale'], false],

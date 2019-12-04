@@ -88,9 +88,6 @@ const Map = ({
     stops.forEach(stop => {
       bubbleTrendStops.push(['>=', ['feature-state', 'value3'], stop])
       bubbleTrendStops.push(redScale(stop * 100))
-      console.log('\n')
-      console.log(stop)
-      console.log(d3.color(redScale(stop * 100)).formatHex())
     })
 
     bubbleTrendStops.push(Util.changeColors.same)
@@ -150,7 +147,7 @@ const Map = ({
       ]
     ]
 
-    const bubbleTrend = bubbleTrendStops
+    const bubbleTrend = bubbleTrendLinearInterpOrig
 
     const bubbleRed = [
       'case',
