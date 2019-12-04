@@ -1336,6 +1336,7 @@ const Details = props => {
                               month: 'short',
                               year: 'numeric'
                             })}
+                        .
                       </div>
                     )}
                 </div>
@@ -1387,6 +1388,7 @@ const Details = props => {
                               month: 'short',
                               year: 'numeric'
                             })}
+                        .
                       </div>
                     )}
                 </div>
