@@ -16,6 +16,8 @@ const Source = ({ data, override, left, ...props }) => {
    * @return {[type]}             [description]
    */
   const joinArrayStrings = arr => {
+    console.log('arr')
+    console.log(arr)
     if (arr.length <= 1) return arr.join('')
     else if (arr.length === 2) return arr.join(' and ')
     else {
@@ -56,11 +58,17 @@ const Source = ({ data, override, left, ...props }) => {
     //   ...
     // ]
 
+    // Sort data by "updated_at" field.
+    const sortFunc = Util.sortByField('updated_at')
+
     // For each type of data that needs to be attributed in the source text:
     data.forEach(dataType => {
       // Define object to hold data source information that will be concatenated
       // and displayed as the source text.
       const sourceObj = {}
+
+      // // Sort data by "updated_at" field.
+      // dataType.data.sort(sortFunc)
 
       // For each datum in this datatype:
       dataType.data.forEach(d => {
@@ -70,6 +78,7 @@ const Source = ({ data, override, left, ...props }) => {
           // Add it
           sourceObj[d.data_source] = {
             n: 1,
+            data_source: d.data_source,
             updated_at: Util.getDateObject(d.updated_at),
             place_names: [d.place_name]
           }
@@ -89,6 +98,9 @@ const Source = ({ data, override, left, ...props }) => {
         }
       })
 
+      // Reshape data into array
+      const sources = Object.values(sourceObj).sort(sortFunc)
+
       // Define array to hold names of places for which a separate dataset was
       // used (i.e., the country is the only one covered by the dataset).
       const placesCoveredBySeparateDataset = []
@@ -97,33 +109,31 @@ const Source = ({ data, override, left, ...props }) => {
       const dataTypeSourceArr = []
 
       // Collate data source string from the source object.
-      for (let [k, v] of Object.entries(sourceObj)) {
+      sources.forEach(s => {
         // If the flag to call out places covered by separate datasets is true:
         if (props.placesCoveredBySeparateDataset === true) {
-          if (v.n === 1) {
-            if (!placesCoveredBySeparateDataset.includes(v.place_names[0])) {
-              placesCoveredBySeparateDataset.push(v.place_names[0])
+          if (s.n === 1) {
+            if (!placesCoveredBySeparateDataset.includes(s.place_names[0])) {
+              placesCoveredBySeparateDataset.push(s.place_names[0])
             }
-            continue
+            return
           }
         }
 
         // Add the data source.
         dataTypeSourceArr.push(
-          `${k} as of ${v.updated_at.toLocaleString('en-us', {
+          `${s.data_source} as of ${s.updated_at.toLocaleString('en-us', {
             month: 'short',
             year: 'numeric'
           })}`
         )
-      }
+      })
 
       // Concatenate the data sources for this type into a single string.
       const dataTypeSourceText = joinArrayStrings(dataTypeSourceArr)
 
       // Add the string for this type to the overall source array.
       sourceArr.push(`${dataType.sourceLabel}: ${dataTypeSourceText}`)
-
-      // Sort them in order of frequency. MAYBE?
 
       // TODO if there are more than three, truncate to "and others" and include
       // a link to the About page relevant content.
@@ -132,12 +142,6 @@ const Source = ({ data, override, left, ...props }) => {
       // list the countries instead of the data sources and link to the About
       // page relevant content.
       // Push name of country to list of countries to mention in this way.
-
-      // Push
-      //   {
-      //     data_source: 'xxx',
-      //     updated_at: 'xxx'
-      //   }
     })
 
     // Return concatenated data source text.

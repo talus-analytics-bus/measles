@@ -654,10 +654,14 @@ Util.sortByName = (a, b) => {
   if (a.name < b.name) return 1
   return 0
 }
-Util.sortByField = field => {
+Util.sortByField = (field, params = {}) => {
+  let func = e => e
+  if (params.convertToDate === true) func = Util.getDateObject
   return (a, b) => {
-    if (a[field] > b[field]) return -1
-    if (a[field] < b[field]) return 1
+    console.log(a)
+    console.log(a[field])
+    if (func(a[field]) > func(b[field])) return -1
+    if (func(a[field]) < func(b[field])) return 1
     return 0
   }
 }

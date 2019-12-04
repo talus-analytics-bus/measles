@@ -230,14 +230,14 @@ const App = () => {
           countryIncidenceHistoryFull: ObservationQuery(
             15,
             'monthly',
-            '2019-10-01',
+            Util.formatDatetimeApi(Util.today()),
             '2010-01-01',
             country
           ),
           countryCaseloadHistoryFull: ObservationQuery(
             6,
             'monthly',
-            '2019-10-01',
+            Util.formatDatetimeApi(Util.today()),
             '2010-01-01',
             country
           ),
@@ -250,7 +250,7 @@ const App = () => {
           countryVaccHistory: ObservationQuery(
             4,
             'yearly',
-            '2018-01-01',
+            Util.formatDatetimeApi(Util.today()),
             '2010-01-01',
             country
           ),

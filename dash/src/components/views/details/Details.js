@@ -1501,6 +1501,12 @@ const Details = props => {
               return Util.getDatetimeStamp(date_time, 'month')
             },
             skip: showYearlyReport,
+            source_data: [
+              {
+                sourceLabel: 'Source',
+                data: [props.countryIncidenceLatest]
+              }
+            ],
             ...(props.countryIncidenceLatest.value !== undefined
               ? props.countryIncidenceLatest
               : { value: null })
