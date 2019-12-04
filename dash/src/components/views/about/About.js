@@ -51,7 +51,7 @@ const About = () => {
         within the dashboard and the analytical methods used to analyze and
         communicate those data.
       </p>
-      <h2>Data sources</h2>
+      <h2 id={'dataSources'}>Data sources</h2>
       <p>
         The Measles Tracker relies on a set of core data elements that,
         together, provide an overview of vaccination efforts. Vaccination

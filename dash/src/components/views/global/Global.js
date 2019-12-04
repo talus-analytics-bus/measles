@@ -642,6 +642,7 @@ const Global = props => {
         chart_jsx: getScatterJsx,
         date_time_fmt: () => '',
         // data_source: getScatterDataSources,
+        placesCoveredBySeparateDataset: true,
         source_data: [
           {
             sourceLabel: 'Source for monthly incidence of measles',
@@ -663,6 +664,7 @@ const Global = props => {
         chart_jsx: getPagingBarJsx,
         date_time_fmt: () => sectionDatetime,
         // data_source: getPagingBarDataSources
+        placesCoveredBySeparateDataset: true,
         source_data: [
           {
             sourceLabel: 'Source',
@@ -695,6 +697,7 @@ const Global = props => {
         ),
         value_fmt: Util.comma,
         value_label: 'current cases',
+        placesCoveredBySeparateDataset: true,
         source_data: [
           {
             sourceLabel: 'Source',
@@ -713,6 +716,7 @@ const Global = props => {
         ),
         value_fmt: Util.percentize,
         value_label: 'of infants',
+        placesCoveredBySeparateDataset: true,
         source_data: [
           {
             sourceLabel: 'Source',
