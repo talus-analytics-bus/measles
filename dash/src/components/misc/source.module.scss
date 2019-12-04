@@ -2,4 +2,8 @@
 @import '../views/details/details.module.scss';
 
 .source {
+  &.right {
+    margin-left: auto;
+    text-align: right;
+  }
 }

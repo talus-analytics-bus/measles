@@ -8,7 +8,7 @@ import Chart from '../../chart/Chart.js'
 import SlidingLine from './content/SlidingLine.js'
 import SparkLine from './content/SparkLine.js'
 import ReactTooltip from 'react-tooltip'
-import Source from '../../../components/misc/Source.js'
+import { Source, renderSourceForItem } from '../../../components/misc/Source.js'
 import InfoTooltip from '../../../components/misc/InfoTooltip.js'
 import YearlyReport from '../../../components/misc/YearlyReport.js'
 import infoTooltipStyles from '../../../components/misc/infotooltip.module.scss'
@@ -866,7 +866,12 @@ const Details = props => {
     }
 
     // Sliding line chart defined in SlidingLine.js
-    if (!noLineData && !showYearlyReport) {
+    if (
+      !noLineData &&
+      !showYearlyReport &&
+      props.countryCaseloadHistory &&
+      props.countryCaseloadHistory.length > 0
+    ) {
       const slidingLineChart = new SlidingLine(
         // Selector of DOM element in Resilience.js component where the chart
         // should be drawn.
@@ -1032,8 +1037,6 @@ const Details = props => {
         data: props.countryCaseloadHistory
       }
     ]
-    console.log('items')
-    console.log(items)
     return items
   }
 
@@ -1098,38 +1101,6 @@ const Details = props => {
         </div>
       )
     }
-  }
-
-  /**
-   * Given the item, render source data.
-   * @method renderSourceForItem
-   * @param  {[type]}            item [description]
-   * @return {[type]}                 [description]
-   */
-  const renderSourceForItem = item => {
-    console.log(item.title)
-    return (
-      // Display data source text if available.
-      !item.notAvail && (
-        <Source
-          className={styles.source}
-          data={item.source_data}
-          override={
-            item.source_data === undefined && (
-              <span>
-                {'Source:'} {item.data_source}
-                {item.updated_at &&
-                  ' as of ' +
-                    new Date(item.updated_at).toLocaleString('en-us', {
-                      month: 'short',
-                      year: 'numeric'
-                    })}
-              </span>
-            )
-          }
-        />
-      )
-    )
   }
 
   // https://medium.com/@webcore1/react-fallback-for-broken-images-strategy-a8dfa9c1be1e
@@ -1284,6 +1255,16 @@ const Details = props => {
                 </span>
               ),
               type: ['jee', 'multi'],
+              source_data: [
+                {
+                  sourceLabel: `Data for ${
+                    props.countryJeeImmun
+                      ? Util.getDatetimeStamp(props.countryJeeImmun, 'year')
+                      : ''
+                  }. Source`,
+                  data: [props.countryJeeImmun ? props.countryJeeImmun : {}]
+                }
+              ],
               // 'legend_jsx': () => getJeeChart('legend'),
               date_time_fmt: date_time => {
                 return Util.getDatetimeStamp(date_time, 'year')
@@ -1352,24 +1333,7 @@ const Details = props => {
                     )}
                   </div>
                   {// Display data source text if available.
-                  item.data_source &&
-                    item.value !== null &&
-                    !item.notAvail &&
-                    !item.hideSource && (
-                      <div className={classNames('dataSource', styles.source)}>
-                        Data for{' '}
-                        {item.value !== null
-                          ? `${item.date_time_fmt(item)}`
-                          : ''}
-                        . Source: {item.data_source}
-                        {item.updated_at &&
-                          ' as of ' +
-                            new Date(item.updated_at).toLocaleString('en-us', {
-                              month: 'short',
-                              year: 'numeric'
-                            })}
-                      </div>
-                    )}
+                  renderSourceForItem(item)}
                 </div>
               )}
               {// For JEE items:
@@ -1403,24 +1367,7 @@ const Details = props => {
                     ))}
                   </div>
                   {// Display data source text if available.
-                  item.data_source &&
-                    item.value !== null &&
-                    !item.notAvail &&
-                    !item.hideSource && (
-                      <div className={classNames('dataSource', styles.source)}>
-                        Data for{' '}
-                        {item.value !== null
-                          ? `${item.date_time_fmt(item)}`
-                          : ''}
-                        . Source: {item.data_source}
-                        {item.updated_at &&
-                          ' as of ' +
-                            new Date(item.updated_at).toLocaleString('en-us', {
-                              month: 'short',
-                              year: 'numeric'
-                            })}
-                      </div>
-                    )}
+                  renderSourceForItem(item)}
                 </div>
               )}
             </div>

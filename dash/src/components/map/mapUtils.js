@@ -273,7 +273,7 @@ const initMap = (
     const setupCircleBubbles = () => {
       // Add centroids to map so they can be accessed via getSourceFeatures.
       // Monthly incidence layer
-      const scaleFactor = 4
+      const s = 1.5811388300841895
       map.addLayer(
         {
           id: 'metric-bubbles-incidence_monthly',
@@ -290,20 +290,30 @@ const initMap = (
               ['feature-state', 'value'],
               0,
               0,
-              0.001,
-              5 / scaleFactor,
-              0.01,
-              10 / scaleFactor,
-              0.1,
-              20 / scaleFactor,
               1,
-              40 / scaleFactor,
-              10,
-              80 / scaleFactor,
+              20 / s,
+              20,
+              20,
               100,
-              160 / scaleFactor,
-              200,
-              320 / scaleFactor
+              20 * s,
+              1000,
+              20 * s * s
+              // 10000,
+              // 20 * s * s * s
+              // 100000,
+              // 20 * s * s * s * s // 50
+              // 0,
+              // 0,
+              // 0.1,
+              // 5,
+              // 1,
+              // 10,
+              // 10,
+              // 20,
+              // 100,
+              // 40,
+              // 1000,
+              // 50
             ],
             'circle-color': [
               'case',

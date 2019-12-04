@@ -1,4 +1,5 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 import classNames from 'classnames'
 import styles from './source.module.scss'
 import Util from './Util.js'
@@ -16,12 +17,14 @@ const Source = ({ data, override, left, ...props }) => {
    * @return {[type]}      [description]
    */
   const noData = data => {
-    let noData = true
+    let noData = false
     data.forEach(dataType => {
       const arrayEmpty = dataType.data.length === 0
-      if (!arrayEmpty) {
+      // If array is empty, return true;
+      if (arrayEmpty) noData = true
+      else {
         const arrayElementEmpty = dataType.data[0].data_source === undefined
-        if (!arrayElementEmpty) noData = false
+        if (arrayElementEmpty) noData = true
       }
     })
     return noData
@@ -51,8 +54,8 @@ const Source = ({ data, override, left, ...props }) => {
    * @return {[type]}               [description]
    */
   const getSourceText = (data, override) => {
-    if (override !== undefined && override !== false) return override
-    if (data === undefined || noData(data)) return ''
+    if (override !== undefined && override !== false) return [override]
+    if (data === undefined || noData(data)) return ['']
 
     // Define array to hold final data source text.
     const sourceArr = []
@@ -140,34 +143,101 @@ const Source = ({ data, override, left, ...props }) => {
           })}`
         )
       })
+      // If there are data sources applicable to only one country, then
+      // list the countries instead of the data sources and link to the About
+      // page relevant content.
+      let separatePlacesStr
+      if (placesCoveredBySeparateDataset.length > 0) {
+        separatePlacesStr = (
+          <span>
+            Additional data sources used for{' '}
+            {joinArrayStrings(placesCoveredBySeparateDataset)} as described in
+            the <Link to='/about#dataSources'>methods</Link>.
+          </span>
+        )
+      }
 
       // Concatenate the data sources for this type into a single string.
       const dataTypeSourceText = joinArrayStrings(dataTypeSourceArr)
 
       // Add the string for this type to the overall source array.
-      sourceArr.push(`${dataType.sourceLabel}: ${dataTypeSourceText}`)
+      sourceArr.push(
+        <span>
+          {dataType.sourceLabel}: {dataTypeSourceText}.
+        </span>
+      )
+      if (separatePlacesStr !== undefined) sourceArr.push(separatePlacesStr)
 
       // TODO if there are more than three, truncate to "and others" and include
       // a link to the About page relevant content.
-
-      // TODO if there are data sources applicable to only one country, then
-      // list the countries instead of the data sources and link to the About
-      // page relevant content.
-      // Push name of country to list of countries to mention in this way.
     })
 
     // Return concatenated data source text.
-    return sourceArr.join('. ') + '.'
+    return sourceArr
   }
   return (
     <div
       className={classNames(
         'dataSource',
-        props.className ? props.className : ''
+        props.className ? props.className : '',
+        {
+          [styles.right]: left !== true
+        }
       )}
     >
-      {getSourceText(data, override)}
+      {getSourceText(data, override).map((jsx, i) => getSourceJsx(jsx, i))}
     </div>
+  )
+}
+
+/**
+ * Return source text JSX with or without a space preceding it as appropriate.
+ * @method getSourceJsx
+ * @param  {[type]}     jsx [description]
+ * @param  {[type]}     i   [description]
+ * @return {[type]}         [description]
+ */
+const getSourceJsx = (jsx, i) => {
+  if (i === 0) return <span>{jsx}</span>
+  else return <span>&nbsp;{jsx}</span>
+}
+
+/**
+ * Given the item, render source data.
+ * @method renderSourceForItem
+ * @param  {[type]}            item [description]
+ * @return {[type]}                 [description]
+ */
+export const renderSourceForItem = (item, params = {}) => {
+  return (
+    // Display data source text if available.
+    !item.notAvail && (
+      <Source
+        className={styles.source}
+        data={item.source_data}
+        placesCoveredBySeparateDataset={
+          item.placesCoveredBySeparateDataset === true
+        }
+        left={
+          (params.left === undefined && params.right === undefined) ||
+          (params.left !== undefined && params.left === true) ||
+          (params.right !== undefined && params.right === false)
+        }
+        override={
+          item.source_data === undefined && (
+            <span>
+              {'Source:'} {item.data_source}
+              {item.updated_at &&
+                ' as of ' +
+                  new Date(item.updated_at).toLocaleString('en-us', {
+                    month: 'short',
+                    year: 'numeric'
+                  })}
+            </span>
+          )
+        }
+      />
+    )
   )
 }
 
