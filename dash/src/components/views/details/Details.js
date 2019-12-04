@@ -8,7 +8,7 @@ import Chart from '../../chart/Chart.js'
 import SlidingLine from './content/SlidingLine.js'
 import SparkLine from './content/SparkLine.js'
 import ReactTooltip from 'react-tooltip'
-import Source from '../../../components/misc/Source.js'
+import { Source, renderSourceForItem } from '../../../components/misc/Source.js'
 import InfoTooltip from '../../../components/misc/InfoTooltip.js'
 import YearlyReport from '../../../components/misc/YearlyReport.js'
 import infoTooltipStyles from '../../../components/misc/infotooltip.module.scss'
@@ -1098,38 +1098,6 @@ const Details = props => {
         </div>
       )
     }
-  }
-
-  /**
-   * Given the item, render source data.
-   * @method renderSourceForItem
-   * @param  {[type]}            item [description]
-   * @return {[type]}                 [description]
-   */
-  const renderSourceForItem = item => {
-    console.log(item.title)
-    return (
-      // Display data source text if available.
-      !item.notAvail && (
-        <Source
-          className={styles.source}
-          data={item.source_data}
-          override={
-            item.source_data === undefined && (
-              <span>
-                {'Source:'} {item.data_source}
-                {item.updated_at &&
-                  ' as of ' +
-                    new Date(item.updated_at).toLocaleString('en-us', {
-                      month: 'short',
-                      year: 'numeric'
-                    })}
-              </span>
-            )
-          }
-        />
-      )
-    )
   }
 
   // https://medium.com/@webcore1/react-fallback-for-broken-images-strategy-a8dfa9c1be1e

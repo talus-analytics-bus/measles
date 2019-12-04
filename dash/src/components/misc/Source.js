@@ -171,4 +171,35 @@ const Source = ({ data, override, left, ...props }) => {
   )
 }
 
+/**
+ * Given the item, render source data.
+ * @method renderSourceForItem
+ * @param  {[type]}            item [description]
+ * @return {[type]}                 [description]
+ */
+export const renderSourceForItem = item => {
+  return (
+    // Display data source text if available.
+    !item.notAvail && (
+      <Source
+        className={styles.source}
+        data={item.source_data}
+        override={
+          item.source_data === undefined && (
+            <span>
+              {'Source:'} {item.data_source}
+              {item.updated_at &&
+                ' as of ' +
+                  new Date(item.updated_at).toLocaleString('en-us', {
+                    month: 'short',
+                    year: 'numeric'
+                  })}
+            </span>
+          )
+        }
+      />
+    )
+  )
+}
+
 export default Source
