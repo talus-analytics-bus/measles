@@ -17,12 +17,14 @@ const Source = ({ data, override, left, ...props }) => {
    * @return {[type]}      [description]
    */
   const noData = data => {
-    let noData = true
+    let noData = false
     data.forEach(dataType => {
       const arrayEmpty = dataType.data.length === 0
-      if (!arrayEmpty) {
+      // If array is empty, return true;
+      if (arrayEmpty) noData = true
+      else {
         const arrayElementEmpty = dataType.data[0].data_source === undefined
-        if (!arrayElementEmpty) noData = false
+        if (arrayElementEmpty) noData = true
       }
     })
     return noData

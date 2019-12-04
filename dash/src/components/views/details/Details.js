@@ -866,7 +866,12 @@ const Details = props => {
     }
 
     // Sliding line chart defined in SlidingLine.js
-    if (!noLineData && !showYearlyReport) {
+    if (
+      !noLineData &&
+      !showYearlyReport &&
+      props.countryCaseloadHistory &&
+      props.countryCaseloadHistory.length > 0
+    ) {
       const slidingLineChart = new SlidingLine(
         // Selector of DOM element in Resilience.js component where the chart
         // should be drawn.
