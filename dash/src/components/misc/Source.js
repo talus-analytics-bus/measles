@@ -10,14 +10,30 @@ import Util from './Util.js'
  */
 const Source = ({ data, override, left, ...props }) => {
   /**
+   * Returns true if no data, false otherwise.
+   * @method noData
+   * @param  {[type]} data [description]
+   * @return {[type]}      [description]
+   */
+  const noData = data => {
+    let noData = true
+    data.forEach(dataType => {
+      const arrayEmpty = dataType.data.length === 0
+      if (!arrayEmpty) {
+        const arrayElementEmpty = dataType.data[0].data_source === undefined
+        if (!arrayElementEmpty) noData = false
+      }
+    })
+    return noData
+  }
+
+  /**
    * Given an array, joins the strings with commas or "and" as appropriate.
    * @method joinArrayStrings
    * @param  {[type]}         arr [description]
    * @return {[type]}             [description]
    */
   const joinArrayStrings = arr => {
-    console.log('arr')
-    console.log(arr)
     if (arr.length <= 1) return arr.join('')
     else if (arr.length === 2) return arr.join(' and ')
     else {
@@ -35,12 +51,8 @@ const Source = ({ data, override, left, ...props }) => {
    * @return {[type]}               [description]
    */
   const getSourceText = (data, override) => {
-    console.log('data - source.js')
-    console.log(data)
-    console.log('override - source.js')
-    console.log(override)
     if (override !== undefined && override !== false) return override
-    if (data === undefined) return ''
+    if (data === undefined || noData(data)) return ''
 
     // Define array to hold final data source text.
     const sourceArr = []
