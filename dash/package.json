@@ -41,7 +41,8 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "tslint": "./node_modules/.bin/tslint",
-    "deploy": "CI=false yarn build && aws s3 sync build/ s3://measles-tracker --delete"
+    "deploy": "CI=false yarn build && aws s3 sync build/ s3://measles-tracker --delete",
+    "deploy-dev": "CI=false yarn build && aws s3 sync build/ s3://measles-tracker-dev --delete"
   },
   "eslintConfig": {
     "extends": "react-app"
