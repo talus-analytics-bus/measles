@@ -1026,8 +1026,14 @@ const Details = props => {
       ]
     }
     const firstDatum = items.values[0]
-    items.data_source = firstDatum.data_source
-    items.updated_at = firstDatum.updated_at
+    items.source_data = [
+      {
+        sourceLabel: 'Source',
+        data: props.countryCaseloadHistory
+      }
+    ]
+    console.log('items')
+    console.log(items)
     return items
   }
 
@@ -1094,6 +1100,38 @@ const Details = props => {
     }
   }
 
+  /**
+   * Given the item, render source data.
+   * @method renderSourceForItem
+   * @param  {[type]}            item [description]
+   * @return {[type]}                 [description]
+   */
+  const renderSourceForItem = item => {
+    console.log(item.title)
+    return (
+      // Display data source text if available.
+      !item.notAvail && (
+        <Source
+          className={styles.source}
+          data={item.source_data}
+          override={
+            item.source_data === undefined && (
+              <span>
+                {'Source:'} {item.data_source}
+                {item.updated_at &&
+                  ' as of ' +
+                    new Date(item.updated_at).toLocaleString('en-us', {
+                      month: 'short',
+                      year: 'numeric'
+                    })}
+              </span>
+            )
+          }
+        />
+      )
+    )
+  }
+
   // https://medium.com/@webcore1/react-fallback-for-broken-images-strategy-a8dfa9c1be1e
   const addDefaultSrc = ev => {
     ev.target.src = '/flags/unspecified.png'
@@ -1154,25 +1192,7 @@ const Details = props => {
                       )}
                     </div>
                     {// Display data source text if available.
-                    item.data_source &&
-                      item.value !== null &&
-                      !item.notAvail &&
-                      !item.hideSource && (
-                        <div
-                          className={classNames('dataSource', styles.source)}
-                        >
-                          Source: {item.data_source}
-                          {item.updated_at &&
-                            ' as of ' +
-                              new Date(item.updated_at).toLocaleString(
-                                'en-us',
-                                {
-                                  month: 'short',
-                                  year: 'numeric'
-                                }
-                              )}
-                        </div>
-                      )}
+                    renderSourceForItem(item)}
                   </div>
                 )}
                 {// For multi items:
@@ -1240,25 +1260,7 @@ const Details = props => {
                       ))}
                     </div>
                     {// Display data source text if available.
-                    item.data_source &&
-                      item.value !== null &&
-                      !item.notAvail &&
-                      !item.hideSource && (
-                        <div
-                          className={classNames('dataSource', styles.source)}
-                        >
-                          Source: {item.data_source}
-                          {item.updated_at &&
-                            ' as of ' +
-                              new Date(item.updated_at).toLocaleString(
-                                'en-us',
-                                {
-                                  month: 'short',
-                                  year: 'numeric'
-                                }
-                              )}
-                        </div>
-                      )}
+                    renderSourceForItem(item)}
                   </div>
                 )}
               </div>
@@ -1539,28 +1541,7 @@ const Details = props => {
                       item.chart_jsx(item.value)}
                   </div>
                   {// Display data source text if available.
-                  !item.notAvail && (
-                    <Source
-                      className={styles.source}
-                      data={item.source_data}
-                      override={
-                        item.source_data === undefined && (
-                          <span>
-                            {'Source:'} {item.data_source}
-                            {item.updated_at &&
-                              ' as of ' +
-                                new Date(item.updated_at).toLocaleString(
-                                  'en-us',
-                                  {
-                                    month: 'short',
-                                    year: 'numeric'
-                                  }
-                                )}
-                          </span>
-                        )
-                      }
-                    />
-                  )}
+                  renderSourceForItem(item)}
                 </div>
               </div>
             )
