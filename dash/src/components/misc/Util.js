@@ -6,6 +6,11 @@ const Util = {}
 // List of countries that report data yearly only.
 Util.yearlyReportIso2 = ['VE']
 
+// Returns cross-browser compatible date object from input date string.
+Util.getDateObject = str => {
+  return new Date(str.replace(/-/g, '/'))
+}
+
 // Calculate age difference in months from text datetime strings.
 // Assumes a is more recent than b
 Util.getMonthsDiff = (aStr, bStr) => {

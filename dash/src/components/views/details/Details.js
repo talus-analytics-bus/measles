@@ -1467,6 +1467,12 @@ const Details = props => {
             date_time_fmt: date_time => {
               return Util.getDatetimeStamp(date_time, 'year')
             },
+            source_data: [
+              {
+                sourceLabel: 'Source',
+                data: [props.countryVaccLatest]
+              }
+            ],
             skip: false,
             ...(props.countryVaccLatest.value !== undefined
               ? props.countryVaccLatest
@@ -1527,19 +1533,22 @@ const Details = props => {
                     !item.notAvail && (
                       <Source
                         className={styles.source}
+                        data={item.source_data}
                         override={
-                          <span>
-                            {'Source:'} {item.data_source}
-                            {item.updated_at &&
-                              ' as of ' +
-                                new Date(item.updated_at).toLocaleString(
-                                  'en-us',
-                                  {
-                                    month: 'short',
-                                    year: 'numeric'
-                                  }
-                                )}
-                          </span>
+                          item.source_data === undefined && (
+                            <span>
+                              {'Source:'} {item.data_source}
+                              {item.updated_at &&
+                                ' as of ' +
+                                  new Date(item.updated_at).toLocaleString(
+                                    'en-us',
+                                    {
+                                      month: 'short',
+                                      year: 'numeric'
+                                    }
+                                  )}
+                            </span>
+                          )
                         }
                       />
                     )}
