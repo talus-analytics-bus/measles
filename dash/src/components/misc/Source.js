@@ -52,8 +52,8 @@ const Source = ({ data, override, left, ...props }) => {
    * @return {[type]}               [description]
    */
   const getSourceText = (data, override) => {
-    if (override !== undefined && override !== false) return override
-    if (data === undefined || noData(data)) return ''
+    if (override !== undefined && override !== false) return [override]
+    if (data === undefined || noData(data)) return ['']
 
     // Define array to hold final data source text.
     const sourceArr = []

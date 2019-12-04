@@ -1032,8 +1032,6 @@ const Details = props => {
         data: props.countryCaseloadHistory
       }
     ]
-    console.log('items')
-    console.log(items)
     return items
   }
 
@@ -1252,6 +1250,16 @@ const Details = props => {
                 </span>
               ),
               type: ['jee', 'multi'],
+              source_data: [
+                {
+                  sourceLabel: `Data for ${
+                    props.countryJeeImmun
+                      ? Util.getDatetimeStamp(props.countryJeeImmun, 'year')
+                      : ''
+                  }. Source`,
+                  data: [props.countryJeeImmun ? props.countryJeeImmun : {}]
+                }
+              ],
               // 'legend_jsx': () => getJeeChart('legend'),
               date_time_fmt: date_time => {
                 return Util.getDatetimeStamp(date_time, 'year')
@@ -1320,25 +1328,7 @@ const Details = props => {
                     )}
                   </div>
                   {// Display data source text if available.
-                  item.data_source &&
-                    item.value !== null &&
-                    !item.notAvail &&
-                    !item.hideSource && (
-                      <div className={classNames('dataSource', styles.source)}>
-                        Data for{' '}
-                        {item.value !== null
-                          ? `${item.date_time_fmt(item)}`
-                          : ''}
-                        . Source: {item.data_source}
-                        {item.updated_at &&
-                          ' as of ' +
-                            new Date(item.updated_at).toLocaleString('en-us', {
-                              month: 'short',
-                              year: 'numeric'
-                            })}
-                        .
-                      </div>
-                    )}
+                  renderSourceForItem(item)}
                 </div>
               )}
               {// For JEE items:
@@ -1372,25 +1362,7 @@ const Details = props => {
                     ))}
                   </div>
                   {// Display data source text if available.
-                  item.data_source &&
-                    item.value !== null &&
-                    !item.notAvail &&
-                    !item.hideSource && (
-                      <div className={classNames('dataSource', styles.source)}>
-                        Data for{' '}
-                        {item.value !== null
-                          ? `${item.date_time_fmt(item)}`
-                          : ''}
-                        . Source: {item.data_source}
-                        {item.updated_at &&
-                          ' as of ' +
-                            new Date(item.updated_at).toLocaleString('en-us', {
-                              month: 'short',
-                              year: 'numeric'
-                            })}
-                        .
-                      </div>
-                    )}
+                  renderSourceForItem(item)}
                 </div>
               )}
             </div>
