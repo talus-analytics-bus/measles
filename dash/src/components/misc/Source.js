@@ -177,7 +177,10 @@ const Source = ({ data, override, left, ...props }) => {
     <div
       className={classNames(
         'dataSource',
-        props.className ? props.className : ''
+        props.className ? props.className : '',
+        {
+          [styles.right]: left !== true
+        }
       )}
     >
       {getSourceText(data, override).map((jsx, i) => getSourceJsx(jsx, i))}
@@ -203,7 +206,7 @@ const getSourceJsx = (jsx, i) => {
  * @param  {[type]}            item [description]
  * @return {[type]}                 [description]
  */
-export const renderSourceForItem = item => {
+export const renderSourceForItem = (item, params = {}) => {
   return (
     // Display data source text if available.
     !item.notAvail && (
@@ -212,6 +215,11 @@ export const renderSourceForItem = item => {
         data={item.source_data}
         placesCoveredBySeparateDataset={
           item.placesCoveredBySeparateDataset === true
+        }
+        left={
+          (params.left === undefined && params.right === undefined) ||
+          (params.left !== undefined && params.left === true) ||
+          (params.right !== undefined && params.right === false)
         }
         override={
           item.source_data === undefined && (

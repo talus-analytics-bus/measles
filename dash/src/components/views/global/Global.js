@@ -825,7 +825,7 @@ const Global = props => {
                     item.chart_jsx !== undefined && item.chart_jsx(item.value)}
                   </div>
                   {// Display data source text if available.
-                  renderSourceForItem(item)}
+                  renderSourceForItem(item, { right: true })}
                 </div>
               </div>
             ))}
