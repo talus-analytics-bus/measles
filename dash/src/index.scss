@@ -104,6 +104,9 @@ body,
   }
 
   // Controls
+  .overlays {
+    overflow: unset !important; // Required for map marker visibility at edge
+  }
   .overlays > div:nth-child(2) {
     bottom: unset;
     top: 37px;
