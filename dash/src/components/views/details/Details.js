@@ -1453,7 +1453,18 @@ const Details = props => {
                 : 'Monthly incidence rate and vaccination over time',
             chart_jsx: getSlidingLineJsx,
             date_time_fmt: Util.getDateTimeRange,
-            data_source: getSlidingLineDataSources,
+            data_source: '',
+            // data_source: getSlidingLineDataSources,
+            source_data: [
+              {
+                sourceLabel: 'Source for total cases of measles',
+                data: props.countryCaseloadHistory
+              },
+              {
+                sourceLabel: 'Source for vaccination coverage',
+                data: props.countryVaccHistory
+              }
+            ],
             skip: showYearlyReport,
             ...(props.countryIncidenceHistory.length > 0
               ? { value: props.countryIncidenceHistory }
@@ -1528,34 +1539,26 @@ const Details = props => {
                       item.chart_jsx(item.value)}
                   </div>
                   {// Display data source text if available.
-                  typeof item.data_source !== 'function' &&
-                    item.data_source &&
-                    !item.notAvail && (
-                      <Source
-                        className={styles.source}
-                        data={item.source_data}
-                        override={
-                          item.source_data === undefined && (
-                            <span>
-                              {'Source:'} {item.data_source}
-                              {item.updated_at &&
-                                ' as of ' +
-                                  new Date(item.updated_at).toLocaleString(
-                                    'en-us',
-                                    {
-                                      month: 'short',
-                                      year: 'numeric'
-                                    }
-                                  )}
-                            </span>
-                          )
-                        }
-                      />
-                    )}
-                  {typeof item.data_source === 'function' && (
+                  !item.notAvail && (
                     <Source
                       className={styles.source}
-                      override={item.data_source()}
+                      data={item.source_data}
+                      override={
+                        item.source_data === undefined && (
+                          <span>
+                            {'Source:'} {item.data_source}
+                            {item.updated_at &&
+                              ' as of ' +
+                                new Date(item.updated_at).toLocaleString(
+                                  'en-us',
+                                  {
+                                    month: 'short',
+                                    year: 'numeric'
+                                  }
+                                )}
+                          </span>
+                        )
+                      }
                     />
                   )}
                 </div>

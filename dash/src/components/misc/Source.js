@@ -78,8 +78,8 @@ const Source = ({ data, override, left, ...props }) => {
           sourceObj[d.data_source].n += 1
 
           // Add place name if it's not there
-          if (!sourceObj.place_names.includes(d.place_name))
-            sourceObj.place_names.push(d.place_name)
+          if (!sourceObj[d.data_source].place_names.includes(d.place_name))
+            sourceObj[d.data_source].place_names.push(d.place_name)
 
           // If this "updated_at" is more recent use it instead
           const newUpdatedAt = Util.getDateObject(d.updated_at)
