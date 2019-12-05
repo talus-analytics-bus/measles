@@ -604,8 +604,8 @@ Util.globalMaxDate = () => {
 
 Util.today = () => {
   const today = new Date()
-  // today.setDate(1)
-  // today.setMonth(0)
+  today.setDate(1)
+  today.setMonth(0)
   return today
 }
 

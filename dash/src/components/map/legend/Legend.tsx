@@ -4,7 +4,7 @@ import styles from './legend.module.scss'
 import Util from '../../misc/Util.js'
 
 // Local components
-import CircleLegend from './CircleLegend.js'
+import ShapeLegend from './ShapeLegend.js'
 
 const Legend = (props: any) => {
   const [open, setOpen] = React.useState(true)
@@ -149,7 +149,7 @@ const Legend = (props: any) => {
         props.bubbleColorIsTrend && (
           <div className={classNames(styles.section, styles.change)}>
             <p className={styles.sectionName}>Change from previous month</p>
-            <CircleLegend circleInfo={undefined} />
+            <ShapeLegend shapeInfo={undefined} />
             {
               // Former legend
               // <div className={styles.legendEntryGroups}>

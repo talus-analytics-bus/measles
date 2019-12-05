@@ -1,6 +1,6 @@
 @import '../../../assets/styles/colors.scss';
 
-.circleLegend {
+.ShapeLegend {
   $entrySize: 16px; // TODO sync with legend.module.scss
   display: flex;
   flex-flow: row;
@@ -11,6 +11,10 @@
     flex-flow: column;
     .label {
       margin-top: 5px;
+    }
+    .rect {
+      height: $entrySize;
+      width: 43px;
     }
     .circle {
       height: $entrySize;

@@ -330,7 +330,7 @@ const Details = props => {
                     <div className={styles.jeeScoreValue}>{bin + 1}</div>
                   </div>
                   <div
-                    className={classNames(styles.jeeCircleLegendLabel, {
+                    className={classNames(styles.jeeShapeLegendLabel, {
                       [styles.labelBottom]: bin % 2 === 0,
                       [styles.labelTop]: bin % 2 === 1
                     })}

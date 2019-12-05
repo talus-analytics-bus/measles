@@ -184,8 +184,9 @@ $spacing: 5px;
             margin-left: $rect-width / 2;
 
             .legendIcon.rect {
-              border-color: $grey;
+              border-color: $grey !important;
               background-color: rgb(179, 179, 179);
+              // border-right: inherit !important;
             }
             .legendIcon.circle {
               // margin: auto 0;
