@@ -923,6 +923,8 @@ const Details = props => {
   React.useEffect(() => {
     if (slidingLine !== null) {
       if (unmountFuncs) {
+        const prevFunc = unmountFuncs.pop()
+        if (prevFunc) prevFunc()
         const newUnmountFuncs = [
           ...unmountFuncs,
           slidingLine.removeResizeListener
