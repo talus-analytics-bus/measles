@@ -49,6 +49,9 @@ const Details = props => {
   // Track whether to show reset view button on sliding line chart
   const [showReset, setShowReset] = React.useState(false)
 
+  // Track event listener removal functions to fire when component unmounts
+  const [unmountFuncs, setUnmountFuncs] = React.useState([])
+
   // Get data for current country.
   const country = props.id
 
@@ -881,7 +884,15 @@ const Details = props => {
         // defined above.
         chartParams
       )
+      // unmountFuncs2.push(slidingLineChart.removeResizeListener)
       setSlidingLine(slidingLineChart)
+      if (unmountFuncs) {
+        const newUnmountFuncs = [
+          ...unmountFuncs,
+          slidingLineChart.removeResizeListener
+        ]
+        setUnmountFuncs(newUnmountFuncs)
+      }
     }
 
     // Rebuild tooltips after the chart is drawn
@@ -910,11 +921,30 @@ const Details = props => {
 
   // Update sliding line chart sizing when it is created
   React.useEffect(() => {
+    if (slidingLine !== null) {
+      if (unmountFuncs) {
+        const newUnmountFuncs = [
+          ...unmountFuncs,
+          slidingLine.removeResizeListener
+        ]
+
+        setUnmountFuncs(newUnmountFuncs)
+      }
+    }
     if (slidingLine !== null && !resizedSlidingLineOnce) {
       setResizedSlidingLineOnce(true)
       slidingLine.update(slidingLineMetric)
     }
   }, [slidingLine])
+
+  // When component unmounts, remove all resize listeners.
+  React.useEffect(() => {
+    return () => {
+      unmountFuncs.forEach(func => {
+        func()
+      })
+    }
+  }, [unmountFuncs])
 
   // Get severity tooltip text, which is dynamic.
   const getSeverityTooltip = item => {
@@ -1109,8 +1139,6 @@ const Details = props => {
   }
 
   // If loading do not show JSX content.
-  console.log('props')
-  console.log(props)
   return (
     <div className={styles.details}>
       <div className={styles.sidebars}>

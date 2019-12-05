@@ -388,13 +388,17 @@ class Chart {
       // event listener
       // https://css-tricks.com/snippets/jquery/done-resizing-event/
       let timer
-      window.addEventListener('resize', () => {
+      const func = () => {
         onResize(this)
         // clearTimeout(timer);
         // timer = window.setTimeout(() => {
         //   onResize(this);
         // }, 100);
-      })
+      }
+      window.addEventListener('resize', func)
+      this.removeResizeListener = () => {
+        window.removeEventListener('resize', func)
+      }
     }
   }
 
@@ -509,8 +513,6 @@ class Chart {
         .nice()
         .range([0, chart.height])
       if (chart.yTickFormat) {
-        console.log('chart.yTickFormat - mvm found')
-        console.log(chart.yTickFormat)
         chart[axisType].tickFormat(chart.yTickFormat)
       }
     }
@@ -537,9 +539,19 @@ export default Chart
 function onResize(chart) {
   const selector = document.querySelector(chart.selector)
 
+  // console.log('\nchart')
+  // console.log(chart)
+  // console.log('selector')
+  // console.log(selector)
+
+  // NOTE: Scatter plot triggers resize event even if it's not on the page
+
   if (!selector) {
     return
   }
+
+  // // Remove "drawn" flag if it's there
+  // if (chart.toggleDrawn) chart.toggleDrawn(false, selector)
 
   // get the width and height of the container that we're inside
   chart.containerwidth = selector.clientWidth
@@ -610,6 +622,9 @@ function onResize(chart) {
   if (chart.resize) {
     chart.resize()
   }
+
+  // // Add "drawn" flag if it's there
+  // if (chart.toggleDrawn) chart.toggleDrawn(true, selector)
 }
 
 // https://stackoverflow.com/questions/14484787/wrap-text-in-javascript
