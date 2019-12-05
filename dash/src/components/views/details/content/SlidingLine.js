@@ -18,6 +18,11 @@ class SlidingLine extends Chart {
     this.show.y = this.data.vals.length > 0
     this.show.vacc = this.data.vaccVals.length > 0
 
+    // Add toggle for drawn class
+    this.toggleDrawn = (isDrawn, el) => {
+      el.classList.toggle(styles.drawn, isDrawn)
+    }
+
     this.setData = metric => {
       this.params.yMetricParams = Util.getMetricChartParams(metric)
       if (metric === 'caseload_totalpop') {
@@ -986,6 +991,9 @@ class SlidingLine extends Chart {
       if (chart.svg.node().parentElement === null) return
       chart.svg.node().parentElement.classList.remove(styles.drawn)
       chart.svg.html('')
+
+      // Unbind event listener for old chart
+      chart.removeResizeListener()
 
       // Create new chart
       const newSlidingLineChart = new SlidingLine(

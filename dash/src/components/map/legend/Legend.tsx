@@ -3,23 +3,26 @@ import classNames from 'classnames'
 import styles from './legend.module.scss'
 import Util from '../../misc/Util.js'
 
+// Local components
+import ShapeLegend from './ShapeLegend.js'
+
 const Legend = (props: any) => {
   const [open, setOpen] = React.useState(true)
 
-  const noDataColor = '#b3b3b3';
+  const noDataColor = '#b3b3b3'
 
   const vaccinationLegendLabels = (i: any) => {
     switch (i) {
       case 0:
-        return 'Low coverage';
+        return 'Low coverage'
       case Util.vaccinationColors.length - 1:
-        return 'High coverage';
+        return 'High coverage'
       default:
-        return '';
+        return ''
     }
-  };
+  }
 
-  const legendBubbleLabeling = props.legendBubbleLabeling;
+  const legendBubbleLabeling = props.legendBubbleLabeling
 
   return (
     <div
@@ -43,34 +46,39 @@ const Legend = (props: any) => {
             <p className={styles.sectionName}>Vaccination coverage (2018)</p>
             <div className={styles.legendEntryGroups}>
               <div className={styles.legendEntryGroup}>
-              <div className={styles.legendEntry}>
-                <div className={styles.legendIcons}>
-                {
-                  Util.vaccinationColors.map((d,i) =>
-                      <div className={classNames(styles.legendIcon, styles.rect)} style={ {'backgroundColor': d} } />
-                  )
-                }
-                </div>
+                <div className={styles.legendEntry}>
+                  <div className={styles.legendIcons}>
+                    {Util.vaccinationColors.map((d, i) => (
+                      <div
+                        className={classNames(styles.legendIcon, styles.rect)}
+                        style={{ backgroundColor: d }}
+                      />
+                    ))}
+                  </div>
 
-                <div className={styles.legendLabels}>
-                  <div className={styles.legendLabel}>
-                  {
-                    vaccinationLegendLabels(0)
-                  }
+                  <div className={styles.legendLabels}>
+                    <div className={styles.legendLabel}>
+                      {vaccinationLegendLabels(0)}
+                    </div>
+                    <div className={styles.legendLabel}>
+                      {vaccinationLegendLabels(5)}
+                    </div>
                   </div>
-                  <div className={styles.legendLabel}>
-                  {
-                    vaccinationLegendLabels(5)
-                  }
-                  </div>
-                </div>
                 </div>
               </div>
               <div className={styles.legendEntryGroup}>
                 {
-                  <div className={classNames(styles.legendEntry, styles.dataNotAvailable)}>
+                  <div
+                    className={classNames(
+                      styles.legendEntry,
+                      styles.dataNotAvailable
+                    )}
+                  >
                     <div className={styles.legendIcons}>
-                      <div className={classNames(styles.legendIcon, styles.rect)} style={ {'backgroundColor': noDataColor} } />
+                      <div
+                        className={classNames(styles.legendIcon, styles.rect)}
+                        style={{ backgroundColor: noDataColor }}
+                      />
                     </div>
                     <div className={styles.legendLabels}>
                       <div className={styles.legendLabel}>
@@ -86,85 +94,112 @@ const Legend = (props: any) => {
         {
           // Incidence
           <div className={styles.section}>
-            <p className={styles.sectionName}>{legendBubbleLabeling.sectionName}</p>
+            <p className={styles.sectionName}>
+              {legendBubbleLabeling.sectionName}
+            </p>
             <div className={styles.legendEntryGroups}>
               <div className={styles.legendEntryGroup}>
                 <div className={classNames(styles.legendEntry, styles.circle)}>
                   <div className={styles.legendIcons}>
-                  {
-                    [1,2,3].map((d,i) =>
-                      <div className={classNames(styles.legendIcon, styles.circle)} />
-                    )
-                  }
+                    {[1, 2, 3].map((d, i) => (
+                      <div
+                        className={classNames(styles.legendIcon, styles.circle)}
+                      />
+                    ))}
                   </div>
                   <div className={styles.legendLabels}>
-                    <div className={styles.legendLabel}>Low<br/>{legendBubbleLabeling.noun}</div>
-                    <div className={styles.legendLabel}>High<br/>{legendBubbleLabeling.noun}</div>
+                    <div className={styles.legendLabel}>
+                      Low
+                      <br />
+                      {legendBubbleLabeling.noun}
+                    </div>
+                    <div className={styles.legendLabel}>
+                      High
+                      <br />
+                      {legendBubbleLabeling.noun}
+                    </div>
                   </div>
                 </div>
               </div>
               <div className={styles.legendEntryGroup}>
-                {
-                  (!props.bubbleColorIsTrend) &&
-                  <div className={classNames(styles.legendEntry, styles.dataNotAvailable)}>
-                    <div className={classNames(styles.legendIcon, styles.circle)} />
+                {!props.bubbleColorIsTrend && (
+                  <div
+                    className={classNames(
+                      styles.legendEntry,
+                      styles.dataNotAvailable
+                    )}
+                  >
+                    <div
+                      className={classNames(styles.legendIcon, styles.circle)}
+                    />
                     <div className={styles.legendLabels}>
                       <div className={styles.legendLabel}>
                         Data over 3
-                        <br/>
+                        <br />
                         months old
                       </div>
                     </div>
                   </div>
-                }
+                )}
               </div>
             </div>
           </div>
         }
-        {
-          // Vaccination coverage
-          (props.bubbleColorIsTrend) &&
+        {// Vaccination coverage
+        props.bubbleColorIsTrend && (
           <div className={classNames(styles.section, styles.change)}>
             <p className={styles.sectionName}>Change from previous month</p>
-            <div className={styles.legendEntryGroups}>
-              <div className={styles.legendEntryGroup}>
-                {
-                  <div className={styles.legendEntry}>
-                    <div
-                      className={classNames(styles.legendIcon, styles.rect, styles.changeGradient)}
-                    />
-                    <div className={styles.legendLabels}>
-                      <div className={styles.legendLabel}>
-                        -100%
-                      </div>
-                      <div className={styles.legendLabel}>
-                        0%
-                      </div>
-                      <div className={styles.legendLabel}>
-                        +100%<br/>or more
-                      </div>
-                    </div>
-                  </div>
-                }
-              </div>
-              <div className={styles.legendEntryGroup}>
-                {
-                  <div className={classNames(styles.legendEntry, styles.dataNotAvailable)}>
-                    <div className={styles.legendIcons}>
-                      <div className={classNames(styles.legendIcon, styles.circle)} />
-                    </div>
-                    <div className={styles.legendLabels}>
-                      <div className={styles.legendLabel}>
-                        Data not available
-                      </div>
-                    </div>
-                  </div>
-                }
-              </div>
-
-            </div>
+            <ShapeLegend shapeInfo={undefined} />
+            {
+              // Former legend
+              // <div className={styles.legendEntryGroups}>
+              //   <div className={styles.legendEntryGroup}>
+              //     {
+              //       <div className={styles.legendEntry}>
+              //         <div
+              //           className={classNames(
+              //             styles.legendIcon,
+              //             styles.rect,
+              //             styles.changeGradient
+              //           )}
+              //         />
+              //         <div className={styles.legendLabels}>
+              //           <div className={styles.legendLabel}>-100%</div>
+              //           <div className={styles.legendLabel}>0%</div>
+              //           <div className={styles.legendLabel}>
+              //             +100%
+              //             <br />
+              //             or more
+              //           </div>
+              //         </div>
+              //       </div>
+              //     }
+              //   </div>
+              //   <div className={styles.legendEntryGroup}>
+              //     {
+              //       <div
+              //         className={classNames(
+              //           styles.legendEntry,
+              //           styles.dataNotAvailable
+              //         )}
+              //       >
+              //         <div className={styles.legendIcons}>
+              //           <div
+              //             className={classNames(styles.legendIcon, styles.circle)}
+              //           />
+              //         </div>
+              //         <div className={styles.legendLabels}>
+              //           <div className={styles.legendLabel}>
+              //             Data not available
+              //           </div>
+              //         </div>
+              //       </div>
+              //     }
+              //   </div>
+              // </div>
+            }
           </div>
-        }
+        )}
       </div>
     </div>
   )
