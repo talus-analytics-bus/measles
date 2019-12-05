@@ -13,7 +13,7 @@ $spacing: 5px;
 
   // Scale legend size to be smaller than default size.
   transform: translateY(calc(100% - 28px));
-  transition: all .5s;
+  transition: all 0.5s;
   transform-origin: bottom;
 
   @media #{$phone} {
@@ -36,12 +36,13 @@ $spacing: 5px;
 
     cursor: pointer;
 
-    i, &::before {
+    i,
+    &::before {
       font-size: 1.0605em !important;
     }
     i {
-      transform: rotate(-90deg)scaleY(1.2);
-      transition: all .5s;
+      transform: rotate(-90deg) scaleY(1.2);
+      transition: all 0.5s;
       vertical-align: middle;
       font-size: initial;
       margin-left: 20px;
@@ -57,10 +58,10 @@ $spacing: 5px;
 
   &.open .toggleButton {
     i {
-      transition: all .5s;
+      transition: all 0.5s;
       top: 0;
       right: -2px;
-      transform: rotate(90deg)scaleY(1.2);
+      transform: rotate(90deg) scaleY(1.2);
     }
     &::before {
       content: 'hide legend';
@@ -72,17 +73,20 @@ $spacing: 5px;
   // Scale legend size to be smaller than default size, and translate it so it
   // is visible.
   transform: scale(1);
-  transition: all .5s;
+  transition: all 0.5s;
 }
 .sections {
   display: flex;
   flex-flow: row;
-  padding: $spacing*2;
+  padding: $spacing * 2;
   // padding-bottom: $spacing*10 - 2px;
-  background-color: rgba(255, 255, 255, 0.92);
+  background-color: #e0e0e1;
+  // background-color: rgba(255, 255, 255, 0.92);
 
   .section {
-    &.change .legendLabel { width: 33%; }
+    &.change .legendLabel {
+      width: 33%;
+    }
     .legendEntryGroups .legendEntryGroup {
       &:not(:last-child) {
         margin-right: 0px;
@@ -96,7 +100,9 @@ $spacing: 5px;
           justify-content: space-between;
         }
 
-        &.dataNotAvailable { margin-left: unset; }
+        &.dataNotAvailable {
+          margin-left: unset;
+        }
 
         .legendLabels {
           display: flex;
@@ -138,7 +144,7 @@ $spacing: 5px;
     cursor: default;
     color: #161616;
 
-    padding-right: $spacing*10;
+    padding-right: $spacing * 10;
     &:last-child {
       padding-right: 3px;
     }
@@ -155,8 +161,8 @@ $spacing: 5px;
         display: flex;
         flow-flow: row;
 
-        $rect-height: 20px * .8;
-        $rect-width: 55px * .8;
+        $rect-height: 20px * 0.8;
+        $rect-width: 55px * 0.8;
         $circle-radius: $rect-height;
         $rect-border-width: 1px;
 
@@ -171,7 +177,7 @@ $spacing: 5px;
 
           .changeGradient {
             background: $value-change-gradient;
-            width: $rect-width*4 !important;
+            width: $rect-width * 4 !important;
           }
 
           &.dataNotAvailable {
@@ -209,16 +215,15 @@ $spacing: 5px;
               &:not(:last-child) {
                 border-right: none;
               }
-
             }
             &.circle {
+              border-width: 0;
               border-radius: 9999px;
               width: $circle-radius;
               height: $circle-radius;
               // margin: auto 25px;
               background-color: #b02c3a;
-              opacity: 0.85;
-              border: 1px solid #b02c3a;
+              // opacity: 0.85;
               // box-shadow: 5px 5px 10px 0px #0000008c;
               // -webkit-box-shadow: 5px 5px 10px 0px #0000008c;
             }
@@ -244,16 +249,16 @@ $spacing: 5px;
             }
             &:nth-child(2) {
               // .legendIcon.circle {
-                width: ($circle-radius * .75);
-                height: ($circle-radius * .75);
-                // margin: auto;
+              width: ($circle-radius * 0.75);
+              height: ($circle-radius * 0.75);
+              // margin: auto;
               // }
             }
             &:nth-child(1) {
               // .legendIcon.circle {
-                width: ($circle-radius * .5);
-                height: ($circle-radius * .5);
-                // margin: auto;
+              width: ($circle-radius * 0.5);
+              height: ($circle-radius * 0.5);
+              // margin: auto;
               // }
             }
           }
@@ -262,17 +267,21 @@ $spacing: 5px;
               margin: auto 25px;
             }
             &:first-child {
-              .legendIcon.circle { margin-left: 0; }
+              .legendIcon.circle {
+                margin-left: 0;
+              }
               // .legendLabel { left: -1px; }
             }
             &:last-child {
-              .legendIcon.circle { margin-right: 0; }
+              .legendIcon.circle {
+                margin-right: 0;
+              }
             }
           }
           &:last-child:not(:first-child) {
             &:not(.circle) {
               .legendLabel {
-                right: -2*$rect-border-width;
+                right: -2 * $rect-border-width;
               }
             }
             &.circle .legendLabel {

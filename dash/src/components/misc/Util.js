@@ -606,7 +606,7 @@ Util.today = () => {
   const today = new Date()
   // today.setDate(1)
   // today.setMonth(0)
-  return today // TODO put time traveling here if needed
+  return today
 }
 
 Util.getDatetimeStamp = (datum, type = 'year') => {

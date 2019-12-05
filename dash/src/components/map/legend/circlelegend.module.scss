@@ -1,0 +1,26 @@
+@import '../../../assets/styles/colors.scss';
+
+.circleLegend {
+  $entrySize: 16px; // TODO sync with legend.module.scss
+  display: flex;
+  flex-flow: row;
+  font-size: 0.8605em;
+  line-height: 1.1;
+  .entry {
+    display: flex;
+    flex-flow: column;
+    .label {
+      margin-top: 5px;
+    }
+    .circle {
+      height: $entrySize;
+      width: $entrySize;
+      border-radius: 9999px;
+    }
+
+    // Spacing between entries
+    &:not(:last-child) {
+      margin-right: 20px;
+    }
+  }
+}
