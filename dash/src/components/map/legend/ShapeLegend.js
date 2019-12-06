@@ -5,13 +5,14 @@ import Util from '../../misc/Util.js'
 
 /**
  * Create a series of horizontally spaced circles with labels. The input should
- * follow the format of "shapeInfo" below.
+ * follow the format of "shapeInfo" below. Note: the shape defaults to rect
+ * unless 'circle' is specified as the shape in props.shape.
  * @method ShapeLegend
  * @param  {object}     shapeInfo [description]
  * @param  {object}     props      [description]
  */
 const ShapeLegend = ({ shapeInfo, ...props }) => {
-  // Circle info structure:
+  // Legend entry shapeInfo structure
   if (shapeInfo === undefined)
     shapeInfo = [
       {
@@ -33,7 +34,8 @@ const ShapeLegend = ({ shapeInfo, ...props }) => {
 
   return (
     <div className={styles.ShapeLegend}>
-      {shapeInfo.map(c => (
+      {// Add one legend entry per shape defined in shapeInfo
+      shapeInfo.map(c => (
         <div className={styles.entry}>
           <div className={styles[shape]} style={{ backgroundColor: c.color }} />
           <div className={styles.label}>

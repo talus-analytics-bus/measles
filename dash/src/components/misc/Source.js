@@ -19,19 +19,25 @@ const Source = ({ data, override, left, ...props }) => {
   const noData = data => {
     let noData = false
     data.forEach(dataType => {
+      // If array is empty, return true (no data)
       const arrayEmpty = dataType.data.length === 0
-      // If array is empty, return true;
       if (arrayEmpty) noData = true
       else {
+        // Otherwise, if the first element of the array is empty (e.g., no
+        // data source has been defined), then return true (no data).
         const arrayElementEmpty = dataType.data[0].data_source === undefined
         if (arrayElementEmpty) noData = true
       }
     })
+
+    // Return whether there was no data.
     return noData
   }
 
   /**
-   * Given an array, joins the strings with commas or "and" as appropriate.
+   * Given an array, joins the strings with commas or "and" as appropriate. The
+   * resulting text string will link the array element strings together using
+   * an Oxford comma if applicable.
    * @method joinArrayStrings
    * @param  {[type]}         arr [description]
    * @return {[type]}             [description]
@@ -63,8 +69,8 @@ const Source = ({ data, override, left, ...props }) => {
     // Structure of data:
     // [
     //   {
-    //     sourceLabel: 'Source',
-    //     data: [{...}, {...}, {...}]
+    //     sourceLabel: 'Source', // text appearing at start of source label
+    //     data: [{...}, {...}, {...}] // data from which to determine sources
     //   },
     //   {
     //     sourceLabel: 'Source',
@@ -73,7 +79,8 @@ const Source = ({ data, override, left, ...props }) => {
     //   ...
     // ]
 
-    // Sort data by "updated_at" field.
+    // Sort data by "updated_at" field so that most recently published data are
+    // cited first.
     const sortFunc = Util.sortByField('updated_at')
 
     // For each type of data that needs to be attributed in the source text:
@@ -82,30 +89,29 @@ const Source = ({ data, override, left, ...props }) => {
       // and displayed as the source text.
       const sourceObj = {}
 
-      // // Sort data by "updated_at" field.
-      // dataType.data.sort(sortFunc)
-
       // For each datum in this datatype:
       dataType.data.forEach(d => {
-        // Get a dict of all the unique data sources and their "updated_at" values
+        // Get obj of all the unique data sources and their "updated_at" values
         // in the dataset.
+
+        // If the data source hasn't yet been seen in the dataset:
         if (sourceObj[d.data_source] === undefined) {
           // Add it
           sourceObj[d.data_source] = {
-            n: 1,
-            data_source: d.data_source,
-            updated_at: Util.getDateObject(d.updated_at),
-            place_names: [d.place_name]
+            n: 1, // number of times source appeared
+            data_source: d.data_source, // source name
+            updated_at: Util.getDateObject(d.updated_at), // when published
+            place_names: [d.place_name] // locations citing it
           }
         } else {
-          // Increment the count
+          // Increment the count (number of times source appeared in data)
           sourceObj[d.data_source].n += 1
 
-          // Add place name if it's not there
+          // Add place name if it's not there already
           if (!sourceObj[d.data_source].place_names.includes(d.place_name))
             sourceObj[d.data_source].place_names.push(d.place_name)
 
-          // If this "updated_at" is more recent use it instead
+          // If this "updated_at" is more recent, use it instead
           const newUpdatedAt = Util.getDateObject(d.updated_at)
           if (sourceObj[d.data_source].updated_at < newUpdatedAt) {
             sourceObj[d.data_source].updated_at = newUpdatedAt
@@ -113,7 +119,7 @@ const Source = ({ data, override, left, ...props }) => {
         }
       })
 
-      // Reshape data into array
+      // Reshape data into array to support concatenating it into a string
       const sources = Object.values(sourceObj).sort(sortFunc)
 
       // Define array to hold names of places for which a separate dataset was
@@ -127,7 +133,13 @@ const Source = ({ data, override, left, ...props }) => {
       sources.forEach(s => {
         // If the flag to call out places covered by separate datasets is true:
         if (props.placesCoveredBySeparateDataset === true) {
-          if (s.n === 1) {
+          // And this data source has only been cited once:
+          // TODO fix this, should instead check whether number of places
+          // citing the data source is equal to 1
+
+          if (s.place_names.length === 1 && s.place_names[0] !== 'World') {
+            // If the list of places covered by a "separate" dataset does not
+            // yet include this place, add it
             if (!placesCoveredBySeparateDataset.includes(s.place_names[0])) {
               placesCoveredBySeparateDataset.push(s.place_names[0])
             }
@@ -135,7 +147,7 @@ const Source = ({ data, override, left, ...props }) => {
           }
         }
 
-        // Add the data source.
+        // Add the data source to the overall list for this datatype.
         dataTypeSourceArr.push(
           `${s.data_source} as of ${s.updated_at.toLocaleString('en-us', {
             month: 'short',
@@ -143,6 +155,7 @@ const Source = ({ data, override, left, ...props }) => {
           })}`
         )
       })
+
       // If there are data sources applicable to only one country, then
       // list the countries instead of the data sources and link to the About
       // page relevant content.
@@ -166,6 +179,9 @@ const Source = ({ data, override, left, ...props }) => {
           {dataType.sourceLabel}: {dataTypeSourceText}.
         </span>
       )
+
+      // If there were places covered by their own separate data sources, add
+      // the string that mentions them.
       if (separatePlacesStr !== undefined) sourceArr.push(separatePlacesStr)
 
       // TODO if there are more than three, truncate to "and others" and include
@@ -198,12 +214,18 @@ const Source = ({ data, override, left, ...props }) => {
  * @return {[type]}         [description]
  */
 const getSourceJsx = (jsx, i) => {
+  // If it's the first source text item, don't precede with a space, otherwise
+  // do.
   if (i === 0) return <span>{jsx}</span>
   else return <span>&nbsp;{jsx}</span>
 }
 
 /**
- * Given the item, render source data.
+ * Given the item, render source data. Item should have value for:
+ *  data_source (str)
+ *  updated_at (str or Date)
+ *  source_data (see "shapeInfo" above)
+ *  notAvail (bool)
  * @method renderSourceForItem
  * @param  {[type]}            item [description]
  * @return {[type]}                 [description]
