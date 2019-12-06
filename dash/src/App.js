@@ -542,6 +542,9 @@ const App = () => {
         chartParams.MiniLine[0].params.data = results.miniLine1Data
 
         // Get average vaccination for each year based on average of countries
+        // TODO store this in the generalized metric database, or the data
+        // source text won't render accurately if we ever use more than one
+        // data source for vaccination coverage.
         const averageVaccDataObj = {}
         results.miniLine2Data.forEach(d => {
           if (averageVaccDataObj[d.date_time] === undefined) {
@@ -550,7 +553,8 @@ const App = () => {
               d.metric = 'avg_coverage_mcv1_infant'
               averageVaccDataObj[d.date_time] = {
                 ...d,
-                tempValues: [d.value]
+                tempValues: [d.value],
+                place_name: 'World'
               }
             }
           } else {
