@@ -28,8 +28,10 @@ const Map = ({
   const defaultViewport = {
     width: '100%',
     height: '100%',
-    longitude: 33.73046875000961,
-    latitude: 4.418504408489266,
+    longitude: 152.03124999998613,
+    latitude: -9.94091835039841,
+    // longitude: 33.73046875000961,
+    // latitude: 4.418504408489266,
     zoom: 2
   }
   const [viewport, setViewport] = React.useState(defaultViewport)
@@ -541,8 +543,6 @@ const Map = ({
           ? clickedOnGeom.properties.ISO_A2
           : clickedOnGeom.properties.WB_A2
       name = clickedOnGeom.properties.NAME
-      // console.log('clickedOnGeom')
-      // console.log(clickedOnGeom)
     }
 
     const bubbleData = bubbleObservations.find(f => f.place_id === id)
@@ -641,6 +641,7 @@ const Map = ({
             latitude: longlat[1],
             zoom: flyZoom
           }
+
           setViewport(newViewport)
           if (callback) callback()
         }
