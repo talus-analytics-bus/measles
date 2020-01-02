@@ -530,7 +530,9 @@ Util.getIncidenceQuantile = (countryObs, params = {}) => {
 }
 
 const getApiUrl = () => {
-  if (process.env.NODE_ENV === 'production') {
+  if (typeof process.env.API_URL !== 'undefined') {
+    return process.env.API_URL
+  } else if (process.env.NODE_ENV === 'production') {
     if (window.location.href.search('https') > -1)
       return 'https://measles-api.talusanalytics.com'
     else return 'http://measles-api-dev.us-west-1.elasticbeanstalk.com/'
