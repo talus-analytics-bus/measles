@@ -535,7 +535,8 @@ const getApiUrl = () => {
   } else if (process.env.NODE_ENV === 'production') {
     if (window.location.href.search('https') > -1)
       return 'https://measles-api.talusanalytics.com'
-    else return 'http://measles-api-dev.us-west-1.elasticbeanstalk.com/'
+    //else return 'http://measles-api-dev.us-west-1.elasticbeanstalk.com/'
+    else return 'http://measles-api-test.us-west-1.elasticbeanstalk.com'
   } else return 'http://localhost:5002'
 }
 
