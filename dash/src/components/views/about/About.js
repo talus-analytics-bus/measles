@@ -100,7 +100,7 @@ const About = () => {
           [2]
         </a>{' '}
         As a result, vaccination coverage data are typically reported on an
-        annual basis, as the majority of vaccination efforts are focused largely
+        annual basis, and the majority of vaccination efforts are focused largely
         on infants.
       </p>
 
@@ -119,11 +119,12 @@ const About = () => {
         >
           here
         </a>
-        . For select countries where caseload data are not available from
-        monthly WHO surveillance reports, alternate sources are used (see
-        below). Based on these available caseload data, it is possible to
-        calculate the monthly incidence rate, or the number of persons newly
-        diagnosed with measles, per 1,000,000 total population, per month.
+        . For select countries where caseload data are not available or
+        adequately captured from monthly WHO surveillance reports, alternate
+        sources are used (see below). Based on these available caseload data, it
+        is possible to calculate the monthly incidence rate, or the number of
+        persons newly diagnosed with measles, per 1,000,000 total population,
+        per month.
         <a
           className={styles.footnoteInline}
           href='#_ftn3'
@@ -265,7 +266,7 @@ const About = () => {
             </td>
             <td width='97'>
               <p>
-                October 2019
+                November 2019
                 <a
                   className={styles.footnoteInline}
                   href='#_ftn4'
@@ -277,6 +278,54 @@ const About = () => {
             </td>
             <td width='96'>
               <p>approximately monthly</p>
+            </td>
+          </tr>
+          <tr>
+            <td width='97'>
+              <p>Measles caseload</p>
+              <p>
+                <em>Data not yet reported to WHO for current outbreaks</em>
+              </p>
+            </td>
+            <td width='110'>
+              <p>
+              Web scraping or manual data capture from ministry of Health
+              websites, or official social media, or other reports
+              </p>
+            </td>
+            <td width='192'>
+              <p>
+                During ongoing outbreaks, reported cases to WHO by a member
+                state may lag behind the best available case reports
+                disseminated via other sources. Where possible, data are
+                captured from other reputable sources of country reporting
+                (e.g., official government social media and websites during latest
+                2019 outbreak in Samoa).
+              </p>
+            </td>
+            <td width='77'>
+              <p>
+              monthly
+              <a
+                className={styles.footnoteInline}
+                href='#_ftn5'
+                name='_ftnref5'
+              >
+                [5]
+              </a>
+              </p>
+            </td>
+            <td width='93'>
+              <p>country</p>
+            </td>
+            <td width='102'>
+              <p>total population</p>
+            </td>
+            <td width='97'>
+              <p>varies</p>
+            </td>
+            <td width='96'>
+              <p>varies</p>
             </td>
           </tr>
           <tr>
@@ -382,9 +431,17 @@ const About = () => {
       </p>
 
       <p>
-        For the current 2019 outbreak in Samoa, for which data are not yet
-        reported in the monthly WHO Measles Surveillance Dataset, case data were
-        identified through a review of updates from the{' '}
+        As of November 2019, the WHO Measles Surveillance Dataset contains no
+        caseload data for Guinea-Bissau, Mauritius, Seychelles, Ecuador, Saint
+        Vincent and the Grenadines, Djibouti, and Vanuatu for the year 2019. As
+        a result, caseload data are not shown.
+      </p>
+
+      <h3><em>2019 outbreak in Samoa</em></h3>
+      <p>
+        For the current 2019 outbreak in Samoa, for which data are not
+        adequately captured in the monthly WHO Measles Surveillance Dataset,
+        case data were identified through a review of updates from the{' '}
         <a target='_blank' href='https://twitter.com/samoagovt'>
           Government of Samoa Twitter Account
         </a>{' '}
@@ -398,6 +455,65 @@ const About = () => {
         </a>{' '}
         published on October 30, 2019.
       </p>
+
+      <h3>Comparison of caseload data sources</h3>
+      <p>
+        Measles Tracker uses the monthly WHO Measles Surveillance Dataset which
+        includes preliminary data on reported measles cases as soon as they are
+        available, commonly with a one to two month lag in reporting by member
+        states.
+        <a
+          className={styles.footnoteInline}
+          href='#_ftn6'
+          name='_ftnref6'
+          title=''
+        >
+          [6]
+        </a>{' '}
+        Since these data are provisional, a given country may have
+        different numbers of reported cases if comparing the sum of all monthly
+        WHO surveillance data (as in Measles Tracker) with the annual WHO
+        surveillance data reported by WHO member states and verified through the
+        WHO/UNICEF Joint Reporting Process (available{' '}
+        <a
+          target='_blank'
+          href='http://www.who.int/entity/immunization/monitoring_surveillance/data/incidence_series.xls?ua=1&ua=1'
+        >
+          here
+        </a>{''}
+        ).
+        <a
+          className={styles.footnoteInline}
+          href='#_ftn7'
+          name='_ftnref7'
+          title=''
+        >
+          [7]
+        </a>{' '}
+        This is important to note when comparing data from Measles Tracker to
+        other sources.  Data from the WHO/UNICEF Joint Reporting Process are
+        only available as a single annual case count and are only made available
+        in July of the year following a reporting year (e.g., July 2019 for the
+        2018 calendar year).
+        <a
+          className={styles.footnoteInline}
+          href='#_ftn7'
+          name='_ftnref7'
+          title=''
+        >
+          [7]
+        </a>{' '}
+        Since data submitted in the monthly reports are considered provisional,
+        many retrospective analyses that do not require the most recent or
+        monthly data use the single-value, annual case count provided the
+        following year by the release of measles cases from the WHO/UNICEF Joint
+        Reporting Process. However, Measles Tracker uses the monthly WHO
+        surveillance data as its the primary source of measles caseload data
+        because it provides information on measles cases at the finest temporal
+        resolution and update frequency available publicly, as needed to provide
+        information about ongoing outbreaks.
+      </p>
+
       <h3>Crosswalking Joint External Evaluations 1.0 and 2.0</h3>
       <p>
         Joint External Evaluations (JEEs) assess a country’s capacity to
@@ -428,11 +544,11 @@ const About = () => {
         10 countries have completed JEE 2.0.
         <a
           className={styles.footnoteInline}
-          href='#_ftn5'
-          name='_ftnref5'
+          href='#_ftn8'
+          name='_ftnref8'
           title=''
         >
-          [5]
+          [8]
         </a>{' '}
         To align the scores between the two assessments and enable an “apples to
         apples” comparison of scores, scores from JEE 1.0 must be crosswalked to
@@ -440,11 +556,11 @@ const About = () => {
         documented in Appendix 2 of JEE 2.0.
         <a
           className={styles.footnoteInline}
-          href='#_ftn6'
-          name='_ftnref6'
+          href='#_ftn9'
+          name='_ftnref9'
           title=''
         >
-          [6]
+          [9]
         </a>
       </p>
 
@@ -628,14 +744,9 @@ const About = () => {
               [5]
             </a>
             <p>
-              World Health Organization. Joint External Evaluation (JEE) mission
-              reports. Accessed online <i>via</i>{' '}
-              <a
-                target='_blank'
-                href='https://www.who.int/ihr/procedures/mission-reports/en/'
-              >
-                https://www.who.int/ihr/procedures/mission-reports/en/
-              </a>
+              If sources publish data at a finer temporal resolution than
+              monthly, they are processed into monthly increments to align with
+              the WHO Measles Surveillance dataset.
             </p>
           </p>
         </div>
@@ -648,6 +759,72 @@ const About = () => {
               title=''
             >
               [6]
+            </a>
+            <p>
+              World Health Organization. Measles and Rubella Surveillance Data.
+              Accessed online <i>via</i>{' '}
+              <a
+                target='_blank'
+                href='https://www.who.int/immunization/monitoring_surveillance/burden/vpd/surveillance_type/active/measles_monthlydata/en/'
+              >
+                https://www.who.int/immunization/monitoring_surveillance/burden/vpd/surveillance_type/active/measles_monthlydata/en/
+              </a>
+            </p>
+          </p>
+        </div>
+        <div className={styles.footnote} id='ftn7'>
+          <p>
+            <a
+              className={styles.footnote}
+              href='#_ftnref7'
+              name='_ftn7'
+              title=''
+            >
+              [7]
+            </a>
+            <p>
+              World Health Organization. WHO/UNICEF Joint Reporting Process.
+              Accessed online <i>via</i>{' '}
+              <a
+                target='_blank'
+                href='https://www.who.int/immunization/monitoring_surveillance/routine/reporting/en/'
+              >
+                https://www.who.int/immunization/monitoring_surveillance/routine/reporting/en/
+              </a>
+            </p>
+          </p>
+        </div>
+        <div className={styles.footnote} id='ftn8'>
+          <p>
+            <a
+              className={styles.footnote}
+              href='#_ftnref8'
+              name='_ftn8'
+              title=''
+            >
+              [8]
+            </a>
+            <p>
+              World Health Organization. Joint External Evaluation (JEE) mission
+              reports. Accessed online <i>via</i>{' '}
+              <a
+                target='_blank'
+                href='https://www.who.int/ihr/procedures/mission-reports/en/'
+              >
+                https://www.who.int/ihr/procedures/mission-reports/en/
+              </a>
+            </p>
+          </p>
+        </div>
+        <div className={styles.footnote} id='ftn9'>
+          <p>
+            <a
+              className={styles.footnote}
+              href='#_ftnref9'
+              name='_ftn9'
+              title=''
+            >
+              [9]
             </a>
             <p>
               World Health Organization. Joint External Evaluation tool (2nd
