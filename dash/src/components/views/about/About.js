@@ -289,8 +289,8 @@ const About = () => {
             </td>
             <td width='110'>
               <p>
-              Web scraping or manual data capture from ministry of Health
-              websites, or official social media, or other reports
+              Web scraping or manual data capture from ministry of health
+              websites, official social media, or other reports
               </p>
             </td>
             <td width='192'>
@@ -299,7 +299,7 @@ const About = () => {
                 state may lag behind the best available case reports
                 disseminated via other sources. Where possible, data are
                 captured from other reputable sources of country reporting
-                (e.g., official government social media and websites during latest
+                (e.g., official government social media and websites during late
                 2019 outbreak in Samoa).
               </p>
             </td>
@@ -508,7 +508,7 @@ const About = () => {
         monthly data use the single-value, annual case count provided the
         following year by the release of measles cases from the WHO/UNICEF Joint
         Reporting Process. However, Measles Tracker uses the monthly WHO
-        surveillance data as its the primary source of measles caseload data
+        surveillance data as its primary source of measles caseload data
         because it provides information on measles cases at the finest temporal
         resolution and update frequency available publicly, as needed to provide
         information about ongoing outbreaks.
