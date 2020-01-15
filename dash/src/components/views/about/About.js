@@ -266,7 +266,7 @@ const About = () => {
             </td>
             <td width='97'>
               <p>
-                November 2019
+                December 2019
                 <a
                   className={styles.footnoteInline}
                   href='#_ftn4'
@@ -431,7 +431,7 @@ const About = () => {
       </p>
 
       <p>
-        As of November 2019, the WHO Measles Surveillance Dataset contains no
+        As of December 2019, the WHO Measles Surveillance Dataset contains no
         caseload data for Guinea-Bissau, Mauritius, Seychelles, Ecuador, Saint
         Vincent and the Grenadines, Djibouti, and Vanuatu for the year 2019. As
         a result, caseload data are not shown.
