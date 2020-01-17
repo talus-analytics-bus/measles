@@ -453,9 +453,23 @@ const About = () => {
         >
           Situational Update No. 2
         </a>{' '}
-        published on October 30, 2019.
+        published on October 30, 2019. Caseload data from these sources contain
+        both suspected and confirmed cases.
       </p>
 
+      <h3><em>2019 outbreak in Democratic Republic of the Congo</em></h3>
+      <p>
+        For the current 2019 outbreak in the Democratic Republic of the Congo,
+        for which data are not adequately captured in the monthly WHO Measles
+        Surveillance Dataset, case data were identified through a review of
+        updates from the{' '}
+        <a target='_blank' href='https://www.afro.who.int/health-topics/disease-outbreaks/outbreaks-and-other-emergencies-updates?page=0'>
+        WHO Africa Outbreaks and Emergencies Weekly Bulletins
+      </a>{' '}
+        . Caseload data from this source contain both suspected and confirmed
+        cases.
+        </p>
+        
       <h3>Comparison of caseload data sources</h3>
       <p>
         Measles Tracker uses the monthly WHO Measles Surveillance Dataset which
