@@ -696,7 +696,7 @@ const Global = props => {
           <div className={classNames(styles.MiniLine, 'MiniLine-0')} />
         ),
         value_fmt: Util.comma,
-        value_label: 'current cases',
+        value_label: 'cases (last reported month)',
         placesCoveredBySeparateDataset: true,
         source_data: [
           {
