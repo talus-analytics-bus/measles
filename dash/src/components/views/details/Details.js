@@ -967,7 +967,7 @@ const Details = props => {
       type: ['multi'],
       values: [
         {
-          title: 'Last reported',
+          title: 'Last reported month',
           value_fmt: Util.formatSIInteger,
           value_label: Util.getPeopleNoun,
           date_time_fmt: date_time => {
@@ -1469,7 +1469,7 @@ const Details = props => {
               : { value: null })
           },
           {
-            title: 'Recent caseload severity',
+            title: 'Caseload severity (last reported month)',
             chart_jsx: getWedgeChart,
             value_fmt: Util.formatIncidence,
             value_label: 'cases per 1M population',
