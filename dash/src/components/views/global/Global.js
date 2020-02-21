@@ -40,9 +40,10 @@ const Global = props => {
   const scatterDataY = props.chartParams.Scatter[0].params.data.y
   const nScatterDataY = scatterDataY.length
   const latestScatterDatum = scatterDataY[nScatterDataY - 1]
-  const sliderMax = Util.getUTCDate(
-    new Date(latestScatterDatum.date_time.replace(/-/g, '/'))
-  )
+  const sliderMax = Util.globalMaxDate()
+  // const sliderMax = Util.getUTCDate(
+  //   new Date(latestScatterDatum.date_time.replace(/-/g, '/'))
+  // )
   const sliderMin = Util.getUTCDate(
     new Date(scatterDataY[0].date_time.replace(/-/g, '/'))
   )
@@ -281,7 +282,7 @@ const Global = props => {
           value={
             curSliderVal.getUTCFullYear() + curSliderVal.getUTCMonth() / 12
           }
-          marks={{ 2016: 2016, 2017: 2017, 2018: 2018, 2019: 2019 }}
+          marks={{ 2016: 2016, 2017: 2017, 2018: 2018, 2019: 2019, 2020: 2020 }}
           step={1 / 12}
           handle={handle}
           trackStyle={trackStyle}
@@ -733,9 +734,6 @@ const Global = props => {
     ]
   }
   // If loading do not show JSX content.
-  console.log('props')
-  console.log(props)
-
   const curSliderValStr = curSliderVal.toLocaleString('en-us', {
     month: 'short',
     year: 'numeric',
