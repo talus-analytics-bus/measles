@@ -598,7 +598,7 @@ Util.formatDatetimeApi = dt => {
 }
 
 Util.globalMaxDate = () => {
-  const globalMaxDate = new Date()
+  const globalMaxDate = new Date('2000/01/01')
   globalMaxDate.setDate(1)
   globalMaxDate.setMonth(0)
   globalMaxDate.setYear(2020)
@@ -607,8 +607,6 @@ Util.globalMaxDate = () => {
 
 Util.today = () => {
   const today = new Date()
-  // today.setDate(1)
-  // today.setMonth(0)
   return today
 }
 

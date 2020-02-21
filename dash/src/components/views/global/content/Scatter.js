@@ -51,8 +51,6 @@ class Scatter extends Chart {
 
   draw() {
     const chart = this
-    console.log('chart')
-    console.log(chart)
 
     // Create clipping path
     const defs = chart.svg.append('defs')
@@ -178,7 +176,7 @@ class Scatter extends Chart {
               .append('tspan')
               .attr('dy', '1.1em')
               .attr('x', 0)
-              .text('(2016-2019)')
+              .text('(2016-2018)')
           } else if (i === 1) {
             tickLabel.attr('text-anchor', 'end')
             tickLabel
@@ -194,7 +192,7 @@ class Scatter extends Chart {
               .append('tspan')
               .attr('dy', '1.1em')
               .attr('x', 0)
-              .text('(2016-2019)')
+              .text('(2016-2018)')
           }
         })
 
@@ -221,7 +219,7 @@ class Scatter extends Chart {
               .append('tspan')
               .attr('dy', '1.1em')
               .attr('x', -10)
-              .text('(2016-2019)')
+              .text('(2016-2020)')
           } else if (i === 1) {
             tickLabel
               .attr('text-anchor', 'end')
@@ -241,7 +239,7 @@ class Scatter extends Chart {
               .append('tspan')
               .attr('dy', '1.1em')
               .attr('x', -10)
-              .text('(2016-2019)')
+              .text('(2016-2020)')
           }
         })
 
@@ -332,8 +330,6 @@ class Scatter extends Chart {
     // Update function: Draw lines, add tooltips, etc.
     // Called: Every time the month/year slider is changed.
     chart.update = (dt = chart.params.curSliderVal, resize = false) => {
-      console.log('dt')
-      console.log(dt)
       if (chart.svg.node().parentElement === null) return
 
       if (resize) {

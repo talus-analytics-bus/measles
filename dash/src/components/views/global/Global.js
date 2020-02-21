@@ -734,9 +734,6 @@ const Global = props => {
     ]
   }
   // If loading do not show JSX content.
-  console.log('props')
-  console.log(props)
-
   const curSliderValStr = curSliderVal.toLocaleString('en-us', {
     month: 'short',
     year: 'numeric',
