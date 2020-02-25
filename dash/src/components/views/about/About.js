@@ -266,7 +266,7 @@ const About = () => {
             </td>
             <td width='97'>
               <p>
-                December 2019
+                January 2020
                 <a
                   className={styles.footnoteInline}
                   href='#_ftn4'
@@ -431,7 +431,7 @@ const About = () => {
       </p>
 
       <p>
-        As of December 2019, the WHO Measles Surveillance Dataset contains no
+        As of January 2020, the WHO Measles Surveillance Dataset contains no
         caseload data for Guinea-Bissau, Mauritius, Seychelles, Ecuador, Saint
         Vincent and the Grenadines, Djibouti, and Vanuatu for the year 2019. As
         a result, caseload data are not shown.
@@ -439,7 +439,7 @@ const About = () => {
 
       <h3><em>2019 outbreak in Samoa</em></h3>
       <p>
-        For the current 2019 outbreak in Samoa, for which data are not
+        For the 2019 outbreak in Samoa, for which data are not
         adequately captured in the monthly WHO Measles Surveillance Dataset,
         case data were identified through a review of updates from the{' '}
         <a target='_blank' href='https://twitter.com/samoagovt'>
@@ -453,8 +453,22 @@ const About = () => {
         >
           Situational Update No. 2
         </a>{' '}
-        published on October 30, 2019.
+        published on October 30, 2019. Caseload data from these sources contain
+        both suspected and confirmed cases.
       </p>
+
+      <h3><em>2019-2020 outbreak in Democratic Republic of the Congo</em></h3>
+      <p>
+        For the current 2019-2020 outbreak in the Democratic Republic of the Congo,
+        for which data are not adequately captured in the monthly WHO Measles
+        Surveillance Dataset, case data were identified through a review of
+        updates from the{' '}
+        <a target='_blank' href='https://www.afro.who.int/health-topics/disease-outbreaks/outbreaks-and-other-emergencies-updates?page=0'>
+        WHO Africa Outbreaks and Emergencies Weekly Bulletins
+      </a>{' '}
+        . Caseload data from this source contain both suspected and confirmed
+        cases.
+        </p>
 
       <h3>Comparison of caseload data sources</h3>
       <p>

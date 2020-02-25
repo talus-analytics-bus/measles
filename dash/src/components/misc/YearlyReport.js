@@ -13,7 +13,7 @@ const YearlyReport = props => {
     caseload_totalpop: {
       VE: {
         values: [
-          { value: 520, year: 2019 },
+          { value: 552, year: 2019 },
           { value: 5668, year: 2018 },
           { value: 727, year: 2017 },
           { value: 1, year: 2016 },
@@ -29,7 +29,7 @@ const YearlyReport = props => {
     incidence_yearly: {
       VE: {
         values: [
-          { value: 18.23548598, year: 2019 },
+          { value: 19.35755365, year: 2019 },
           { value: 196.2120346, year: 2018 },
           { value: 24.72580544, year: 2017 },
           { value: 0.033499436, year: 2016 },
