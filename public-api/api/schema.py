@@ -6,6 +6,7 @@
 import functools
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
+import pytz
 
 # Third party libraries
 from pony.orm import select
@@ -250,12 +251,12 @@ def getObservations(filters):
             temp_value = metric.temporal_resolution
 
     if 'start' in filters:
-        min_time = datetime.strptime(filters['start'], '%Y-%m-%d')
+        min_time = pytz.utc.localize(datetime.strptime(filters['start'], '%Y-%m-%d'))
     else:
         min_time = metric.min_time
 
     if 'end' in filters:
-        max_time = datetime.strptime(filters['end'], '%Y-%m-%d')
+        max_time = pytz.utc.localize(datetime.strptime(filters['end'], '%Y-%m-%d'))
     else:
         max_time = metric.max_time
 
