@@ -145,7 +145,9 @@ def get_start(t_rs, end, lag):
     elif t_rs == 'daily':
         start = end - timedelta(days=lag)
 
-    return pytz.utc.localize(start)
+    naive = start.tzinfo is None or start.tzinfo.utcoffset(start) is None
+    return start if not naive else pytz.utc.localize(start)
+    # return pytz.utc.localize(start)
 
 
 def manage_lag(metric, null_res, max_time, null_places, observations):
