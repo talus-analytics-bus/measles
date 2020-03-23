@@ -183,10 +183,12 @@ def manage_lag(metric, null_res, max_time, null_places, observations):
                              if o.metric.metric_id == metric.metric_id
                              and o.date_time.datetime >= min_time
                              and o.date_time.datetime <= max_time
+                             and o.place is not None
                              and o.place.place_id in null_places)
         elif len(null_places) == 0:
             lag_res = select(o for o in observations
                              if o.metric.metric_id == metric.metric_id
+                             and o.place is not None
                              and o.date_time.datetime >= min_time
                              and o.date_time.datetime <= max_time)
         else:
@@ -194,6 +196,7 @@ def manage_lag(metric, null_res, max_time, null_places, observations):
                              if o.metric.metric_id == metric.metric_id
                              and o.date_time.datetime >= min_time
                              and o.date_time.datetime <= max_time
+                             and o.place is not None
                              and o.place.place_id == null_places[0])
 
     latest_observation = {}
@@ -310,12 +313,14 @@ def getObservations(filters):
                                  if o.metric.metric_id == metric_id
                                  and o.date_time.datetime >= min_time
                                  and o.date_time.datetime <= max_time
+                                 and o.place is not None
                                  and o.place.place_id == filters['place_id'])
 
                 place_id = filters['place_id']
             else:
                 res = select(o for o in observations
                              if o.metric.metric_id == metric_id
+                             and o.place is not None
                              and o.date_time.datetime >= min_time
                              and o.date_time.datetime <= max_time)
 
@@ -396,10 +401,12 @@ def getTrend(filters):
                          and o.date_time.datetime >= min_time
                          and o.date_time.datetime <= end
                          and o.value is not None
+                         and o.place is not None
                          and o.place.place_id == filters['place_id'])
         else:
             res = select(o for o in db.Observation
                          if o.metric.metric_id == metric_id
+                         and o.place is not None
                          and o.date_time.datetime >= min_time
                          and o.date_time.datetime <= end
                          and o.value is not None)
