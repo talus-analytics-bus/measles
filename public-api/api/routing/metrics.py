@@ -72,18 +72,18 @@ class Observations(Resource):
             if lag is not None and len(lag) > 0:
                 for o in lag:
                     res_list.append({
-                      'data_source': o[1],
-                      'date_time': o[2].strftime('%Y-%m-%d %H:%M:%S %Z'),
-                      'definition': o[3],
-                      'metric': o[4],
-                      'observation_id': o[5],
-                      'place_fips': o[6],
-                      'place_id': o[7],
-                      'place_iso': o[8],
-                      'place_name': o[9],
-                      'updated_at': o[10],
-                      'value': o[11],
-                      'stale_flag': True,
+                        'data_source': o[1],
+                        'date_time': o[2].strftime('%Y-%m-%d %H:%M:%S %Z'),
+                        'definition': o[3],
+                        'metric': o[4],
+                        'observation_id': o[5],
+                        'place_fips': o[6],
+                        'place_id': o[7],
+                        'place_iso': o[8],
+                        'place_name': o[9],
+                        'updated_at': o[10],
+                        'value': o[11],
+                        'stale_flag': True,
                     })
 
                     lagged_places.append(o[7])
@@ -93,18 +93,18 @@ class Observations(Resource):
                 if o.place_id in lagged_places:
                     continue
                 res_list.append({
-                  'data_source': o[1],
-                  'date_time': o[2].strftime('%Y-%m-%d %H:%M:%S %Z'),
-                  'definition': o[3],
-                  'metric': o[4],
-                  'observation_id': o[5],
-                  'place_fips': o[6],
-                  'place_id': o[7],
-                  'place_iso': o[8],
-                  'place_name': o[9],
-                  'updated_at': o[10],
-                  'value': o[11],
-                  'stale_flag': False,
+                    'data_source': o[1],
+                    'date_time': o[2].strftime('%Y-%m-%d %H:%M:%S %Z'),
+                    'definition': o[3],
+                    'metric': o[4],
+                    'observation_id': o[5],
+                    'place_fips': o[6],
+                    'place_id': o[7],
+                    'place_iso': o[8],
+                    'place_name': o[9],
+                    'updated_at': o[10],
+                    'value': o[11],
+                    'stale_flag': False,
                 })
 
             res_list.sort(key=lambda o: (o['place_id'], o['date_time']))
@@ -116,7 +116,8 @@ class Observations(Resource):
             if lag is not None and len(lag) > 0:
                 lagData = [r.to_dict(related_objects=True) for r in lag]
 
-                formattedData = [o for o in formattedData if o['value'] is not None]
+                formattedData = [
+                    o for o in formattedData if o['value'] is not None]
 
                 for o in formattedData:
                     o['stale_flag'] = False
@@ -130,7 +131,8 @@ class Observations(Resource):
                 o['metric'] = metric_info['metric_name']
                 o['definition'] = metric_info['metric_definition']
 
-                o['date_time'] = o['date_time'].to_dict()['datetime'].strftime(strf_str)
+                o['date_time'] = o['date_time'].to_dict(
+                )['datetime'].strftime(strf_str)
 
                 place_info = o['place'].to_dict()
                 o['place_id'] = place_info['place_id']
@@ -180,18 +182,18 @@ class Trend(Resource):
                 for o in place_list:
                     o_date = o[2]
                     o_dict = {
-                      'data_source': o[1],
-                      'no_tz': o_date.replace(tzinfo=None),
-                      'date_time': o_date.strftime(strf_str),
-                      'definition': o[3],
-                      'metric': o[4],
-                      'observation_id': o[5],
-                      'place_fips': o[6],
-                      'place_id': place_id,
-                      'place_iso': o[8],
-                      'place_name': o[9],
-                      'updated_at': o[10],
-                      'value': o[11],
+                        'data_source': o[1],
+                        'no_tz': o_date.replace(tzinfo=None),
+                        'date_time': o_date.strftime(strf_str),
+                        'definition': o[3],
+                        'metric': o[4],
+                        'observation_id': o[5],
+                        'place_fips': o[6],
+                        'place_id': place_id,
+                        'place_iso': o[8],
+                        'place_name': o[9],
+                        'updated_at': o[10],
+                        'value': o[11],
                     }
 
                     if counter == 0:
@@ -201,10 +203,14 @@ class Trend(Resource):
                         end_dict[place_id] = o_dict
         else:
             for place_id, place_list in place_lists.items():
-                formattedData = [r.to_dict(related_objects=True) for r in place_list]
+                formattedData = [r.to_dict(related_objects=True)
+                                 for r in place_list]
                 counter = 0
-
+                print('len(formattedData)')
+                print(len(formattedData))
                 for o in formattedData:
+                    # print('o')
+                    # print(o)
                     o_date = o['date_time'].to_dict()['datetime']
 
                     metric_info = o['metric'].to_dict()
@@ -232,6 +238,8 @@ class Trend(Resource):
         trends = []
 
         for place, end_obs in end_dict.items():
+            print('end_obs')
+            print(end_obs)
             try:
                 start_obs = start_dict[place]
             except KeyError:
@@ -252,7 +260,8 @@ class Trend(Resource):
             trend['end_obs'] = end_value
 
             try:
-                trend['percent_change'] = (end_value - start_value) / start_value
+                trend['percent_change'] = (
+                    end_value - start_value) / start_value
             except (TypeError, ZeroDivisionError):
                 if end_value is None:
                     trend['percent_change'] = None
@@ -318,13 +327,14 @@ class Places(Resource):
         # Get and return places.
         # order = None
         order = [
-          "Europe",
-          "Eastern Mediterranean",
-          "Africa",
-          "South-East Asia",
-          "Western Pacific",
-          "Americas",
-          "Unspecified region"
-        ];
-        res = schema.getEntityInstances(db.Place, 'place_id', organizing_attribute, order, filters, params)
+            "Europe",
+            "Eastern Mediterranean",
+            "Africa",
+            "South-East Asia",
+            "Western Pacific",
+            "Americas",
+            "Unspecified region"
+        ]
+        res = schema.getEntityInstances(
+            db.Place, 'place_id', organizing_attribute, order, filters, params)
         return res
