@@ -63,8 +63,6 @@ def getEntityInstances(entity_class, id_field_name, organizing_attribute, order,
     # instances of the entity in the db. Otherwise return only the instance
     # with that ID.
     instances = None
-    print('params')
-    print(params)
     if 'id' in params:
         instances = [o for o in instancesTmp if getattr(
             o, id_field_name) == int(params['id'])]
@@ -309,8 +307,6 @@ def getObservations(filters):
             else:
                 res = db.select(view_q_str)
 
-            print(view_q_str)
-
         else:
             if 'place_id' in filters:
                 res = None
@@ -378,11 +374,6 @@ def getTrend(filters):
 
     t_rs = metric.temporal_resolution
 
-    print('metric.lag_allowed')
-    print(metric.lag_allowed)
-    print('lag')
-    print(lag)
-
     start = get_start(t_rs, end, lag)
 
     # TODO review calculation of start and min_time and their usage in the code
@@ -390,11 +381,6 @@ def getTrend(filters):
     min_time = get_start(metric.temporal_resolution, end,
                          metric.lag_allowed if metric.lag_allowed is not None
                          else lag)
-
-    print('end')
-    print(end)
-    print('min_time')
-    print(min_time)
 
     if metric.is_view:
         q_str = f"""SELECT v.metric_id, v.data_source, d.dt,

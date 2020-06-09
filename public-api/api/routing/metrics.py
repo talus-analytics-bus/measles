@@ -206,11 +206,7 @@ class Trend(Resource):
                 formattedData = [r.to_dict(related_objects=True)
                                  for r in place_list]
                 counter = 0
-                print('len(formattedData)')
-                print(len(formattedData))
                 for o in formattedData:
-                    # print('o')
-                    # print(o)
                     o_date = o['date_time'].to_dict()['datetime']
 
                     metric_info = o['metric'].to_dict()
@@ -238,12 +234,9 @@ class Trend(Resource):
         trends = []
 
         for place, end_obs in end_dict.items():
-            print('end_obs')
-            print(end_obs)
             try:
                 start_obs = start_dict[place]
             except KeyError:
-                print(f'No matching observiation for place: {place}')
                 break
 
             trend = {}
