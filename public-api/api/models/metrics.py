@@ -32,7 +32,8 @@ class DateTime(db.Entity):
     dt_id = PrimaryKey(int, auto=True)
     # date = Required(date)
     # time = Required(time)
-    datetime = Required(datetime, column="dt", sql_type='TIMESTAMP WITH TIME ZONE')
+    datetime = Required(datetime, column="dt",
+                        sql_type='TIMESTAMP WITH TIME ZONE')
     day = Required(bool)
     week_sunday = Required(bool)
     week_monday = Required(bool)
@@ -48,6 +49,9 @@ class Poly(db.Entity):
 
 class Point(db.Entity):
     point_id = PrimaryKey(int, auto=True)
+    geom = Required(str, sql_type='point')
+    lon = Optional(float)
+    lat = Optional(float)
     place = Required("Place", column="place_id")
 
 

@@ -90,7 +90,7 @@ def getEntityInstances(entity_class, id_field_name, organizing_attribute, order,
                 continue
 
             # Get ID and name of entity instance to return as output
-            dataSets = [(getattr(o, id_field_name), o.name, o.iso2) for o in instances
+            dataSets = [(getattr(o, id_field_name), o.name, o.iso2, o.point.lon if o.point is not None else None, o.point.lat if o.point is not None else None) for o in instances
                         if getattr(o, organizing_attribute) == key]
 
             # Store the sets of data under the value of the organizing attribute
@@ -104,7 +104,7 @@ def getEntityInstances(entity_class, id_field_name, organizing_attribute, order,
 
     # Otherwise, return the instances without organizing them under an attribute
     else:
-        return [(getattr(o, id_field_name), o.name, o.iso2) for o in instances]
+        return [(getattr(o, id_field_name), o.name, o.iso2, o.region, o.point.lon if o.point is not None else None, o.point.lat if o.point is not None else None) for o in instances]
 
 
 # Define a metric endpoint query.
