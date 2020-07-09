@@ -80,9 +80,10 @@ class Observations(Resource):
                         'place_fips': o[6],
                         'place_id': o[7],
                         'place_iso': o[8],
-                        'place_name': o[9],
-                        'updated_at': o[10],
-                        'value': o[11],
+                        'place_iso3': o[9],
+                        'place_name': o[10],
+                        'updated_at': o[11],
+                        'value': o[12],
                         'stale_flag': True,
                     })
 
@@ -101,9 +102,10 @@ class Observations(Resource):
                     'place_fips': o[6],
                     'place_id': o[7],
                     'place_iso': o[8],
-                    'place_name': o[9],
-                    'updated_at': o[10],
-                    'value': o[11],
+                    'place_iso3': o[9],
+                    'place_name': o[10],
+                    'updated_at': o[11],
+                    'value': o[12],
                     'stale_flag': False,
                 })
 
@@ -138,6 +140,7 @@ class Observations(Resource):
                 o['place_id'] = place_info['place_id']
                 o['place_name'] = place_info['name']
                 o['place_iso'] = place_info['iso2']
+                o['place_iso3'] = place_info['iso']
                 o['place_fips'] = place_info['fips']
                 del[o['place']]
 
@@ -191,9 +194,10 @@ class Trend(Resource):
                         'place_fips': o[6],
                         'place_id': place_id,
                         'place_iso': o[8],
-                        'place_name': o[9],
-                        'updated_at': o[10],
-                        'value': o[11],
+                        'place_iso3': o[9],
+                        'place_name': o[10],
+                        'updated_at': o[11],
+                        'value': o[12],
                     }
 
                     if counter == 0:
@@ -222,6 +226,7 @@ class Trend(Resource):
                     o['place_id'] = place_id
                     o['place_name'] = place_info['name']
                     o['place_iso'] = place_info['iso2']
+                    o['place_iso3'] = place_info['iso']
                     o['place_fips'] = place_info['fips']
                     del[o['place']]
 
@@ -275,6 +280,7 @@ class Trend(Resource):
             trend['place_id'] = place
             trend['place_name'] = end_obs['place_name']
             trend['place_iso'] = end_obs['place_iso']
+            trend['place_iso3'] = end_obs['place_iso3']
             trend['place_fips'] = end_obs['place_fips']
 
             no_tz_date = end_obs['no_tz']

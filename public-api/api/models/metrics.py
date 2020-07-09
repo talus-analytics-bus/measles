@@ -6,7 +6,7 @@
 from datetime import datetime
 
 # Third party libraries
-from pony.orm import PrimaryKey, Required, Optional, Set
+from pony.orm import PrimaryKey, Required, Optional, Set, StrArray
 from . import db
 
 
@@ -58,6 +58,7 @@ class Point(db.Entity):
 class Place(db.Entity):
     place_id = PrimaryKey(int, auto=True)
     name = Required(str)
+    other_names = Optional(StrArray)
     description = Optional(str)
     fips = Optional(str)
     iso = Optional(str)

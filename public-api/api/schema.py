@@ -169,6 +169,7 @@ def manage_lag(metric, null_res, max_time, null_places, observations):
         lag_res_q_str = f"""SELECT v.metric_id, v.data_source, d.dt,
                             m.metric_definition, m.metric_name, v.observation_id,
                             p.fips AS place_fips, p.place_id, p.iso2 AS place_iso,
+                            p.iso AS place_iso3,
                             p.name AS place_name, v.updated_at, v.value::FLOAT
                             FROM {metric.view_name} v
                             LEFT JOIN datetime d ON v.datetime_id = d.dt_id
@@ -280,6 +281,7 @@ def getObservations(filters):
     view_q_str = f"""SELECT v.metric_id, v.data_source, d.dt,
                         m.metric_definition, m.metric_name, v.observation_id,
                         p.fips AS place_fips, p.place_id, p.iso2 AS place_iso,
+                        p.iso AS place_iso3,
                         p.name AS place_name, v.updated_at, v.value::FLOAT
                         FROM {metric.view_name} v
                         LEFT JOIN datetime d ON v.datetime_id = d.dt_id
@@ -386,6 +388,7 @@ def getTrend(filters):
         q_str = f"""SELECT v.metric_id, v.data_source, d.dt,
                 m.metric_definition, m.metric_name, v.observation_id,
                 p.fips AS place_fips, p.place_id, p.iso2 AS place_iso,
+                p.iso AS place_iso3,
                 p.name AS place_name, v.updated_at, v.value::FLOAT
                 FROM {metric.view_name} v
                 LEFT JOIN datetime d ON v.datetime_id = d.dt_id
