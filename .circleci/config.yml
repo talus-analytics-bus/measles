@@ -8,7 +8,7 @@ jobs:
     working_directory: ~/repo
 
     docker:
-      - image: circleci/node:10.12.0-stretch
+      - image: circleci/node:10.14.2-stretch
     environment:
       API_URL: http://measles-api-dev.us-west-1.elasticbeanstalk.com
 
@@ -54,7 +54,7 @@ jobs:
     working_directory: ~/repo
 
     docker:
-      - image: circleci/node:10.12.0-stretch
+      - image: circleci/node:10.14.2-stretch
     environment:
       API_URL: http://measles-api-test.us-west-1.elasticbeanstalk.com
 

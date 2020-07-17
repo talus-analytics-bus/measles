@@ -6,6 +6,7 @@
 import functools
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
+import pytz
 
 # Third party libraries
 from pony.orm import select
@@ -62,10 +63,9 @@ def getEntityInstances(entity_class, id_field_name, organizing_attribute, order,
     # instances of the entity in the db. Otherwise return only the instance
     # with that ID.
     instances = None
-    print('params')
-    print(params)
     if 'id' in params:
-        instances = [o for o in instancesTmp if getattr(o, id_field_name) == int(params['id'])]
+        instances = [o for o in instancesTmp if getattr(
+            o, id_field_name) == int(params['id'])]
 
     else:
         instances = instancesTmp
@@ -90,7 +90,7 @@ def getEntityInstances(entity_class, id_field_name, organizing_attribute, order,
                 continue
 
             # Get ID and name of entity instance to return as output
-            dataSets = [(getattr(o, id_field_name), o.name, o.iso2) for o in instances
+            dataSets = [(getattr(o, id_field_name), o.name, o.iso2, o.point.lon if o.point is not None else None, o.point.lat if o.point is not None else None) for o in instances
                         if getattr(o, organizing_attribute) == key]
 
             # Store the sets of data under the value of the organizing attribute
@@ -104,7 +104,7 @@ def getEntityInstances(entity_class, id_field_name, organizing_attribute, order,
 
     # Otherwise, return the instances without organizing them under an attribute
     else:
-        return [(getattr(o, id_field_name), o.name, o.iso2) for o in instances]
+        return [(getattr(o, id_field_name), o.name, o.iso2, o.region, o.point.lon if o.point is not None else None, o.point.lat if o.point is not None else None) for o in instances]
 
 
 # Define a metric endpoint query.
@@ -130,8 +130,10 @@ def observation_summary(metric_id, t_summary, temp_value, s_summary, spatial_val
     return 'test'
 
 
-spatial_resolution_error = Exception("Requested spatial resolution is finer than metric's")
-temporal_resolution_error = Exception("Requested temporal resolution is finer than metric's")
+spatial_resolution_error = Exception(
+    "Requested spatial resolution is finer than metric's")
+temporal_resolution_error = Exception(
+    "Requested temporal resolution is finer than metric's")
 
 
 def get_start(t_rs, end, lag):
@@ -144,16 +146,20 @@ def get_start(t_rs, end, lag):
     elif t_rs == 'daily':
         start = end - timedelta(days=lag)
 
-    return start
+    naive = start.tzinfo is None or start.tzinfo.utcoffset(start) is None
+    return start if not naive else pytz.utc.localize(start)
+    # return pytz.utc.localize(start)
 
 
 def manage_lag(metric, null_res, max_time, null_places, observations):
 
-    min_time = get_start(metric.temporal_resolution, max_time, metric.lag_allowed)
+    min_time = get_start(metric.temporal_resolution,
+                         max_time, metric.lag_allowed)
 
     if metric.is_view:
         if len(null_places) > 1:
-            place_id_arr = '{' + (', '.join(map(lambda x: str(x), null_places))) + '}'
+            place_id_arr = '{' + \
+                (', '.join(map(lambda x: str(x), null_places))) + '}'
             place_id_q_str = f"""AND v.place_id = ANY('{place_id_arr}'::int[])"""
         elif len(null_places) == 0:
             place_id_q_str = ''
@@ -163,6 +169,7 @@ def manage_lag(metric, null_res, max_time, null_places, observations):
         lag_res_q_str = f"""SELECT v.metric_id, v.data_source, d.dt,
                             m.metric_definition, m.metric_name, v.observation_id,
                             p.fips AS place_fips, p.place_id, p.iso2 AS place_iso,
+                            p.iso AS place_iso3,
                             p.name AS place_name, v.updated_at, v.value::FLOAT
                             FROM {metric.view_name} v
                             LEFT JOIN datetime d ON v.datetime_id = d.dt_id
@@ -180,10 +187,12 @@ def manage_lag(metric, null_res, max_time, null_places, observations):
                              if o.metric.metric_id == metric.metric_id
                              and o.date_time.datetime >= min_time
                              and o.date_time.datetime <= max_time
+                             and o.place is not None
                              and o.place.place_id in null_places)
         elif len(null_places) == 0:
             lag_res = select(o for o in observations
                              if o.metric.metric_id == metric.metric_id
+                             and o.place is not None
                              and o.date_time.datetime >= min_time
                              and o.date_time.datetime <= max_time)
         else:
@@ -191,6 +200,7 @@ def manage_lag(metric, null_res, max_time, null_places, observations):
                              if o.metric.metric_id == metric.metric_id
                              and o.date_time.datetime >= min_time
                              and o.date_time.datetime <= max_time
+                             and o.place is not None
                              and o.place.place_id == null_places[0])
 
     latest_observation = {}
@@ -214,7 +224,8 @@ def manage_lag(metric, null_res, max_time, null_places, observations):
 
 # Define an observation endpoint query.
 def getObservations(filters):
-    s_rs = ['planet', 'global', 'country', 'state', 'county', 'block_group', 'tract', 'point']
+    s_rs = ['planet', 'global', 'country', 'state',
+            'county', 'block_group', 'tract', 'point']
     t_rs = ['yearly', 'monthly', 'weekly', 'daily', 'occasion']
 
     # Initialize response as empty
@@ -250,12 +261,14 @@ def getObservations(filters):
             temp_value = metric.temporal_resolution
 
     if 'start' in filters:
-        min_time = datetime.strptime(filters['start'], '%Y-%m-%d')
+        min_time = pytz.utc.localize(
+            datetime.strptime(filters['start'], '%Y-%m-%d'))
     else:
         min_time = metric.min_time
 
     if 'end' in filters:
-        max_time = datetime.strptime(filters['end'], '%Y-%m-%d')
+        max_time = pytz.utc.localize(
+            datetime.strptime(filters['end'], '%Y-%m-%d'))
     else:
         max_time = metric.max_time
 
@@ -268,6 +281,7 @@ def getObservations(filters):
     view_q_str = f"""SELECT v.metric_id, v.data_source, d.dt,
                         m.metric_definition, m.metric_name, v.observation_id,
                         p.fips AS place_fips, p.place_id, p.iso2 AS place_iso,
+                        p.iso AS place_iso3,
                         p.name AS place_name, v.updated_at, v.value::FLOAT
                         FROM {metric.view_name} v
                         LEFT JOIN datetime d ON v.datetime_id = d.dt_id
@@ -295,8 +309,6 @@ def getObservations(filters):
             else:
                 res = db.select(view_q_str)
 
-            print(view_q_str)
-
         else:
             if 'place_id' in filters:
                 res = None
@@ -307,17 +319,20 @@ def getObservations(filters):
                                  if o.metric.metric_id == metric_id
                                  and o.date_time.datetime >= min_time
                                  and o.date_time.datetime <= max_time
+                                 and o.place is not None
                                  and o.place.place_id == filters['place_id'])
 
                 place_id = filters['place_id']
             else:
                 res = select(o for o in observations
                              if o.metric.metric_id == metric_id
+                             and o.place is not None
                              and o.date_time.datetime >= min_time
                              and o.date_time.datetime <= max_time)
 
         metric_lag_allowed = metric.lag_allowed is not None and metric.lag_allowed > 0
-        lag_allowed = True if (metric_lag_allowed and min_time == max_time) else False
+        lag_allowed = True if (
+            metric_lag_allowed and min_time == max_time) else False
 
         if lag_allowed:
             if place_id is None:
@@ -331,12 +346,14 @@ def getObservations(filters):
                         else:
                             null_places.append(o.place.place_id)
 
-                lag = manage_lag(metric, null_res, max_time, null_places, observations)
+                lag = manage_lag(metric, null_res, max_time,
+                                 null_places, observations)
             else:
                 res_list = list(res)
 
                 if len(res_list) == 0 or res_list[0].value is None:
-                    lag = manage_lag(metric, res, max_time, [place_id], observations)
+                    lag = manage_lag(metric, res, max_time, [
+                                     place_id], observations)
 
         else:
             lag = None
@@ -361,12 +378,17 @@ def getTrend(filters):
 
     start = get_start(t_rs, end, lag)
 
-    min_time = get_start(metric.temporal_resolution, end, metric.lag_allowed)
+    # TODO review calculation of start and min_time and their usage in the code
+    # blocks below.
+    min_time = get_start(metric.temporal_resolution, end,
+                         metric.lag_allowed if metric.lag_allowed is not None
+                         else lag)
 
     if metric.is_view:
         q_str = f"""SELECT v.metric_id, v.data_source, d.dt,
                 m.metric_definition, m.metric_name, v.observation_id,
                 p.fips AS place_fips, p.place_id, p.iso2 AS place_iso,
+                p.iso AS place_iso3,
                 p.name AS place_name, v.updated_at, v.value::FLOAT
                 FROM {metric.view_name} v
                 LEFT JOIN datetime d ON v.datetime_id = d.dt_id
@@ -393,15 +415,18 @@ def getTrend(filters):
                          and o.date_time.datetime >= min_time
                          and o.date_time.datetime <= end
                          and o.value is not None
+                         and o.place is not None
                          and o.place.place_id == filters['place_id'])
         else:
             res = select(o for o in db.Observation
                          if o.metric.metric_id == metric_id
+                         and o.place is not None
                          and o.date_time.datetime >= min_time
                          and o.date_time.datetime <= end
                          and o.value is not None)
 
-        res_list = sorted(list(res), key=lambda o: (o.place.place_id, o.date_time.datetime))
+        res_list = sorted(list(res), key=lambda o: (
+            o.place.place_id, o.date_time.datetime))
 
     place_lists = {}
     current_place = None

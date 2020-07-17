@@ -14,6 +14,8 @@ import pprint
 import os
 
 # Config class, instantiated in api/setup.py.
+
+
 class Config:
     def __init__(self, config_file):
 
@@ -31,7 +33,6 @@ class Config:
         for key in cfg['DEFAULT']:
             print('key = ' + key)
             cfg['session'][key] = cfg['DEFAULT'][key]
-
 
         # Define the current database session based on command line arguments,
         # if they were provided

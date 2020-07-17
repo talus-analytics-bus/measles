@@ -6,7 +6,7 @@
 from datetime import datetime
 
 # Third party libraries
-from pony.orm import PrimaryKey, Required, Optional, Set
+from pony.orm import PrimaryKey, Required, Optional, Set, StrArray
 from . import db
 
 
@@ -32,7 +32,8 @@ class DateTime(db.Entity):
     dt_id = PrimaryKey(int, auto=True)
     # date = Required(date)
     # time = Required(time)
-    datetime = Required(datetime, column="dt", sql_type='TIMESTAMP WITH TIME ZONE')
+    datetime = Required(datetime, column="dt",
+                        sql_type='TIMESTAMP WITH TIME ZONE')
     day = Required(bool)
     week_sunday = Required(bool)
     week_monday = Required(bool)
@@ -48,12 +49,16 @@ class Poly(db.Entity):
 
 class Point(db.Entity):
     point_id = PrimaryKey(int, auto=True)
+    geom = Required(str, sql_type='point')
+    lon = Optional(float)
+    lat = Optional(float)
     place = Required("Place", column="place_id")
 
 
 class Place(db.Entity):
     place_id = PrimaryKey(int, auto=True)
     name = Required(str)
+    other_names = Optional(StrArray)
     description = Optional(str)
     fips = Optional(str)
     iso = Optional(str)
