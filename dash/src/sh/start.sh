@@ -1,2 +1,0 @@
-export REACT_APP_MAPBOX_ACCESS_TOKEN=pk.eyJ1IjoidHJhZXRoZXRoaXJkIiwiYSI6ImNqdWozcWk0dDA3N2I0M280eHZ4cWx0aXgifQ.pguVMQ_DPd2VONzhzk8CEg;
-yarn start;
