@@ -266,7 +266,7 @@ const About = () => {
             </td>
             <td width='97'>
               <p>
-                January 2020
+                June 2020
                 <a
                   className={styles.footnoteInline}
                   href='#_ftn4'
@@ -431,10 +431,13 @@ const About = () => {
       </p>
 
       <p>
-        As of January 2020, the WHO Measles Surveillance Dataset contains no
-        caseload data for Guinea-Bissau, Mauritius, Seychelles, Ecuador, Saint
-        Vincent and the Grenadines, Djibouti, and Vanuatu for the year 2019. As
-        a result, caseload data are not shown.
+        As of June 2020, the WHO Measles Surveillance Dataset contains no
+        caseload data for Cabo Verde, Guinea-Bissau, Mauritania, Mauritius,
+        Sao Tome and Principe, Antigua and Barbuda, Bahamas, Colombia, Dominica,
+        Ecuador, Grenada, Saint Kitts and Nevis, Saint Lucia, Suriname, Trinidad
+        and Tobago, Saint Vincent and the Grenadines, Djibouti, Yemen, Montenegro,
+        Tonga, Vanuatu, and Samoa for the year 2020. As a result, caseload data
+        are not shown.
       </p>
 
       <h3><em>2019 outbreak in Samoa</em></h3>
