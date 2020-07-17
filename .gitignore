@@ -22,6 +22,9 @@ dash/.DS_Store
 public-api/.DS_Store
 .env*
 
+# start scripts
+public-api/bin
+
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*

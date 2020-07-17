@@ -249,7 +249,6 @@ const Global = props => {
     const wrapperStyle = {
       width: '500px',
       marginLeft: 15
-      // marginTop: 35,
     }
     const trackStyle = { backgroundColor: 'transparent' }
     const handleStyle = {
