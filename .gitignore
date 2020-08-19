@@ -2,6 +2,7 @@
 
 # shell scripts
 public-api/bin/
+sh/
 
 # dependencies
 node_modules
