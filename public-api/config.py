@@ -60,6 +60,9 @@ class Config:
         print(self.db)
         self.db['port'] = int(self.db['port'])
 
+        # manually set db name to COVID AMP metric db
+        self.db['dbname'] = 'metric-amp'
+
         # Define database engine based on db connection parameters.
         self.engine = create_engine(f"postgresql+psycopg2://{self.db['user']}:{self.db['password']}@{self.db['host']}:{self.db['port']}/{self.db['dbname']}",
                                     use_batch_mode=True)
