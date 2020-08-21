@@ -11,29 +11,38 @@ from werkzeug.exceptions import NotFound
 # Returns true if database entity class instance's attribute contains a value
 # in the filter set, false otherwise.
 def passes_filters(instance, filters):
-    instancePasses = True
-    for filterSetName in filters:
+    passes = True
 
-        # Get filter set
-        filterSet = set(filters[filterSetName])
+    for filter_set_name in filters:
 
-        # Get instance attribute values
-        instanceSetTmp = getattr(instance, filterSetName)
-
-        # If wrong type, cast to set
-        instanceSet = None
-        if type(instanceSetTmp) != set:
-            instanceSet = set([instanceSetTmp])
+        if filter_set_name == 'place_type':
+            if instance.place_type not in filters[filter_set_name]:
+                passes = False
+            continue
         else:
-            instanceSet = instanceSetTmp
 
-        # If instance fails one filter, it fails completely.
-        if len(instanceSet & filterSet) == 0:
-            passes = False
-    return instancePasses
+            # Get filter set
+            filterSet = set(filters[filter_set_name])
+
+            # Get instance attribute values
+            instanceSetTmp = getattr(instance, filter_set_name)
+
+            # If wrong type, cast to set
+            instanceSet = None
+            if type(instanceSetTmp) != set:
+                instanceSet = set([instanceSetTmp])
+            else:
+                instanceSet = instanceSetTmp
+
+            # If instance fails one filter, it fails completely.
+            if len(instanceSet & filterSet) == 0:
+                passes = False
+    return passes
 
 # A decorator to format API responses (Query objects) as
 # { data: [{...}, {...}] }
+
+
 def format_response(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
