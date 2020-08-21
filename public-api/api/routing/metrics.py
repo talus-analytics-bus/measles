@@ -305,6 +305,9 @@ class Places(Resource):
     parser.add_argument('by_region', type=bool, required=False,
                         help="""If true, returns catalog of places by region.
                              If not provided, places are not returned by region.""")
+    parser.add_argument('place_type', type=str, required=False,
+                        help="""Optional: The type of place to return, e.g.,
+                        `country`.""")
 
     @api.doc(parser=parser)
     @db_session
@@ -319,12 +322,20 @@ class Places(Resource):
             organizing_attribute = 'region'
 
         # Setup filters
-        filters = {
-            'place_type': ['country'],
-        }
+        filters = {}
+        place_id = params.get('place_id', None)
 
-        # Get and return places.
-        # order = None
+        # was a specific place defined in the `place_id` arg?
+        place_defined = place_id is not None
+        if place_defined:
+            filters['place_id'] = [int(place_id)]
+
+        # get place type filter
+        place_type = params.get('place_type', None)
+        place_types = [place_type] if place_type is not None else None
+        if place_types is not None:
+            filters['place_type'] = place_types
+
         order = [
             "Europe",
             "Eastern Mediterranean",
