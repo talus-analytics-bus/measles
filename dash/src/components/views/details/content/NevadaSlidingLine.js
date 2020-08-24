@@ -56,7 +56,8 @@ class NevadaSlidingLine extends Chart {
     // Get max incidence from data.
     // [ max, min ]
     const yMaxTmp = d3.max(this.data.vals, d => d.value) || 5
-    const yMax = yMaxTmp > 5 ? yMaxTmp : 5
+    const yMax = this.params.yMax || (yMaxTmp > 5 ? yMaxTmp : 5)
+    // this.yDomainDefault = [50, 0]
     this.yDomainDefault = [yMax, 0]
 
     // // Adjust margins if not showing incidence or vaccination
