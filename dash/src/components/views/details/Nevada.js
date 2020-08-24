@@ -67,26 +67,79 @@ const Nevada = ({ ...props }) => {
   populations.Nevada = d3.sum(Object.values(populations))
 
   // Legend entry data
-  const legendEntries = [
+  const legendEntries1 = [
     {
-      label: 'Nevada (statewide)',
+      label: 'Statewide new COVID-19 cases (7-day moving avg.)',
+      class: styles.valueLine,
+      shape: 'line'
+    },
+    // {
+    //   label: 'Counties',
+    //   class: styles.valueLineSec,
+    //   shape: 'line'
+    // },
+    {
+      label: 'Statewide daily new cases',
+      class: styles.grayRect,
+      shape: 'rect'
+    }
+  ]
+  const legendEntries2 = [
+    {
+      label: 'Statewide 7-d. avg.',
       class: styles.valueLine,
       shape: 'line'
     },
     {
-      label: 'Counties',
+      label: 'Counties 7-d. avg.',
       class: styles.valueLineSec,
       shape: 'line'
+    },
+    {
+      label: 'Statewide daily new cases',
+      class: styles.grayRect,
+      shape: 'rect'
     }
   ]
   // Legend JSX
-  const legend = (
+  const legend1 = (
     <div className={styles.slidingLineLegend}>
-      {legendEntries.map(
+      {legendEntries1.map(
         entry =>
           entry.skip !== true && (
             <div className={styles.entry}>
-              <svg width='36' height='18'>
+              <svg width={entry.shape === 'line' ? 36 : 10} height='18'>
+                {entry.shape === 'line' ? (
+                  <line
+                    className={classNames(styles.symbol, entry.class)}
+                    x1='0'
+                    x2='36'
+                    y1='9'
+                    y2='9'
+                  />
+                ) : (
+                  <rect
+                    className={classNames(styles.symbol, entry.class)}
+                    x='0'
+                    y='0'
+                    height='18'
+                    width='18'
+                  />
+                )}
+              </svg>
+              <div className={styles.label}>{entry.label}</div>
+            </div>
+          )
+      )}
+    </div>
+  )
+  const legend2 = (
+    <div className={styles.slidingLineLegend}>
+      {legendEntries2.map(
+        entry =>
+          entry.skip !== true && (
+            <div className={styles.entry}>
+              <svg width={entry.shape === 'line' ? 36 : 10} height='18'>
                 {entry.shape === 'line' ? (
                   <line
                     className={classNames(styles.symbol, entry.class)}
@@ -160,12 +213,6 @@ const Nevada = ({ ...props }) => {
                 value: +d[place_name] - newData[i - 1][place_name],
                 place_name
               })
-            } else if (i === 0) {
-              newCasesDataLines[place_name].push({
-                date_time: d.Date,
-                value: 0,
-                place_name
-              })
             }
 
             // 7-day average daily new cases by state, county
@@ -198,7 +245,8 @@ const Nevada = ({ ...props }) => {
       }
       const data = {
         y: newCasesDataAvgLines.Nevada,
-        ySec
+        ySec,
+        bar: newCasesDataLines.Nevada
       }
       setData(data)
     })
@@ -224,6 +272,9 @@ const Nevada = ({ ...props }) => {
         setCountSummaryDateRange: () => {
           return null
         },
+        yMax: 1450,
+        xDomain: [new Date('06/02/2020'), new Date('08/18/2020')],
+
         margin: {
           top: 20,
           right: 25,
@@ -232,6 +283,7 @@ const Nevada = ({ ...props }) => {
           left: 140
         }
       }
+      console.log(chartParams.data)
 
       // Sliding line chart defined in NevadaSlidingLine.js
 
@@ -246,8 +298,6 @@ const Nevada = ({ ...props }) => {
       )
 
       // PER 100k chart
-      console.log('populations')
-      console.log(populations)
       const chartParams100k = {
         ...chartParams,
         yMax: 50,
@@ -259,8 +309,10 @@ const Nevada = ({ ...props }) => {
       chartParams100k.data.y.forEach(d => {
         d.value = d.value / (populations.Nevada / 100000.0)
       })
+      chartParams100k.data.bar.forEach(d => {
+        d.value = d.value / (populations.Nevada / 100000.0)
+      })
       chartParams100k.data.ySec.forEach(d => {
-        console.log(populations[d[0].place_name] / 100000.0)
         d.forEach(dd => {
           dd.value = dd.value / (populations[dd.place_name] / 100000.0)
         })
@@ -294,11 +346,11 @@ const Nevada = ({ ...props }) => {
     <div>
       <div className={styles.slidingLineContainer}>
         <div className={styles.slidingLineChartWrapper}>
-          <div className={styles.slidingLineLegend}>{legend}</div>
+          <div className={styles.slidingLineLegend}>{legend1}</div>
           <div className={styles.slidingLine} />
         </div>
         <div className={styles.slidingLineChartWrapper}>
-          <div className={styles.slidingLineLegend}>{legend}</div>
+          <div className={styles.slidingLineLegend}>{legend2}</div>
           <div className={styles.slidingLinePerCapita} />
         </div>
       </div>

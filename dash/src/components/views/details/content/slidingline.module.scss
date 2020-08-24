@@ -10,6 +10,12 @@ $main-line: $value-red;
   width: 0 !important;
   height: auto !important;
 }
+.valueRects rect {
+  fill: gray;
+  opacity: 0.2;
+  stroke: white;
+  clip-path: url('#plotArea');
+}
 .lineValue,
 .lineVacc,
 .lineNull {
@@ -23,6 +29,8 @@ $main-line: $value-red;
   }
 }
 .lineValueSec path {
+  // display: none;
+
   fill: none;
   // display: none;
   stroke: $main-line;

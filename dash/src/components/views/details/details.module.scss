@@ -27,6 +27,7 @@ $spacing: 20px;
     font-size: 1.25rem;
     justify-content: flex-end;
     .entry {
+      max-width: 350px;
       display: flex;
       flex-flow: row;
       align-items: center;
@@ -37,12 +38,16 @@ $spacing: 20px;
         width: 20px;
         border-top: 2px solid black;
         margin-right: 5px;
+        &.grayRect {
+          stroke: none;
+          fill: gray;
+          opacity: 0.2;
+        }
         &.valueLine {
           stroke: $value-red;
           stroke-width: 3px;
           stroke-linecap: round;
           stroke-linejoin: round;
-          height: 0;
         }
         &.valueLineSec {
           stroke: $value-red;
@@ -50,7 +55,6 @@ $spacing: 20px;
           stroke-width: 2px;
           stroke-linecap: round;
           stroke-linejoin: round;
-          height: 0;
         }
         &.monthlyIncidence {
           stroke: $value-red;

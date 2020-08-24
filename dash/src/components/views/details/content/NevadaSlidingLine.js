@@ -28,6 +28,7 @@ class NevadaSlidingLine extends Chart {
       if (metric === 'caseload_totalpop') {
         this.data.vals = params.data.y
         this.data.valsSec = params.data.ySec
+        this.data.bar = params.data.bar
       } else if (metric === 'incidence_monthly') {
         this.data.vals = params.data.y2
       }
@@ -48,6 +49,9 @@ class NevadaSlidingLine extends Chart {
       this.xDomainDefault = [minTime, maxTime]
     }
 
+    if (params.xDomain !== undefined) {
+      this.xDomainDefault = params.xDomain
+    }
     // If no default xdomain, hide line chart
     if (this.xDomainDefault === undefined) {
       return
@@ -121,9 +125,9 @@ class NevadaSlidingLine extends Chart {
     // TODO deal with time zone effects elegantly.
     const x2Domain = d3
       .timeDays(
-        new Date(chart.xDomainDefault[0]).setSeconds(1),
-        new Date(chart.xDomainDefault[1]).setUTCMonth(
-          chart.xDomainDefault[1].getUTCMonth() + 0
+        new Date(chart.xDomainDefault[0]),
+        new Date(chart.xDomainDefault[1]).setUTCDate(
+          chart.xDomainDefault[1].getUTCDate() + 1
         )
       )
       .map(d => {
@@ -134,12 +138,18 @@ class NevadaSlidingLine extends Chart {
           timeZone: 'UTC'
         })
       })
-
     const x2 = d3
       .scaleBand()
       .domain(x2Domain) // never changes
       .range([0, chart.width])
       .paddingInner(0)
+
+    // const x2 = d3
+    //   .scaleBand()
+    //   .domain(x2Domain) // never changes
+    //   .range([0, chart.width])
+    //   .paddingInner(0)
+
     // x axis: slider
     function onlyUnique(value, index, self) {
       return self.indexOf(value) === index
@@ -200,7 +210,7 @@ class NevadaSlidingLine extends Chart {
 
     // x axis - main chart
     const hardcodedTickDates = [
-      '06/7/2020',
+      '06/02/2020',
       '06/15/2020',
       '07/1/2020',
       '07/15/2020',
@@ -293,7 +303,12 @@ class NevadaSlidingLine extends Chart {
     // Define line function - main chart
     const line = d3
       .line()
-      .x(d => x(new Date(d.date_time.replace(/-/g, '/'))))
+      .x(d => {
+        // return x2(d.date_time)
+        const dateForX = new Date(d.date_time.replace(/-/g, '/'))
+        const xVal = x(dateForX)
+        return xVal
+      })
       .y(d => y(d.value))
     const lineVacc = d3
       .line()
@@ -351,6 +366,45 @@ class NevadaSlidingLine extends Chart {
       }
       return valueLineSegments
     }
+
+    // Add rects to main chart
+    chart
+      .newGroup(styles.valueRects)
+      .selectAll('rect')
+      .data(chart.data.bar)
+      .enter()
+      .append('rect')
+      .attr('x', d => {
+        const dateForX = new Date(d.date_time.replace(/-/g, '/'))
+        const xVal = x(dateForX) - x2.bandwidth() / 2
+        return xVal
+
+        // return (
+        //   x2(
+        //     new Date(d['date_time'].replace(/-/g, '/')).toLocaleString(
+        //       'en-US',
+        //       {
+        //         month: 'numeric',
+        //         day: 'numeric',
+        //         year: 'numeric',
+        //         timeZone: 'UTC'
+        //       }
+        //     )
+        //   ) -
+        //   x2.bandwidth() / 2
+        // )
+      })
+      .attr('y', d => {
+        const val = d.value !== null ? d.value : y.domain()[0]
+        return y(val)
+        return chart.height - y(val)
+      })
+      .attr('width', x2.bandwidth()) // todo bands
+      .attr('height', d => {
+        const val = d.value !== null ? d.value : y.domain()[0]
+        return chart.height - y(val)
+      })
+      .attr('class', styles.sliderRect)
 
     // Add line to chart
     const valueLineSegments = getValueLineSegments(chart.data.vals)
@@ -549,7 +603,7 @@ class NevadaSlidingLine extends Chart {
       }
 
       // Get xpos of start year from x2 domain and return it
-      const brushStartXPos = x2('6/8/2020')
+      const brushStartXPos = x2('06/07/2020')
       // const brushStartXPos = x2(startMonth + '/' + startYear)
       // const brushStartXPos = x2(startMonth + '/' + startYear) + x2.step() / 2;
       return brushStartXPos
@@ -685,7 +739,7 @@ class NevadaSlidingLine extends Chart {
         // TODO elegantly
         if (isNaN(index) || index < 0 || index >= chart.data.vals.length) {
           snapBrush = false
-          return [0, 0]
+          return new Date(chart.xDomainDefault[0])
         }
 
         // Push index to array for later use
@@ -697,6 +751,10 @@ class NevadaSlidingLine extends Chart {
       const invertedVals = s.map((d, i) => {
         return getDomainInvertVals(d, i)
       })
+      console.log('invertedVals')
+      console.log(invertedVals)
+      console.log('x2.domain()')
+      console.log(x2.domain())
       x.domain(invertedVals)
       chart[styles['x-axis']].call(xAxis)
       // chart[styles['x-axis']].call(xAxis).call(wrapTimeLabels)
