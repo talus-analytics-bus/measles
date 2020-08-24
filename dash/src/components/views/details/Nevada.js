@@ -61,9 +61,12 @@ const Nevada = ({ ...props }) => {
       const newCasesAvgData = []
       newData.forEach((d, i) => {
         const date_time = d.Date
+
+        //
         for (const [place_name, v] of Object.entries(d)) {
           if (place_name === 'Date') continue
           else {
+            // cumulative cases by state, county
             defined({
               datum: cumulativeDataLines,
               keys: [place_name],
@@ -75,44 +78,48 @@ const Nevada = ({ ...props }) => {
               value: +v,
               place_name
             })
-          }
 
-          // new cases data
-          defined({
-            datum: newCasesDataLines,
-            keys: [place_name],
-            finalVal: []
-          })
-          if (i > 0) {
-            newCasesDataLines[place_name].push({
-              date_time: d.Date,
-              value: +d[place_name] - newData[i - 1][place_name],
-              place_name
-            })
-          } else if (i === 0) {
-            newCasesDataLines[place_name].push({
-              date_time: d.Date,
-              value: 0,
-              place_name
-            })
-          }
-          if (i > 5) {
+            // daily new cases by state, county
             defined({
-              datum: newCasesDataAvgLines,
+              datum: newCasesDataLines,
               keys: [place_name],
               finalVal: []
             })
-            newCasesDataAvgLines[place_name].push({
-              date_time: d.Date,
-              value: d3.mean(
-                newCasesDataLines[place_name].slice(i - 6, i + 1),
-                d => d.value
-              ),
-              place_name
-            })
+            if (i > 0) {
+              newCasesDataLines[place_name].push({
+                date_time: d.Date,
+                value: +d[place_name] - newData[i - 1][place_name],
+                place_name
+              })
+            } else if (i === 0) {
+              newCasesDataLines[place_name].push({
+                date_time: d.Date,
+                value: 0,
+                place_name
+              })
+            }
+
+            // 7-day average daily new cases by state, county
+            if (i > 5) {
+              defined({
+                datum: newCasesDataAvgLines,
+                keys: [place_name],
+                finalVal: []
+              })
+              newCasesDataAvgLines[place_name].push({
+                date_time: d.Date,
+                value: d3.mean(
+                  newCasesDataLines[place_name].slice(i - 6, i + 1),
+                  d => d.value
+                ),
+                place_name
+              })
+            }
           }
         }
       })
+
+      // collate data into primary and secondary lines
       const ySec = []
       for (const [k, v] of Object.entries(newCasesDataAvgLines)) {
         if (['Nevada', 'Date'].includes(k)) continue
@@ -120,15 +127,11 @@ const Nevada = ({ ...props }) => {
           ySec.push(v)
         }
       }
-      console.log('newCasesDataAvgLines')
-      console.log(newCasesDataAvgLines)
       const data = {
         y: newCasesDataAvgLines.Nevada,
         ySec
       }
       setData(data)
-      // setData(newCasesData)
-      // setData(cumulativeData)
     })
   }, [])
 

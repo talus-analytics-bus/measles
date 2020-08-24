@@ -152,12 +152,12 @@ const App = () => {
   React.useEffect(() => {
     getAppData()
 
-    // If welcome modal isn't being shown currently and it has not already been
-    // shown, show it, and mark it as already shown.
-    if (!showWelcomeModal && !alreadyShowedWelcomeModal) {
-      setShowWelcomeModal(true)
-      alreadyShowedWelcomeModal = true
-    }
+    // // If welcome modal isn't being shown currently and it has not already been
+    // // shown, show it, and mark it as already shown.
+    // if (!showWelcomeModal && !alreadyShowedWelcomeModal) {
+    //   setShowWelcomeModal(true)
+    //   alreadyShowedWelcomeModal = true
+    // }
   }, [])
 
   // Functions to render each page's elements.
