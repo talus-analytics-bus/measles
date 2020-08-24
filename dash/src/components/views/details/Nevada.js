@@ -54,15 +54,28 @@ const Nevada = ({ ...props }) => {
     // load data
     getData().then(newData => {
       // TODO format data
-      const cumulativeData = []
+      const cumulativeDataLines = {}
       const newCasesData = []
       const newCasesAvgData = []
       newData.forEach((d, i) => {
-        cumulativeData.push({
-          date_time: d.Date,
-          value: +d.Nevada,
-          place_name: 'Nevada'
-        })
+        const date_time = d.Date
+        for (const [place_name, v] of Object.entries(d)) {
+          if (place_name === 'Date') continue
+          else {
+            if (cumulativeDataLines[place_name] === undefined)
+              cumulativeDataLines[place_name] = []
+            cumulativeDataLines[place_name].push({
+              date_time,
+              value: +v,
+              place_name
+            })
+          }
+        }
+        // cumulativeData.push({
+        //   date_time: d.Date,
+        //   value: +d.Nevada,
+        //   place_name: 'Nevada'
+        // })
         if (i > 0) {
           newCasesData.push({
             date_time: d.Date,
@@ -84,8 +97,18 @@ const Nevada = ({ ...props }) => {
           })
         }
       })
-
-      setData(newCasesAvgData)
+      const ySec = []
+      for (const [k, v] of Object.entries(cumulativeDataLines)) {
+        if (['Nevada', 'Date'].includes(k)) continue
+        else {
+          ySec.push(v)
+        }
+      }
+      const data = {
+        y: cumulativeDataLines.Nevada,
+        ySec
+      }
+      setData(data)
       // setData(newCasesData)
       // setData(cumulativeData)
     })
@@ -93,14 +116,9 @@ const Nevada = ({ ...props }) => {
 
   useEffect(() => {
     if (data !== null) {
-      console.log('data')
-      console.log(data)
       // Setup sliding line chart params
       const chartParams = {
-        data: {
-          y: data,
-          y2: []
-        },
+        data,
         vaccData: [],
         noResizeEvent: false,
         setTooltipData: () => {

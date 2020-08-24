@@ -27,6 +27,7 @@ class NevadaSlidingLine extends Chart {
       this.params.yMetricParams = Util.getMetricChartParams(metric)
       if (metric === 'caseload_totalpop') {
         this.data.vals = params.data.y
+        this.data.valsSec = params.data.ySec
       } else if (metric === 'incidence_monthly') {
         this.data.vals = params.data.y2
       }
@@ -289,11 +290,11 @@ class NevadaSlidingLine extends Chart {
 
     // Get "value" line segments -- all segments where data are available (not
     // null).
-    const getValueLineSegments = () => {
+    const getValueLineSegments = input => {
       const valueLineSegments = []
       let start, end, prev
       let segment = []
-      chart.data.vals.forEach(datum => {
+      input.forEach(datum => {
         // If no start and datum not-null, datum is start
         // If there was a previous datum, also include it
         if (!start && datum.value !== null) {
@@ -333,9 +334,7 @@ class NevadaSlidingLine extends Chart {
     }
 
     // Add line to chart
-    const valueLineSegments = getValueLineSegments()
-    console.log('valueLineSegments')
-    console.log(valueLineSegments)
+    const valueLineSegments = getValueLineSegments(chart.data.vals)
     chart
       .newGroup(styles.lineValue)
       .selectAll('path')
@@ -343,6 +342,19 @@ class NevadaSlidingLine extends Chart {
       .enter()
       .append('path')
       .attr('d', d => line(d))
+
+    // add secondary lines to chart
+    const secLines = chart.newGroup(styles.lineValueSec)
+    chart.data.valsSec.forEach(d => {
+      const secSegments = getValueLineSegments(d)
+      secLines
+        .selectAll('g.' + styles.lineGroup)
+        .data(secSegments)
+        .enter()
+        .append('path')
+        .attr('d', dd => line(dd))
+    })
+
     // chart
     //   .newGroup(styles.lineValueSec)
     //   .selectAll('path')
