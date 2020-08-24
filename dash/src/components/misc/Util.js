@@ -819,4 +819,18 @@ Util.mobilecheck = () => {
   return check
 }
 
+export const defined = ({ datum, keys, finalVal }) => {
+  let datumLevel = datum
+  keys.forEach((k, i) => {
+    if (datumLevel[k] === undefined) {
+      if (i === keys.length - 1) {
+        datumLevel[k] = finalVal
+      } else {
+        datumLevel[k] = {}
+      }
+    }
+    datumLevel = datumLevel[k]
+  })
+}
+
 export default Util

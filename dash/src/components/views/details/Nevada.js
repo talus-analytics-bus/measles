@@ -16,7 +16,7 @@ import infoTooltipStyles from '../../../components/misc/infotooltip.module.scss'
 import MiniMap from '../../../components/map/MiniMap.js'
 
 // Utilities (date formatting, etc.)
-import Util from '../../../components/misc/Util.js'
+import Util, { defined } from '../../../components/misc/Util.js'
 import * as d3 from 'd3/dist/d3.min'
 
 import classNames from 'classnames'
@@ -55,6 +55,8 @@ const Nevada = ({ ...props }) => {
     getData().then(newData => {
       // TODO format data
       const cumulativeDataLines = {}
+      const newCasesDataLines = {}
+      const newCasesDataAvgLines = {}
       const newCasesData = []
       const newCasesAvgData = []
       newData.forEach((d, i) => {
@@ -62,50 +64,66 @@ const Nevada = ({ ...props }) => {
         for (const [place_name, v] of Object.entries(d)) {
           if (place_name === 'Date') continue
           else {
-            if (cumulativeDataLines[place_name] === undefined)
-              cumulativeDataLines[place_name] = []
+            defined({
+              datum: cumulativeDataLines,
+              keys: [place_name],
+              finalVal: []
+            })
+
             cumulativeDataLines[place_name].push({
               date_time,
               value: +v,
               place_name
             })
           }
-        }
-        // cumulativeData.push({
-        //   date_time: d.Date,
-        //   value: +d.Nevada,
-        //   place_name: 'Nevada'
-        // })
-        if (i > 0) {
-          newCasesData.push({
-            date_time: d.Date,
-            value: +d.Nevada - newData[i - 1].Nevada,
-            place_name: 'Nevada'
+
+          // new cases data
+          defined({
+            datum: newCasesDataLines,
+            keys: [place_name],
+            finalVal: []
           })
-        } else if (i === 0) {
-          newCasesData.push({
-            date_time: d.Date,
-            value: 0,
-            place_name: 'Nevada'
-          })
-        }
-        if (i > 5) {
-          newCasesAvgData.push({
-            date_time: d.Date,
-            value: d3.mean(newCasesData.slice(i - 6, i + 1), d => d.value),
-            place_name: 'Nevada'
-          })
+          if (i > 0) {
+            newCasesDataLines[place_name].push({
+              date_time: d.Date,
+              value: +d[place_name] - newData[i - 1][place_name],
+              place_name
+            })
+          } else if (i === 0) {
+            newCasesDataLines[place_name].push({
+              date_time: d.Date,
+              value: 0,
+              place_name
+            })
+          }
+          if (i > 5) {
+            defined({
+              datum: newCasesDataAvgLines,
+              keys: [place_name],
+              finalVal: []
+            })
+            newCasesDataAvgLines[place_name].push({
+              date_time: d.Date,
+              value: d3.mean(
+                newCasesDataLines[place_name].slice(i - 6, i + 1),
+                d => d.value
+              ),
+              place_name
+            })
+          }
         }
       })
       const ySec = []
-      for (const [k, v] of Object.entries(cumulativeDataLines)) {
+      for (const [k, v] of Object.entries(newCasesDataAvgLines)) {
         if (['Nevada', 'Date'].includes(k)) continue
         else {
           ySec.push(v)
         }
       }
+      console.log('newCasesDataAvgLines')
+      console.log(newCasesDataAvgLines)
       const data = {
-        y: cumulativeDataLines.Nevada,
+        y: newCasesDataAvgLines.Nevada,
         ySec
       }
       setData(data)

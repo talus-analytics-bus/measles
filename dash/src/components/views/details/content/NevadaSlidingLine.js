@@ -515,7 +515,7 @@ class NevadaSlidingLine extends Chart {
       .text(
         chart.params.metric === 'incidence_monthly'
           ? 'Monthly incidence of measles'
-          : 'New COVID-19'
+          : 'New COVID-19 cases reported'
       )
     yAxisLabel
       .append('tspan')
@@ -524,7 +524,7 @@ class NevadaSlidingLine extends Chart {
       .text(
         chart.params.metric === 'incidence_monthly'
           ? '(cases per 1M population)'
-          : 'cases reported'
+          : '(7-day average)'
       )
 
     const yAxisRightLabel = chart[styles['y-axis-right']]
