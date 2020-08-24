@@ -45,6 +45,8 @@ class NevadaSlidingLine extends Chart {
         minMaxData[minMaxData.length - 1]['date_time'].replace(/-/g, '/')
       )
       this.xDomainDefault = [minTime, maxTime]
+      console.log('this.xDomainDefault')
+      console.log(this.xDomainDefault)
     }
 
     // If no default xdomain, hide line chart
@@ -128,6 +130,8 @@ class NevadaSlidingLine extends Chart {
           timeZone: 'UTC'
         })
       })
+    console.log('x2Domain')
+    console.log(x2Domain)
 
     const x2 = d3
       .scaleBand()
@@ -148,7 +152,7 @@ class NevadaSlidingLine extends Chart {
       .axisBottom()
       .tickSize(0)
       .tickValues(tickValues)
-      .tickFormat(val => val.replace('1/', ''))
+      // .tickFormat(val => val.replace('1/', ''))
       .tickPadding(10)
       .scale(x2)
 
@@ -168,17 +172,18 @@ class NevadaSlidingLine extends Chart {
       formatYear = d3.timeFormat('%Y')
 
     function multiFormat(date) {
-      let format
-      this.dataset.year = formatYear(date)
-      if (d3.timeMonth(date) < date) {
-        this.parentElement.remove()
-      } else if (d3.timeYear(date) < date) {
-        format = formatMonth(date)
-      } else {
-        format = formatMonth(date) + ' ' + formatYear(date)
-        this.dataset.type = 'year-and-month'
-      }
-      return format
+      return date
+      // let format
+      // this.dataset.year = formatYear(date)
+      // if (d3.timeMonth(date) < date) {
+      //   // this.parentElement.remove()
+      // } else if (d3.timeYear(date) < date) {
+      //   format = formatMonth(date)
+      // } else {
+      //   format = formatMonth(date) + ' ' + formatYear(date)
+      //   this.dataset.type = 'year-and-month'
+      // }
+      // return format
     }
 
     // x axis - main chart
@@ -186,7 +191,7 @@ class NevadaSlidingLine extends Chart {
       .axisBottom()
       .tickSizeOuter(0)
       .ticks(7)
-      .tickFormat(multiFormat)
+      // .tickFormat(multiFormat)
       .scale(x)
 
     const wrapTimeLabels = selection => {
@@ -329,6 +334,8 @@ class NevadaSlidingLine extends Chart {
 
     // Add line to chart
     const valueLineSegments = getValueLineSegments()
+    console.log('valueLineSegments')
+    console.log(valueLineSegments)
     chart
       .newGroup(styles.lineValue)
       .selectAll('path')
@@ -703,8 +710,8 @@ class NevadaSlidingLine extends Chart {
         const invertedVals = s.map((d, i) => {
           return getDomainInvertVals(d, i)
         })
-        x.domain(invertedVals)
-        chart[styles['x-axis']].call(xAxis).call(wrapTimeLabels)
+        // x.domain(invertedVals)
+        // chart[styles['x-axis']].call(xAxis).call(wrapTimeLabels)
 
         // Reposition chart elements
         chart[styles.lineValue].selectAll('path').attr('d', d => line(d))

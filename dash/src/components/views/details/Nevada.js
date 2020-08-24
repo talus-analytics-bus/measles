@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import Popup from 'reactjs-popup'
 import axios from 'axios'
 import { Link } from 'react-router-dom'
@@ -27,78 +27,103 @@ import stylesTooltip from './tooltip.module.scss'
 const Nevada = ({ ...props }) => {
   // STATE
   // Track whether the sliding line chart has been drawn
-  const [slidingLine, setSlidingLine] = React.useState(null)
+  const [slidingLine, setSlidingLine] = useState(null)
 
   // Track whether to show reset view button on sliding line chart
-  const [showReset, setShowReset] = React.useState(false)
+  const [showReset, setShowReset] = useState(false)
 
   // Track whether the sliding line chart has been drawn
-  const [slidingLineMetric, setSlidingLineMetric] = React.useState(
+  const [slidingLineMetric, setSlidingLineMetric] = useState(
     'caseload_totalpop'
   )
 
   // Track event listener removal functions to fire when component unmounts
-  const [unmountFuncs, setUnmountFuncs] = React.useState([])
+  const [unmountFuncs, setUnmountFuncs] = useState([])
+
+  // Data
+  const [data, setData] = useState(null)
+
+  // UTILITY FUNCS
+  const getData = async () => {
+    const newData = await d3.csv('./data/cases.csv')
+    return newData
+  }
 
   // EFFECT HOOKS
-  React.useEffect(() => {
-    // Setup sliding line chart params
-    const chartParams = {
-      data: {
-        y: [
-          { value: 1, date_time: '2020-01-15' },
-          { value: 2, date_time: '2020-02-15' },
-          { value: 3, date_time: '2020-03-15' }
-        ],
-        y2: []
-      },
-      vaccData: [],
-      noResizeEvent: false,
-      setTooltipData: () => {
-        return null
-      },
-      tooltipClassName: '',
-      setShowReset: setShowReset,
-      metric: slidingLineMetric,
-      setSlidingLine: setSlidingLine,
-      setCountSummary: () => {
-        return null
-      },
-      setCountSummaryDateRange: () => {
-        return null
-      },
-      margin: {
-        top: 20,
-        right: 98,
-        bottom: 70,
-        left: 100
-      }
-    }
+  useEffect(() => {
+    // load data
+    getData().then(newData => {
+      // TODO format data
+      const formattedData = []
+      newData.forEach(d => {
+        formattedData.push({
+          date_time: d.Date,
+          value: +d.Nevada
+        })
+      })
 
-    // Sliding line chart defined in NevadaSlidingLine.js
-
-    const slidingLineChart = new NevadaSlidingLine(
-      // Selector of DOM element in Resilience.js component where the chart
-      // should be drawn.
-      '.' + styles.slidingLine,
-
-      // Chart parameters consumed by Chart.js and ResilienceRadarChart.js,
-      // defined above.
-      chartParams
-    )
-    // unmountFuncs2.push(slidingLineChart.removeResizeListener)
-    setSlidingLine(slidingLineChart)
-    if (unmountFuncs) {
-      const newUnmountFuncs = [
-        ...unmountFuncs,
-        slidingLineChart.removeResizeListener
-      ]
-      setUnmountFuncs(newUnmountFuncs)
-    }
-
-    // Rebuild tooltips after the chart is drawn
-    ReactTooltip.rebuild()
+      setData(formattedData)
+    })
   }, [])
+
+  useEffect(() => {
+    if (data !== null) {
+      console.log('data')
+      console.log(data)
+      // Setup sliding line chart params
+      const chartParams = {
+        data: {
+          y: data,
+          y2: []
+        },
+        vaccData: [],
+        noResizeEvent: false,
+        setTooltipData: () => {
+          return null
+        },
+        tooltipClassName: '',
+        setShowReset: setShowReset,
+        metric: slidingLineMetric,
+        setSlidingLine: setSlidingLine,
+        setCountSummary: () => {
+          return null
+        },
+        setCountSummaryDateRange: () => {
+          return null
+        },
+        margin: {
+          top: 20,
+          right: 98,
+          bottom: 70,
+          left: 100
+        }
+      }
+
+      // Sliding line chart defined in NevadaSlidingLine.js
+
+      const slidingLineChart = new NevadaSlidingLine(
+        // Selector of DOM element in Resilience.js component where the chart
+        // should be drawn.
+        '.' + styles.slidingLine,
+
+        // Chart parameters consumed by Chart.js and ResilienceRadarChart.js,
+        // defined above.
+        chartParams
+      )
+      // unmountFuncs2.push(slidingLineChart.removeResizeListener)
+      setSlidingLine(slidingLineChart)
+      if (unmountFuncs) {
+        const newUnmountFuncs = [
+          ...unmountFuncs,
+          slidingLineChart.removeResizeListener
+        ]
+        setUnmountFuncs(newUnmountFuncs)
+      }
+
+      // Rebuild tooltips after the chart is drawn
+      ReactTooltip.rebuild()
+    }
+  }, [data])
 
   // JSX
   return (
