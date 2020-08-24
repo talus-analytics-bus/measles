@@ -44,6 +44,28 @@ const Nevada = ({ ...props }) => {
   const [data, setData] = useState(null)
 
   // CONSTANTS
+  // population by county, Nevada
+  const populations = {
+    'Carson City': 56546,
+    Churchill: 25876,
+    Clark: 2318174,
+    Douglas: 49695,
+    Elko: 54985,
+    Esmeralda: 974,
+    Eureka: 1966,
+    Humboldt: 17062,
+    Lander: 5996,
+    Lincoln: 5200,
+    Lyon: 57987,
+    Mineral: 4561,
+    Nye: 48864,
+    Pershing: 6962,
+    Storey: 4465,
+    Washoe: 478155,
+    'White Pine': 10586
+  }
+  populations.Nevada = d3.sum(Object.values(populations))
+
   // Legend entry data
   const legendEntries = [
     {
@@ -222,6 +244,28 @@ const Nevada = ({ ...props }) => {
         // defined above.
         chartParams
       )
+
+      // PER 100k chart
+      console.log('populations')
+      console.log(populations)
+      const chartParams100k = {
+        ...chartParams,
+        yMax: 50,
+        yLabel: [
+          'Per 100k new COVID-19 cases',
+          'reported (7-day moving average)'
+        ]
+      }
+      chartParams100k.data.y.forEach(d => {
+        d.value = d.value / (populations.Nevada / 100000.0)
+      })
+      chartParams100k.data.ySec.forEach(d => {
+        console.log(populations[d[0].place_name] / 100000.0)
+        d.forEach(dd => {
+          dd.value = dd.value / (populations[dd.place_name] / 100000.0)
+        })
+      })
+
       const slidingLineChartPerCapita = new NevadaSlidingLine(
         // Selector of DOM element in Resilience.js component where the chart
         // should be drawn.
@@ -229,13 +273,7 @@ const Nevada = ({ ...props }) => {
 
         // Chart parameters consumed by Chart.js and ResilienceRadarChart.js,
         // defined above.
-        {
-          ...chartParams,
-          yLabel: [
-            'Per 100k new COVID-19 cases',
-            'reported (7-day moving average)'
-          ]
-        }
+        chartParams100k
       )
       // setSlidingLine(slidingLineChart)
       if (unmountFuncs) {
