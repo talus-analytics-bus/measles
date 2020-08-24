@@ -5,11 +5,76 @@ $header-height: 100px;
 $button-width: 200px;
 $spacing: 20px;
 .slidingLineContainer {
+  // height: 100
   .slidingLineChartWrapper {
-    .slidingLine {
-      // width: 800px;
-      height: 600px;
-      margin: 20px 100px;
+    width: 800px;
+    height: 400px;
+    margin: 20px 100px;
+    &:not(:last-child) {
+      margin-bottom: 100px;
+    }
+    .slidingLine,
+    .slidingLinePerCapita {
+      width: 800px;
+      height: 400px;
+    }
+  }
+  .slidingLineLegend {
+    display: flex;
+    flex-flow: row;
+    margin-top: 10px;
+    // font-weight: bold;
+    font-size: 1.25rem;
+    justify-content: flex-end;
+    .entry {
+      display: flex;
+      flex-flow: row;
+      align-items: center;
+      &:not(:last-child) {
+        margin-right: 20px;
+      }
+      .symbol {
+        width: 20px;
+        border-top: 2px solid black;
+        margin-right: 5px;
+        &.valueLine {
+          stroke: $value-red;
+          stroke-width: 3px;
+          stroke-linecap: round;
+          stroke-linejoin: round;
+          height: 0;
+        }
+        &.valueLineSec {
+          stroke: $value-red;
+          opacity: 0.5;
+          stroke-width: 2px;
+          stroke-linecap: round;
+          stroke-linejoin: round;
+          height: 0;
+        }
+        &.monthlyIncidence {
+          stroke: $value-red;
+          stroke-width: 3px;
+          stroke-linecap: round;
+          stroke-linejoin: round;
+          height: 0;
+        }
+        &.vaccinationCoverage {
+          stroke: darken(#5781ab, 15%);
+          // stroke: #333333;
+          stroke-width: 1.5px;
+          stroke-dasharray: 6, 6;
+          stroke-linecap: square;
+          height: 0;
+        }
+        &.noIncidence {
+          fill: #e6e6e6;
+        }
+      }
+      .label {
+        font-size: 1em;
+        margin-left: 5px;
+      }
     }
   }
 }
@@ -551,46 +616,7 @@ $spacing: 20px;
         // }
       }
     }
-    .slidingLineLegend {
-      display: flex;
-      flex-flow: row;
-      margin-top: 10px;
-      // font-weight: bold;
-      font-size: 15.5px;
-      .entry {
-        display: flex;
-        flex-flow: row;
-        align-items: center;
-        margin-right: 20px;
-        .symbol {
-          width: 20px;
-          border-top: 2px solid black;
-          margin-right: 5px;
-          &.monthlyIncidence {
-            stroke: $value-red;
-            stroke-width: 3px;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-            height: 0;
-          }
-          &.vaccinationCoverage {
-            stroke: darken(#5781ab, 15%);
-            // stroke: #333333;
-            stroke-width: 1.5px;
-            stroke-dasharray: 6, 6;
-            stroke-linecap: square;
-            height: 0;
-          }
-          &.noIncidence {
-            fill: #e6e6e6;
-          }
-        }
-        .label {
-          font-size: 1em;
-          margin-left: 5px;
-        }
-      }
-    }
+
     button {
       visibility: hidden;
       opacity: 0;

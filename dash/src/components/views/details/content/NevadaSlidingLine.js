@@ -46,8 +46,6 @@ class NevadaSlidingLine extends Chart {
         minMaxData[minMaxData.length - 1]['date_time'].replace(/-/g, '/')
       )
       this.xDomainDefault = [minTime, maxTime]
-      console.log('this.xDomainDefault')
-      console.log(this.xDomainDefault)
     }
 
     // If no default xdomain, hide line chart
@@ -61,10 +59,10 @@ class NevadaSlidingLine extends Chart {
     const yMax = yMaxTmp > 5 ? yMaxTmp : 5
     this.yDomainDefault = [yMax, 0]
 
-    // Adjust margins if not showing incidence or vaccination
-    if (!this.show.vacc) {
-      this.params.margin.right = 0
-    }
+    // // Adjust margins if not showing incidence or vaccination
+    // if (!this.show.vacc) {
+    //   this.params.margin.right = 0
+    // }
 
     // Set tick format
     if (this.params.yMetricParams && this.params.yMetricParams.tickFormat) {
@@ -73,7 +71,9 @@ class NevadaSlidingLine extends Chart {
 
     // Adjust left margin to fit available space
     this.init()
+    const origMarginLeft = this.params.margin.left
     this.params.margin.left = this.fitLeftMargin(this.yDomainDefault)
+    this.params.margin.left = origMarginLeft
     this.onResize(this)
     this.draw()
   }
@@ -83,7 +83,8 @@ class NevadaSlidingLine extends Chart {
 
     // Parameterize the slider
     chart.slider = {
-      height: chart.height * 0.24
+      height: 0
+      // height: chart.height * 0.24
     }
 
     chart.newGroup(styles.slider).attr('transform', `translate(0, ${45})`)
@@ -118,42 +119,51 @@ class NevadaSlidingLine extends Chart {
     // x scale: Time - slider (via scale band)
     // TODO deal with time zone effects elegantly.
     const x2Domain = d3
-      .timeMonths(
+      .timeDays(
         new Date(chart.xDomainDefault[0]).setSeconds(1),
         new Date(chart.xDomainDefault[1]).setUTCMonth(
-          chart.xDomainDefault[1].getUTCMonth() + 1
+          chart.xDomainDefault[1].getUTCMonth() + 0
         )
       )
       .map(d => {
         return d.toLocaleString('en-US', {
           month: 'numeric',
+          day: 'numeric',
           year: 'numeric',
           timeZone: 'UTC'
         })
       })
-    console.log('x2Domain')
-    console.log(x2Domain)
 
     const x2 = d3
       .scaleBand()
       .domain(x2Domain) // never changes
       .range([0, chart.width])
       .paddingInner(0)
-
     // x axis: slider
     function onlyUnique(value, index, self) {
       return self.indexOf(value) === index
     }
     const tickValues = chart.data.vals
-      .map(
-        d => '1/' + new Date(d.date_time.replace(/-/g, '/')).getUTCFullYear()
+      .map(d =>
+        new Date(d.date_time.replace(/-/g, '/')).toLocaleString('en-US', {
+          month: 'numeric',
+          day: 'numeric',
+          year: 'numeric',
+          timeZone: 'UTC'
+        })
       )
-      .filter(onlyUnique)
+      // .map(
+      //   d => '1/' + new Date(d.date_time.replace(/-/g, '/')).getUTCFullYear()
+      // )
+      // .filter(onlyUnique)
+      .filter((d, i) => {
+        return i % 10 === 0
+      })
     const xAxis2 = d3
       .axisBottom()
       .tickSize(0)
       .tickValues(tickValues)
-      // .tickFormat(val => val.replace('1/', ''))
+      .tickFormat(val => val.replace('1/', ''))
       .tickPadding(10)
       .scale(x2)
 
@@ -173,26 +183,34 @@ class NevadaSlidingLine extends Chart {
       formatYear = d3.timeFormat('%Y')
 
     function multiFormat(date) {
-      return date
-      // let format
-      // this.dataset.year = formatYear(date)
-      // if (d3.timeMonth(date) < date) {
-      //   // this.parentElement.remove()
-      // } else if (d3.timeYear(date) < date) {
-      //   format = formatMonth(date)
-      // } else {
-      //   format = formatMonth(date) + ' ' + formatYear(date)
-      //   this.dataset.type = 'year-and-month'
-      // }
-      // return format
+      return d3.timeFormat('%b %e')(date)
+      let format
+      this.dataset.year = formatYear(date)
+      if (d3.timeMonth(date) < date) {
+        // this.parentElement.remove()
+      } else if (d3.timeYear(date) < date) {
+        format = formatMonth(date)
+      } else {
+        format = formatMonth(date) + ' ' + formatYear(date)
+        this.dataset.type = 'year-and-month'
+      }
+      return format
     }
 
     // x axis - main chart
+    const hardcodedTickDates = [
+      '06/7/2020',
+      '06/15/2020',
+      '07/1/2020',
+      '07/15/2020',
+      '08/1/2020',
+      '08/15/2020'
+    ]
     const xAxis = d3
       .axisBottom()
       .tickSizeOuter(0)
-      .ticks(7)
-      // .tickFormat(multiFormat)
+      .tickValues(hardcodedTickDates.map(d => new Date(d + ' 12:00 AM')))
+      .tickFormat(multiFormat)
       .scale(x)
 
     const wrapTimeLabels = selection => {
@@ -242,7 +260,7 @@ class NevadaSlidingLine extends Chart {
       .newGroup(styles['x-axis'])
       .attr('transform', `translate(0, ${chart.height})`)
       .call(xAxis)
-      .call(wrapTimeLabels)
+    // .call(wrapTimeLabels)
 
     // y scale: incidence - main chart
     // Never changes
@@ -355,49 +373,6 @@ class NevadaSlidingLine extends Chart {
         .attr('d', dd => line(dd))
     })
 
-    // chart
-    //   .newGroup(styles.lineValueSec)
-    //   .selectAll('path')
-    //   .data(valueLineSegments)
-    //   .enter()
-    //   .append('path')
-    //   .attr('d', d => line(d))
-
-    // Add vaccination line to chart
-    const formatVaccVals = () => {
-      const output = []
-      const vals = chart.data.vaccVals
-      chart.data.vaccVals.forEach((v, i) => {
-        // For first val do nothing special
-        if (i === 0) {
-          output.push(v)
-          return
-        }
-
-        // For all other values, append the value, and also a fake point that
-        // has the last point's value and this point's datetime.
-        const fakePoint = {
-          value: vals[i - 1].value,
-          date_time: v.date_time
-        }
-        output.push(fakePoint)
-        output.push(v)
-        if (i === vals.length - 1) {
-          const pointDt = new Date(v.date_time.replace(/-/g, '/'))
-          const year = pointDt.getUTCFullYear()
-          pointDt.setUTCFullYear(year + 1)
-          const fakeDtStr = Util.formatDatetimeApi(pointDt)
-          const fakeFuturePoint = {
-            value: v.value,
-            date_time: fakeDtStr
-          }
-          output.push(fakeFuturePoint)
-        }
-      })
-
-      return output
-    }
-
     // Get "value" line segments -- all segments where data are available (not
     // null).
     const getNullLineSegments = () => {
@@ -464,6 +439,7 @@ class NevadaSlidingLine extends Chart {
         return x2(
           new Date(d['date_time'].replace(/-/g, '/')).toLocaleString('en-US', {
             month: 'numeric',
+            day: 'numeric',
             year: 'numeric',
             timeZone: 'UTC'
           })
@@ -474,8 +450,7 @@ class NevadaSlidingLine extends Chart {
         return (
           chart.height + (chart.slider.height - (chart.slider.height - y2(val)))
         )
-        // return chart.height + chart.slider.height;
-      }) // TODO check
+      })
       .attr('width', x2.bandwidth()) // todo bands
       .attr('height', d => {
         const val = d.value !== null ? d.value : y2.domain()[0]
@@ -501,7 +476,7 @@ class NevadaSlidingLine extends Chart {
       .call(yAxisRight)
       .classed(styles.invisible, !chart.show.vacc)
 
-    const yAxisLeftYPos = this.labelShift
+    const yAxisLeftYPos = this.labelShift - 20
 
     const yAxisLabel = chart[styles['y-axis']]
       .append('text')
@@ -513,7 +488,9 @@ class NevadaSlidingLine extends Chart {
       .append('tspan')
       .attr('x', -chart.height / 2)
       .text(
-        chart.params.metric === 'incidence_monthly'
+        chart.params.yLabel
+          ? chart.params.yLabel[0]
+          : chart.params.metric === 'incidence_monthly'
           ? 'Monthly incidence of measles'
           : 'New COVID-19 cases reported'
       )
@@ -522,9 +499,11 @@ class NevadaSlidingLine extends Chart {
       .attr('x', -chart.height / 2)
       .attr('dy', '1.2em')
       .text(
-        chart.params.metric === 'incidence_monthly'
+        chart.params.yLabel
+          ? chart.params.yLabel[1]
+          : chart.params.metric === 'incidence_monthly'
           ? '(cases per 1M population)'
-          : '(7-day average)'
+          : '(7-day moving average)'
       )
 
     const yAxisRightLabel = chart[styles['y-axis-right']]
@@ -569,7 +548,8 @@ class NevadaSlidingLine extends Chart {
       }
 
       // Get xpos of start year from x2 domain and return it
-      const brushStartXPos = x2(startMonth + '/' + startYear)
+      const brushStartXPos = x2('6/8/2020')
+      // const brushStartXPos = x2(startMonth + '/' + startYear)
       // const brushStartXPos = x2(startMonth + '/' + startYear) + x2.step() / 2;
       return brushStartXPos
     }
@@ -655,139 +635,136 @@ class NevadaSlidingLine extends Chart {
       .attr('y', chart.height)
       .lower()
 
-    brush
-      // .on('start end', () => {
-      //   console.log('was a start end')
-      // })
-      .on('brush start end', () => {
-        if (
-          d3.event.sourceEvent &&
-          (d3.event.sourceEvent.type === 'brush' ||
-            d3.event.sourceEvent.type === 'start' ||
-            d3.event.sourceEvent.type === 'end')
-        )
-          return
+    brush.on('brush start end', () => {
+      if (
+        d3.event.sourceEvent &&
+        (d3.event.sourceEvent.type === 'brush' ||
+          d3.event.sourceEvent.type === 'start' ||
+          d3.event.sourceEvent.type === 'end')
+      )
+        return
 
-        // Get current start/end positions of brush ([1, 2])
-        const s = d3.event.selection || x2.range()
+      // Get current start/end positions of brush ([1, 2])
+      const s = d3.event.selection || x2.range()
 
-        // Show reset button if not default positions.
-        if (chart.brushStartPos) {
-          if (s[0] === chart.brushStartPos && s[1] === chart.width) {
-            chart.params.setShowReset(false)
-          } else {
-            chart.params.setShowReset(true)
-          }
-        }
-
-        const eachBand = x2.step()
-        const indices = []
-        let snapBrush = true
-        const getDomainInvertVals = (val, i) => {
-          // i is 0 if left handle, 1 if right
-          // For left handle: ceil, right: floor
-
-          // const roundFunc = Math.floor;
-          const roundFunc = i === 0 ? Math.ceil : Math.floor
-
-          // const frac = val / chart.width;
-          // const nData = chart.data.vals.length;
-          // let index = roundFunc(frac * nData);
-          let index = roundFunc(val / eachBand)
-          const exact = Math.abs(index - val / eachBand) <= 1e-6
-          // const exact = Math.abs(index - (frac * nData)) <= 1e-6;
-
-          if (index > chart.data.vals.length - 1) {
-            index = chart.data.vals.length - 1
-          } else if (exact && i === 1) {
-            index = index - 1
-          }
-          // ALMOST worked
-          // else if (exact && i === 0) index = index - 1;
-
-          // TODO elegantly
-          if (isNaN(index) || index < 0 || index >= chart.data.vals.length) {
-            snapBrush = false
-            return [0, 0]
-          }
-
-          // Push index to array for later use
-          indices.push(index)
-          return new Date(
-            chart.data.vals[index]['date_time'].replace(/-/g, '/')
-          )
-        }
-
-        // Update main chart x axis
-        const invertedVals = s.map((d, i) => {
-          return getDomainInvertVals(d, i)
-        })
-        // x.domain(invertedVals)
-        // chart[styles['x-axis']].call(xAxis).call(wrapTimeLabels)
-
-        // Reposition chart elements
-        chart[styles.lineValue].selectAll('path').attr('d', d => line(d))
-        chart[styles.areaNull].selectAll('path').attr('d', d => area(d))
-
-        // Store this position
-        chart.params.brushPosPercent = [s[0] / chart.width, s[1] / chart.width]
-
-        // Calculate total count to show in summary count metric
-        const dataForSummary = chart.data.vals.slice(indices[0], indices[1] + 1)
-        chart.params.setCountSummary(d3.sum(dataForSummary, d => d.value))
-
-        chart.params.setCountSummaryDateRange(
-          dataForSummary.length > 1
-            ? Util.getDateTimeRange({ value: dataForSummary })
-            : Util.getDatetimeStamp(dataForSummary[0], 'month')
-        )
-
-        // SNAP BRUSH POS
-        // ALMOST works...
-
-        const snapS = false
-          ? [
-              x2(
-                `${invertedVals[0].getUTCMonth() +
-                  1}/${invertedVals[0].getUTCFullYear()}`
-              ),
-              x2(
-                `${invertedVals[1].getUTCMonth() +
-                  1}/${invertedVals[1].getUTCFullYear()}`
-              )
-              // x2(`${invertedVals[1].getUTCMonth() + 1}/${invertedVals[1].getUTCFullYear()}`) + x2.step() * .99,
-            ]
-          : s
-
-        if (snapBrush) gBrush.call(brush.move, snapS)
-
-        // Adjust handle positions
-        if (s == null) {
-          handle.attr('display', 'none')
+      // Show reset button if not default positions.
+      if (chart.brushStartPos) {
+        if (s[0] === chart.brushStartPos && s[1] === chart.width) {
+          chart.params.setShowReset(false)
         } else {
-          handle.attr('display', null).attr('transform', function(d, i) {
-            return (
-              'translate(' +
-              [
-                snapS[i] + 0.5 * Math.pow(-1, i),
-                chart.height - chart.slider.height * 0.625
-              ] +
-              ')'
-            )
-          })
+          chart.params.setShowReset(true)
+        }
+      }
+
+      const eachBand = x2.step()
+      const indices = []
+      let snapBrush = true
+      const getDomainInvertVals = (val, i) => {
+        // i is 0 if left handle, 1 if right
+        // For left handle: ceil, right: floor
+
+        // const roundFunc = Math.floor;
+        const roundFunc = i === 0 ? Math.ceil : Math.floor
+
+        // const frac = val / chart.width;
+        // const nData = chart.data.vals.length;
+        // let index = roundFunc(frac * nData);
+        let index = roundFunc(val / eachBand)
+        const exact = Math.abs(index - val / eachBand) <= 1e-6
+        // const exact = Math.abs(index - (frac * nData)) <= 1e-6;
+
+        if (index > chart.data.vals.length - 1) {
+          index = chart.data.vals.length - 1
+        } else if (exact && i === 1) {
+          index = index - 1
+        }
+        // ALMOST worked
+        // else if (exact && i === 0) index = index - 1;
+
+        // TODO elegantly
+        if (isNaN(index) || index < 0 || index >= chart.data.vals.length) {
+          snapBrush = false
+          return [0, 0]
         }
 
-        // Reposition overlay rects (to gray out bars outside the window)
-        overlayRects
-          .attr('width', function(d, i) {
-            if (i === 0) return snapS[0]
-            else return chart.width - snapS[1]
-          })
-          .attr('x', function(d, i) {
-            if (i === 1) return snapS[1]
-            else return 0
-          })
+        // Push index to array for later use
+        indices.push(index)
+        return new Date(chart.data.vals[index]['date_time'].replace(/-/g, '/'))
+      }
+
+      // Update main chart x axis
+      const invertedVals = s.map((d, i) => {
+        return getDomainInvertVals(d, i)
       })
+      x.domain(invertedVals)
+      chart[styles['x-axis']].call(xAxis)
+      // chart[styles['x-axis']].call(xAxis).call(wrapTimeLabels)
+
+      // Reposition chart elements
+      chart[styles.lineValue].selectAll('path').attr('d', d => line(d))
+      chart[styles.lineValueSec].selectAll('path').attr('d', d => line(d))
+      chart[styles.areaNull].selectAll('path').attr('d', d => area(d))
+
+      // Store this position
+      chart.params.brushPosPercent = [s[0] / chart.width, s[1] / chart.width]
+
+      // Calculate total count to show in summary count metric
+      const dataForSummary = chart.data.vals.slice(indices[0], indices[1] + 1)
+      chart.params.setCountSummary(d3.sum(dataForSummary, d => d.value))
+
+      chart.params.setCountSummaryDateRange(
+        dataForSummary.length > 1
+          ? Util.getDateTimeRange({ value: dataForSummary })
+          : Util.getDatetimeStamp(dataForSummary[0], 'month')
+      )
+
+      // SNAP BRUSH POS
+      // ALMOST works...
+
+      const snapS = false
+        ? [
+            x2(
+              `${invertedVals[0].getUTCMonth() +
+                1}/${invertedVals[0].getUTCDate()}/${invertedVals[0].getUTCFullYear()}`
+            ),
+            x2(
+              `${invertedVals[1].getUTCMonth() +
+                1}/${invertedVals[1].getUTCDate()}/${invertedVals[1].getUTCFullYear()}`
+            )
+            // x2(`${invertedVals[1].getUTCMonth() + 1}/${invertedVals[1].getUTCFullYear()}`) + x2.step() * .99,
+          ]
+        : s
+
+      if (snapBrush) gBrush.call(brush.move, snapS)
+
+      // Adjust handle positions
+      if (s == null) {
+        handle.attr('display', 'none')
+      } else {
+        handle.attr('display', null).attr('transform', function(d, i) {
+          const snapi = isNaN(snapS[i]) ? 0 : snapS[i]
+          return (
+            'translate(' +
+            [
+              snapi + 0.5 * Math.pow(-1, i),
+              chart.height - chart.slider.height * 0.625
+            ] +
+            ')'
+          )
+        })
+      }
+
+      // Reposition overlay rects (to gray out bars outside the window)
+      overlayRects
+        .attr('width', function(d, i) {
+          if (i === 0) return snapS[0]
+          else return chart.width - snapS[1]
+        })
+        .attr('x', function(d, i) {
+          if (i === 1) return snapS[1]
+          else return 0
+        })
+    })
 
     chart.brushStartPos = getBrushStartPos()
 

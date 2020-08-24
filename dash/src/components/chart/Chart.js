@@ -5,18 +5,10 @@ class Chart {
     this.DEV = false
 
     this.selector = selector
-    console.log('selector')
-    console.log(selector)
     document.querySelector(selector).innerHTML = ''
     this.svg = d3.select(selector).append('svg')
 
     if (!this.margin) this.margin = params.margin
-    // this.margin = params.margin || {
-    //   top: 0,
-    //   bottom: 0,
-    //   left: 0,
-    //   right: 0,
-    // };
 
     this.chart = this.svg.append('g').classed('chart', true)
     this.outlines = this.svg.append('g').classed('outlines', true)
@@ -336,7 +328,6 @@ class Chart {
       }
     }
     if (this.svg.node() === undefined || this.svg.node() === null) {
-      console.log('Not part of an svg')
       return {
         x: 0,
         y: 0,
@@ -540,11 +531,6 @@ export default Chart
 
 function onResize(chart) {
   const selector = document.querySelector(chart.selector)
-
-  // console.log('\nchart')
-  // console.log(chart)
-  // console.log('selector')
-  // console.log(selector)
 
   // NOTE: Scatter plot triggers resize event even if it's not on the page
 

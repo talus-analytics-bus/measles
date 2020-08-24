@@ -781,8 +781,6 @@ const App = () => {
             />
           </div>
         </Switch>
-        {page !== 'map' && <Footer />}
-        {showWelcomeModal && <BrowserDetection>{modalToShow}</BrowserDetection>}
       </BrowserRouter>
     </div>
   )

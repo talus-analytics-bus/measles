@@ -43,6 +43,53 @@ const Nevada = ({ ...props }) => {
   // Data
   const [data, setData] = useState(null)
 
+  // CONSTANTS
+  // Legend entry data
+  const legendEntries = [
+    {
+      label: 'Nevada (statewide)',
+      class: styles.valueLine,
+      shape: 'line'
+    },
+    {
+      label: 'Counties',
+      class: styles.valueLineSec,
+      shape: 'line'
+    }
+  ]
+  // Legend JSX
+  const legend = (
+    <div className={styles.slidingLineLegend}>
+      {legendEntries.map(
+        entry =>
+          entry.skip !== true && (
+            <div className={styles.entry}>
+              <svg width='36' height='18'>
+                {entry.shape === 'line' ? (
+                  <line
+                    className={classNames(styles.symbol, entry.class)}
+                    x1='0'
+                    x2='36'
+                    y1='9'
+                    y2='9'
+                  />
+                ) : (
+                  <rect
+                    className={classNames(styles.symbol, entry.class)}
+                    x='0'
+                    y='0'
+                    height='18'
+                    width='18'
+                  />
+                )}
+              </svg>
+              <div className={styles.label}>{entry.label}</div>
+            </div>
+          )
+      )}
+    </div>
+  )
+
   // UTILITY FUNCS
   const getData = async () => {
     const newData = await d3.csv('./data/cases.csv')
@@ -157,9 +204,10 @@ const Nevada = ({ ...props }) => {
         },
         margin: {
           top: 20,
-          right: 98,
-          bottom: 70,
-          left: 100
+          right: 25,
+          bottom: 30,
+          // bottom: 70, // make room for slider
+          left: 140
         }
       }
 
@@ -174,8 +222,22 @@ const Nevada = ({ ...props }) => {
         // defined above.
         chartParams
       )
-      // unmountFuncs2.push(slidingLineChart.removeResizeListener)
-      setSlidingLine(slidingLineChart)
+      const slidingLineChartPerCapita = new NevadaSlidingLine(
+        // Selector of DOM element in Resilience.js component where the chart
+        // should be drawn.
+        '.' + styles.slidingLinePerCapita,
+
+        // Chart parameters consumed by Chart.js and ResilienceRadarChart.js,
+        // defined above.
+        {
+          ...chartParams,
+          yLabel: [
+            'Per 100k new COVID-19 cases',
+            'reported (7-day moving average)'
+          ]
+        }
+      )
+      // setSlidingLine(slidingLineChart)
       if (unmountFuncs) {
         const newUnmountFuncs = [
           ...unmountFuncs,
@@ -194,7 +256,12 @@ const Nevada = ({ ...props }) => {
     <div>
       <div className={styles.slidingLineContainer}>
         <div className={styles.slidingLineChartWrapper}>
+          <div className={styles.slidingLineLegend}>{legend}</div>
           <div className={styles.slidingLine} />
+        </div>
+        <div className={styles.slidingLineChartWrapper}>
+          <div className={styles.slidingLineLegend}>{legend}</div>
+          <div className={styles.slidingLinePerCapita} />
         </div>
       </div>
     </div>
