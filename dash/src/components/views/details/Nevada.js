@@ -54,15 +54,40 @@ const Nevada = ({ ...props }) => {
     // load data
     getData().then(newData => {
       // TODO format data
-      const formattedData = []
-      newData.forEach(d => {
-        formattedData.push({
+      const cumulativeData = []
+      const newCasesData = []
+      const newCasesAvgData = []
+      newData.forEach((d, i) => {
+        cumulativeData.push({
           date_time: d.Date,
-          value: +d.Nevada
+          value: +d.Nevada,
+          place_name: 'Nevada'
         })
+        if (i > 0) {
+          newCasesData.push({
+            date_time: d.Date,
+            value: +d.Nevada - newData[i - 1].Nevada,
+            place_name: 'Nevada'
+          })
+        } else if (i === 0) {
+          newCasesData.push({
+            date_time: d.Date,
+            value: 0,
+            place_name: 'Nevada'
+          })
+        }
+        if (i > 5) {
+          newCasesAvgData.push({
+            date_time: d.Date,
+            value: d3.mean(newCasesData.slice(i - 6, i + 1), d => d.value),
+            place_name: 'Nevada'
+          })
+        }
       })
 
-      setData(formattedData)
+      setData(newCasesAvgData)
+      // setData(newCasesData)
+      // setData(cumulativeData)
     })
   }, [])
 

@@ -364,7 +364,7 @@ Util.getScatterLabelData = datum => {
   switch (datum.metric || datum) {
     case 'incidence_12months':
     case 'caseload_totalpop':
-      return 'Total measles cases reported'
+      return 'New COVID-19 cases'
     case 'incidence_monthly':
       return 'Monthly incidence of measles'
     case 'coverage_mcv1_infant':

@@ -503,7 +503,7 @@ class NevadaSlidingLine extends Chart {
       .text(
         chart.params.metric === 'incidence_monthly'
           ? 'Monthly incidence of measles'
-          : 'Total measles'
+          : 'New COVID-19'
       )
     yAxisLabel
       .append('tspan')
