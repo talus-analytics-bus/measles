@@ -4,6 +4,15 @@ $drawer-width: 360px;
 $header-height: 100px;
 $button-width: 200px;
 $spacing: 20px;
+.slidingLineContainer {
+  .slidingLineChartWrapper {
+    .slidingLine {
+      // width: 800px;
+      height: 600px;
+      margin: 20px 100px;
+    }
+  }
+}
 .wedgeTooltip {
   span {
     font-weight: bold;
@@ -588,16 +597,6 @@ $spacing: 20px;
       transition: opacity 0.125s;
       margin: 0;
       margin-left: auto;
-    }
-    .slidingLine {
-      height: $slidingLineHeight;
-      // height: $slidingLineWidth/2.2;
-      width: $slidingLineWidth;
-      // margin-left: 20px;
-      svg {
-        margin-top: 10px;
-      }
-      // Other styles for this chart are in slidingline.module.scss
     }
   }
 

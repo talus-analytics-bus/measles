@@ -17,6 +17,7 @@ import Util from './components/misc/Util.js'
 
 // views
 import Details from './components/views/details/Details.js'
+import Nevada from './components/views/details/Nevada.js'
 import Global from './components/views/global/Global.js'
 import About from './components/views/about/About.js'
 
@@ -175,6 +176,10 @@ const App = () => {
       className={'map'}
     />
   )
+
+  const renderNevada = () => {
+    return <Nevada />
+  }
 
   const renderDetails = id => {
     if (loading) {
@@ -753,6 +758,15 @@ const App = () => {
                 setLoadingNav(true)
                 // window.scrollTo(0,0);
                 return renderDetails(d.match.params.id)
+              }}
+            />
+            <Route
+              path='/nevada'
+              render={d => {
+                setPage('details')
+                setLoadingNav(false)
+                // window.scrollTo(0,0);
+                return renderNevada()
               }}
             />
             <Route

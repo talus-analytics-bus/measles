@@ -5,6 +5,8 @@ class Chart {
     this.DEV = false
 
     this.selector = selector
+    console.log('selector')
+    console.log(selector)
     document.querySelector(selector).innerHTML = ''
     this.svg = d3.select(selector).append('svg')
 
