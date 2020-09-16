@@ -266,7 +266,7 @@ const About = () => {
             </td>
             <td width='97'>
               <p>
-                July 2020
+                August 2020
                 <a
                   className={styles.footnoteInline}
                   href='#_ftn4'
@@ -431,11 +431,11 @@ const About = () => {
       </p>
 
       <p>
-        As of July 2020, the WHO Measles Surveillance Dataset contains no
+        As of August 2020, the WHO Measles Surveillance Dataset contains no
         caseload data for Cabo Verde, Guinea-Bissau, Mauritania, Mauritius,
         Sao Tome and Principe, Antigua and Barbuda, Bahamas, Dominica,
-        Ecuador, Grenada, Saint Kitts and Nevis, Saint Lucia, Suriname, Trinidad
-        and Tobago, Saint Vincent and the Grenadines, Djibouti, Yemen, Montenegro,
+        Ecuador, Saint Kitts and Nevis, Saint Lucia, Suriname, Trinidad
+        and Tobago, Saint Vincent and the Grenadines, Djibouti, Montenegro,
         Tonga, Vanuatu, and Samoa for the year 2020. As a result, caseload data
         are not shown.
       </p>
