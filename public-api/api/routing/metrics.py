@@ -55,13 +55,24 @@ class Observations(Resource):
                                 than metric. Provides a summary at that level if lower.
                                 If not provided, native resolution of metric is returned.""")
     parser.add_argument('place_id', type=int, required=False,
-                        help="""Optional place id to limit metric to only that location.""")
+                        help="""Optional place id to limit metric to only that location. If place names are defined, this should not also be defined.""")
+    parser.add_argument('place_name', type=str, required=False,
+                        help="""Optional place id to limit metric to only that location. If place IDs are defined, this should not also be defined.""")
 
     @api.doc(parser=parser)
     @db_session
     @format_response
     def get(self):
-        params = request.args
+        params = dict(request.args)
+
+        # if place_name not undefined, get place_ids from it and assign to
+        # params place_id
+        if 'place_name' in params:
+            place_name = params['place_name']
+            place = db.Place.get(name=place_name)
+            if place is not None:
+                params['place_id'] = place.place_id
+
         (view_flag, res, lag) = schema.getObservations(params)
 
         if view_flag:
