@@ -56,6 +56,8 @@ class Observations(Resource):
                                 If not provided, native resolution of metric is returned.""")
     parser.add_argument('place_id', type=int, required=False,
                         help="""Optional place id to limit metric to only that location. If place names are defined, this should not also be defined.""")
+    parser.add_argument('fields', type=int, required=False,
+                        help="""Optional field(s) to return.""")
     parser.add_argument('place_name', type=str, required=False,
                         help="""Optional place id to limit metric to only that location. If place IDs are defined, this should not also be defined.""")
 
@@ -74,6 +76,37 @@ class Observations(Resource):
                 params['place_id'] = place.place_id
 
         (view_flag, res, lag) = schema.getObservations(params)
+
+        def get_subsetted_res_list(orig_res_list):
+            """Return only a subset of the response list data fields, if they
+            are defined.
+
+            Parameters
+            ----------
+            orig_res_list : type
+                Description of parameter `orig_res_list`.
+
+            Returns
+            -------
+            type
+                Description of returned object.
+
+            """
+            limit_returned_fields = 'fields' in params
+            if limit_returned_fields:
+                # get fields to return
+                field_set = params['fields'].split(',')
+                res_list_subset = list()
+                for d in res_list:
+                    res_list_subset.append(
+                        {
+                            k: d[k] for k in field_set
+                        }
+                    )
+
+                return res_list_subset
+            else:
+                return res_list
 
         if view_flag:
             res_list = []
@@ -122,7 +155,8 @@ class Observations(Resource):
 
             res_list.sort(key=lambda o: (o['place_id'], o['date_time']))
 
-            return res_list
+            # return only requested fields, if applicable
+            return get_subsetted_res_list(res_list)
         else:
             formattedData = [r.to_dict(related_objects=True) for r in res]
 
@@ -157,7 +191,8 @@ class Observations(Resource):
 
         formattedData.sort(key=lambda o: (o['place_id'], o['date_time']))
 
-        return formattedData
+        # return only requested fields, if applicable
+        return get_subsetted_res_list(formattedData)
 
 
 # Initialize get trend between end and lag # of periods prior
