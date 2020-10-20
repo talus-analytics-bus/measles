@@ -69,13 +69,13 @@ def format_response(func):
             results = {
                 "data": request.path, "error": True, "message": "404 - not found"
             }
-        except Exception as e:
-            print(e)
-            results = {
-                "data": '',
-                "error": True,
-                "message": str(e),
-            }
+        # except Exception as e:
+        #     print(e)
+        #     results = {
+        #         "data": '',
+        #         "error": True,
+        #         "message": str(e),
+        #     }
 
         # Convert entire response to JSON and return it.
         return flask.jsonify(results)

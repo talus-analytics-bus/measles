@@ -55,11 +55,13 @@ class Observations(Resource):
                                 than metric. Provides a summary at that level if lower.
                                 If not provided, native resolution of metric is returned.""")
     parser.add_argument('place_id', type=int, required=False,
-                        help="""Optional place id to limit metric to only that location. If place names are defined, this should not also be defined.""")
+                        help="""Optional place id to limit metric to only that location. If place names or ISO3 are defined, this should not also be defined.""")
     parser.add_argument('fields', type=int, required=False,
                         help="""Optional field(s) to return.""")
     parser.add_argument('place_name', type=str, required=False,
-                        help="""Optional place id to limit metric to only that location. If place IDs are defined, this should not also be defined.""")
+                        help="""Optional place id to limit metric to only that location. If place IDs or ISO3 are defined, this should not also be defined.""")
+    parser.add_argument('place_iso3', type=str, required=False,
+                        help="""Optional place iso3 code to limit metric to only that location. If place IDs or names are defined, this should not also be defined.""")
 
     @api.doc(parser=parser)
     @db_session
@@ -72,6 +74,11 @@ class Observations(Resource):
         if 'place_name' in params:
             place_name = params['place_name']
             place = db.Place.get(name=place_name)
+            if place is not None:
+                params['place_id'] = place.place_id
+        elif 'place_iso3' in params:
+            place_iso3 = params['place_iso3']
+            place = db.Place.get(iso=place_iso3)
             if place is not None:
                 params['place_id'] = place.place_id
 
@@ -106,7 +113,7 @@ class Observations(Resource):
 
                 return res_list_subset
             else:
-                return res_list
+                return orig_res_list
 
         if view_flag:
             res_list = []
