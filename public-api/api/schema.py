@@ -15,9 +15,13 @@ from pony.orm import select
 from .models import db
 from .utils import passes_filters
 
+# Constants
+strf_str = '%Y-%m-%d %H:%M:%S %Z'
 
 # Cache responses for API requests that have previously been made so that the
 # computation does not need to be repeated.
+
+
 def cached(func):
 
     # Cache initially blank.
@@ -30,7 +34,6 @@ def cached(func):
 
         # If the request has been made before
         if key in cache:
-
             # Return the cached data for the response to the request
             return cache[key]
 
@@ -237,6 +240,7 @@ def manage_lag(metric, null_res, max_time, null_places, observations):
 
 
 # Define an observation endpoint query.
+@cached
 def getObservations(filters):
     s_rs = ['planet', 'global', 'country', 'state',
             'county', 'block_group', 'tract', 'point']
@@ -373,6 +377,126 @@ def getObservations(filters):
             lag = None
 
         return (is_view, res, lag)
+
+
+@cached
+def format_observations(view_flag, res, lag, params):
+    def get_subsetted_res_list(orig_res_list):
+        """Return only a subset of the response list data fields, if they
+        are defined.
+
+        Parameters
+        ----------
+        orig_res_list : type
+            Description of parameter `orig_res_list`.
+
+        Returns
+        -------
+        type
+            Description of returned object.
+
+        """
+        limit_returned_fields = 'fields' in params
+        if limit_returned_fields:
+            # get fields to return
+            field_set = params['fields'].split(',')
+            res_list_subset = list()
+            for d in orig_res_list:
+                res_list_subset.append(
+                    {
+                        k: d[k] for k in field_set
+                    }
+                )
+
+            return res_list_subset
+        else:
+            return orig_res_list
+
+    if view_flag:
+        res_list = []
+
+        lagged_places = []
+
+        if lag is not None and len(lag) > 0:
+            for o in lag:
+                res_list.append({
+                    'data_source': o[1],
+                    'date_time': o[2].strftime('%Y-%m-%d %H:%M:%S %Z'),
+                    'definition': o[3],
+                    'metric': o[4],
+                    'observation_id': o[5],
+                    'place_fips': o[6],
+                    'place_id': o[7],
+                    'place_iso': o[8],
+                    'place_iso3': o[9],
+                    'place_name': o[10],
+                    'updated_at': o[11],
+                    'value': o[12],
+                    'stale_flag': True,
+                })
+
+                lagged_places.append(o[7])
+
+        for o in res:
+
+            if o.place_id in lagged_places:
+                continue
+            res_list.append({
+                'data_source': o[1],
+                'date_time': o[2].strftime('%Y-%m-%d %H:%M:%S %Z'),
+                'definition': o[3],
+                'metric': o[4],
+                'observation_id': o[5],
+                'place_fips': o[6],
+                'place_id': o[7],
+                'place_iso': o[8],
+                'place_iso3': o[9],
+                'place_name': o[10],
+                'updated_at': o[11],
+                'value': o[12],
+                'stale_flag': False,
+            })
+
+        res_list.sort(key=lambda o: (o['place_id'], o['date_time']))
+
+        # return only requested fields, if applicable
+        return get_subsetted_res_list(res_list)
+    else:
+        formattedData = [r.to_dict(related_objects=True) for r in res]
+
+        if lag is not None and len(lag) > 0:
+            lagData = [r.to_dict(related_objects=True) for r in lag]
+
+            formattedData = [
+                o for o in formattedData if o['value'] is not None]
+
+            for o in formattedData:
+                o['stale_flag'] = False
+            for o in lagData:
+                o['stale_flag'] = True
+
+            formattedData.extend(lagData)
+
+        for o in formattedData:
+            metric_info = o['metric'].to_dict()
+            o['metric'] = metric_info['metric_name']
+            o['definition'] = metric_info['metric_definition']
+
+            o['date_time'] = o['date_time'].to_dict(
+            )['datetime'].strftime(strf_str)
+
+            place_info = o['place'].to_dict()
+            o['place_id'] = place_info['place_id']
+            o['place_name'] = place_info['name']
+            o['place_iso'] = place_info['iso2']
+            o['place_iso3'] = place_info['iso']
+            o['place_fips'] = place_info['fips']
+            del[o['place']]
+
+    formattedData.sort(key=lambda o: (o['place_id'], o['date_time']))
+    print('Made it!')
+    # return only requested fields, if applicable
+    return get_subsetted_res_list(formattedData)
 
 
 # Define a trend endpoint query.

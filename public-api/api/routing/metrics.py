@@ -15,6 +15,8 @@ from ..utils import format_response
 strf_str = '%Y-%m-%d %H:%M:%S %Z'
 
 # Initialize metric catalog or specifics endpoint
+
+
 @api.route("/metric", methods=["GET"])
 class Metric(Resource):
     parser = api.parser()
@@ -56,7 +58,7 @@ class Observations(Resource):
                                 If not provided, native resolution of metric is returned.""")
     parser.add_argument('place_id', type=int, required=False,
                         help="""Optional place id to limit metric to only that location. If place names or ISO3 are defined, this should not also be defined.""")
-    parser.add_argument('fields', type=int, required=False,
+    parser.add_argument('fields', type=str, required=False,
                         help="""Optional field(s) to return.""")
     parser.add_argument('place_name', type=str, required=False,
                         help="""Optional place id to limit metric to only that location. If place IDs or ISO3 are defined, this should not also be defined.""")
@@ -82,124 +84,9 @@ class Observations(Resource):
             if place is not None:
                 params['place_id'] = place.place_id
 
-        (view_flag, res, lag) = schema.getObservations(params)
+        (view_flag, res, lag) = schema.getObservations(filters=params)
 
-        def get_subsetted_res_list(orig_res_list):
-            """Return only a subset of the response list data fields, if they
-            are defined.
-
-            Parameters
-            ----------
-            orig_res_list : type
-                Description of parameter `orig_res_list`.
-
-            Returns
-            -------
-            type
-                Description of returned object.
-
-            """
-            limit_returned_fields = 'fields' in params
-            if limit_returned_fields:
-                # get fields to return
-                field_set = params['fields'].split(',')
-                res_list_subset = list()
-                for d in res_list:
-                    res_list_subset.append(
-                        {
-                            k: d[k] for k in field_set
-                        }
-                    )
-
-                return res_list_subset
-            else:
-                return orig_res_list
-
-        if view_flag:
-            res_list = []
-
-            lagged_places = []
-
-            if lag is not None and len(lag) > 0:
-                for o in lag:
-                    res_list.append({
-                        'data_source': o[1],
-                        'date_time': o[2].strftime('%Y-%m-%d %H:%M:%S %Z'),
-                        'definition': o[3],
-                        'metric': o[4],
-                        'observation_id': o[5],
-                        'place_fips': o[6],
-                        'place_id': o[7],
-                        'place_iso': o[8],
-                        'place_iso3': o[9],
-                        'place_name': o[10],
-                        'updated_at': o[11],
-                        'value': o[12],
-                        'stale_flag': True,
-                    })
-
-                    lagged_places.append(o[7])
-
-            for o in res:
-
-                if o.place_id in lagged_places:
-                    continue
-                res_list.append({
-                    'data_source': o[1],
-                    'date_time': o[2].strftime('%Y-%m-%d %H:%M:%S %Z'),
-                    'definition': o[3],
-                    'metric': o[4],
-                    'observation_id': o[5],
-                    'place_fips': o[6],
-                    'place_id': o[7],
-                    'place_iso': o[8],
-                    'place_iso3': o[9],
-                    'place_name': o[10],
-                    'updated_at': o[11],
-                    'value': o[12],
-                    'stale_flag': False,
-                })
-
-            res_list.sort(key=lambda o: (o['place_id'], o['date_time']))
-
-            # return only requested fields, if applicable
-            return get_subsetted_res_list(res_list)
-        else:
-            formattedData = [r.to_dict(related_objects=True) for r in res]
-
-            if lag is not None and len(lag) > 0:
-                lagData = [r.to_dict(related_objects=True) for r in lag]
-
-                formattedData = [
-                    o for o in formattedData if o['value'] is not None]
-
-                for o in formattedData:
-                    o['stale_flag'] = False
-                for o in lagData:
-                    o['stale_flag'] = True
-
-                formattedData.extend(lagData)
-
-            for o in formattedData:
-                metric_info = o['metric'].to_dict()
-                o['metric'] = metric_info['metric_name']
-                o['definition'] = metric_info['metric_definition']
-
-                o['date_time'] = o['date_time'].to_dict(
-                )['datetime'].strftime(strf_str)
-
-                place_info = o['place'].to_dict()
-                o['place_id'] = place_info['place_id']
-                o['place_name'] = place_info['name']
-                o['place_iso'] = place_info['iso2']
-                o['place_iso3'] = place_info['iso']
-                o['place_fips'] = place_info['fips']
-                del[o['place']]
-
-        formattedData.sort(key=lambda o: (o['place_id'], o['date_time']))
-
-        # return only requested fields, if applicable
-        return get_subsetted_res_list(formattedData)
+        return schema.format_observations(view_flag, res, lag, params=params)
 
 
 # Initialize get trend between end and lag # of periods prior
@@ -349,6 +236,8 @@ class Trend(Resource):
         return trends
 
 # Initialize places catalog or specifics endpoint
+
+
 @api.route("/places", methods=["GET"])
 class Places(Resource):
     parser = api.parser()
