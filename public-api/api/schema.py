@@ -4,7 +4,7 @@
 
 # Standard libraries
 import functools
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from dateutil.relativedelta import relativedelta
 import pytz
 
@@ -183,7 +183,7 @@ def manage_lag(metric, null_res, max_time, null_places, observations):
         else:
             place_id_q_str = f"""AND v.place_id = {null_places[0]}"""
 
-        lag_res_q_str = f"""SELECT v.metric_id, v.data_source, d.dt,
+        lag_res_q_str = f"""SELECT v.metric_id, v.data_source, d.dt_notz,
                             m.metric_definition, m.metric_name, v.observation_id,
                             p.fips AS place_fips, p.place_id, p.iso2 AS place_iso,
                             p.iso AS place_iso3,
@@ -193,9 +193,9 @@ def manage_lag(metric, null_res, max_time, null_places, observations):
                             LEFT JOIN place p ON v.place_id = p.place_id
                             LEFT JOIN metric m ON v.metric_id = m.metric_id
                             WHERE
-                            d.dt >= '{min_time}'
+                            d.dt_notz >= '{min_time}'
                             {place_id_q_str}
-                            AND d.dt <= '{max_time}'"""
+                            AND d.dt_notz <= '{max_time}'"""
         lag_res = db.select(lag_res_q_str)
 
     else:
@@ -227,7 +227,7 @@ def manage_lag(metric, null_res, max_time, null_places, observations):
 
         if o.value is not None:
             if place_id in latest_observation:
-                obs_dt = o.dt if metric.is_view else o.date_time.datetime
+                obs_dt = o.dt_notz if metric.is_view else o.date_time.datetime
                 latest_obs_dt = latest_observation[place_id].dt if metric.is_view else \
                     latest_observation[place_id].date_time.datetime
 
@@ -296,7 +296,7 @@ def getObservations(filters):
 
     # If the metric is a view, then the pool of observations comes from that
     # view. Otherwise, it is simply the "Observations" entity.
-    view_q_str = f"""SELECT v.metric_id, v.data_source, d.dt,
+    view_q_str = f"""SELECT v.metric_id, v.data_source, d.dt_notz,
                         m.metric_definition, m.metric_name, v.observation_id,
                         p.fips AS place_fips, p.place_id, p.iso2 AS place_iso,
                         p.iso AS place_iso3,
@@ -306,8 +306,8 @@ def getObservations(filters):
                         LEFT JOIN place p ON v.place_id = p.place_id
                         LEFT JOIN metric m ON v.metric_id = m.metric_id
                         WHERE
-                        d.dt >= '{min_time}'
-                        AND d.dt <= '{max_time}'"""
+                        d.dt_notz >= '{min_time}'
+                        AND d.dt_notz <= '{max_time}'"""
     if is_view:
         observations = db.select(view_q_str)
     else:
@@ -421,7 +421,8 @@ def format_observations(view_flag, res, lag, params):
             for o in lag:
                 res_list.append({
                     'data_source': o[1],
-                    'date_time': o[2].strftime('%Y-%m-%d %H:%M:%S %Z'),
+                    'date_time': o[2].date(),
+                    # 'date_time': o[2].strftime('%Y-%m-%d %H:%M:%S %Z'),
                     'definition': o[3],
                     'metric': o[4],
                     'observation_id': o[5],
@@ -443,7 +444,7 @@ def format_observations(view_flag, res, lag, params):
                 continue
             res_list.append({
                 'data_source': o[1],
-                'date_time': o[2].strftime('%Y-%m-%d %H:%M:%S %Z'),
+                'date_time': o[2].date().strftime(strf_str),
                 'definition': o[3],
                 'metric': o[4],
                 'observation_id': o[5],
@@ -482,8 +483,9 @@ def format_observations(view_flag, res, lag, params):
             o['metric'] = metric_info['metric_name']
             o['definition'] = metric_info['metric_definition']
 
-            o['date_time'] = o['date_time'].to_dict(
-            )['datetime'].strftime(strf_str)
+            # Format date
+            cur_dt = o['date_time'].to_dict()['datetime']
+            o['date_time'] = cur_dt.strftime(strf_str)
 
             place_info = o['place'].to_dict()
             o['place_id'] = place_info['place_id']
@@ -494,7 +496,7 @@ def format_observations(view_flag, res, lag, params):
             del[o['place']]
 
     formattedData.sort(key=lambda o: (o['place_id'], o['date_time']))
-    print('Made it!')
+
     # return only requested fields, if applicable
     return get_subsetted_res_list(formattedData)
 
@@ -523,7 +525,7 @@ def getTrend(filters):
                          else lag)
 
     if metric.is_view:
-        q_str = f"""SELECT v.metric_id, v.data_source, d.dt,
+        q_str = f"""SELECT v.metric_id, v.data_source, d.dt_notz,
                 m.metric_definition, m.metric_name, v.observation_id,
                 p.fips AS place_fips, p.place_id, p.iso2 AS place_iso,
                 p.iso AS place_iso3,
@@ -533,8 +535,8 @@ def getTrend(filters):
                 LEFT JOIN place p ON v.place_id = p.place_id
                 LEFT JOIN metric m ON v.metric_id = m.metric_id
                 WHERE
-                d.dt >= '{min_time}'
-                AND d.dt <= '{end}'
+                d.dt_notz >= '{min_time}'
+                AND d.dt_notz <= '{end}'
                 AND v.value IS NOT NULL
                 """
         if 'place_id' in filters:
@@ -544,7 +546,7 @@ def getTrend(filters):
         else:
             res = db.select(q_str)
 
-        res_list = sorted(list(res), key=lambda o: (o.place_id, o.dt))
+        res_list = sorted(list(res), key=lambda o: (o.place_id, o.dt_notz))
 
     else:
         if 'place_id' in filters:
