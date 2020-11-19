@@ -1,6 +1,5 @@
 # Standard libraries
 import functools
-import datetime
 import json
 
 # Third party libraries
@@ -47,10 +46,9 @@ def passes_filters(instance, filters):
 def format_response(func):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
-        from_cache = ''
         try:
             # Load unformatted data from prior function return statement.
-            unformattedData, from_cache = func(*args, **kwargs)
+            unformattedData = func(*args, **kwargs)
 
             # Init formatted data.
             formattedData = []
@@ -71,13 +69,16 @@ def format_response(func):
             results = {
                 "data": request.path, "error": True, "message": "404 - not found"
             }
+        # except Exception as e:
+        #     print(e)
+        #     results = {
+        #         "data": '',
+        #         "error": True,
+        #         "message": str(e),
+        #     }
 
         # Convert entire response to JSON and return it.
-        results['cacheKey'] = from_cache
-        res = flask.jsonify(results)
-        res.headers['Cache-Control'] = 'must-revalidate;max-age=9999999;'
-        res.last_modified = from_cache
-        return res
+        return flask.jsonify(results)
 
     # Return the function wrapper (allows a succession of decorator functions to
     # be called)

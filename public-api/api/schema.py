@@ -4,7 +4,6 @@
 
 # Standard libraries
 import functools
-import random
 from datetime import datetime, timedelta, timezone
 from dateutil.relativedelta import relativedelta
 import pytz
@@ -36,29 +35,20 @@ def cached(func):
         # If the request has been made before
         if key in cache:
             # Return the cached data for the response to the request
-            results, from_cache = cache[key]
-
-            # Generate version number
-            # from_cache = random.randrange(1000000)
-            # from_cache = True
-            return results, from_cache  # cached flag
+            return cache[key]
 
         # Otherwise
         # After the request is done, take the results and cache them for next
         # time
         results = func(*args, **kwargs)
-
-        # Generate version number
-        from_cache = datetime.utcnow()
-        cache[key] = results, from_cache
-        return results, from_cache
+        cache[key] = results
+        return results
 
     # Return the function wrapper (for decoration)
     return wrapper
 
 
 # Define a generic endpoint query.
-@cached
 def getEntityInstances(entity_class, id_field_name, organizing_attribute, order, filters, params):
 
     # Get the entity instances.

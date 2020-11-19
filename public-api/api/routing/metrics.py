@@ -84,7 +84,7 @@ class Observations(Resource):
             if place is not None:
                 params['place_id'] = place.place_id
 
-        (view_flag, res, lag), from_cache = schema.getObservations(filters=params)
+        (view_flag, res, lag) = schema.getObservations(filters=params)
 
         return schema.format_observations(view_flag, res, lag, params=params)
 
@@ -288,9 +288,5 @@ class Places(Resource):
             "Unspecified region"
         ]
         res = schema.getEntityInstances(
-            entity_class=db.Place,
-            id_field_name='place_id',
-            organizing_attribute=organizing_attribute,
-            order=order, filters=filters, params=params
-        )
+            db.Place, 'place_id', organizing_attribute, order, filters, params)
         return res
