@@ -32,8 +32,8 @@ class DateTime(db.Entity):
     dt_id = PrimaryKey(int, auto=True)
     # date = Required(date)
     # time = Required(time)
-    datetime = Required(datetime, column="dt_notz",
-                        sql_type='TIMESTAMP NO TIMEZONE')
+    datetime = Required(datetime, column="dt",
+                        sql_type='TIMESTAMP WITH TIME ZONE')
     day = Required(bool)
     week_sunday = Required(bool)
     week_monday = Required(bool)
