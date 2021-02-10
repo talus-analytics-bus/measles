@@ -149,7 +149,7 @@ const Legend = (props: any) => {
         props.bubbleColorIsTrend && (
           <div className={classNames(styles.section, styles.change)}>
             <p className={styles.sectionName}>Change from previous month</p>
-            <ShapeLegend shapeInfo={undefined} />
+            <ShapeLegend />
             {
               // Former legend
               // <div className={styles.legendEntryGroups}>
