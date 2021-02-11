@@ -101,4 +101,6 @@ class Config:
         parser.add_argument('--help', action='help', help="""Please check the file config.py
                             for a list of command line arguments.""")
 
-        return parser.parse_args()
+        args, unknown = parser.parse_known_args()
+
+        return args
