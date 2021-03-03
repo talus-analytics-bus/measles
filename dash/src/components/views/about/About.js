@@ -438,7 +438,7 @@ const About = () => {
         Mali, Mozambique, Mauritania, Mauritius, Malawi, Namibia, Niger, Rwanda, 
         Senegal, Sierra Leone, South Sudan, Sao Tome and Principe, Kingdom of Eswatini, 
         Seychelles, Chad, Togo, United Republic of Tanzania, Uganda, South Africa, 
-        Zambia, Zimbabwe, Argentina, Antigua and Barbuda, Bahamas, Belize, Bolivia, 
+        Zambia, Zimbabwe, Argentina, Antigua and Barbuda, Bahamas, Belize, Bolivia (Plurinational State of), 
         Barbados, Canada, Colombia, Costa Rica, Cuba, Dominica, Ecuador, Grenada, 
         Guatemala, Guyana, Jamaica, Saint Kitts and Nevis, Saint Lucia, Panama, 
         Suriname, Trinidad and Tobago, Uruguay, Saint Vincent and the Grenadines, 
