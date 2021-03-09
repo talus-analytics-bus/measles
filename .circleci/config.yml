@@ -28,21 +28,12 @@ jobs:
       - aws-cli/configure
 
       - run:
-          name: Setup environment variables
-          command: |
-            echo 'export MY_ENV_VAR="FOO"' >> $BASH_ENV
-
-      - run:
-          name: 'What was my custom environment variable?'
-          command: echo ${MY_ENV_VAR}
-
-      - run:
-          name: yarn build dash
-          command: cd dash; rm yarn.lock; yarn install --network-timeout 1000000
+          name: npm build dash
+          command: cd dash; npm install --network-timeout 1000000
 
       - run:
           name: deploy
-          command: cd dash; yarn run deploy
+          command: cd dash; npm run deploy
 
       - run:
           name: Notify Slack
@@ -74,21 +65,12 @@ jobs:
       - aws-cli/configure
 
       - run:
-          name: Setup environment variables
-          command: |
-            echo 'export MY_ENV_VAR="FOO"' >> $BASH_ENV
-
-      - run:
-          name: 'What was my custom environment variable?'
-          command: echo ${MY_ENV_VAR}
-
-      - run:
-          name: yarn build dash
-          command: cd dash; rm yarn.lock; yarn install --network-timeout 1000000
+          name: npm build dash
+          command: cd dash; npm install --network-timeout 1000000
 
       - run:
           name: deploy
-          command: cd dash; yarn run deploy-dev
+          command: cd dash; npm run deploy-dev
 
 workflows:
   version: 2
