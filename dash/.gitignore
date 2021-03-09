@@ -8,3 +8,6 @@ dash/node_modules
 
 # VScode files
 .vscode
+
+# build files
+build
