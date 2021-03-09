@@ -5,3 +5,9 @@
 !.elasticbeanstalk/*.global.yml
 node_modules
 dash/node_modules
+
+# VScode files
+.vscode
+
+# build files
+build

@@ -5,7 +5,6 @@
   "dependencies": {
     "@types/classnames": "^2.2.8",
     "@types/jest": "24.0.13",
-    "@types/mapbox-gl": "^0.51.7",
     "@types/node": "12.0.4",
     "@types/react": "16.8.19",
     "@types/react-dom": "16.8.4",
@@ -15,7 +14,6 @@
     "classnames": "^2.2.6",
     "d3": "^5.12.0",
     "fuzzy-search": "^3.0.2",
-    "material-design-icons": "^3.0.1",
     "rc-align": "2.3.5",
     "rc-slider": "^8.7.1",
     "rc-tooltip": "^4.0.0-alpha.0",
@@ -33,7 +31,7 @@
     "react-select-search": "^0.9.6",
     "react-tooltip": "^3.11.1",
     "reactjs-popup": "^1.4.1",
-    "typescript": "3.8"
+    "typescript": "^4.2.3"
   },
   "scripts": {
     "start": "react-scripts start",
