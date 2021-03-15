@@ -266,7 +266,7 @@ const About = () => {
             </td>
             <td width='97'>
               <p>
-                January 2021
+                February 2021
                 <a
                   className={styles.footnoteInline}
                   href='#_ftn4'
@@ -431,36 +431,28 @@ const About = () => {
       </p>
 
       <p>
-        As of January 2021, the WHO Measles Surveillance Dataset contains no
-        caseload data for Angola, Botswana, Central African Republic, Congo, 
-        Comoros, Cabo Verde, Algeria, Eritrea, Ethiopia, Gabon, Ghana, Guinea, 
-        Guinea-Bissau, Equatorial Guinea, Kenya, Liberia, Lesotho, Madagascar, 
-        Mali, Mozambique, Mauritania, Mauritius, Malawi, Namibia, Niger, Rwanda, 
-        Senegal, Sierra Leone, South Sudan, Sao Tome and Principe, Kingdom of Eswatini, 
-        Seychelles, Chad, Togo, United Republic of Tanzania, Uganda, South Africa, 
-        Zambia, Zimbabwe, Argentina, Antigua and Barbuda, Bahamas, Belize, Bolivia, 
-        Barbados, Canada, Colombia, Costa Rica, Cuba, Dominica, Ecuador, Grenada, 
-        Guatemala, Guyana, Jamaica, Saint Kitts and Nevis, Saint Lucia, Panama, 
-        Suriname, Trinidad and Tobago, Uruguay, Saint Vincent and the Grenadines, 
-        Afghanistan, United Arab Emirates, Djibouti, Egypt, Iran (Islamic Republic of), 
-        Iraq, Jordan, Kuwait, Lebanon, Libya, Morocco, Oman, Pakistan, Qatar, 
-        Saudi Arabia, Sudan, Somalia, Syrian Arab Republic, Tunisia, Yemen, 
-        Albania, Armenia, Austria, Azerbaijan, Belgium, Bulgaria, 
-        Bosnia and Herzegovina, Belarus, Cyprus, Czech Republic, Germany, Denmark,
-        Spain, Estonia, Finland, France, Georgia, Greece, Croatia, Hungary, Ireland,
-        United Kingdom of Great Britain and Northern Ireland, Iceland, Israel, Italy, 
-        Kazakhstan, Kyrgyzstan, Lithuania, Luxembourg, Latvia, Monaco, 
-        Republic of Moldova, The Republic of North Macedonia, Malta, Montenegro, 
-        Netherlands, Norway, Poland, Portugal, Romania, San Marino, Serbia, 
-        Slovakia, Slovenia, Sweden, Tajikistan, Turkmenistan, Turkey, Ukraine, 
-        Uzbekistan, Bangladesh, Bhutan, Indonesia, India, Sri Lanka, Maldives,
-        Myanmar, Nepal, Democratic People's Republic of Korea, Thailand, Timor-Leste,
-        Australia, Brunei Darussalam, China, Cook Islands, Fiji, Japan, Cambodia, 
-        Micronesia (Federated States of), Kiribati, Republic of Korea, Malaysia, 
-        Lao People's Democratic Republic, Marshall Islands, Mongolia, Niue, 
-        Nauru, New Zealand, Philippines, Palau, Papua New Guinea, Singapore, 
-        Solomon Islands, Tonga, Tuvalu, Viet Nam, Vanuatu, and Samoa for the 
-        year 2021. As a result, caseload data are not shown.
+        As of February 2021, the WHO Measles Surveillance Dataset contains no
+        caseload data for Botswana, Comoros, Cabo Verde, Algeria, Eritrea, 
+        Ethiopia, Guinea, Guinea-Bissau, Kenya, Liberia, Lesotho, Madagascar, 
+        Mozambique, Mauritania, Mauritius, Malawi, Namibia, Rwanda, Sierra Leone, 
+        South Sudan, Sao Tome and Principe, Kingdom of Eswatini, Seychelles, 
+        United Republic of Tanzania, Uganda, South Africa, Zambia, Zimbabwe, 
+        Argentina, Antigua and Barbuda, Bahamas, Belize, Bolivia, Canada, 
+        Colombia, Costa Rica, Dominica, Ecuador, Grenada, Guatemala, Guyana, 
+        Jamaica, Saint Kitts and Nevis, Saint Lucia, Panama, Suriname, 
+        Trinidad and Tobago, Uruguay, Saint Vincent and the Grenadines, 
+        Afghanistan, United Arab Emirates, Djibouti, Egypt, 
+        Iran (Islamic Republic of), Iraq, Jordan, Kuwait, Lebanon, Libya, 
+        Morocco, Oman, Pakistan, Qatar, Saudi Arabia, Sudan, Somalia, 
+        Syrian Arab Republic, Tunisia, Yemen, Austria, Azerbaijan, Bulgaria, 
+        Bosnia and Herzegovina, Cyprus, Czech Republic, Denmark, Finland, France, 
+        United Kingdom of Great Britain and Northern Ireland, Greece, Croatia,
+        Hungary, Iceland, Israel, Italy, Kyrgyzstan, Lithuania, Luxembourg, 
+        Latvia, Monaco, The Republic of North Macedonia, Malta, Montenegro, 
+        Netherlands, Norway, Portugal, Romania, San Marino, Slovakia, Slovenia, 
+        Sweden, Uzbekistan, Sri Lanka, Democratic People's Republic of Korea, 
+        Australia, Brunei Darussalam, Mongolia, Singapore, Tonga, Vanuatu, 
+        and Samoa for the year 2021. As a result, caseload data are not shown.
       </p>
 
       <h3><em>2019 outbreak in Samoa</em></h3>
