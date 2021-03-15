@@ -24,7 +24,7 @@ import About from './components/views/about/About.js'
 import styles from './App.module.scss'
 import './components/views/details/details.module.scss'
 import infoTooltipStyles from './components/misc/infotooltip.module.scss'
-import 'material-design-icons/iconfont/material-icons.css'
+// import 'material-design-icons/iconfont/material-icons.css'
 
 // queries
 import ObservationQuery from './components/misc/ObservationQuery.js'
