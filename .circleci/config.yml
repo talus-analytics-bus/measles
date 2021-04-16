@@ -16,7 +16,7 @@ jobs:
       - checkout
 
       - run:
-          name: Installing Deployment Dependencies
+          name: install deployment dependencies
           working_directory: /
           command: |
             sudo apt-get -y -qq update
@@ -36,6 +36,13 @@ jobs:
           command: cd dash; npm run deploy
 
       - run:
+          name: invalidate CloudFront cache
+          command: |
+            aws cloudfront create-invalidation \
+            --distribution-id E39BLBIF64P4WL \
+            --paths "/*"
+
+      - run:
           name: Notify Slack
           command: |
             curl -X POST -H 'Content-type: application/json' --data '{"text":"http://measles-tracker.s3-website-us-west-1.amazonaws.com"}' \
@@ -53,7 +60,7 @@ jobs:
       - checkout
 
       - run:
-          name: Installing Deployment Dependencies
+          name: install deployment dependencies
           working_directory: /
           command: |
             sudo apt-get -y -qq update
@@ -71,6 +78,13 @@ jobs:
       - run:
           name: deploy
           command: cd dash; npm run deploy-dev
+
+      - run:
+          name: invalidate CloudFront cache
+          command: |
+            aws cloudfront create-invalidation \
+            --distribution-id E1IIPZGX1PO4X0 \
+            --paths "/*"
 
 workflows:
   version: 2
