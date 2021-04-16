@@ -100,8 +100,8 @@ const About = () => {
           [2]
         </a>{' '}
         As a result, vaccination coverage data are typically reported on an
-        annual basis, and the majority of vaccination efforts are focused largely
-        on infants.
+        annual basis, and the majority of vaccination efforts are focused
+        largely on infants.
       </p>
 
       <p>
@@ -289,8 +289,8 @@ const About = () => {
             </td>
             <td width='110'>
               <p>
-              Web scraping or manual data capture from ministry of health
-              websites, official social media, or other reports
+                Web scraping or manual data capture from ministry of health
+                websites, official social media, or other reports
               </p>
             </td>
             <td width='192'>
@@ -305,14 +305,14 @@ const About = () => {
             </td>
             <td width='77'>
               <p>
-              monthly
-              <a
-                className={styles.footnoteInline}
-                href='#_ftn5'
-                name='_ftnref5'
-              >
-                [5]
-              </a>
+                monthly
+                <a
+                  className={styles.footnoteInline}
+                  href='#_ftn5'
+                  name='_ftnref5'
+                >
+                  [5]
+                </a>
               </p>
             </td>
             <td width='93'>
@@ -432,30 +432,32 @@ const About = () => {
 
       <p>
         As of March 2021, the WHO Measles Surveillance Dataset contains no
-        caseload data for Botswana, Cabo Verde, Eritrea, Guinea, Guinea-Bissau, 
-        Liberia, Lesotho, Mauritania, Mauritius, Malawi, Namibia, Sierra Leone, 
-        South Sudan, Sao Tome and Principe, Kingdom of Eswatini, Seychelles, 
-        United Republic of Tanzania, Uganda, South Africa, Zambia, Zimbabwe, 
-        Argentina, Antigua and Barbuda, Bahamas, Belize, Bolivia, Canada, 
-        Colombia, Costa Rica, Dominica, Ecuador, Grenada, Guyana, 
-        Jamaica, Saint Kitts and Nevis, Saint Lucia, Suriname, 
-        Trinidad and Tobago, Uruguay, Saint Vincent and the Grenadines, 
-        nited Arab Emirates, Djibouti, Iraq, Jordan, Kuwait, Lebanon, Libya, 
-        Oman, Qatar, Sudan, Somalia, Syrian Arab Republic, Tunisia, Yemen, 
-        Austria, Bulgaria, Bosnia and Herzegovina, Cyprus, Czech Republic, 
-        Denmark, Finland, United Kingdom of Great Britain and Northern Ireland, 
-        Greece, Croatia, Hungary, Iceland, Israel, Italy, Kyrgyzstan, Lithuania, 
-        Luxembourg, Latvia, Monaco, Malta, Montenegro, Netherlands, Norway, Portugal, 
-        Romania, San Marino, Slovakia, Slovenia, Sweden, Uzbekistan, 
-        Democratic People's Republic of Korea, Australia, Mongolia, Singapore, 
-        Tonga, Vanuatu, and Samoa for the year 2021. As a result, caseload data are not shown.
+        caseload data for Botswana, Cabo Verde, Eritrea, Guinea, Guinea-Bissau,
+        Liberia, Lesotho, Mauritania, Mauritius, Malawi, Namibia, Sierra Leone,
+        South Sudan, Sao Tome and Principe, Kingdom of Eswatini, Seychelles,
+        United Republic of Tanzania, Uganda, South Africa, Zambia, Zimbabwe,
+        Argentina, Antigua and Barbuda, Bahamas, Belize, Bolivia, Canada,
+        Colombia, Costa Rica, Dominica, Ecuador, Grenada, Guyana, Jamaica, Saint
+        Kitts and Nevis, Saint Lucia, Suriname, Trinidad and Tobago, Uruguay,
+        Saint Vincent and the Grenadines, nited Arab Emirates, Djibouti, Iraq,
+        Jordan, Kuwait, Lebanon, Libya, Oman, Qatar, Sudan, Somalia, Syrian Arab
+        Republic, Tunisia, Yemen, Austria, Bulgaria, Bosnia and Herzegovina,
+        Cyprus, Czech Republic, Denmark, Finland, United Kingdom of Great
+        Britain and Northern Ireland, Greece, Croatia, Hungary, Iceland, Israel,
+        Italy, Kyrgyzstan, Lithuania, Luxembourg, Latvia, Monaco, Malta,
+        Montenegro, Netherlands, Norway, Portugal, Romania, San Marino,
+        Slovakia, Slovenia, Sweden, Uzbekistan, Democratic People's Republic of
+        Korea, Australia, Mongolia, Singapore, Tonga, Vanuatu, and Samoa for the
+        year 2021. As a result, caseload data are not shown.
       </p>
 
-      <h3><em>2019 outbreak in Samoa</em></h3>
+      <h3>
+        <em>2019 outbreak in Samoa</em>
+      </h3>
       <p>
-        For the 2019 outbreak in Samoa, for which data are not
-        adequately captured in the monthly WHO Measles Surveillance Dataset,
-        case data were identified through a review of updates from the{' '}
+        For the 2019 outbreak in Samoa, for which data are not adequately
+        captured in the monthly WHO Measles Surveillance Dataset, case data were
+        identified through a review of updates from the{' '}
         <a target='_blank' href='https://twitter.com/samoagovt'>
           Government of Samoa Twitter Account
         </a>{' '}
@@ -471,18 +473,23 @@ const About = () => {
         both suspected and confirmed cases.
       </p>
 
-      <h3><em>2019-2020 outbreak in Democratic Republic of the Congo</em></h3>
+      <h3>
+        <em>2019-2020 outbreak in Democratic Republic of the Congo</em>
+      </h3>
       <p>
-        For the current 2019-2020 outbreak in the Democratic Republic of the Congo,
-        for which data are not adequately captured in the monthly WHO Measles
-        Surveillance Dataset, case data were identified through a review of
-        updates from the{' '}
-        <a target='_blank' href='https://www.afro.who.int/health-topics/disease-outbreaks/outbreaks-and-other-emergencies-updates?page=0'>
-        WHO Africa Outbreaks and Emergencies Weekly Bulletins
-      </a>{' '}
+        For the current 2019-2020 outbreak in the Democratic Republic of the
+        Congo, for which data are not adequately captured in the monthly WHO
+        Measles Surveillance Dataset, case data were identified through a review
+        of updates from the{' '}
+        <a
+          target='_blank'
+          href='https://www.afro.who.int/health-topics/disease-outbreaks/outbreaks-and-other-emergencies-updates?page=0'
+        >
+          WHO Africa Outbreaks and Emergencies Weekly Bulletins
+        </a>{' '}
         . Caseload data from this source contain both suspected and confirmed
         cases.
-        </p>
+      </p>
 
       <h3>Comparison of caseload data sources</h3>
       <p>
@@ -498,9 +505,9 @@ const About = () => {
         >
           [6]
         </a>{' '}
-        Since these data are provisional, a given country may have
-        different numbers of reported cases if comparing the sum of all monthly
-        WHO surveillance data (as in Measles Tracker) with the annual WHO
+        Since these data are provisional, a given country may have different
+        numbers of reported cases if comparing the sum of all monthly WHO
+        surveillance data (as in Measles Tracker) with the annual WHO
         surveillance data reported by WHO member states and verified through the
         WHO/UNICEF Joint Reporting Process (available{' '}
         <a
@@ -508,7 +515,8 @@ const About = () => {
           href='http://www.who.int/entity/immunization/monitoring_surveillance/data/incidence_series.xls?ua=1&ua=1'
         >
           here
-        </a>{''}
+        </a>
+        {''}
         ).
         <a
           className={styles.footnoteInline}
@@ -519,9 +527,9 @@ const About = () => {
           [7]
         </a>{' '}
         This is important to note when comparing data from Measles Tracker to
-        other sources.  Data from the WHO/UNICEF Joint Reporting Process are
-        only available as a single annual case count and are only made available
-        in July of the year following a reporting year (e.g., July 2019 for the
+        other sources. Data from the WHO/UNICEF Joint Reporting Process are only
+        available as a single annual case count and are only made available in
+        July of the year following a reporting year (e.g., July 2019 for the
         2018 calendar year).
         <a
           className={styles.footnoteInline}
@@ -536,8 +544,8 @@ const About = () => {
         monthly data use the single-value, annual case count provided the
         following year by the release of measles cases from the WHO/UNICEF Joint
         Reporting Process. However, Measles Tracker uses the monthly WHO
-        surveillance data as its primary source of measles caseload data
-        because it provides information on measles cases at the finest temporal
+        surveillance data as its primary source of measles caseload data because
+        it provides information on measles cases at the finest temporal
         resolution and update frequency available publicly, as needed to provide
         information about ongoing outbreaks.
       </p>
