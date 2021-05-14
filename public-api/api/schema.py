@@ -16,7 +16,7 @@ from .models import db
 from .utils import passes_filters
 
 # Constants
-strf_str = '%Y-%m-%d %H:%M:%S %Z'
+strf_str = "%Y-%m-%d %H:%M:%S %Z"
 
 # Cache responses for API requests that have previously been made so that the
 # computation does not need to be repeated.
@@ -49,7 +49,9 @@ def cached(func):
 
 
 # Define a generic endpoint query.
-def getEntityInstances(entity_class, id_field_name, organizing_attribute, order, filters, params):
+def getEntityInstances(
+    entity_class, id_field_name, organizing_attribute, order, filters, params
+):
 
     # Get the entity instances.
     allInstances = select(o for o in entity_class).order_by(entity_class.name)
@@ -66,9 +68,12 @@ def getEntityInstances(entity_class, id_field_name, organizing_attribute, order,
     # instances of the entity in the db. Otherwise return only the instance
     # with that ID.
     instances = None
-    if 'id' in params:
-        instances = [o for o in instancesTmp if getattr(
-            o, id_field_name) == int(params['id'])]
+    if "id" in params:
+        instances = [
+            o
+            for o in instancesTmp
+            if getattr(o, id_field_name) == int(params["id"])
+        ]
 
     else:
         instances = instancesTmp
@@ -94,34 +99,23 @@ def getEntityInstances(entity_class, id_field_name, organizing_attribute, order,
 
             # Get ID and name of entity instance to return as output
             dataSets = [
-                (
-                    {
-                        'name': o.name,
-                        'iso': o.iso
-                    }
-                ) for o in instances
+                ({"name": o.name, "iso": o.iso})
+                for o in instances
                 if getattr(o, organizing_attribute) == key
             ]
 
             # Store the sets of data under the value of the organizing attribute
             res.append(
                 {
-                    'name': key,
-                    'data': dataSets,
+                    "name": key,
+                    "data": dataSets,
                 }
             )
         return res
 
     # Otherwise, return the instances without organizing them under an attribute
     else:
-        return [
-            (
-                {
-                    'name': o.name,
-                    'iso': o.iso
-                }
-            ) for o in instances
-        ]
+        return [({"name": o.name, "iso": o.iso}) for o in instances]
 
 
 # Define a metric endpoint query.
@@ -131,36 +125,45 @@ def getMetrics(filters):
     res = None
 
     # If id param is not in the filters (query params), then return all people
-    if 'id' not in filters:
+    if "id" not in filters:
         res = select(m for m in db.Metric)
 
     # Otherwise, return the person whose id matches the input.
     else:
-        res = select(m for m in db.Metric if m.metric_id == filters['id'])
+        res = select(m for m in db.Metric if m.metric_id == filters["id"])
 
     # Return the query response (sliced)
     return res[:]
 
 
-def observation_summary(metric_id, t_summary, temp_value, s_summary, spatial_value,
-                        min_time, max_time):
-    return 'test'
+def observation_summary(
+    metric_id,
+    t_summary,
+    temp_value,
+    s_summary,
+    spatial_value,
+    min_time,
+    max_time,
+):
+    return "test"
 
 
 spatial_resolution_error = Exception(
-    "Requested spatial resolution is finer than metric's")
+    "Requested spatial resolution is finer than metric's"
+)
 temporal_resolution_error = Exception(
-    "Requested temporal resolution is finer than metric's")
+    "Requested temporal resolution is finer than metric's"
+)
 
 
 def get_start(t_rs, end, lag):
-    if t_rs == 'yearly':
+    if t_rs == "yearly":
         start = end - relativedelta(years=lag)
-    elif t_rs == 'monthly':
+    elif t_rs == "monthly":
         start = end - relativedelta(months=lag)
-    elif t_rs == 'weekly':
+    elif t_rs == "weekly":
         start = end - timedelta(weeks=lag)
-    elif t_rs == 'daily':
+    elif t_rs == "daily":
         start = end - timedelta(days=lag)
 
     naive = start.tzinfo is None or start.tzinfo.utcoffset(start) is None
@@ -170,16 +173,20 @@ def get_start(t_rs, end, lag):
 
 def manage_lag(metric, null_res, max_time, null_places, observations):
 
-    min_time = get_start(metric.temporal_resolution,
-                         max_time, metric.lag_allowed)
+    min_time = get_start(
+        metric.temporal_resolution, max_time, metric.lag_allowed
+    )
 
     if metric.is_view:
         if len(null_places) > 1:
-            place_id_arr = '{' + \
-                (', '.join(map(lambda x: str(x), null_places))) + '}'
-            place_id_q_str = f"""AND v.place_id = ANY('{place_id_arr}'::int[])"""
+            place_id_arr = (
+                "{" + (", ".join(map(lambda x: str(x), null_places))) + "}"
+            )
+            place_id_q_str = (
+                f"""AND v.place_id = ANY('{place_id_arr}'::int[])"""
+            )
         elif len(null_places) == 0:
-            place_id_q_str = ''
+            place_id_q_str = ""
         else:
             place_id_q_str = f"""AND v.place_id = {null_places[0]}"""
 
@@ -200,25 +207,34 @@ def manage_lag(metric, null_res, max_time, null_places, observations):
 
     else:
         if len(null_places) > 1:
-            lag_res = select(o for o in observations
-                             if o.metric.metric_id == metric.metric_id
-                             and o.date_time.datetime >= min_time
-                             and o.date_time.datetime <= max_time
-                             and o.place is not None
-                             and o.place.place_id in null_places)
+            lag_res = select(
+                o
+                for o in observations
+                if o.metric.metric_id == metric.metric_id
+                and o.date_time.datetime >= min_time
+                and o.date_time.datetime <= max_time
+                and o.place is not None
+                and o.place.place_id in null_places
+            )
         elif len(null_places) == 0:
-            lag_res = select(o for o in observations
-                             if o.metric.metric_id == metric.metric_id
-                             and o.place is not None
-                             and o.date_time.datetime >= min_time
-                             and o.date_time.datetime <= max_time)
+            lag_res = select(
+                o
+                for o in observations
+                if o.metric.metric_id == metric.metric_id
+                and o.place is not None
+                and o.date_time.datetime >= min_time
+                and o.date_time.datetime <= max_time
+            )
         else:
-            lag_res = select(o for o in observations
-                             if o.metric.metric_id == metric.metric_id
-                             and o.date_time.datetime >= min_time
-                             and o.date_time.datetime <= max_time
-                             and o.place is not None
-                             and o.place.place_id == null_places[0])
+            lag_res = select(
+                o
+                for o in observations
+                if o.metric.metric_id == metric.metric_id
+                and o.date_time.datetime >= min_time
+                and o.date_time.datetime <= max_time
+                and o.place is not None
+                and o.place.place_id == null_places[0]
+            )
 
     latest_observation = {}
 
@@ -228,8 +244,11 @@ def manage_lag(metric, null_res, max_time, null_places, observations):
         if o.value is not None:
             if place_id in latest_observation:
                 obs_dt = o.dt if metric.is_view else o.date_time.datetime
-                latest_obs_dt = latest_observation[place_id].dt if metric.is_view else \
-                    latest_observation[place_id].date_time.datetime
+                latest_obs_dt = (
+                    latest_observation[place_id].dt
+                    if metric.is_view
+                    else latest_observation[place_id].date_time.datetime
+                )
 
                 if obs_dt > latest_obs_dt:
                     latest_observation[place_id] = o
@@ -240,53 +259,71 @@ def manage_lag(metric, null_res, max_time, null_places, observations):
 
 
 # Define an observation endpoint query.
-@cached
+# @cached
 def getObservations(filters):
-    s_rs = ['planet', 'global', 'country', 'state',
-            'county', 'block_group', 'tract', 'point']
-    t_rs = ['yearly', 'monthly', 'weekly', 'daily', 'occasion']
+    s_rs = [
+        "planet",
+        "global",
+        "country",
+        "state",
+        "county",
+        "block_group",
+        "tract",
+        "point",
+    ]
+    t_rs = ["yearly", "monthly", "weekly", "daily", "occasion"]
 
     # Initialize response as empty
     res = None
 
-    metric_id = filters['metric_id']
+    metric_id = filters["metric_id"]
 
     # get metric info to check resolutions
     metric = db.Metric[metric_id]
 
-    if 'spatial_resolution' in filters:
+    if "spatial_resolution" in filters:
         # check that the requested spatial resolution is not higher than
         # the metric's
-        if s_rs.index(filters['spatial_resolution']) > s_rs.index(metric.spatial_resolution):
-            raise(spatial_resolution_error)
-        elif s_rs.index(filters['spatial_resolution']) < s_rs.index(metric.spatial_resolution):
+        if s_rs.index(filters["spatial_resolution"]) > s_rs.index(
+            metric.spatial_resolution
+        ):
+            raise (spatial_resolution_error)
+        elif s_rs.index(filters["spatial_resolution"]) < s_rs.index(
+            metric.spatial_resolution
+        ):
             s_summary = True
-            spatial_value = filters['spatial_resolution']
+            spatial_value = filters["spatial_resolution"]
         else:
             s_summary = False
             spatial_value = metric.spatial_resolution
 
-    if 'temporal_resolution' in filters:
+    if "temporal_resolution" in filters:
         # check that the requested spatial resolution is not higher than
         # the metric's
-        if t_rs.index(filters['temporal_resolution']) > t_rs.index(metric.temporal_resolution):
-            raise(temporal_resolution_error)
-        elif t_rs.index(filters['temporal_resolution']) < t_rs.index(metric.temporal_resolution):
+        if t_rs.index(filters["temporal_resolution"]) > t_rs.index(
+            metric.temporal_resolution
+        ):
+            raise (temporal_resolution_error)
+        elif t_rs.index(filters["temporal_resolution"]) < t_rs.index(
+            metric.temporal_resolution
+        ):
             t_summary = True
-            temp_value = filters['temporal_resolution']
+            temp_value = filters["temporal_resolution"]
         else:
             t_summary = False
             temp_value = metric.temporal_resolution
 
-    if 'start' in filters:
+    if "start" in filters:
         min_time = pytz.utc.localize(
-            datetime.strptime(filters['start'], '%Y-%m-%d'))
+            datetime.strptime(filters["start"], "%Y-%m-%d")
+        )
     else:
         min_time = metric.min_time
 
-    if 'end' in filters:
+    if "end" in filters:
         max_time = pytz.utc.localize(
-            datetime.strptime(filters['end'], '%Y-%m-%d'))
+            datetime.strptime(filters["end"], "%Y-%m-%d")
+        )
     else:
         max_time = metric.max_time
 
@@ -314,43 +351,59 @@ def getObservations(filters):
         observations = db.Observation
 
     if t_summary or s_summary:
-        return observation_summary(metric_id, t_summary, temp_value, s_summary, spatial_value,
-                                   min_time, max_time)
+        return observation_summary(
+            metric_id,
+            t_summary,
+            temp_value,
+            s_summary,
+            spatial_value,
+            min_time,
+            max_time,
+        )
 
     else:
         if is_view:
-            if 'place_id' in filters:
+            if "place_id" in filters:
                 view_q_str += f" AND p.place_id = {filters['place_id']}"
-                place_id = filters['place_id']
+                place_id = filters["place_id"]
 
                 res = db.select(view_q_str)
             else:
                 res = db.select(view_q_str)
 
         else:
-            if 'place_id' in filters:
+            if "place_id" in filters:
                 res = None
                 if is_view:
                     res = select(o for o in observations)
                 else:
-                    res = select(o for o in observations
-                                 if o.metric.metric_id == metric_id
-                                 and o.date_time.datetime >= min_time
-                                 and o.date_time.datetime <= max_time
-                                 and o.place is not None
-                                 and o.place.place_id == filters['place_id'])
+                    res = select(
+                        o
+                        for o in observations
+                        if o.metric.metric_id == metric_id
+                        and o.date_time.datetime >= min_time
+                        and o.date_time.datetime <= max_time
+                        and o.place is not None
+                        and o.place.place_id == filters["place_id"]
+                    )
 
-                place_id = filters['place_id']
+                place_id = filters["place_id"]
             else:
-                res = select(o for o in observations
-                             if o.metric.metric_id == metric_id
-                             and o.place is not None
-                             and o.date_time.datetime >= min_time
-                             and o.date_time.datetime <= max_time)
+                res = select(
+                    o
+                    for o in observations
+                    if o.metric.metric_id == metric_id
+                    and o.place is not None
+                    and o.date_time.datetime >= min_time
+                    and o.date_time.datetime <= max_time
+                )
 
-        metric_lag_allowed = metric.lag_allowed is not None and metric.lag_allowed > 0
-        lag_allowed = True if (
-            metric_lag_allowed and min_time == max_time) else False
+        metric_lag_allowed = (
+            metric.lag_allowed is not None and metric.lag_allowed > 0
+        )
+        lag_allowed = (
+            True if (metric_lag_allowed and min_time == max_time) else False
+        )
 
         if lag_allowed:
             if place_id is None:
@@ -364,14 +417,16 @@ def getObservations(filters):
                         else:
                             null_places.append(o.place.place_id)
 
-                lag = manage_lag(metric, null_res, max_time,
-                                 null_places, observations)
+                lag = manage_lag(
+                    metric, null_res, max_time, null_places, observations
+                )
             else:
                 res_list = list(res)
 
                 if len(res_list) == 0 or res_list[0].value is None:
-                    lag = manage_lag(metric, res, max_time, [
-                                     place_id], observations)
+                    lag = manage_lag(
+                        metric, res, max_time, [place_id], observations
+                    )
 
         else:
             lag = None
@@ -396,17 +451,13 @@ def format_observations(view_flag, res, lag, params):
             Description of returned object.
 
         """
-        limit_returned_fields = 'fields' in params
+        limit_returned_fields = "fields" in params
         if limit_returned_fields:
             # get fields to return
-            field_set = params['fields'].split(',')
+            field_set = params["fields"].split(",")
             res_list_subset = list()
             for d in orig_res_list:
-                res_list_subset.append(
-                    {
-                        k: d[k] for k in field_set
-                    }
-                )
+                res_list_subset.append({k: d[k] for k in field_set})
 
             return res_list_subset
         else:
@@ -419,21 +470,23 @@ def format_observations(view_flag, res, lag, params):
 
         if lag is not None and len(lag) > 0:
             for o in lag:
-                res_list.append({
-                    'data_source': o[1],
-                    'date_time': o[2].strftime('%Y-%m-%d %H:%M:%S %Z'),
-                    'definition': o[3],
-                    'metric': o[4],
-                    'observation_id': o[5],
-                    'place_fips': o[6],
-                    'place_id': o[7],
-                    'place_iso': o[8],
-                    'place_iso3': o[9],
-                    'place_name': o[10],
-                    'updated_at': o[11],
-                    'value': o[12],
-                    'stale_flag': True,
-                })
+                res_list.append(
+                    {
+                        "data_source": o[1],
+                        "date_time": o[2].strftime("%Y-%m-%d %H:%M:%S %Z"),
+                        "definition": o[3],
+                        "metric": o[4],
+                        "observation_id": o[5],
+                        "place_fips": o[6],
+                        "place_id": o[7],
+                        "place_iso": o[8],
+                        "place_iso3": o[9],
+                        "place_name": o[10],
+                        "updated_at": o[11],
+                        "value": o[12],
+                        "stale_flag": True,
+                    }
+                )
 
                 lagged_places.append(o[7])
 
@@ -441,23 +494,25 @@ def format_observations(view_flag, res, lag, params):
 
             if o.place_id in lagged_places:
                 continue
-            res_list.append({
-                'data_source': o[1],
-                'date_time': o[2].strftime('%Y-%m-%d %H:%M:%S %Z'),
-                'definition': o[3],
-                'metric': o[4],
-                'observation_id': o[5],
-                'place_fips': o[6],
-                'place_id': o[7],
-                'place_iso': o[8],
-                'place_iso3': o[9],
-                'place_name': o[10],
-                'updated_at': o[11],
-                'value': o[12],
-                'stale_flag': False,
-            })
+            res_list.append(
+                {
+                    "data_source": o[1],
+                    "date_time": o[2].strftime("%Y-%m-%d %H:%M:%S %Z"),
+                    "definition": o[3],
+                    "metric": o[4],
+                    "observation_id": o[5],
+                    "place_fips": o[6],
+                    "place_id": o[7],
+                    "place_iso": o[8],
+                    "place_iso3": o[9],
+                    "place_name": o[10],
+                    "updated_at": o[11],
+                    "value": o[12],
+                    "stale_flag": False,
+                }
+            )
 
-        res_list.sort(key=lambda o: (o['place_id'], o['date_time']))
+        res_list.sort(key=lambda o: (o["place_id"], o["date_time"]))
 
         # return only requested fields, if applicable
         return get_subsetted_res_list(res_list)
@@ -468,33 +523,35 @@ def format_observations(view_flag, res, lag, params):
             lagData = [r.to_dict(related_objects=True) for r in lag]
 
             formattedData = [
-                o for o in formattedData if o['value'] is not None]
+                o for o in formattedData if o["value"] is not None
+            ]
 
             for o in formattedData:
-                o['stale_flag'] = False
+                o["stale_flag"] = False
             for o in lagData:
-                o['stale_flag'] = True
+                o["stale_flag"] = True
 
             formattedData.extend(lagData)
 
         for o in formattedData:
-            metric_info = o['metric'].to_dict()
-            o['metric'] = metric_info['metric_name']
-            o['definition'] = metric_info['metric_definition']
+            metric_info = o["metric"].to_dict()
+            o["metric"] = metric_info["metric_name"]
+            o["definition"] = metric_info["metric_definition"]
 
-            o['date_time'] = o['date_time'].to_dict(
-            )['datetime'].strftime(strf_str)
+            o["date_time"] = (
+                o["date_time"].to_dict()["datetime"].strftime(strf_str)
+            )
 
-            place_info = o['place'].to_dict()
-            o['place_id'] = place_info['place_id']
-            o['place_name'] = place_info['name']
-            o['place_iso'] = place_info['iso2']
-            o['place_iso3'] = place_info['iso']
-            o['place_fips'] = place_info['fips']
-            del[o['place']]
+            place_info = o["place"].to_dict()
+            o["place_id"] = place_info["place_id"]
+            o["place_name"] = place_info["name"]
+            o["place_iso"] = place_info["iso2"]
+            o["place_iso3"] = place_info["iso"]
+            o["place_fips"] = place_info["fips"]
+            del [o["place"]]
 
-    formattedData.sort(key=lambda o: (o['place_id'], o['date_time']))
-    print('Made it!')
+    formattedData.sort(key=lambda o: (o["place_id"], o["date_time"]))
+    print("Made it!")
     # return only requested fields, if applicable
     return get_subsetted_res_list(formattedData)
 
@@ -504,13 +561,13 @@ def getTrend(filters):
     # Initialize response as empty
     res = None
 
-    metric_id = filters['metric_id']
+    metric_id = filters["metric_id"]
 
     # get metric info to check resolutions
     metric = db.Metric[metric_id]
 
-    end = datetime.strptime(filters['end'], '%Y-%m-%d')
-    lag = int(filters['lag'])
+    end = datetime.strptime(filters["end"], "%Y-%m-%d")
+    lag = int(filters["lag"])
 
     t_rs = metric.temporal_resolution
 
@@ -518,9 +575,11 @@ def getTrend(filters):
 
     # TODO review calculation of start and min_time and their usage in the code
     # blocks below.
-    min_time = get_start(metric.temporal_resolution, end,
-                         metric.lag_allowed if metric.lag_allowed is not None
-                         else lag)
+    min_time = get_start(
+        metric.temporal_resolution,
+        end,
+        metric.lag_allowed if metric.lag_allowed is not None else lag,
+    )
 
     if metric.is_view:
         q_str = f"""SELECT v.metric_id, v.data_source, d.dt,
@@ -537,7 +596,7 @@ def getTrend(filters):
                 AND d.dt <= '{end}'
                 AND v.value IS NOT NULL
                 """
-        if 'place_id' in filters:
+        if "place_id" in filters:
             q_str += f" AND p.place_id = {filters['place_id']}"
 
             res = db.select(q_str)
@@ -547,24 +606,31 @@ def getTrend(filters):
         res_list = sorted(list(res), key=lambda o: (o.place_id, o.dt))
 
     else:
-        if 'place_id' in filters:
-            res = select(o for o in db.Observation
-                         if o.metric.metric_id == metric_id
-                         and o.date_time.datetime >= min_time
-                         and o.date_time.datetime <= end
-                         and o.value is not None
-                         and o.place is not None
-                         and o.place.place_id == filters['place_id'])
+        if "place_id" in filters:
+            res = select(
+                o
+                for o in db.Observation
+                if o.metric.metric_id == metric_id
+                and o.date_time.datetime >= min_time
+                and o.date_time.datetime <= end
+                and o.value is not None
+                and o.place is not None
+                and o.place.place_id == filters["place_id"]
+            )
         else:
-            res = select(o for o in db.Observation
-                         if o.metric.metric_id == metric_id
-                         and o.place is not None
-                         and o.date_time.datetime >= min_time
-                         and o.date_time.datetime <= end
-                         and o.value is not None)
+            res = select(
+                o
+                for o in db.Observation
+                if o.metric.metric_id == metric_id
+                and o.place is not None
+                and o.date_time.datetime >= min_time
+                and o.date_time.datetime <= end
+                and o.value is not None
+            )
 
-        res_list = sorted(list(res), key=lambda o: (
-            o.place.place_id, o.date_time.datetime))
+        res_list = sorted(
+            list(res), key=lambda o: (o.place.place_id, o.date_time.datetime)
+        )
 
     place_lists = {}
     current_place = None

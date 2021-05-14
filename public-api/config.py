@@ -9,6 +9,7 @@
 from configparser import ConfigParser
 from argparse import ArgumentParser
 from sqlalchemy import create_engine
+
 # from sqlalchemy.exc import OperationalError
 import pprint
 import os
@@ -29,43 +30,47 @@ class Config:
 
         # Populate session config variables with defaults, to be potentially
         # overidden by command line arguments.
-        cfg['session'] = {}
-        for key in cfg['DEFAULT']:
-            print('key = ' + key)
-            cfg['session'][key] = cfg['DEFAULT'][key]
+        cfg["session"] = {}
+        for key in cfg["DEFAULT"]:
+            print("key = " + key)
+            cfg["session"][key] = cfg["DEFAULT"][key]
 
         # Define the current database session based on command line arguments,
         # if they were provided
         # TODO make this more legible.
         for k, v in vars(self.clargs).items():
             if v is not None:
-                if k.startswith('pg_'):
-                    cfg['session'][k.split('_')[1]] = str(v)
+                if k.startswith("pg_"):
+                    cfg["session"][k.split("_")[1]] = str(v)
                 else:
-                    cfg['session'][k] = str(v)
+                    cfg["session"][k] = str(v)
 
         # Define parameters for database connection, if available.
         # TODO make this more legible.
-        self.db = {k: v
-                   for k, v in dict(cfg['session']).items()
-                   if k not in ['datadir']}
+        self.db = {
+            k: v
+            for k, v in dict(cfg["session"]).items()
+            if k not in ["datadir"]
+        }
 
         # load env variables for things that aren't in the config
-        db_list = ['user', 'password', 'host', 'port', 'dbname']
+        db_list = ["user", "password", "host", "port", "dbname"]
         for param in db_list:
             if param not in self.db:
                 self.db[param] = os.environ[param]
 
         # Convert type of 'port' to integer
         print(self.db)
-        self.db['port'] = int(self.db['port'])
+        self.db["port"] = int(self.db["port"])
 
         # manually set db name to COVID AMP metric db
-        self.db['dbname'] = 'metric-amp'
+        self.db["dbname"] = self.db.get("dbname", "metric-amp")
 
         # Define database engine based on db connection parameters.
-        self.engine = create_engine(f"postgresql+psycopg2://{self.db['user']}:{self.db['password']}@{self.db['host']}:{self.db['port']}/{self.db['dbname']}",
-                                    use_batch_mode=True)
+        self.engine = create_engine(
+            f"postgresql+psycopg2://{self.db['user']}:{self.db['password']}@{self.db['host']}:{self.db['port']}/{self.db['dbname']}",
+            use_batch_mode=True,
+        )
 
         # Debug mode is not used.
         self.debug = False
@@ -95,13 +100,17 @@ class Config:
     # if provided.
     @staticmethod
     def collect_arguments():
-        parser = ArgumentParser(description='Test', add_help=False)
-        parser.add_argument('-h', '--pg-host')
-        parser.add_argument('-p', '--pg-port', type=int)
-        parser.add_argument('-d', '--pg-dbname')
-        parser.add_argument('-u', '--pg-user')
-        parser.add_argument('-w', '--pg-password')
-        parser.add_argument('--help', action='help', help="""Please check the file config.py
-                            for a list of command line arguments.""")
+        parser = ArgumentParser(description="Test", add_help=False)
+        parser.add_argument("-h", "--pg-host")
+        parser.add_argument("-p", "--pg-port", type=int)
+        parser.add_argument("-d", "--pg-dbname")
+        parser.add_argument("-u", "--pg-user")
+        parser.add_argument("-w", "--pg-password")
+        parser.add_argument(
+            "--help",
+            action="help",
+            help="""Please check the file config.py
+                            for a list of command line arguments.""",
+        )
 
         return parser.parse_args()
