@@ -266,7 +266,7 @@ const About = () => {
             </td>
             <td width='97'>
               <p>
-                March 2021
+                April 2021
                 <a
                   className={styles.footnoteInline}
                   href='#_ftn4'
@@ -431,24 +431,20 @@ const About = () => {
       </p>
 
       <p>
-        As of March 2021, the WHO Measles Surveillance Dataset contains no
-        caseload data for Botswana, Cabo Verde, Eritrea, Guinea, Guinea-Bissau,
-        Liberia, Lesotho, Mauritania, Mauritius, Malawi, Namibia, Sierra Leone,
-        South Sudan, Sao Tome and Principe, Kingdom of Eswatini, Seychelles,
-        United Republic of Tanzania, Uganda, South Africa, Zambia, Zimbabwe,
-        Argentina, Antigua and Barbuda, Bahamas, Belize, Bolivia, Canada,
-        Colombia, Costa Rica, Dominica, Ecuador, Grenada, Guyana, Jamaica, Saint
-        Kitts and Nevis, Saint Lucia, Suriname, Trinidad and Tobago, Uruguay,
-        Saint Vincent and the Grenadines, nited Arab Emirates, Djibouti, Iraq,
-        Jordan, Kuwait, Lebanon, Libya, Oman, Qatar, Sudan, Somalia, Syrian Arab
-        Republic, Tunisia, Yemen, Austria, Bulgaria, Bosnia and Herzegovina,
-        Cyprus, Czech Republic, Denmark, Finland, United Kingdom of Great
-        Britain and Northern Ireland, Greece, Croatia, Hungary, Iceland, Israel,
-        Italy, Kyrgyzstan, Lithuania, Luxembourg, Latvia, Monaco, Malta,
-        Montenegro, Netherlands, Norway, Portugal, Romania, San Marino,
-        Slovakia, Slovenia, Sweden, Uzbekistan, Democratic People's Republic of
-        Korea, Australia, Mongolia, Singapore, Tonga, Vanuatu, and Samoa for the
-        year 2021. As a result, caseload data are not shown.
+        As of April 2021, the WHO Measles Surveillance Dataset contains no
+        caseload data for Botswana, Cabo Verde, Guinea-Bissau, Liberia, 
+        Mauritania, Mauritius, South Sudan, Sao Tome and Principe, Seychelles, 
+        Argentina, Antigua and Barbuda, Bahamas, Belize, Canada, Colombia, 
+        Dominica, Ecuador, Grenada, Guyana, Jamaica, Saint Kitts and Nevis, 
+        Saint Lucia, Suriname, Trinidad and Tobago, Uruguay, Saint Vincent and 
+        the Grenadines, Djibouti, Jordan, Kuwait, Lebanon, Oman, Somalia, 
+        Yemen, Austria, Bulgaria, Bosnia and Herzegovina, Cyprus, Czech 
+        Republic, Denmark, Finland, Greece, Croatia, Hungary, Iceland, Israel,
+        Kyrgyzstan, Lithuania, Luxembourg, Latvia, Monaco, Malta, Montenegro, 
+        Netherlands, Norway, Romania, San Marino, Slovakia, Slovenia, Sweden, 
+        Uzbekistan, Democratic People's Republic of Korea, Australia, Mongolia, 
+        Tonga, Vanuatu, and Samoa for the year 2021. As a result, caseload data 
+        are not shown.
       </p>
 
       <h3>
