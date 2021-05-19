@@ -1,9 +1,6 @@
 import React from 'react'
-import ReactMapGL, { Marker, NavigationControl, Popup } from 'react-map-gl'
-import * as d3 from 'd3/dist/d3.min'
-import TrendQuery from '../misc/TrendQuery.js'
+import ReactMapGL, { NavigationControl, Popup } from 'react-map-gl'
 import Util from '../misc/Util.js'
-import ObservationQuery from '../misc/ObservationQuery.js'
 import 'mapbox-gl/dist/mapbox-gl.css'
 import './map.scss'
 import styles from './map.module.scss'
@@ -20,10 +17,7 @@ const Map = ({
   bubbleObservations,
   trendObservations,
   incidenceObservations,
-  mappedFacilityTypes,
-  setMappedFacilityTypes,
-  setLoadingNav,
-  ...props
+  setLoadingNav
 }) => {
   const defaultViewport = {
     width: '100%',
@@ -39,14 +33,13 @@ const Map = ({
   const [cursorLngLat, setCursorLngLat] = React.useState([0, 0])
   const [showGeomPopup, setShowGeomPopup] = React.useState(false)
   const [popupData, setPopupData] = React.useState({})
-  const [markersLoaded, setMarkersLoaded] = React.useState(false)
 
   // Whether the reset button is shown or not. Controlled by the viewport
   // setting being other than the default.
   const [showReset, setShowReset] = React.useState(false)
 
   // HTML markers for bubbles
-  const [markerComponents, setMarkerComponents] = React.useState([])
+  const [markerComponents] = React.useState([])
 
   const [showDataToggles, setShowDataToggles] = React.useState(false)
 
@@ -71,7 +64,6 @@ const Map = ({
 
     // Define color stop points
     const stops = [0, 1 / 3, 2 / 3, 3 / 3]
-    const stops5 = [0, 0.2, 0.4, 0.6, 0.8, 1]
     // const stops = [[0, 0], [0.2, 20], [0.4, 40], [0.6, 60], [0.8, 80], [1, 100]]
     stops.reverse()
 
@@ -111,43 +103,9 @@ const Map = ({
 
     // Color scheme gradient from green to white to red that marks the decrease
     // or increase since the previous month in measles caseload/incidence.
-    const bubbleTrendLinearInterpIncOnly = [
-      'case',
-      ['==', ['feature-state', 'value3'], null],
-      Util.changeColors.missing,
-      ['<=', ['feature-state', 'value3'], 0],
-      Util.changeColors.same,
-      [
-        'interpolate',
-        ['linear'],
-        ['feature-state', 'value3'],
-        0,
-        Util.changeColors.same,
-        1,
-        Util.changeColors.pos
-      ]
-    ]
 
     // Color scheme gradient from green to white to red that marks the decrease
     // or increase since the previous month in measles caseload/incidence.
-    const bubbleTrendLinearInterpOrig = [
-      'case',
-      ['==', ['feature-state', 'value3'], null],
-      Util.changeColors.missing,
-      ['==', ['feature-state', 'value3'], 0],
-      Util.changeColors.same,
-      [
-        'interpolate',
-        ['linear'],
-        ['feature-state', 'value3'],
-        -1,
-        Util.changeColors.neg,
-        0,
-        Util.changeColors.same,
-        1,
-        Util.changeColors.pos
-      ]
-    ]
 
     const bubbleTrend = bubbleTrendThreshold
 
@@ -187,55 +145,6 @@ const Map = ({
   }
 
   // Given incidence value, return scaled linear radius of marker.
-  const markerSizeScale = d3
-    .scaleLinear()
-    .domain([0.001, 100]) // expected incidence value range
-    .range([5 * 2, 150 * 2])
-  function getMarkerStyle(value) {
-    if (value === 0)
-      return {
-        height: '0px',
-        width: '0px'
-      }
-    else
-      return {
-        height: markerSizeScale(value) + 'px',
-        width: markerSizeScale(value) + 'px'
-      }
-  }
-
-  function getMarkerComponents(map, observations) {
-    const newMarkerComponents = []
-
-    observations.forEach(observation => {
-      const value = observation['value']
-      const place_id = observation['place_id']
-
-      if (!value) {
-        // map.setFeatureState({source: 'centroids', sourceLayer: 'mvmupdatescentroidsv2', id: place_id }, {value: 0});
-      } else {
-        //const state = { value: Math.floor(256 * value)};
-        const state = { value: value }
-        // map.setFeatureState({source: 'centroids', sourceLayer: 'mvmupdatescentroidsv2', id: place_id }, state);
-        const featureState = map.getFeatureState({
-          source: 'centroids',
-          sourceLayer: 'mvmupdatescentroidsv2',
-          id: place_id
-        })
-        if (featureState.lat !== null && featureState.lon !== null) {
-          // Get size (height and width) of marker according to the linear scale
-          const markerStyle = getMarkerStyle(featureState.value)
-          newMarkerComponents.push(
-            <Marker latitude={featureState.lat} longitude={featureState.lon}>
-              <div style={markerStyle} className={'general-marker'} />
-            </Marker>
-          )
-        }
-      }
-    })
-
-    setMarkerComponents(newMarkerComponents)
-  }
 
   React.useEffect(() => {
     const map = mapRef.getMap()
@@ -295,10 +204,11 @@ const Map = ({
     [bubbleMetric]
   )
 
-  const navTitleEl = (document.getElementById('navTitle').textContent =
+  const navTitleEl = document.getElementById('navTitle')
+  navTitleEl.textContent =
     bubbleMetric === 'incidence_monthly'
       ? 'Measles vaccination coverage and monthly incidence'
-      : 'Measles vaccination coverage and caseload')
+      : 'Measles vaccination coverage and caseload'
 
   /**
    * Reset the viewport to the default values. This is fired when the "Reset"
@@ -584,89 +494,6 @@ const Map = ({
       setSelectedGeomID(-1)
       setShowGeomPopup(false)
     }
-
-    /**
-     * Fly user to specified longlat map location, and (if provided) to the
-     * final zoom value -- otherwise the zoom value is 150% of the current
-     * zoom value or 8, whichever is smaller.
-     * @method flyToLongLat
-     * @param  {array}     longlat   Longlat coord in decimal deg
-     * @param  {float}     finalZoom Zoom value to end on, or null
-     * @param  {object}     viewport  Viewport state variable
-     * @param  {object}     mapRef    MapBox map reference object
-     * @param  {function}     callback    Optional callback function when done
-     */
-    const flyToLongLat = (
-      longlat,
-      finalZoom,
-      viewport,
-      mapRef,
-      callback = () => {}
-    ) => {
-      // Get current zoom level.
-      const curZoom = viewport.zoom
-
-      // Set zoom level to fly to (0 to 24 inclusive). Either zoom in by 20% or
-      // the minimum zoom level required to see facilities, whichever is
-      // smaller. Use final zoom if it specified.
-      const flyZoom =
-        finalZoom !== null ? finalZoom : Math.min(4, curZoom * 1.5)
-
-      // Start off flying
-      let flying = true
-
-      /**
-       * When flying stops, update the viewport position to match the place
-       * that was flown to.
-       * @method onFlyEnd
-       */
-      function onFlyEnd() {
-        // Get map object reference.
-        const map = mapRef.getMap()
-
-        // Delete the event listener for the end of movement (we only want it to
-        // be called when the current flight is over).
-        map.off('moveend', onFlyEnd)
-
-        // If flying,
-        if (flying) {
-          // Stop flying,
-          flying = false
-
-          // Set viewport state to the flight destination and zoom level
-          const newViewport = {
-            width: '100%',
-            height: '100%',
-            longitude: longlat[0],
-            latitude: longlat[1],
-            zoom: flyZoom
-          }
-
-          setViewport(newViewport)
-          if (callback) callback()
-        }
-      }
-
-      // Get map object reference.
-      const map = mapRef.getMap()
-
-      // Assign event listener so viewport is updated when flight is over.
-      map.on('moveend', onFlyEnd)
-
-      // Fly to the position occupied by the clicked cluster on the map.
-      map.flyTo({
-        center: longlat,
-        zoom: flyZoom,
-        bearing: 0,
-        speed: 2,
-        curve: 1,
-        easing: function(t) {
-          return t
-        }
-      })
-
-      setShowReset(true)
-    }
   }
 
   const onPopupClose = () => {
@@ -684,11 +511,7 @@ const Map = ({
     setSelectedGeomID(-1)
   }
 
-  const getBubbleMarker = (d, map) => {
-    return markerComponents[0] // debug
-  }
-
-  const renderMarkerComponents = (incidenceObservations, mapRef) => {
+  const renderMarkerComponents = () => {
     return markerComponents.map(component => component)
   }
 
@@ -710,7 +533,7 @@ const Map = ({
             metric: 'incidence_monthly',
             label: 'monthly incidence rate'
           }
-        ].map((entry, i) => (
+        ].map(entry => (
           <div className={styles.dataToggle}>
             <label for={entry.value}>
               <input
