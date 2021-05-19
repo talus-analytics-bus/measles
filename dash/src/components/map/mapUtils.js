@@ -171,7 +171,7 @@ const initMap = (
           const place_id = +observation['place_id']
           const stale = getStaleStatus(observation, 'month')
 
-          if (!value) {
+          if ([undefined, null].includes(value)) {
             map.setFeatureState(
               {
                 source: 'centroids',
