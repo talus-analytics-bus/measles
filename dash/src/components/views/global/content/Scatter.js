@@ -409,9 +409,7 @@ class Scatter extends Chart {
         else xDataYearlyStr = (+xDataYearlyStr - 1).toString()
       }
 
-      // xData.forEach(d => d.value_normalized = Math.log10(d.value));
       xData.forEach(d => (d.value_normalized = d.value))
-      // xData.forEach(d => d.value_normalized = d.value / xDataMax );
 
       // size data - case count
       const sizeData = chart.data.vals.size.filter(d => {
