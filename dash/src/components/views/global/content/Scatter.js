@@ -109,11 +109,11 @@ class Scatter extends Chart {
       else return rTmp(val)
     }
 
-    // Define bubble label size scale
-    const labelSize = val => {
-      return r(val)
-      // return (r(val) / 2) + 10;
-    }
+    // // Define bubble label size scale
+    // const labelSize = val => {
+    //   return r(val)
+    //   // return (r(val) / 2) + 10;
+    // }
 
     // Define x scale - vaccination coverage
     const x = d3
@@ -128,7 +128,7 @@ class Scatter extends Chart {
       .tickPadding(10)
       .tickFormat(() => '')
 
-    const xAxisG = chart.newGroup(styles['x-axis'])
+    const xAxisG = chart.newGroup(styles['x-axis']) // eslint-disable-line
 
     // Define y scale - incidence
     const y = d3
@@ -143,7 +143,7 @@ class Scatter extends Chart {
       .tickPadding(10)
       .tickFormat(() => '')
 
-    const yAxisG = chart.newGroup(styles['y-axis'])
+    const yAxisG = chart.newGroup(styles['y-axis']) // eslint-disable-line
 
     const resizeAxes = () => {
       yAxis.scale(y).tickValues(y.domain())
@@ -380,7 +380,6 @@ class Scatter extends Chart {
       const yData = chart.data.vals.y.filter(d => {
         return d.date_time.startsWith(monthlyStr)
       })
-      const yDataMax = d3.max(yData, d => d.value)
       yData.forEach(d => {
         if (d.value === null) d.value_normalized = null
         else if (d.value === 0) {
@@ -401,40 +400,32 @@ class Scatter extends Chart {
       let xDataYearlyStr = yearlyStr
       let foundXData = false
       let xData
+      const filterFunc = d => {
+        return d.date_time.startsWith(xDataYearlyStr)
+      }
       while (!foundXData) {
-        xData = chart.data.vals.x.filter(d => {
-          return d.date_time.startsWith(xDataYearlyStr)
-        })
+        xData = chart.data.vals.x.filter(filterFunc)
         if (xData.length > 0) foundXData = true
         else xDataYearlyStr = (+xDataYearlyStr - 1).toString()
       }
 
-      const xDataMax = d3.max(xData, d => d.value)
-      // xData.forEach(d => d.value_normalized = Math.log10(d.value));
       xData.forEach(d => (d.value_normalized = d.value))
-      // xData.forEach(d => d.value_normalized = d.value / xDataMax );
 
       // size data - case count
       const sizeData = chart.data.vals.size.filter(d => {
         return d.date_time.startsWith(monthlyStr) // TODO elegantly
       })
-      const sizeDataMax = d3.max(sizeData, d => d.value)
       sizeData.forEach(d => {
         if (d.value === null) d.value_normalized = null
         else if (d.value === 0) {
           d.value_normalized = Math.log10(chart.grandMinSize)
         } else {
           d.value_normalized = Math.log10(d.value)
-          // d.value_normalized = d.value / chart.grandMaxY
-          // d.value_normalized = d.value / yDataMax
         }
       })
-      // sizeData.forEach(d => d.value_normalized = d.value / chart.grandMaxSize );
-      // sizeData.forEach(d => d.value_normalized = d.value / sizeDataMax );
 
       // Collate data points
       const data = []
-      const dataTrend = []
       xData.forEach(xDatum => {
         if (Util.yearlyReportIso2.includes(xDatum.place_iso)) return // skip VE for now.
         const placeId = xDatum.place_id
@@ -478,15 +469,10 @@ class Scatter extends Chart {
 
       // Update x-scale domain so that far left side corresponds to the
       // lowest normalized x value.
-      const xMin = d3.min(data, d => d.value_normalized.x)
       x.domain([chart.grandMinX, chart.grandMaxX])
-      // x.domain([xMin, 1]);
 
       // Ditto for the lower limit of the y-scale
-      const yMin = d3.min(data, d => d.value_normalized.y)
       y.domain([Math.log10(chart.grandMinY), Math.log10(chart.grandMaxY)])
-      // y.domain([0, 1]);
-      // y.domain([yMin, 1]);
 
       // Enter new bubbles based on place_id if needed (pos and color)
       // Update existing bubbles by moving to new position and colors
@@ -854,16 +840,9 @@ class Scatter extends Chart {
 
     // Call update function, using most recent dt of data as the initial
     // selection.
-    const nData = chart.data.vals.y.length
     const initDt = Util.globalMaxDate()
-    // const initDt = Util.getUTCDate(
-    //   new Date(chart.data.vals.y[nData - 1].date_time.replace(/-/g, '/'))
-    // )
 
     chart.update(initDt)
-
-    // Reduce width at the end
-    // chart.svg.node().parentElement.classList.add(styles.drawn);
   }
 }
 
