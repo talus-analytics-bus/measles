@@ -1,6 +1,5 @@
 // import ReactMapGL, { NavigationControl, Popup } from 'react-map-gl'
 
-import circleImg from '../../assets/images/circle@3x.png'
 import Util from '../../components/misc/Util.js'
 const noCircleBorder = true // if true, no circle borders drawn
 const initMap = (
@@ -142,6 +141,7 @@ const initMap = (
               if (today.getUTCMonth() - then.getUTCMonth() > 3) return true
               else return false
             case 'year':
+            default:
               if (today.getUTCYear() - then.getUTCYear() > 3) return true
               else return false
           }
