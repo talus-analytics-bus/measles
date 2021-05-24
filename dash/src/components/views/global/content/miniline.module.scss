@@ -1,4 +1,4 @@
-@import '../../../../assets/styles/colors.scss';
+@import "../../../../assets/styles/colors.scss";
 .invisible {
   display: none;
 }
@@ -20,7 +20,7 @@
     stroke-width: 3px;
     stroke-linecap: round;
     stroke-linejoin: round;
-    clip-path: url('#plotArea');
+    clip-path: url("#plotArea");
 
     &.avg_coverage_mcv1_infant {
       stroke: $data-blue;
@@ -39,24 +39,28 @@
   path {
     // stroke: green;
     fill: $light-grey-2;
-    clip-path: url('#plotArea');
+    clip-path: url("#plotArea");
   }
 }
 
-.x-axis, .x-axis-2, .y-axis, .y-axis-right {
+.x-axis,
+.x-axis-2,
+.y-axis,
+.y-axis-right {
   > path {
     display: none;
   }
-  path, line {
+  path,
+  line {
     stroke: #6d6e70;
   }
   text {
-    font-family:'Open Sans', sans-serif;
+    font-family: "Open Sans", sans-serif;
     font-size: 1.5em;
     fill: $dark-grey;
   }
   .label {
-    font-family: 'open_sanssemibold', sans-serif;
+    font-family: "open_sanssemibold", sans-serif;
     font-weight: 600;
     text-align: center;
     fill: $dark-grey;
@@ -70,7 +74,7 @@ circle.miniLinePoint {
   &.incidence_monthly {
     fill: $value-red;
   }
-  &:last-child { r: 7; }
+  // &:last-child { r: 7; }
 }
 
 .y-axis-right .label {
@@ -84,23 +88,21 @@ circle.miniLinePoint {
   .sliderRect {
     fill: $value-red;
     stroke: white;
-    stroke-width: .25px;
+    stroke-width: 0.25px;
     &.dim {
-      opacity: .5;
+      opacity: 0.5;
     }
     &.nullBar {
       fill: #e6e6e6;
       stroke-width: 0;
     }
   }
-
 }
 .overlayRect {
   fill: white;
-  opacity: .5;
+  opacity: 0.5;
   .overlayRect-1 {
     fill: white;
-
   }
   .overlayRect-2 {
     fill: white;
@@ -113,6 +115,6 @@ circle.miniLinePoint {
   // transform: translateX(.5px);
   line {
     opacity: 0;
-    transition: opacity .5s;
+    transition: opacity 0.5s;
   }
 }
