@@ -116,3 +116,6 @@ dbconfig.ini
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
+
+# Scratch files
+scratch*
