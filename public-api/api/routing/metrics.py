@@ -131,6 +131,7 @@ class Observations(Resource):
         # if place_name not undefined, get place_ids from it and assign to
         # params place_id
         expected_place: bool = False
+        place: db.Place = None
         if "place_name" in params:
             expected_place = True
             place_name = params["place_name"]

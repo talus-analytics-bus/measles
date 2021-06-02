@@ -345,10 +345,11 @@ def getObservations(filters):
                         WHERE
                         d.dt >= '{min_time}'
                         AND d.dt <= '{max_time}'"""
-    if is_view:
-        observations = db.select(view_q_str)
-    else:
-        observations = db.Observation
+    if "place_id" not in filters:
+        if is_view:
+            observations = db.select(view_q_str)
+        else:
+            observations = db.Observation
 
     if t_summary or s_summary:
         return observation_summary(
