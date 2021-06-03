@@ -5,6 +5,7 @@
 # Standard libraries
 import functools
 from datetime import datetime, timedelta
+from typing import List
 from dateutil.relativedelta import relativedelta
 import pytz
 
@@ -345,6 +346,7 @@ def getObservations(filters):
                         WHERE
                         d.dt >= '{min_time}'
                         AND d.dt <= '{max_time}'"""
+    observations = None
     if "place_id" not in filters:
         if is_view:
             observations = db.select(view_q_str)
@@ -374,6 +376,8 @@ def getObservations(filters):
 
         else:
             if "place_id" in filters:
+                if observations is None:
+                    observations = db.Observation
                 res = None
                 if is_view:
                     res = select(o for o in observations)
