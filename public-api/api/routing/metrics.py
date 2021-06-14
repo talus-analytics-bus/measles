@@ -176,7 +176,8 @@ class Observations(Resource):
             raise ValueError("No county FIPS code in params dictionary.")
         else:
             fips_tmp: str = params["fips"]
-            fips: str = fips_tmp if len(fips_tmp) == 4 else fips_tmp[1:]
+            has_leading_zero: bool = len(fips_tmp) == 5 and fips_tmp[0] == "0"
+            fips: str = fips_tmp if not has_leading_zero else fips_tmp[1:]
             return fips
 
 
