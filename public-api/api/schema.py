@@ -20,6 +20,7 @@ strf_str = "%Y-%m-%d %H:%M:%S %Z"
 
 # Cache responses for API requests that have previously been made so that the
 # computation does not need to be repeated.
+USE_CACHING: bool = True
 
 
 def cached(func):
@@ -29,20 +30,23 @@ def cached(func):
 
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
-        # Get the key corresponding to the request
-        key = str(kwargs)
+        if USE_CACHING:
+            # Get the key corresponding to the request
+            key = str(kwargs)
 
-        # If the request has been made before
-        if key in cache:
-            # Return the cached data for the response to the request
-            return cache[key]
+            # If the request has been made before
+            if key in cache:
+                # Return the cached data for the response to the request
+                return cache[key]
 
-        # Otherwise
-        # After the request is done, take the results and cache them for next
-        # time
-        results = func(*args, **kwargs)
-        cache[key] = results
-        return results
+            # Otherwise
+            # After the request is done, take the results and cache them for next
+            # time
+            results = func(*args, **kwargs)
+            cache[key] = results
+            return results
+        else:
+            return func(*args, **kwargs)
 
     # Return the function wrapper (for decoration)
     return wrapper
