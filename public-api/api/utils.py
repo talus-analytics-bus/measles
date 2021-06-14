@@ -1,9 +1,10 @@
 # Standard libraries
 import functools
-import json
+from typing import Any
 
 # Third party libraries
 import flask
+from flask.globals import request
 from pony.orm.core import QueryResult
 from werkzeug.exceptions import NotFound
 
@@ -15,7 +16,7 @@ def passes_filters(instance, filters):
 
     for filter_set_name in filters:
 
-        if filter_set_name == 'place_type':
+        if filter_set_name == "place_type":
             if instance.place_type not in filters[filter_set_name]:
                 passes = False
             continue
@@ -39,6 +40,7 @@ def passes_filters(instance, filters):
                 passes = False
     return passes
 
+
 # A decorator to format API responses (Query objects) as
 # { data: [{...}, {...}] }
 
@@ -57,17 +59,22 @@ def format_response(func):
             # items in a dictionary.
             if type(unformattedData) == QueryResult:
                 formattedData = [r.to_dict() for r in unformattedData]
-            # Otherwise, it is a tuple or list, and should be returned directly.
+            # Otherwise, it is a tuple or list, and should be
+            # returned directly.
             else:
                 formattedData = unformattedData[:]
             results = {
-                "data": formattedData, "error": False, "message": "Success"
+                "data": formattedData,
+                "error": False,
+                "message": "Success",
             }
 
         # If there was an error, return it.
         except NotFound:
             results = {
-                "data": request.path, "error": True, "message": "404 - not found"
+                "data": request.path,
+                "error": True,
+                "message": "404 - not found",
             }
         # except Exception as e:
         #     print(e)
@@ -80,6 +87,30 @@ def format_response(func):
         # Convert entire response to JSON and return it.
         return flask.jsonify(results)
 
-    # Return the function wrapper (allows a succession of decorator functions to
-    # be called)
+    # Return the function wrapper (allows a succession of decorator
+    # functions to be called)
     return wrapper
+
+
+def get_county_fips_with_leading_zero(place_fips: str) -> str:
+    """Returns the given county FIPS code with leading zeros (5 digits).
+
+    Args:
+        place_fips (str): The original county FIPS code.
+
+    Raises:
+        ValueError: `place_fips` not a string or a number
+
+    Returns:
+        str: The county FIPS code with leading zeros, if any.
+    """
+    place_fips_type: Any = type(place_fips)
+    if place_fips_type == int:
+        return place_fips
+    elif place_fips_type == str:
+        if len(place_fips) == 4:
+            return "0" + place_fips
+        else:
+            return place_fips
+    else:
+        raise ValueError("Unexpected type: " + place_fips_type)

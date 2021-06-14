@@ -5,7 +5,6 @@
 # Standard libraries
 import functools
 from datetime import datetime, timedelta
-from typing import List
 from dateutil.relativedelta import relativedelta
 import pytz
 
@@ -14,7 +13,7 @@ from pony.orm import select
 
 # Local libraries
 from .models import db
-from .utils import passes_filters
+from .utils import get_county_fips_with_leading_zero, passes_filters
 
 # Constants
 strf_str = "%Y-%m-%d %H:%M:%S %Z"
@@ -84,7 +83,9 @@ def getEntityInstances(
     if organizing_attribute is not None:
 
         # # Get the values of the attribute
-        # resKeys = select(getattr(o, organizing_attribute) for o in entity_class)[:]
+        # resKeys = select(
+        #     getattr(o, organizing_attribute) for o in entity_class
+        # )[:]
 
         # Organize outputs by these values.
         res = []
@@ -105,7 +106,8 @@ def getEntityInstances(
                 if getattr(o, organizing_attribute) == key
             ]
 
-            # Store the sets of data under the value of the organizing attribute
+            # Store the sets of data under the value of the
+            # organizing attribute
             res.append(
                 {
                     "name": key,
@@ -114,7 +116,8 @@ def getEntityInstances(
             )
         return res
 
-    # Otherwise, return the instances without organizing them under an attribute
+    # Otherwise, return the instances without organizing them under
+    # an attribute
     else:
         return [({"name": o.name, "iso": o.iso}) for o in instances]
 
@@ -192,8 +195,10 @@ def manage_lag(metric, null_res, max_time, null_places, observations):
             place_id_q_str = f"""AND v.place_id = {null_places[0]}"""
 
         lag_res_q_str = f"""SELECT v.metric_id, v.data_source, d.dt,
-                            m.metric_definition, m.metric_name, v.observation_id,
-                            p.fips AS place_fips, p.place_id, p.iso2 AS place_iso,
+                            m.metric_definition, m.metric_name,
+                            v.observation_id,
+                            p.fips AS place_fips, p.place_id, p.iso2
+                            AS place_iso,
                             p.iso AS place_iso3,
                             p.name AS place_name, v.updated_at, v.value::FLOAT
                             FROM {metric.view_name} v
@@ -439,7 +444,7 @@ def getObservations(filters):
         return (is_view, res, lag)
 
 
-@cached
+# @cached
 def format_observations(view_flag, res, lag, params):
     def get_subsetted_res_list(orig_res_list):
         """Return only a subset of the response list data fields, if they
@@ -456,6 +461,19 @@ def format_observations(view_flag, res, lag, params):
             Description of returned object.
 
         """
+
+        # format `place_fips` if needed
+        if params["spatial_resolution"] == "county":
+            has_place_fips: bool = (
+                len(orig_res_list) > 0 and "place_fips" in orig_res_list[0]
+            )
+            if has_place_fips:
+                d: dict = None
+                for d in orig_res_list:
+                    d["place_fips"] = get_county_fips_with_leading_zero(
+                        d["place_fips"]
+                    )
+
         limit_returned_fields = "fields" in params
         if limit_returned_fields:
             # get fields to return
