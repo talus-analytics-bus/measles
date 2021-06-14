@@ -104,13 +104,16 @@ def get_county_fips_with_leading_zero(place_fips: str) -> str:
     Returns:
         str: The county FIPS code with leading zeros, if any.
     """
-    place_fips_type: Any = type(place_fips)
-    if place_fips_type == int:
-        return place_fips
-    elif place_fips_type == str:
-        if len(place_fips) == 4:
-            return "0" + place_fips
-        else:
-            return place_fips
+    if place_fips is None:
+        return None
     else:
-        raise ValueError("Unexpected type: " + place_fips_type)
+        place_fips_type: Any = type(place_fips)
+        if place_fips_type == int:
+            return place_fips
+        elif place_fips_type == str:
+            if len(place_fips) == 4:
+                return "0" + place_fips
+            else:
+                return place_fips
+        else:
+            raise ValueError("Unexpected type: " + str(place_fips_type))
