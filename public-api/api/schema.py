@@ -265,7 +265,7 @@ def manage_lag(metric, null_res, max_time, null_places, observations):
 
 
 # Define an observation endpoint query.
-# @cached
+@cached
 def getObservations(filters):
     s_rs = [
         "planet",
@@ -444,7 +444,7 @@ def getObservations(filters):
         return (is_view, res, lag)
 
 
-# @cached
+@cached
 def format_observations(view_flag, res, lag, params):
     def get_subsetted_res_list(orig_res_list):
         """Return only a subset of the response list data fields, if they
