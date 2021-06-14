@@ -146,7 +146,8 @@ class Observations(Resource):
                 params["place_id"] = place.place_id
         elif "fips" in params:
             expected_place = True
-            place: db.Place = db.Place.get(fips=params["fips"])
+            fips: str = self.get_county_fips_no_leading_zero(params)
+            place: db.Place = db.Place.get(fips=fips)
             if place is not None:
                 params["place_id"] = place.place_id
         # if place is none but was expected, return empty
@@ -156,6 +157,27 @@ class Observations(Resource):
         (view_flag, res, lag) = schema.getObservations(filters=params)
 
         return schema.format_observations(view_flag, res, lag, params=params)
+
+    def get_county_fips_no_leading_zero(self, params):
+        """Given the params dictionary for the request, returns the county FIPS
+        code (if any) without any leading zeros.
+
+        Args:
+            params (Dict[str, Any]): Params dictionary for the request
+
+        Raises:
+            ValueError: No county FIPS code is present in params dictionary
+
+        Returns:
+            str: If any, the county FIPS code in the params dictionary without
+            any leading zeros.
+        """
+        if "fips" not in params:
+            raise ValueError("No county FIPS code in params dictionary.")
+        else:
+            fips_tmp: str = params["fips"]
+            fips: str = fips_tmp if len(fips_tmp) == 4 else fips_tmp[1:]
+            return fips
 
 
 # Initialize get trend between end and lag # of periods prior
