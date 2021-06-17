@@ -117,3 +117,25 @@ def get_county_fips_with_leading_zero(place_fips: str) -> str:
                 return place_fips
         else:
             raise ValueError("Unexpected type: " + str(place_fips_type))
+
+
+def get_place_id_from_spatial_resolution(spatial_resolution: str) -> str:
+    """Given a spatial resolution, returns the correct data field on the Place
+    entity to describe that place's well-known identifier.
+
+    Args:
+        spatial_resolution (str): The spatial resolution
+
+    Raises:
+        NotImplementedError: Unimplemented spatial resolutions
+
+    Returns:
+        str: The spatial resolution's place well-known identifier field
+    """
+    if spatial_resolution == "county":
+        return "fips"
+    else:
+        raise NotImplementedError(
+            "Place name not yet defined for `spatial_resolution`: "
+            + str(spatial_resolution)
+        )

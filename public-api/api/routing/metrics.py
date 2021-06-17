@@ -1,16 +1,19 @@
 # Standard libraries
-from datetime import datetime
+from typing import List
+from api.models.metrics import Observation
+from datetime import date, datetime
 
 # Third party libraries
 from flask import request
 from flask_restplus import Resource
 from pony.orm import db_session
+from pony.orm.core import Query, select
 
 # Local libraries
 from ..models import db
 from ..db import api
 from .. import schema
-from ..utils import format_response
+from ..utils import format_response, get_place_id_from_spatial_resolution
 
 strf_str = "%Y-%m-%d %H:%M:%S %Z"
 
@@ -347,6 +350,141 @@ class Trend(Resource):
 
 
 # Initialize places catalog or specifics endpoint
+
+
+@api.route("/observations_redux", methods=["GET"])
+class ObservationRedux(Resource):
+    parser = api.parser()
+    parser.add_argument(
+        "metric_id",
+        type=int,
+        required=True,
+        help="Unique ID of metric for which observiations should be returned.",
+    )
+    # parser.add_argument(
+    #     "start",
+    #     type=date,
+    #     required=False,
+    #     help="""Date of first observation to be returned. If not provided,
+    #                             min_time for the metric is used.""",
+    # )
+    # parser.add_argument(
+    #     "end",
+    #     type=date,
+    #     required=False,
+    #     help="""Date of last observation to be returned. If not provided,
+    #                             max_time for the metric is used.""",
+    # )
+    # parser.add_argument(
+    #     "temporal_resolution",
+    #     type=str,
+    #     required=False,
+    #     default="planet",
+    #     choices=("yearly", "monthly", "weekly", "daily"),
+    #     help="""Temporal resolution to use. Throws error if higher resolution
+    #                             than metric. Provides a summary at that level if lower.
+    #                             If not provided, native resolution of metric is returned.""",
+    # )
+    parser.add_argument(
+        "spatial_resolution",
+        type=str,
+        required=False,
+        default="yearly",
+        choices=(
+            "planet",
+            "country",
+            "state",
+            "county",
+            "block_group",
+            "tract",
+            "point",
+        ),
+        help="""Spatial resolution to use. Throws error if higher resolution
+                                than metric. Provides a summary at that level if lower.
+                                If not provided, native resolution of metric is returned.""",
+    )
+    # parser.add_argument(
+    #     "place_id",
+    #     type=int,
+    #     required=False,
+    #     help="""Optional place id to limit metric to only that location. """
+    #     """If place names or ISO3 are defined, this should not also """
+    #     """be defined.""",
+    # )
+    # parser.add_argument(
+    #     "fields",
+    #     type=str,
+    #     required=False,
+    #     help="""Optional field(s) to return.""",
+    # )
+    # parser.add_argument(
+    #     "place_name",
+    #     type=str,
+    #     required=False,
+    #     help="""Optional place id to limit metric to only that location. If place IDs or ISO3 are defined, this should not also be defined.""",
+    # )
+    # parser.add_argument(
+    #     "place_iso3",
+    #     type=str,
+    #     required=False,
+    #     help="""Optional place iso3 code to limit metric to only that location. If place IDs or names are defined, this should not also be defined.""",
+    # )
+    # parser.add_argument(
+    #     "fips",
+    #     type=str,
+    #     required=False,
+    #     help="""Optional fips code to limit metric to only that location. If place IDs or names are defined, this should not also be defined.""",
+    # )
+
+    @db_session
+    @format_response
+    def get(self):
+
+        # initialize parameters
+        params: dict = dict(request.args)
+        metric_id: int = params.get("metric_id")
+        start_date: date = params.get("start_date")
+        end_date: date = params.get("end_date")
+        spatial_resolution: str = params.get("spatial_resolution")
+
+        # validate parameters
+        one_date: bool = start_date == end_date or (
+            start_date is not None and end_date is None
+        )
+        if not one_date or start_date is None:
+            raise NotImplementedError(
+                "Start date must equal end date or be "
+                "only date provided -- date ranges are not "
+                "currently supported."
+            )
+
+        # get observation date
+        start_date_vals: List[str] = start_date.split("-")
+        start_date_ints: List[int] = list(
+            map(lambda x: int(x), start_date_vals)
+        )
+        (year, month, day) = start_date_ints
+        obs_date: date = date(year, month, day)
+
+        # get place identifier for spatial resolution
+        place_id_field: str = get_place_id_from_spatial_resolution(
+            spatial_resolution
+        )
+        place_id_response_key: str = "place_" + place_id_field
+
+        # make request
+        q: Query = select(
+            (getattr(i.place, place_id_field), i.value)
+            for i in Observation
+            if i.metric.metric_id == metric_id
+            and i.date_time.datetime_date == obs_date
+        )
+
+        # return response with name and value fields only
+        res: List[dict] = [
+            {place_id_response_key: t[0], "value": t[1]} for t in q
+        ]
+        return res
 
 
 @api.route("/places", methods=["GET"])

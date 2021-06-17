@@ -3,6 +3,7 @@
 ##
 
 # Standard libraries
+from api.models.metrics import Place
 import functools
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
@@ -20,7 +21,7 @@ strf_str = "%Y-%m-%d %H:%M:%S %Z"
 
 # Cache responses for API requests that have previously been made so that the
 # computation does not need to be repeated.
-USE_CACHING: bool = True
+USE_CACHING: bool = False
 
 
 def cached(func):
@@ -40,8 +41,8 @@ def cached(func):
                 return cache[key]
 
             # Otherwise
-            # After the request is done, take the results and cache them for next
-            # time
+            # After the request is done, take the results and cache them for
+            # next time
             results = func(*args, **kwargs)
             cache[key] = results
             return results
@@ -294,6 +295,7 @@ def getObservations(filters):
     if "spatial_resolution" in filters:
         # check that the requested spatial resolution is not higher than
         # the metric's
+        # TODO check for opto
         if s_rs.index(filters["spatial_resolution"]) > s_rs.index(
             metric.spatial_resolution
         ):
@@ -544,7 +546,9 @@ def format_observations(view_flag, res, lag, params):
         # return only requested fields, if applicable
         return get_subsetted_res_list(res_list)
     else:
-        formattedData = [r.to_dict(related_objects=True) for r in res]
+        # TODO address bottleneck at line below
+        instances = res[:][:]
+        formattedData = [i.to_dict(related_objects=True) for i in instances]
 
         if lag is not None and len(lag) > 0:
             lagData = [r.to_dict(related_objects=True) for r in lag]
@@ -559,7 +563,7 @@ def format_observations(view_flag, res, lag, params):
                 o["stale_flag"] = True
 
             formattedData.extend(lagData)
-
+        # TODO Fix possible bottleneck here
         for o in formattedData:
             metric_info = o["metric"].to_dict()
             o["metric"] = metric_info["metric_name"]
@@ -569,16 +573,15 @@ def format_observations(view_flag, res, lag, params):
                 o["date_time"].to_dict()["datetime"].strftime(strf_str)
             )
 
-            place_info = o["place"].to_dict()
-            o["place_id"] = place_info["place_id"]
-            o["place_name"] = place_info["name"]
-            o["place_iso"] = place_info["iso2"]
-            o["place_iso3"] = place_info["iso"]
-            o["place_fips"] = place_info["fips"]
+            place: Place = o["place"]
+            o["place_id"] = place.place_id
+            o["place_name"] = place.name
+            o["place_iso"] = place.iso2
+            o["place_iso3"] = place.iso
+            o["place_fips"] = place.fips
             del [o["place"]]
 
     formattedData.sort(key=lambda o: (o["place_id"], o["date_time"]))
-    print("Made it!")
     # return only requested fields, if applicable
     return get_subsetted_res_list(formattedData)
 
