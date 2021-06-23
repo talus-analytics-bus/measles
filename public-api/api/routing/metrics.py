@@ -518,12 +518,6 @@ class Places(Resource):
     def get(self):
         params = request.args
 
-        # If we are to organize the places by region, then set the organizing
-        # attribute to the name of the region column in the places table.
-        organizing_attribute = None
-        if "by_region" in params and params["by_region"] == "true":
-            organizing_attribute = "region"
-
         # Setup filters
         filters = {}
         place_id = params.get("place_id", None)
@@ -538,6 +532,18 @@ class Places(Resource):
         place_types = [place_type] if place_type is not None else None
         if place_types is not None:
             filters["place_type"] = place_types
+
+        # If we are to organize the places by region, then set the organizing
+        # attribute to the name of the region column in the places table.
+        organizing_attribute = None
+        if "by_region" in params and params["by_region"] == "true":
+            organizing_attribute = "region"
+        elif (
+            place_types is not None
+            and len(place_types) == 1
+            and place_types[0] == "county"
+        ):
+            organizing_attribute = "fips"
 
         order = [
             "Europe",

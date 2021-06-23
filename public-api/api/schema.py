@@ -3,6 +3,7 @@
 ##
 
 # Standard libraries
+from typing import List
 from api.models.metrics import Place
 import functools
 from datetime import datetime, timedelta
@@ -85,7 +86,7 @@ def getEntityInstances(
 
     # And if there is an organizing attribute, return outputs organized
     # by the values of that attribute.
-    if organizing_attribute is not None:
+    if organizing_attribute == "region":
 
         # # Get the values of the attribute
         # resKeys = select(
@@ -105,7 +106,7 @@ def getEntityInstances(
                 continue
 
             # Get ID and name of entity instance to return as output
-            dataSets = [
+            data_sets = [
                 ({"name": o.name, "iso": o.iso})
                 for o in instances
                 if getattr(o, organizing_attribute) == key
@@ -116,10 +117,20 @@ def getEntityInstances(
             res.append(
                 {
                     "name": key,
-                    "data": dataSets,
+                    "data": data_sets,
                 }
             )
-        return res
+    elif organizing_attribute == "fips":
+        data_sets: List[tuple] = [(o.name, o.fips) for o in instances]
+        by_fips: dict = {}
+        name: str = None
+        fips: str = None
+        for name, fips in data_sets:
+            fips_with_leading_zero: str = get_county_fips_with_leading_zero(
+                fips
+            )
+            by_fips[fips_with_leading_zero] = name
+        return [by_fips]
 
     # Otherwise, return the instances without organizing them under
     # an attribute
