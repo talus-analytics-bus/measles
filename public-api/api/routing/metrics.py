@@ -13,7 +13,11 @@ from pony.orm.core import Query, select
 from ..models import db
 from ..db import api
 from .. import schema
-from ..utils import format_response, get_place_id_from_spatial_resolution
+from ..utils import (
+    format_response,
+    get_county_fips_with_leading_zero,
+    get_place_id_from_spatial_resolution,
+)
 
 strf_str = "%Y-%m-%d %H:%M:%S %Z"
 
@@ -481,9 +485,20 @@ class ObservationRedux(Resource):
         )
 
         # return response with name and value fields only
-        res: List[dict] = [
-            {place_id_response_key: t[0], "value": t[1]} for t in q
-        ]
+        # for counties: include leading zeros in FIPS codes
+        res: List[dict] = None
+        if spatial_resolution != "county":
+            res = [{place_id_response_key: t[0], "value": t[1]} for t in q]
+        else:
+            res = [
+                {
+                    place_id_response_key: get_county_fips_with_leading_zero(
+                        t[0]
+                    ),
+                    "value": t[1],
+                }
+                for t in q
+            ]
         return res
 
 
