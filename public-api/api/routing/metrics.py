@@ -71,8 +71,8 @@ class Observations(Resource):
         default="planet",
         choices=("yearly", "monthly", "weekly", "daily"),
         help="""Temporal resolution to use. Throws error if higher resolution
-                                than metric. Provides a summary at that level if lower.
-                                If not provided, native resolution of metric is returned.""",
+                than metric. Provides a summary at that level if lower.
+                If not provided, native resolution of metric is returned.""",
     )
     parser.add_argument(
         "spatial_resolution",
