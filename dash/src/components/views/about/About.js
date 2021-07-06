@@ -233,7 +233,7 @@ const About = () => {
               <p>ages 12-23 months</p>
             </td>
             <td width='97'>
-              <p>2018</p>
+              <p>2019</p>
             </td>
             <td width='96'>
               <p>3 times per year (June, July, and December)</p>
@@ -432,16 +432,16 @@ const About = () => {
 
       <p>
         As of May 2021, the WHO Measles Surveillance Dataset contains no
-        caseload data for Botswana, Cabo Verde, Guinea-Bissau, Mauritania, 
-        Mauritius, South Sudan, Sao Tome and Principe, Seychelles, 
-        Argentina, Antigua and Barbuda, Bahamas, Belize, Canada, Colombia, 
-        Dominica, Ecuador, Grenada, Guyana, Jamaica, Saint Kitts and Nevis, 
-        Saint Lucia, Suriname, Trinidad and Tobago, Uruguay, Saint Vincent and 
-        the Grenadines, Djibouti, Jordan, Yemen, Austria, Bulgaria, 
-        Bosnia and Herzegovina, Cyprus, Czech Republic, Denmark, Finland, Greece, 
-        Croatia, Hungary, Iceland, Israel, Lithuania, Luxembourg, Latvia, Monaco, 
-        Malta, Montenegro, Netherlands, Norway, San Marino, Slovakia, Slovenia, Sweden, 
-        Uzbekistan, Australia, Mongolia, Tonga, Vanuatu, and Samoa for the year 2021. 
+        caseload data for Botswana, Cabo Verde, Guinea-Bissau, Mauritania,
+        Mauritius, South Sudan, Sao Tome and Principe, Seychelles,
+        Argentina, Antigua and Barbuda, Bahamas, Belize, Canada, Colombia,
+        Dominica, Ecuador, Grenada, Guyana, Jamaica, Saint Kitts and Nevis,
+        Saint Lucia, Suriname, Trinidad and Tobago, Uruguay, Saint Vincent and
+        the Grenadines, Djibouti, Jordan, Yemen, Austria, Bulgaria,
+        Bosnia and Herzegovina, Cyprus, Czech Republic, Denmark, Finland, Greece,
+        Croatia, Hungary, Iceland, Israel, Lithuania, Luxembourg, Latvia, Monaco,
+        Malta, Montenegro, Netherlands, Norway, San Marino, Slovakia, Slovenia, Sweden,
+        Uzbekistan, Australia, Mongolia, Tonga, Vanuatu, and Samoa for the year 2021.
         As a result, caseload data are not shown.
       </p>
 

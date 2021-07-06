@@ -176,7 +176,7 @@ class Scatter extends Chart {
               .append('tspan')
               .attr('dy', '1.1em')
               .attr('x', 0)
-              .text('(2016-2018)')
+              .text('(2016-2019)')
           } else if (i === 1) {
             tickLabel.attr('text-anchor', 'end')
             tickLabel
@@ -192,7 +192,7 @@ class Scatter extends Chart {
               .append('tspan')
               .attr('dy', '1.1em')
               .attr('x', 0)
-              .text('(2016-2018)')
+              .text('(2016-2019)')
           }
         })
 
@@ -219,7 +219,7 @@ class Scatter extends Chart {
               .append('tspan')
               .attr('dy', '1.1em')
               .attr('x', -10)
-              .text('(2016-2020)')
+              .text('(2016-2021)')
           } else if (i === 1) {
             tickLabel
               .attr('text-anchor', 'end')
@@ -239,7 +239,7 @@ class Scatter extends Chart {
               .append('tspan')
               .attr('dy', '1.1em')
               .attr('x', -10)
-              .text('(2016-2020)')
+              .text('(2016-2021)')
           }
         })
 
