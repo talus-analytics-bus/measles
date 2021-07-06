@@ -114,7 +114,7 @@ const App = () => {
         'monthly',
         Util.formatDatetimeApi(Util.today())
       ),
-      vaccination: ObservationQuery(4, 'yearly', '2018-01-01'),
+      vaccination: ObservationQuery(4, 'yearly', '2019-01-01'),
       trend: TrendQuery(6, Util.formatDatetimeApi(Util.today())),
       places: PlaceQuery(placesParams.place_id, placesParams.by_region)
     }

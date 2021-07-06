@@ -43,7 +43,7 @@ const Legend = (props: any) => {
         {
           // Vaccination coverage
           <div className={styles.section}>
-            <p className={styles.sectionName}>Vaccination coverage (2018)</p>
+            <p className={styles.sectionName}>Vaccination coverage (2019)</p>
             <div className={styles.legendEntryGroups}>
               <div className={styles.legendEntryGroup}>
                 <div className={styles.legendEntry}>
