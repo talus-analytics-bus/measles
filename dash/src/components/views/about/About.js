@@ -351,7 +351,7 @@ const About = () => {
               <p>total population</p>
             </td>
             <td width='97'>
-              <p>2019</p>
+              <p>2020</p>
             </td>
             <td width='96'>
               <p>every two years</p>
