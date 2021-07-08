@@ -506,7 +506,7 @@ const About = () => {
         WHO/UNICEF Joint Reporting Process (available{' '}
         <a
           target='_blank'
-          href='https://www.who.int/teams/immunization-vaccines-and-biologicals/immunization-analy[…]d-insights/global-monitoring/who-unicef-joint-reporting-process'
+          href='https://www.who.int/teams/immunization-vaccines-and-biologicals/immunization-analysis-and-insights/global-monitoring/who-unicef-joint-reporting-process'
         >
           here
         </a>
@@ -795,9 +795,9 @@ const About = () => {
               Accessed online <i>via</i>{' '}
               <a
                 target='_blank'
-                href='https://www.who.int/teams/immunization-vaccines-and-biologicals/immunization-analy[…]illance/monitoring/provisional-monthly-measles-and-rubella-data'
+                href='https://www.who.int/teams/immunization-vaccines-and-biologicals/immunization-analysis-and-insights/surveillance/monitoring/provisional-monthly-measles-and-rubella-data'
               >
-                https://www.who.int/teams/immunization-vaccines-and-biologicals/immunization-analy[…]illance/monitoring/provisional-monthly-measles-and-rubella-data
+                https://www.who.int/teams/immunization-vaccines-and-biologicals/immunization-analysis-and-insights/surveillance/monitoring/provisional-monthly-measles-and-rubella-data
               </a>
             </p>
           </p>
@@ -817,9 +817,9 @@ const About = () => {
               Accessed online <i>via</i>{' '}
               <a
                 target='_blank'
-                href='https://www.who.int/teams/immunization-vaccines-and-biologicals/immunization-analy[…]d-insights/global-monitoring/who-unicef-joint-reporting-process'
+                href='https://www.who.int/teams/immunization-vaccines-and-biologicals/immunization-analysis-and-insights/global-monitoring/who-unicef-joint-reporting-process'
               >
-                https://www.who.int/teams/immunization-vaccines-and-biologicals/immunization-analy[…]d-insights/global-monitoring/who-unicef-joint-reporting-process
+                https://www.who.int/teams/immunization-vaccines-and-biologicals/immunization-analysis-and-insights/global-monitoring/who-unicef-joint-reporting-process
               </a>
             </p>
           </p>
@@ -839,9 +839,9 @@ const About = () => {
               reports. Accessed online <i>via</i>{' '}
               <a
                 target='_blank'
-                href='https://apps.who.int/iris/handle/10665/8/discover'
+                href='https://apps.who.int/iris/handle/10665/8/discover?query=jee+mission+report&submit='
               >
-                https://apps.who.int/iris/handle/10665/8/discover
+                https://apps.who.int/iris/handle/10665/8/discover?query=jee+mission+report&submit=
               </a>
             </p>
           </p>
