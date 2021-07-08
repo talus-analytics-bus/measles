@@ -506,7 +506,7 @@ const About = () => {
         WHO/UNICEF Joint Reporting Process (available{' '}
         <a
           target='_blank'
-          href='http://www.who.int/entity/immunization/monitoring_surveillance/data/incidence_series.xls?ua=1&ua=1'
+          href='https://www.who.int/teams/immunization-vaccines-and-biologicals/immunization-analy[…]d-insights/global-monitoring/who-unicef-joint-reporting-process'
         >
           here
         </a>
@@ -795,9 +795,9 @@ const About = () => {
               Accessed online <i>via</i>{' '}
               <a
                 target='_blank'
-                href='https://www.who.int/immunization/monitoring_surveillance/burden/vpd/surveillance_type/active/measles_monthlydata/en/'
+                href='https://www.who.int/teams/immunization-vaccines-and-biologicals/immunization-analy[…]illance/monitoring/provisional-monthly-measles-and-rubella-data'
               >
-                https://www.who.int/immunization/monitoring_surveillance/burden/vpd/surveillance_type/active/measles_monthlydata/en/
+                https://www.who.int/teams/immunization-vaccines-and-biologicals/immunization-analy[…]illance/monitoring/provisional-monthly-measles-and-rubella-data
               </a>
             </p>
           </p>
@@ -817,9 +817,9 @@ const About = () => {
               Accessed online <i>via</i>{' '}
               <a
                 target='_blank'
-                href='https://www.who.int/immunization/monitoring_surveillance/routine/reporting/en/'
+                href='https://www.who.int/teams/immunization-vaccines-and-biologicals/immunization-analy[…]d-insights/global-monitoring/who-unicef-joint-reporting-process'
               >
-                https://www.who.int/immunization/monitoring_surveillance/routine/reporting/en/
+                https://www.who.int/teams/immunization-vaccines-and-biologicals/immunization-analy[…]d-insights/global-monitoring/who-unicef-joint-reporting-process
               </a>
             </p>
           </p>
@@ -839,9 +839,9 @@ const About = () => {
               reports. Accessed online <i>via</i>{' '}
               <a
                 target='_blank'
-                href='https://www.who.int/ihr/procedures/mission-reports/en/'
+                href='https://apps.who.int/iris/handle/10665/8/discover'
               >
-                https://www.who.int/ihr/procedures/mission-reports/en/
+                https://apps.who.int/iris/handle/10665/8/discover
               </a>
             </p>
           </p>
