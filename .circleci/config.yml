@@ -22,7 +22,7 @@ jobs:
             sudo apt-get -y -qq update
             sudo apt-get install python3-pip python3-dev g++ build-essential
             sudo pip3 install --upgrade setuptools pytz
-            sudo pip3 install awsebcli --upgrade
+            sudo pip3 install awsebcli==3.20.0
 
       - aws-cli/install
       - aws-cli/configure
