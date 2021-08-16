@@ -52,24 +52,16 @@ jobs:
     working_directory: ~/repo
 
     docker:
-      - image: circleci/node:10.14.2-stretch
-    environment:
-      API_URL: http://measles-api-test.us-west-1.elasticbeanstalk.com
+      - image: circleci/python:3.7.10
 
     steps:
       - checkout
 
       - run:
-          name: install deployment dependencies
+          name: Installing deployment dependencies
           working_directory: /
           command: |
-            sudo apt-get -y -qq update
-            sudo apt-get install python3-pip python3-dev g++ build-essential
-            sudo pip3 install --upgrade setuptools pytz
             sudo pip3 install awsebcli --upgrade
-
-      - aws-cli/install
-      - aws-cli/configure
 
       - run:
           name: npm build dash
