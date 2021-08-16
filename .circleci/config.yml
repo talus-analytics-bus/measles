@@ -62,6 +62,7 @@ jobs:
           working_directory: /
           command: |
             sudo pip3 install awsebcli --upgrade
+            sudo pip3 install -r requirements.txt
 
       - run:
           name: npm build dash
