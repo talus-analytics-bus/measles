@@ -52,17 +52,21 @@ jobs:
     working_directory: ~/repo
 
     docker:
-      - image: circleci/python:3.7.10
+      - image: circleci/node:10.14.2-stretch
 
     steps:
       - checkout
 
       - run:
-          name: Installing deployment dependencies
+          name: Install deployment dependencies
           working_directory: /
           command: |
+            sudo apt-get -y -qq update
+            sudo apt-get install python3-pip python3-dev g++ build-essential
             sudo pip3 install awsebcli --upgrade
-            sudo pip3 install -r requirements.txt
+
+      - aws-cli/install
+      - aws-cli/configure
 
       - run:
           name: npm build dash
