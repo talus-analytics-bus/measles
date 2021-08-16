@@ -266,7 +266,7 @@ const About = () => {
             </td>
             <td width='97'>
               <p>
-                June 2021
+                July 2021
                 <a
                   className={styles.footnoteInline}
                   href='#_ftn4'
@@ -431,14 +431,14 @@ const About = () => {
       </p>
 
       <p>
-        As of June 2021, the WHO Measles Surveillance Dataset contains no
+        As of July 2021, the WHO Measles Surveillance Dataset contains no
         caseload data for Botswana, Cabo Verde, Guinea-Bissau, Mauritania,
-        Mauritius, South Sudan, Sao Tome and Principe, Seychelles, Antigua and 
+        Mauritius, Sao Tome and Principe, Seychelles, Antigua and 
         Barbuda, Bahamas, Canada, Dominica, Ecuador, Grenada, Guyana, Jamaica, 
         Saint Kitts and Nevis, Saint Lucia, Suriname, Trinidad and Tobago, 
-        Uruguay, Saint Vincent and the Grenadines, Djibouti, Jordan, Yemen, 
+        Uruguay, Saint Vincent and the Grenadines, Djibouti, Yemen, 
         Austria, Bulgaria, Bosnia and Herzegovina, Cyprus, Czech Republic, 
-        Denmark, Finland, Greece, Croatia, Hungary, Iceland, Israel, Lithuania, 
+        Denmark, Greece, Croatia, Hungary, Iceland, Israel, Lithuania, 
         Luxembourg, Latvia, Monaco, Malta, Montenegro, Netherlands, Norway, 
         San Marino, Slovakia, Slovenia, Sweden, Uzbekistan, Australia, Tonga, 
         Vanuatu, and Samoa for the year 2021. As a result, caseload data are 
