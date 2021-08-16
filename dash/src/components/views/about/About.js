@@ -266,7 +266,7 @@ const About = () => {
             </td>
             <td width='97'>
               <p>
-                May 2021
+                July 2021
                 <a
                   className={styles.footnoteInline}
                   href='#_ftn4'
@@ -351,7 +351,7 @@ const About = () => {
               <p>total population</p>
             </td>
             <td width='97'>
-              <p>2019</p>
+              <p>2020</p>
             </td>
             <td width='96'>
               <p>every two years</p>
@@ -431,18 +431,18 @@ const About = () => {
       </p>
 
       <p>
-        As of May 2021, the WHO Measles Surveillance Dataset contains no
+        As of July 2021, the WHO Measles Surveillance Dataset contains no
         caseload data for Botswana, Cabo Verde, Guinea-Bissau, Mauritania,
-        Mauritius, South Sudan, Sao Tome and Principe, Seychelles,
-        Argentina, Antigua and Barbuda, Bahamas, Belize, Canada, Colombia,
-        Dominica, Ecuador, Grenada, Guyana, Jamaica, Saint Kitts and Nevis,
-        Saint Lucia, Suriname, Trinidad and Tobago, Uruguay, Saint Vincent and
-        the Grenadines, Djibouti, Jordan, Yemen, Austria, Bulgaria,
-        Bosnia and Herzegovina, Cyprus, Czech Republic, Denmark, Finland, Greece,
-        Croatia, Hungary, Iceland, Israel, Lithuania, Luxembourg, Latvia, Monaco,
-        Malta, Montenegro, Netherlands, Norway, San Marino, Slovakia, Slovenia, Sweden,
-        Uzbekistan, Australia, Mongolia, Tonga, Vanuatu, and Samoa for the year 2021.
-        As a result, caseload data are not shown.
+        Mauritius, Sao Tome and Principe, Seychelles, Antigua and 
+        Barbuda, Bahamas, Canada, Dominica, Ecuador, Grenada, Guyana, Jamaica, 
+        Saint Kitts and Nevis, Saint Lucia, Suriname, Trinidad and Tobago, 
+        Uruguay, Saint Vincent and the Grenadines, Djibouti, Yemen, 
+        Austria, Bulgaria, Bosnia and Herzegovina, Cyprus, Czech Republic, 
+        Denmark, Greece, Croatia, Hungary, Iceland, Israel, Lithuania, 
+        Luxembourg, Latvia, Monaco, Malta, Montenegro, Netherlands, Norway, 
+        San Marino, Slovakia, Slovenia, Sweden, Uzbekistan, Australia, Tonga, 
+        Vanuatu, and Samoa for the year 2021. As a result, caseload data are 
+        not shown.
       </p>
 
       <h3>
@@ -506,7 +506,7 @@ const About = () => {
         WHO/UNICEF Joint Reporting Process (available{' '}
         <a
           target='_blank'
-          href='http://www.who.int/entity/immunization/monitoring_surveillance/data/incidence_series.xls?ua=1&ua=1'
+          href='https://www.who.int/teams/immunization-vaccines-and-biologicals/immunization-analysis-and-insights/global-monitoring/who-unicef-joint-reporting-process'
         >
           here
         </a>
@@ -795,9 +795,9 @@ const About = () => {
               Accessed online <i>via</i>{' '}
               <a
                 target='_blank'
-                href='https://www.who.int/immunization/monitoring_surveillance/burden/vpd/surveillance_type/active/measles_monthlydata/en/'
+                href='https://www.who.int/teams/immunization-vaccines-and-biologicals/immunization-analysis-and-insights/surveillance/monitoring/provisional-monthly-measles-and-rubella-data'
               >
-                https://www.who.int/immunization/monitoring_surveillance/burden/vpd/surveillance_type/active/measles_monthlydata/en/
+                https://www.who.int/teams/immunization-vaccines-and-biologicals/immunization-analysis-and-insights/surveillance/monitoring/provisional-monthly-measles-and-rubella-data
               </a>
             </p>
           </p>
@@ -817,9 +817,9 @@ const About = () => {
               Accessed online <i>via</i>{' '}
               <a
                 target='_blank'
-                href='https://www.who.int/immunization/monitoring_surveillance/routine/reporting/en/'
+                href='https://www.who.int/teams/immunization-vaccines-and-biologicals/immunization-analysis-and-insights/global-monitoring/who-unicef-joint-reporting-process'
               >
-                https://www.who.int/immunization/monitoring_surveillance/routine/reporting/en/
+                https://www.who.int/teams/immunization-vaccines-and-biologicals/immunization-analysis-and-insights/global-monitoring/who-unicef-joint-reporting-process
               </a>
             </p>
           </p>
@@ -839,9 +839,9 @@ const About = () => {
               reports. Accessed online <i>via</i>{' '}
               <a
                 target='_blank'
-                href='https://www.who.int/ihr/procedures/mission-reports/en/'
+                href='https://apps.who.int/iris/handle/10665/8/discover?query=jee+mission+report&submit='
               >
-                https://www.who.int/ihr/procedures/mission-reports/en/
+                https://apps.who.int/iris/handle/10665/8/discover?query=jee+mission+report&submit=
               </a>
             </p>
           </p>
