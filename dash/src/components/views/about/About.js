@@ -471,7 +471,7 @@ const About = () => {
         <em>2019-2020 and 2021 outbreaks in Democratic Republic of the Congo</em>
       </h3>
       <p>
-        For both the 2019-2020 and current 2020-2021 outbreaks in the 
+        For both the 2019-2020 outbreak and current 2021 outbreak in the 
         Democratic Republic of the Congo, for which data are not adequately 
         captured in the monthly WHO Measles Surveillance Dataset, case data 
         were identified through a review of updates from the{' '}
