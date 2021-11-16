@@ -468,7 +468,7 @@ const About = () => {
       </p>
 
       <h3>
-        <em>2019-2020 outbreak in Democratic Republic of the Congo</em>
+        <em>2019-2020 and 2021 outbreaks in Democratic Republic of the Congo</em>
       </h3>
       <p>
         For both the 2019-2020 and current 2020-2021 outbreaks in the 
