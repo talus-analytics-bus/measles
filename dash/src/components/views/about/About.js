@@ -433,15 +433,15 @@ const About = () => {
       <p>
         As of October 2021, the WHO Measles Surveillance Dataset contains no
         caseload data for Cabo Verde, Guinea-Bissau, Mauritania,
-        Mauritius, Sao Tome and Principe, Seychelles, Antigua and 
-        Barbuda, Bahamas, Canada, Dominica, Ecuador, Grenada, Guyana, Jamaica, 
-        Saint Kitts and Nevis, Saint Lucia, Suriname, Trinidad and Tobago, 
-        Uruguay, Saint Vincent and the Grenadines, Djibouti, Yemen, 
-        Austria, Bulgaria, Bosnia and Herzegovina, Cyprus, Czech Republic, 
-        Denmark, Greece, Croatia, Hungary, Iceland, Israel, Lithuania, 
-        Luxembourg, Latvia, Monaco, Malta, Montenegro, Netherlands, Norway, 
-        San Marino, Slovakia, Slovenia, Sweden, Uzbekistan, Australia, Tonga, 
-        Vanuatu, and Samoa for the year 2021. As a result, caseload data are 
+        Mauritius, Sao Tome and Principe, Seychelles, Antigua and
+        Barbuda, Bahamas, Canada, Dominica, Ecuador, Grenada, Guyana, Jamaica,
+        Saint Kitts and Nevis, Saint Lucia, Suriname, Trinidad and Tobago,
+        Uruguay, Saint Vincent and the Grenadines, Djibouti, Yemen,
+        Austria, Bulgaria, Bosnia and Herzegovina, Cyprus, Czech Republic,
+        Denmark, Greece, Croatia, Hungary, Iceland, Israel, Lithuania,
+        Luxembourg, Latvia, Monaco, Malta, Montenegro, Netherlands, Norway,
+        San Marino, Slovakia, Slovenia, Sweden, Uzbekistan, Australia, Tonga,
+        Vanuatu, and Samoa for the year 2021. As a result, caseload data are
         not shown.
       </p>
 
@@ -471,7 +471,7 @@ const About = () => {
         <em>2019-2020 and 2021 outbreaks in Democratic Republic of the Congo</em>
       </h3>
       <p>
-        For both the 2019-2020 and current 2020-2021 outbreaks in the 
+        For both the 2019-2020 outbreak and current 2021 outbreak in the 
         Democratic Republic of the Congo, for which data are not adequately 
         captured in the monthly WHO Measles Surveillance Dataset, case data 
         were identified through a review of updates from the{' '}
