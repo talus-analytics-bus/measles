@@ -1,7 +1,7 @@
 # Standard libraries
+import psycopg2
 from typing import List
-from api.models.metrics import Observation
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 
 # Third party libraries
 from flask import request
@@ -476,26 +476,59 @@ class ObservationRedux(Resource):
         )
         place_id_response_key: str = "place_" + place_id_field
 
-        # make request
-        q: Query = select(
-            (getattr(i.place, place_id_field), i.value)
-            for i in Observation
-            if i.metric.metric_id == metric_id
-            and i.date_time.datetime_date == obs_date
+        # get most recent obs for places, accounting for any lag
+        metric: Metric = select(
+            i for i in db.Metric if i.metric_id == metric_id
+        ).get()
+        lagged_obs_date: datetime.date = (
+            obs_date - timedelta(metric.lag_allowed)
+            if metric.lag_allowed is not None
+            else obs_date
         )
+        sql: str = f"""
+            WITH most_recent_obs AS (
+                SELECT DISTINCT ON (p.{place_id_field}) o.observation_id,
+                    p.{place_id_field} AS {place_id_response_key},
+                    d.dt_id,
+                    o.value
+                FROM observation o,
+                    place p,
+                    datetime d
+                WHERE d.dt BETWEEN '{str(lagged_obs_date)}'
+                    AND '{str(obs_date)}'
+                    AND o.metric_id = {metric_id}
+                    AND o.place_id = p.place_id
+                    AND o.datetime_id = d.dt_id
+                ORDER BY p.{place_id_field},
+                    d.dt DESC
+            )
+            SELECT {place_id_response_key},
+                value
+            FROM most_recent_obs
+            """
+
+        cur: psycopg2.cursor
+        conn: psycopg2.connection = db.get_connection()
+        q = list()
+        with conn.cursor() as cur:
+            cur: psycopg2.cursor
+            cur.execute(sql)
+            q = cur.fetchall()
 
         # return response with name and value fields only
         # for counties: include leading zeros in FIPS codes
         res: List[dict] = None
         if spatial_resolution != "county":
-            res = [{place_id_response_key: t[0], "value": t[1]} for t in q]
+            res = [
+                {place_id_response_key: t[0], "value": float(t[1])} for t in q
+            ]
         else:
             res = [
                 {
                     place_id_response_key: get_county_fips_with_leading_zero(
                         t[0]
                     ),
-                    "value": t[1],
+                    "value": float(t[1]),
                 }
                 for t in q
             ]
