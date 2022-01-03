@@ -3,7 +3,7 @@
 ##
 
 # Standard libraries
-from typing import List
+from typing import List, Set
 from api.models.metrics import Place
 import functools
 from datetime import datetime, timedelta
@@ -461,7 +461,7 @@ def getObservations(filters):
         return (is_view, res, lag)
 
 
-@cached
+# @cached
 def format_observations(view_flag, res, lag, params):
     def get_subsetted_res_list(orig_res_list):
         """Return only a subset of the response list data fields, if they
@@ -573,7 +573,15 @@ def format_observations(view_flag, res, lag, params):
             for o in lagData:
                 o["stale_flag"] = True
 
-            formattedData.extend(lagData)
+            # sloppy fix: add lagData el to formattedData only if obs not in it
+            formattedDataIds: Set[int] = {
+                o["observation_id"] for o in formattedData
+            }
+            formattedData += [
+                o
+                for o in lagData
+                if o["observation_id"] not in formattedDataIds
+            ]
         # TODO Fix possible bottleneck here
         for o in formattedData:
             metric_info = o["metric"].to_dict()
