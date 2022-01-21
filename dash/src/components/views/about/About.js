@@ -266,7 +266,7 @@ const About = () => {
             </td>
             <td width='97'>
               <p>
-                November 2021
+                December 2021
                 <a
                   className={styles.footnoteInline}
                   href='#_ftn4'
@@ -431,18 +431,17 @@ const About = () => {
       </p>
 
       <p>
-        As of November 2021, the WHO Measles Surveillance Dataset contains no
+        As of December 2021, the WHO Measles Surveillance Dataset contains no
         caseload data for Cabo Verde, Guinea-Bissau, Mauritania,
         Mauritius, Sao Tome and Principe, Seychelles, Antigua and
         Barbuda, Bahamas, Canada, Dominica, Ecuador, Grenada, Guyana, Jamaica,
         Saint Kitts and Nevis, Saint Lucia, Suriname, Trinidad and Tobago,
         Uruguay, Saint Vincent and the Grenadines, Djibouti, Austria, 
-        Bulgaria, Bosnia and Herzegovina, Cyprus, Czech Republic,
-        Denmark, Greece, Croatia, Hungary, Iceland, Israel, Lithuania,
-        Luxembourg, Latvia, Monaco, Malta, Montenegro, Netherlands, Norway,
-        San Marino, Slovakia, Slovenia, Sweden, Uzbekistan, Australia, Tonga,
-        Vanuatu, and Samoa for the year 2021. As a result, caseload data are
-        not shown.
+        Bulgaria, Cyprus, Czech Republic, Denmark, Greece, Croatia, Hungary, 
+        Iceland, Israel, Lithuania, Luxembourg, Latvia, Monaco, Malta, Montenegro, 
+        Netherlands, Norway, San Marino, Slovakia, Slovenia, Sweden, Uzbekistan, 
+        Australia, Tonga, Vanuatu, and Samoa for the year 2021. As a result, 
+        caseload data are not shown.
       </p>
 
       <h3>
