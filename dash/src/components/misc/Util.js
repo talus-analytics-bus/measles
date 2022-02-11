@@ -600,8 +600,8 @@ Util.formatDatetimeApi = dt => {
 Util.globalMaxDate = () => {
   const globalMaxDate = new Date('2000/01/01')
   globalMaxDate.setDate(1)
-  globalMaxDate.setMonth(11) // Dec
-  globalMaxDate.setYear(2021)
+  globalMaxDate.setMonth(0) // Jan
+  globalMaxDate.setYear(2022)
   return globalMaxDate
 }
 

@@ -266,7 +266,7 @@ const About = () => {
             </td>
             <td width='97'>
               <p>
-                December 2021
+                January 2022
                 <a
                   className={styles.footnoteInline}
                   href='#_ftn4'
@@ -431,17 +431,35 @@ const About = () => {
       </p>
 
       <p>
-        As of December 2021, the WHO Measles Surveillance Dataset contains no
-        caseload data for Cabo Verde, Guinea-Bissau, Mauritania,
-        Mauritius, Sao Tome and Principe, Seychelles, Antigua and
-        Barbuda, Bahamas, Canada, Dominica, Ecuador, Grenada, Guyana, Jamaica,
-        Saint Kitts and Nevis, Saint Lucia, Suriname, Trinidad and Tobago,
-        Uruguay, Saint Vincent and the Grenadines, Djibouti, Austria, 
-        Bulgaria, Cyprus, Czech Republic, Denmark, Greece, Croatia, Hungary, 
-        Iceland, Israel, Lithuania, Luxembourg, Latvia, Monaco, Malta, Montenegro, 
-        Netherlands, Norway, San Marino, Slovakia, Slovenia, Sweden, Uzbekistan, 
-        Australia, Tonga, Vanuatu, and Samoa for the year 2021. As a result, 
-        caseload data are not shown.
+        As of January 2022, the WHO Measles Surveillance Dataset contains no
+        caseload data for Angola, Botswana, Comoros, Cabo Verde, Algeria, 
+        Eritrea, Gabon, Ghana, Guinea, gambia, Guinea-Bissau, Equatorial Guinea,
+        Kenya, Liberia, Lesotho, Madagascar, Mali, Mozambique, Mauritania, 
+        Mauritius, Malawi, Namibia, Niger, Rwanda, Sierra Leone, South Sudan,
+        Sao Tome and Principe, Eswatini, Seychelles, Chad, Togo, 
+        United Republic of Tanzania, Uganda, South Africa, Zambia, Zimbabwe, 
+        Argentina, Antigua and Barbuda, Bahamas, Belize, Barbados, Canada, 
+        Costa Rica, Dominica, Dominican Republic, Ecuador, Grenada, Guatemala, 
+        Guyana, Jamaica, Saint Kitts and Nevis, Saint Lucia, Panama, Suriname, 
+        Trinidad and Tobago, Uruguay, Saint Vincent and the Grenadines, 
+        Afghanistan, United Arab Emirates, Bahrain, Djibouti, Egypt, Iran, Iraq,
+        Jordan, Kuwait, Lebanon, Libya, Morocco, Oman, Pakistan, Qatar, Saudi Arabia,
+        Sudan, Somalia, Syrian Arab Republic, Tunisia, Yemen, Albania, Andorra, 
+        Armenia, Austria, Azerbaijan, Belgium, Bulgaria, Bosnia and Herzegovina, 
+        Belarus, Cyprus, Czech Republic, Germany, Denmark, Spain, Estonia, France,
+        United Kingdom of Great Britain and Northern Ireland, Georgia, Greece, 
+        Croatia, Hungary, Ireland, Iceland, Israel, Italy, Kazakhsan, Kyrgyzstan,
+        Lithuania, Luxembourg, Latvia, Monaco, Republic of Moldova, North Macedonia,
+        Malta, Montenegro, Netherlands, Norway, Poland, Portugal, Romania,
+        San Marino, Serbia, Slovakia, Slovenia, Sweden, Tajikistan, Turkmenistan,
+        Turkey, Ukraine, Uzbekistan, Indonesia, Sri Lanka, Myanmar, Nepal,
+        Democratic Peoples Republic of Korea, Timor-Leste, Australia, Brunei,
+        China, Cook Islands, Fiji, Micronesia (Federated States of), Japan,
+        Cambodia, Kiribati, Republic of Korea, Lao Peoples Democratic Republic, 
+        Marshall Islands, Mongolia, Malaysia, Niue, Nauru, New Zealand, Philippines,
+        Palau, Papua Nwe Guinea, Singapore, Solomon Islands, Tonga, Tuvalu, 
+        Viet Nam, Vanuatu, and Samoa for the year 2022. As a result, caseload 
+        data are not shown.
       </p>
 
       <h3>
@@ -467,10 +485,10 @@ const About = () => {
       </p>
 
       <h3>
-        <em>2019-2020 and 2021 outbreaks in Democratic Republic of the Congo</em>
+        <em>2019-2020 and 2021-2022 outbreaks in Democratic Republic of the Congo</em>
       </h3>
       <p>
-        For both the 2019-2020 outbreak and current 2021 outbreak in the 
+        For both the 2019-2020 outbreak and current 2021-2022 outbreak in the 
         Democratic Republic of the Congo, for which data are not adequately 
         captured in the monthly WHO Measles Surveillance Dataset, case data 
         were identified through a review of updates from the{' '}
