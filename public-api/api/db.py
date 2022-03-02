@@ -36,17 +36,19 @@ appconfig = Config("dbconfig.ini")
 
 
 # Setup for Pony ORM ###########################################################
+try:
+    # Bind database object to the target database (postgres assumed) using the
+    # dbconfig.ini and command line-derived configuration arguments.
+    db.bind(
+        provider="postgres",
+        user=appconfig.db["user"],
+        password=appconfig.db["password"],
+        host=appconfig.db["host"],
+        database=appconfig.db["dbname"],
+    )
 
-# Bind database object to the target database (postgres assumed) using the
-# dbconfig.ini and command line-derived configuration arguments.
-db.bind(
-    provider="postgres",
-    user=appconfig.db["user"],
-    password=appconfig.db["password"],
-    host=appconfig.db["host"],
-    database=appconfig.db["dbname"],
-)
-
-# Generate mapping (create tables if they don't already exist) to store data.
-# Change this argument to True if the tables you need don't yet exist.
-db.generate_mapping(create_tables=False)
+    # Generate mapping (create tables if they don't already exist) to store data.
+    # Change this argument to True if the tables you need don't yet exist.
+    db.generate_mapping(create_tables=False)
+except Exception:
+    pass
