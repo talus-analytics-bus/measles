@@ -239,7 +239,7 @@ class Scatter extends Chart {
               .append('tspan')
               .attr('dy', '1.1em')
               .attr('x', -10)
-              .text('(2016-2021)')
+              .text('(2016-2022)')
           }
         })
 
