@@ -3,7 +3,7 @@ import base64
 from botocore.exceptions import ClientError
 
 
-def get_secret(secret_name="talus_dev_rds_secret", region_name="us-west-1"):
+def get_secret(secret_name="talus-prod-1", region_name="us-west-1"):
 
     # Create a Secrets Manager client
     session = boto3.session.Session()
