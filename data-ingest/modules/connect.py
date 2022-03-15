@@ -4,6 +4,18 @@ from botocore.exceptions import ClientError
 
 
 def get_secret(secret_name="talus-prod-1", region_name="us-west-1"):
+    """Get AWS Secrets Manager secret
+
+    Args:
+        secret_name (str, optional): Name of secret. Defaults 
+        to "talus-prod-1".
+        
+        region_name (str, optional): Region secret is in. Defaults 
+        to "us-west-1".
+
+    Returns:
+        Any: The secret, which most often is a string or bytes
+    """    
 
     # Create a Secrets Manager client
     session = boto3.session.Session()
