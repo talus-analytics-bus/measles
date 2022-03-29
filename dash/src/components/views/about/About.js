@@ -266,7 +266,7 @@ const About = () => {
             </td>
             <td width='97'>
               <p>
-                January 2022
+                February 2022
                 <a
                   className={styles.footnoteInline}
                   href='#_ftn4'
@@ -431,7 +431,7 @@ const About = () => {
       </p>
 
       <p>
-        As of January 2022, the WHO Measles Surveillance Dataset contains no
+        As of February 2022, the WHO Measles Surveillance Dataset contains no
         caseload data for Angola, Botswana, Comoros, Cabo Verde, Algeria, 
         Eritrea, Ethiopia, Guinea-Bissau, Equatorial Guinea, Kenya, Madagascar, 
         Mozambique, Mauritania, Mauritius, Malawi, Namibia, Rwanda, South Sudan,
@@ -441,13 +441,13 @@ const About = () => {
         Jamaica, Saint Kitts and Nevis, Saint Lucia, Panama, Suriname, 
         Trinidad and Tobago, Uruguay, Saint Vincent and the Grenadines, 
         Djibouti, Iraq, Lebanon, Saudi Arabia, Sudan, Somalia, Tunisia, Yemen, 
-        Albania, Andorra, Armenia, Austria, Azerbaijan, Belgium, Bulgaria, 
-        Cyprus, Czech Republic, Germany, Denmark, Spain, France, Greece, 
-        Croatia, Hungary, Ireland, Iceland, Israel, Italy, Lithuania, Luxembourg, 
-        Latvia, Monaco, Republic of Moldova, North Macedonia, Malta, Netherlands, 
-        Norway, Portugal, Romania, San Marino, Slovakia, Slovenia, Sweden, 
-        Uzbekistan, Sri Lanka, Democratic Peoples Republic of Korea, Australia, 
-        Brunei, Fiji, Cambodia, Lao Peoples Democratic Republic, Mongolia, Tonga,
+        Albania, Andorra, Armenia, Austria, Azerbaijan, Bulgaria, Cyprus, 
+        Czech Republic, Germany, Denmark, France, Greece, Croatia, Hungary, 
+        Iceland, Israel, Italy, Lithuania, Luxembourg, Latvia, Monaco, 
+        Republic of Moldova, North Macedonia, Malta, Netherlands, Norway, 
+        Portugal, Romania, San Marino, Slovakia, Slovenia, Sweden, Uzbekistan, 
+        Sri Lanka, Democratic Peoples Republic of Korea, Australia, Brunei, 
+        Fiji, Cambodia, Lao Peoples Democratic Republic, Mongolia, Tonga,
         Viet Nam, Vanuatu, and Samoa for the year 2022. As a result, caseload 
         data are not shown.
       </p>
