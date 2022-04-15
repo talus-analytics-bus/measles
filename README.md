@@ -1,6 +1,6 @@
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-## Setup Enviornment
+## Setup Environment
 
 You will need Node and Yarn to run this project
 
