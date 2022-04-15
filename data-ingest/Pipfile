@@ -1,0 +1,17 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+notebook = "*"
+pandas = "*"
+psycopg2-binary = "*"
+sqlalchemy = "*"
+boto3 = "*"
+openpyxl = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.7"
