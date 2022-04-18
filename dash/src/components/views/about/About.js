@@ -266,7 +266,7 @@ const About = () => {
             </td>
             <td width='97'>
               <p>
-                February 2022
+                March 2022
                 <a
                   className={styles.footnoteInline}
                   href='#_ftn4'
@@ -431,25 +431,20 @@ const About = () => {
       </p>
 
       <p>
-        As of February 2022, the WHO Measles Surveillance Dataset contains no
-        caseload data for Angola, Botswana, Comoros, Cabo Verde, Algeria, 
-        Eritrea, Ethiopia, Guinea-Bissau, Equatorial Guinea, Kenya, Madagascar, 
-        Mozambique, Mauritania, Mauritius, Malawi, Namibia, Rwanda, South Sudan,
+        As of March 2022, the WHO Measles Surveillance Dataset contains no
+        caseload data for Angola, Cabo Verde, Algeria, Eritrea, Guinea-Bissau, 
+        Equatorial Guinea, Kenya, Mauritania, Mauritius, Malawi, South Sudan,
         Sao Tome and Principe, Seychelles, United Republic of Tanzania, Zambia, 
-        Zimbabwe, Argentina, Antigua and Barbuda, Bahamas, Belize, Barbados, 
-        Canada, Costa Rica, Dominica, Ecuador, Grenada, Guatemala, Guyana, 
-        Jamaica, Saint Kitts and Nevis, Saint Lucia, Panama, Suriname, 
-        Trinidad and Tobago, Uruguay, Saint Vincent and the Grenadines, 
-        Djibouti, Iraq, Lebanon, Saudi Arabia, Sudan, Somalia, Tunisia, Yemen, 
-        Albania, Andorra, Armenia, Austria, Azerbaijan, Bulgaria, Cyprus, 
-        Czech Republic, Germany, Denmark, France, Greece, Croatia, Hungary, 
-        Iceland, Israel, Italy, Lithuania, Luxembourg, Latvia, Monaco, 
-        Republic of Moldova, North Macedonia, Malta, Netherlands, Norway, 
-        Portugal, Romania, San Marino, Slovakia, Slovenia, Sweden, Uzbekistan, 
-        Sri Lanka, Democratic Peoples Republic of Korea, Australia, Brunei, 
-        Fiji, Cambodia, Lao Peoples Democratic Republic, Mongolia, Tonga,
-        Viet Nam, Vanuatu, and Samoa for the year 2022. As a result, caseload 
-        data are not shown.
+        Antigua and Barbuda, Bahamas, Belize, Barbados, Canada, Costa Rica, 
+        Dominica, Ecuador, Grenada, Guyana, Jamaica, Saint Kitts and Nevis, 
+        Saint Lucia, Panama, Suriname, Trinidad and Tobago, Uruguay, 
+        Saint Vincent and the Grenadines, Djibouti, Lebanon, Andorra, Armenia, 
+        Bulgaria, Cyprus, Czech Republic, Denmark, Greece, Croatia, Hungary, 
+        Iceland, Israel, Lithuania, Luxembourg, Latvia, Monaco, North Macedonia, 
+        Malta, Netherlands, Norway, San Marino, Slovakia, Slovenia, Sweden, Uzbekistan, 
+        Democratic Peoples Republic of Korea, Australia, Brunei, Cambodia, 
+        Lao Peoples Democratic Republic, Mongolia, Tonga, Viet Nam, Vanuatu, 
+        and Samoa for the year 2022. As a result, caseload data are not shown.
       </p>
 
       <h3>
