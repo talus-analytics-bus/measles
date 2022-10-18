@@ -17,7 +17,8 @@ from .models import db
 # Setup for Flask API Server ###################################################
 
 # Load Flask app
-app = Flask(__name__)
+# app = Flask(__name__)
+application = app = Flask(__name__)
 
 # Allow Cross Origin Requests
 CORS(app)
