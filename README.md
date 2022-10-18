@@ -1,3 +1,7 @@
+## COVID Caseload api note:
+
+COVID caseload api note is in: `public_api/` directory, in branch `amp-metric-api-amazonlinux2`.
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Setup Environment
