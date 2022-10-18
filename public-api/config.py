@@ -7,7 +7,6 @@
 
 # Third party libraries
 from configparser import ConfigParser
-from argparse import ArgumentParser
 from sqlalchemy import create_engine
 
 # from sqlalchemy.exc import OperationalError
@@ -15,6 +14,9 @@ import pprint
 import os
 
 # Config class, instantiated in api/setup.py.
+
+# if __name__ == '__main__':
+#     from argparse import ArgumentParser
 
 
 class Config:
@@ -25,39 +27,42 @@ class Config:
         cfg = ConfigParser()
         cfg.read(config_file)
 
-        # Define command line  arguments.
-        self.clargs = self.collect_arguments()
+        # # Define command line  arguments.
+        # self.clargs = self.collect_arguments()
 
-        # Populate session config variables with defaults, to be potentially
-        # overidden by command line arguments.
-        cfg["session"] = {}
-        for key in cfg["DEFAULT"]:
-            print("key = " + key)
-            cfg["session"][key] = cfg["DEFAULT"][key]
+        # # Populate session config variables with defaults, to be potentially
+        # # overidden by command line arguments.
+        # cfg["session"] = {}
+        # for key in cfg["DEFAULT"]:
+        #     print("key = " + key)
+        #     cfg["session"][key] = cfg["DEFAULT"][key]
 
-        # Define the current database session based on command line arguments,
-        # if they were provided
-        # TODO make this more legible.
-        for k, v in vars(self.clargs).items():
-            if v is not None:
-                if k.startswith("pg_"):
-                    cfg["session"][k.split("_")[1]] = str(v)
-                else:
-                    cfg["session"][k] = str(v)
+        # # Define the current database session based on command line arguments,
+        # # if they were provided
+        # # TODO make this more legible.
+        # for k, v in vars(self.clargs).items():
+        #     if v is not None:
+        #         if k.startswith("pg_"):
+        #             cfg["session"][k.split("_")[1]] = str(v)
+        #         else:
+        #             cfg["session"][k] = str(v)
 
-        # Define parameters for database connection, if available.
-        # TODO make this more legible.
-        self.db = {
-            k: v
-            for k, v in dict(cfg["session"]).items()
-            if k not in ["datadir"]
-        }
+        # # Define parameters for database connection, if available.
+        # # TODO make this more legible.
+        # print(cfg["session"])
+        # self.db = {
+        #     k: v for k, v in dict(cfg["session"]).items() if k not in ["datadir"]
+        # }
 
+        print("defining self.db")
+        self.db = {}
         # load env variables for things that aren't in the config
         db_list = ["user", "password", "host", "port", "dbname"]
+        # for param in db_list:
+        #     if param not in self.db:
+        #         self.db[param] = os.environ[param]
         for param in db_list:
-            if param not in self.db:
-                self.db[param] = os.environ[param]
+            self.db[param] = os.environ[param]
 
         # Convert type of 'port' to integer
         print(self.db)
@@ -96,21 +101,23 @@ class Config:
     def __setitem__(self, key, value):
         self.__dict__[key] = value
 
-    # Define argument parser to collect command line arguments from the user,
-    # if provided.
-    @staticmethod
-    def collect_arguments():
-        parser = ArgumentParser(description="Test", add_help=False)
-        parser.add_argument("-h", "--pg-host")
-        parser.add_argument("-p", "--pg-port", type=int)
-        parser.add_argument("-d", "--pg-dbname")
-        parser.add_argument("-u", "--pg-user")
-        parser.add_argument("-w", "--pg-password")
-        parser.add_argument(
-            "--help",
-            action="help",
-            help="""Please check the file config.py
-                            for a list of command line arguments.""",
-        )
+    # # Define argument parser to collect command line arguments from the user,
+    # # if provided.
+    # @staticmethod
+    # def collect_arguments():
+    #     parser = ArgumentParser(description="Test", add_help=False)
+    #     parser.add_argument("-h", "--pg-host")
+    #     parser.add_argument("-p", "--pg-port", type=int)
+    #     parser.add_argument("-d", "--pg-dbname")
+    #     parser.add_argument("-u", "--pg-user")
+    #     parser.add_argument("-w", "--pg-password")
+    #     parser.add_argument(
+    #         "--help",
+    #         action="help",
+    #         help="""Please check the file config.py
+    #                         for a list of command line arguments.""",
+    #     )
 
-        return parser.parse_args()
+    #     args, unknown = parser.parse_known_args()
+
+    #     return args
