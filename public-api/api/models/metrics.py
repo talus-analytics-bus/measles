@@ -44,17 +44,17 @@ class DateTime(db.Entity):
     observations = Set("Observation")
 
 
-class Poly(db.Entity):
-    poly_id = PrimaryKey(int, auto=True)
-    place = Required("Place", column="place_id")
+# class Poly(db.Entity):
+#     poly_id = PrimaryKey(int, auto=True)
+#     place = Required("Place", column="place_id")
 
 
-class Point(db.Entity):
-    point_id = PrimaryKey(int, auto=True)
-    geom = Required(str, sql_type="point")
-    lon = Optional(float)
-    lat = Optional(float)
-    place = Required("Place", column="place_id")
+# class Point(db.Entity):
+#     point_id = PrimaryKey(int, auto=True)
+#     geom = Required(str, sql_type="point")
+#     lon = Optional(float)
+#     lat = Optional(float)
+#     place = Required("Place", column="place_id")
 
 
 class Place(db.Entity):
@@ -66,8 +66,8 @@ class Place(db.Entity):
     iso = Optional(str)
     iso2 = Optional(str)
     place_type = Required(str)
-    poly = Optional("Poly", column="poly_id")
-    point = Optional("Point", column="point_id")
+    # poly = Optional("Poly", column="poly_id")
+    # point = Optional("Point", column="point_id")
     observations = Set("Observation")
     region = Optional(str)
 
